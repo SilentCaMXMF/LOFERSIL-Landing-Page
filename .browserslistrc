@@ -1,0 +1,11 @@
+# Browsers that we support
+
+> 1%
+last 2 versions
+not dead
+
+# Explicitly support these browsers
+chrome >= 90
+firefox >= 88
+safari >= 14
+edge >= 90

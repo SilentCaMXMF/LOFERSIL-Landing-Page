@@ -1,0 +1,16 @@
+{
+  "name": "LOFERSIL - Premium Products & Services",
+  "short_name": "LOFERSIL",
+  "description": "Discover LOFERSIL's premium collection of products and services.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

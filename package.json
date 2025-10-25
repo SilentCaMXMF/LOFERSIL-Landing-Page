@@ -1,0 +1,50 @@
+{
+  "name": "lofersil-landing-page",
+  "version": "1.0.0",
+  "description": "LOFERSIL Landing Page - Static TypeScript site for Vercel deployment",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node build.js",
+    "build:dev": "tsc && postcss src/styles/main.css -o dist/main.css",
+    "dev": "tsc --watch",
+    "start": "live-server dist --port=3000 --open=/",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.{ts,css,html}",
+    "optimize-images": "imagemin assets/images/* --out-dir=dist/images",
+    "prebuild": "npm run format",
+    "lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
+    "vercel-deploy": "./vercel-deploy.sh",
+    "deploy:preview": "vercel",
+    "deploy:prod": "vercel --prod"
+  },
+  "keywords": [
+    "landing-page",
+    "typescript",
+    "static-site",
+    "vercel",
+    "lofersil"
+  ],
+  "author": "LOFERSIL",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "autoprefixer": "^10.4.0",
+    "cssnano": "^6.0.0",
+    "eslint": "^8.0.0",
+    "favicons": "^7.2.0",
+    "imagemin": "^8.0.0",
+    "imagemin-cli": "^7.0.0",
+    "lighthouse": "^11.0.0",
+    "live-server": "^1.2.0",
+    "postcss": "^8.4.0",
+    "postcss-cli": "^10.0.0",
+    "prettier": "^3.0.0",
+    "terser": "^5.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "web-vitals": "^5.1.0"
+  }
+}
