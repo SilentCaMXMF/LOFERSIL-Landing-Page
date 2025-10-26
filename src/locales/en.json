@@ -1,0 +1,180 @@
+{
+  "meta": {
+    "title": "LOFERSIL - Premium Products & Services",
+    "description": "LOFERSIL - Premium products and services. Discover our collection and find what you're looking for.",
+    "keywords": "lofersil, products, services, premium, quality",
+    "ogTitle": "LOFERSIL - Premium Products & Services",
+    "ogDescription": "Discover LOFERSIL's premium collection of products and services. Quality and excellence in everything we do.",
+    "twitterTitle": "LOFERSIL - Premium Products & Services",
+    "twitterDescription": "Discover LOFERSIL's premium collection of products and services."
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "services": "Services",
+    "about": "About",
+    "contact": "Contact",
+    "store": "Visit Store",
+    "langToggle": "EN"
+  },
+  "hero": {
+    "title": "Welcome to LOFERSIL",
+    "subtitle": "Premium Products & Services",
+    "description": "Discover our curated collection of high-quality products and exceptional services. Experience excellence in everything we offer.",
+    "exploreProducts": "Explore Products",
+    "ourServices": "Our Services"
+  },
+  "features": {
+    "title": "Why Choose LOFERSIL?",
+    "subtitle": "Quality, reliability, and excellence in every aspect",
+    "premiumQuality": {
+      "title": "Premium Quality",
+      "description": "Only the finest products and services make it to our collection."
+    },
+    "fastReliable": {
+      "title": "Fast & Reliable",
+      "description": "Quick delivery and dependable service you can count on."
+    },
+    "exceptionalSupport": {
+      "title": "Exceptional Support",
+      "description": "Our team is here to help you every step of the way."
+    }
+  },
+  "cta": {
+    "title": "Ready to Get Started?",
+    "description": "Visit our store to explore our complete collection of premium products and services.",
+    "button": "Visit Our Store"
+  },
+  "footer": {
+    "title": "LOFERSIL",
+    "description": "Premium products and services for discerning customers.",
+    "quickLinks": "Quick Links",
+    "connect": "Connect",
+    "copyright": "© 2024 LOFERSIL. All rights reserved."
+  },
+  "routes": {
+    "/": {
+      "title": "LOFERSIL - Premium Products & Services",
+      "description": "Discover LOFERSIL's premium collection of products and services. Quality and excellence in everything we do."
+    },
+    "/products": {
+      "title": "Products - LOFERSIL",
+      "description": "Explore our premium product collection. High-quality items curated for discerning customers.",
+      "heroTitle": "Our Products",
+      "heroSubtitle": "Premium Collection",
+      "heroDescription": "Discover our carefully curated selection of high-quality products designed to meet your needs.",
+      "sectionTitle": "Product Categories",
+      "sectionSubtitle": "Find exactly what you're looking for",
+      "electronics": {
+        "title": "Electronics",
+        "description": "Latest technology and gadgets for modern living."
+      },
+      "fashion": {
+        "title": "Fashion",
+        "description": "Stylish and comfortable clothing for every occasion."
+      },
+      "homeGarden": {
+        "title": "Home & Garden",
+        "description": "Everything you need to make your space beautiful."
+      },
+      "entertainment": {
+        "title": "Entertainment",
+        "description": "Fun and engaging products for leisure time."
+      }
+    },
+    "/services": {
+      "title": "Services - LOFERSIL",
+      "description": "Professional services tailored to your needs. Expert solutions for businesses and individuals.",
+      "heroTitle": "Our Services",
+      "heroSubtitle": "Expert Solutions",
+      "heroDescription": "Professional services designed to help you achieve your goals with excellence.",
+      "sectionTitle": "Service Areas",
+      "sectionSubtitle": "Comprehensive solutions for your needs",
+      "consulting": {
+        "title": "Consulting",
+        "description": "Expert advice and strategic planning services."
+      },
+      "technicalSupport": {
+        "title": "Technical Support",
+        "description": "Reliable technical assistance and maintenance."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "Data-driven insights to optimize your performance."
+      },
+      "design": {
+        "title": "Design",
+        "description": "Creative design solutions for your projects."
+      }
+    },
+    "/about": {
+      "title": "About Us - LOFERSIL",
+      "description": "Learn about LOFERSIL's mission, values, and commitment to quality. Discover our story.",
+      "heroTitle": "About LOFERSIL",
+      "heroSubtitle": "Our Story",
+      "heroDescription": "Founded with a passion for quality and excellence, LOFERSIL is committed to providing premium products and services.",
+      "sectionTitle": "Our Mission",
+      "sectionSubtitle": "Delivering excellence in everything we do",
+      "qualityFirst": {
+        "title": "Quality First",
+        "description": "We prioritize quality in every product and service we offer."
+      },
+      "customerFocus": {
+        "title": "Customer Focus",
+        "description": "Your satisfaction is our top priority."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "description": "Continuously improving and adapting to meet your needs."
+      }
+    },
+    "/contact": {
+      "title": "Contact Us - LOFERSIL",
+      "description": "Get in touch with LOFERSIL. We're here to help with any questions or support you need.",
+      "heroTitle": "Contact Us",
+      "heroSubtitle": "Get In Touch",
+      "heroDescription": "Have questions? Need support? We're here to help you every step of the way.",
+      "sectionTitle": "Contact Information",
+      "sectionSubtitle": "Reach out to us through any of these channels",
+      "email": {
+        "title": "Email",
+        "description": "info@lofersil.com"
+      },
+      "phone": {
+        "title": "Phone",
+        "description": "+1 (555) 123-4567"
+      },
+      "address": {
+        "title": "Address",
+        "description": "123 Premium Street, Quality City, QC 12345"
+      }
+    },
+    "/store": {
+      "title": "Store - LOFERSIL",
+      "description": "Visit our online store to browse and purchase our complete collection of premium products.",
+      "heroTitle": "Our Store",
+      "heroSubtitle": "Premium Shopping Experience",
+      "heroDescription": "Browse our complete collection of premium products. Quality items at competitive prices.",
+      "browseProducts": "Browse Products",
+      "contactSales": "Contact Sales",
+      "sectionTitle": "Store Features",
+      "sectionSubtitle": "Why shop with us",
+      "easyShopping": {
+        "title": "Easy Shopping",
+        "description": "Intuitive interface for a seamless shopping experience."
+      },
+      "fastShipping": {
+        "title": "Fast Shipping",
+        "description": "Quick and reliable delivery to your doorstep."
+      },
+      "securePayment": {
+        "title": "Secure Payment",
+        "description": "Safe and secure payment processing."
+      },
+      "qualityGuarantee": {
+        "title": "Quality Guarantee",
+        "description": "100% satisfaction guarantee on all purchases."
+      }
+    }
+  }
+}

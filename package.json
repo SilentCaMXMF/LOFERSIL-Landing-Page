@@ -2,6 +2,7 @@
   "name": "lofersil-landing-page",
   "version": "1.0.0",
   "description": "LOFERSIL Landing Page - Static TypeScript site for Vercel deployment",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "node build.js",

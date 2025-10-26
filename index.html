@@ -5,29 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
+      data-i18n="meta.description"
       content="LOFERSIL - Premium products and services. Discover our collection and find what you're looking for."
     />
-    <meta name="keywords" content="lofersil, products, services, premium, quality" />
+    <meta
+      name="keywords"
+      data-i18n="meta.keywords"
+      content="lofersil, products, services, premium, quality"
+    />
     <meta name="author" content="LOFERSIL" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="LOFERSIL - Premium Products & Services" />
+    <meta
+      property="og:title"
+      data-i18n="meta.ogTitle"
+      content="LOFERSIL - Premium Products & Services"
+    />
     <meta
       property="og:description"
+      data-i18n="meta.ogDescription"
       content="Discover LOFERSIL's premium collection of products and services. Quality and excellence in everything we do."
     />
     <meta property="og:site_name" content="LOFERSIL" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content="LOFERSIL - Premium Products & Services" />
+    <meta
+      property="twitter:title"
+      data-i18n="meta.twitterTitle"
+      content="LOFERSIL - Premium Products & Services"
+    />
     <meta
       property="twitter:description"
+      data-i18n="meta.twitterDescription"
       content="Discover LOFERSIL's premium collection of products and services."
     />
 
-    <title>LOFERSIL - Premium Products & Services</title>
+    <title data-i18n="meta.title">LOFERSIL - Premium Products & Services</title>
+
+    <!-- Hreflang tags for SEO -->
+    <link rel="alternate" hreflang="en" href="https://lofersil.com/" />
+    <link rel="alternate" hreflang="pt-PT" href="https://lofersil.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://lofersil.com/" />
 
     <!-- Preload critical resources -->
     <link rel="preload" href="/main.css" as="style" />
@@ -50,12 +70,20 @@
           <a href="/" class="logo-link">LOFERSIL</a>
         </div>
         <div class="nav-menu" id="nav-menu">
-          <a href="/" class="nav-link active">Home</a>
-          <a href="/products" class="nav-link">Products</a>
-          <a href="/services" class="nav-link">Services</a>
-          <a href="/about" class="nav-link">About</a>
-          <a href="/contact" class="nav-link">Contact</a>
-          <a href="/store" class="nav-link nav-cta">Visit Store</a>
+          <a href="/" class="nav-link active" data-i18n="nav.home">Home</a>
+          <a href="/products" class="nav-link" data-i18n="nav.products">Products</a>
+          <a href="/services" class="nav-link" data-i18n="nav.services">Services</a>
+          <a href="/about" class="nav-link" data-i18n="nav.about">About</a>
+          <a href="/contact" class="nav-link" data-i18n="nav.contact">Contact</a>
+          <a href="/store" class="nav-link nav-cta" data-i18n="nav.store">Visit Store</a>
+          <button
+            id="lang-toggle"
+            class="nav-link lang-toggle"
+            data-i18n="nav.langToggle"
+            aria-label="Toggle language"
+          >
+            EN
+          </button>
         </div>
         <div class="nav-toggle" id="nav-toggle">
           <span></span>
@@ -71,15 +99,19 @@
       <section id="hero" class="hero">
         <div class="hero-container">
           <div class="hero-content">
-            <h1 class="hero-title">Welcome to LOFERSIL</h1>
-            <p class="hero-subtitle">Premium Products & Services</p>
-            <p class="hero-description">
+            <h1 class="hero-title" data-i18n="hero.title">Welcome to LOFERSIL</h1>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">Premium Products & Services</p>
+            <p class="hero-description" data-i18n="hero.description">
               Discover our curated collection of high-quality products and exceptional services.
               Experience excellence in everything we offer.
             </p>
             <div class="hero-actions">
-              <a href="/products" class="btn btn-primary">Explore Products</a>
-              <a href="/services" class="btn btn-secondary">Our Services</a>
+              <a href="/products" class="btn btn-primary" data-i18n="hero.exploreProducts"
+                >Explore Products</a
+              >
+              <a href="/services" class="btn btn-secondary" data-i18n="hero.ourServices"
+                >Our Services</a
+              >
             </div>
           </div>
           <div class="hero-image">
@@ -92,28 +124,36 @@
       <section id="features" class="features">
         <div class="features-container">
           <div class="section-header">
-            <h2 class="section-title">Why Choose LOFERSIL?</h2>
-            <p class="section-subtitle">Quality, reliability, and excellence in every aspect</p>
+            <h2 class="section-title" data-i18n="features.title">Why Choose LOFERSIL?</h2>
+            <p class="section-subtitle" data-i18n="features.subtitle">
+              Quality, reliability, and excellence in every aspect
+            </p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">⭐</div>
-              <h3 class="feature-title">Premium Quality</h3>
-              <p class="feature-description">
+              <h3 class="feature-title" data-i18n="features.premiumQuality.title">
+                Premium Quality
+              </h3>
+              <p class="feature-description" data-i18n="features.premiumQuality.description">
                 Only the finest products and services make it to our collection.
               </p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🚀</div>
-              <h3 class="feature-title">Fast & Reliable</h3>
-              <p class="feature-description">
+              <h3 class="feature-title" data-i18n="features.fastReliable.title">Fast & Reliable</h3>
+              <p class="feature-description" data-i18n="features.fastReliable.description">
                 Quick delivery and dependable service you can count on.
               </p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">💎</div>
-              <h3 class="feature-title">Exceptional Support</h3>
-              <p class="feature-description">Our team is here to help you every step of the way.</p>
+              <h3 class="feature-title" data-i18n="features.exceptionalSupport.title">
+                Exceptional Support
+              </h3>
+              <p class="feature-description" data-i18n="features.exceptionalSupport.description">
+                Our team is here to help you every step of the way.
+              </p>
             </div>
           </div>
         </div>
@@ -123,11 +163,13 @@
       <section id="cta" class="cta">
         <div class="cta-container">
           <div class="cta-content">
-            <h2 class="cta-title">Ready to Get Started?</h2>
-            <p class="cta-description">
+            <h2 class="cta-title" data-i18n="cta.title">Ready to Get Started?</h2>
+            <p class="cta-description" data-i18n="cta.description">
               Visit our store to explore our complete collection of premium products and services.
             </p>
-            <a href="/store" class="btn btn-primary btn-large">Visit Our Store</a>
+            <a href="/store" class="btn btn-primary btn-large" data-i18n="cta.button"
+              >Visit Our Store</a
+            >
           </div>
         </div>
       </section>
@@ -138,24 +180,24 @@
       <div class="footer-container">
         <div class="footer-content">
           <div class="footer-section">
-            <h3 class="footer-title">LOFERSIL</h3>
-            <p class="footer-description">
+            <h3 class="footer-title" data-i18n="footer.title">LOFERSIL</h3>
+            <p class="footer-description" data-i18n="footer.description">
               Premium products and services for discerning customers.
             </p>
           </div>
           <div class="footer-section">
-            <h4 class="footer-subtitle">Quick Links</h4>
+            <h4 class="footer-subtitle" data-i18n="footer.quickLinks">Quick Links</h4>
             <ul class="footer-links">
-              <li><a href="/products">Products</a></li>
-              <li><a href="/services">Services</a></li>
-              <li><a href="/about">About Us</a></li>
-              <li><a href="/contact">Contact</a></li>
+              <li><a href="/products" data-i18n="nav.products">Products</a></li>
+              <li><a href="/services" data-i18n="nav.services">Services</a></li>
+              <li><a href="/about" data-i18n="nav.about">About Us</a></li>
+              <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
             </ul>
           </div>
           <div class="footer-section">
-            <h4 class="footer-subtitle">Connect</h4>
+            <h4 class="footer-subtitle" data-i18n="footer.connect">Connect</h4>
             <ul class="footer-links">
-              <li><a href="/store">Store</a></li>
+              <li><a href="/store" data-i18n="nav.store">Store</a></li>
               <li><a href="/support">Support</a></li>
               <li><a href="/privacy">Privacy Policy</a></li>
               <li><a href="/terms">Terms of Service</a></li>
@@ -163,7 +205,7 @@
           </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2024 LOFERSIL. All rights reserved.</p>
+          <p data-i18n="footer.copyright">&copy; 2024 LOFERSIL. All rights reserved.</p>
         </div>
       </div>
     </footer>

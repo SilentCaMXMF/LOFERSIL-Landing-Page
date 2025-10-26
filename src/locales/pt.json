@@ -1,0 +1,180 @@
+{
+  "meta": {
+    "title": "LOFERSIL - Produtos e Serviços Premium",
+    "description": "LOFERSIL - Produtos e serviços premium. Descubra a nossa coleção e encontre o que procura.",
+    "keywords": "lofersil, produtos, serviços, premium, qualidade, portugal",
+    "ogTitle": "LOFERSIL - Produtos e Serviços Premium",
+    "ogDescription": "Descubra a coleção premium de produtos e serviços da LOFERSIL. Qualidade e excelência em tudo o que fazemos.",
+    "twitterTitle": "LOFERSIL - Produtos e Serviços Premium",
+    "twitterDescription": "Descubra a coleção premium de produtos e serviços da LOFERSIL."
+  },
+  "nav": {
+    "home": "Início",
+    "products": "Produtos",
+    "services": "Serviços",
+    "about": "Sobre Nós",
+    "contact": "Contacto",
+    "store": "Visitar Loja",
+    "langToggle": "PT"
+  },
+  "hero": {
+    "title": "Bem-vindo à LOFERSIL",
+    "subtitle": "Produtos e Serviços Premium",
+    "description": "Descubra a nossa coleção selecionada de produtos de alta qualidade e serviços excecionais. Experimente a excelência em tudo o que oferecemos.",
+    "exploreProducts": "Explorar Produtos",
+    "ourServices": "Nossos Serviços"
+  },
+  "features": {
+    "title": "Porquê Escolher LOFERSIL?",
+    "subtitle": "Qualidade, fiabilidade e excelência em todos os aspetos",
+    "premiumQuality": {
+      "title": "Qualidade Premium",
+      "description": "Apenas os melhores produtos e serviços fazem parte da nossa coleção."
+    },
+    "fastReliable": {
+      "title": "Rápido e Fiável",
+      "description": "Entrega rápida e serviço confiável em que pode contar."
+    },
+    "exceptionalSupport": {
+      "title": "Suporte Exceional",
+      "description": "A nossa equipa está aqui para ajudar em todos os passos."
+    }
+  },
+  "cta": {
+    "title": "Pronto para Começar?",
+    "description": "Visite a nossa loja para explorar a nossa coleção completa de produtos e serviços premium.",
+    "button": "Visitar a Nossa Loja"
+  },
+  "footer": {
+    "title": "LOFERSIL",
+    "description": "Produtos e serviços premium para clientes exigentes.",
+    "quickLinks": "Links Rápidos",
+    "connect": "Ligar",
+    "copyright": "© 2024 LOFERSIL. Todos os direitos reservados."
+  },
+  "routes": {
+    "/": {
+      "title": "LOFERSIL - Produtos e Serviços Premium",
+      "description": "Descubra a coleção premium de produtos e serviços da LOFERSIL. Qualidade e excelência em tudo o que fazemos."
+    },
+    "/products": {
+      "title": "Produtos - LOFERSIL",
+      "description": "Explore a nossa coleção premium de produtos. Artigos de alta qualidade selecionados para clientes exigentes.",
+      "heroTitle": "Nossos Produtos",
+      "heroSubtitle": "Coleção Premium",
+      "heroDescription": "Descubra a nossa seleção cuidadosa de produtos de alta qualidade desenhados para satisfazer as suas necessidades.",
+      "sectionTitle": "Categorias de Produtos",
+      "sectionSubtitle": "Encontre exatamente o que procura",
+      "electronics": {
+        "title": "Eletrónicos",
+        "description": "Última tecnologia e gadgets para a vida moderna."
+      },
+      "fashion": {
+        "title": "Moda",
+        "description": "Roupa elegante e confortável para todas as ocasiões."
+      },
+      "homeGarden": {
+        "title": "Casa e Jardim",
+        "description": "Tudo o que precisa para tornar o seu espaço bonito."
+      },
+      "entertainment": {
+        "title": "Entretenimento",
+        "description": "Produtos divertidos e envolventes para o tempo livre."
+      }
+    },
+    "/services": {
+      "title": "Serviços - LOFERSIL",
+      "description": "Serviços profissionais adaptados às suas necessidades. Soluções especializadas para empresas e indivíduos.",
+      "heroTitle": "Nossos Serviços",
+      "heroSubtitle": "Soluções Especializadas",
+      "heroDescription": "Serviços profissionais desenhados para ajudar a alcançar os seus objetivos com excelência.",
+      "sectionTitle": "Áreas de Serviço",
+      "sectionSubtitle": "Soluções abrangentes para as suas necessidades",
+      "consulting": {
+        "title": "Consultoria",
+        "description": "Aconselhamento especializado e serviços de planeamento estratégico."
+      },
+      "technicalSupport": {
+        "title": "Suporte Técnico",
+        "description": "Assistência técnica fiável e manutenção."
+      },
+      "analytics": {
+        "title": "Análise",
+        "description": "Informações baseadas em dados para otimizar o seu desempenho."
+      },
+      "design": {
+        "title": "Design",
+        "description": "Soluções de design criativo para os seus projetos."
+      }
+    },
+    "/about": {
+      "title": "Sobre Nós - LOFERSIL",
+      "description": "Conheça a missão, valores e compromisso com a qualidade da LOFERSIL. Descubra a nossa história.",
+      "heroTitle": "Sobre a LOFERSIL",
+      "heroSubtitle": "A Nossa História",
+      "heroDescription": "Fundada com paixão pela qualidade e excelência, a LOFERSIL está comprometida em fornecer produtos e serviços premium.",
+      "sectionTitle": "A Nossa Missão",
+      "sectionSubtitle": "Entregar excelência em tudo o que fazemos",
+      "qualityFirst": {
+        "title": "Qualidade Primeiro",
+        "description": "Priorizamos a qualidade em todos os produtos e serviços que oferecemos."
+      },
+      "customerFocus": {
+        "title": "Foco no Cliente",
+        "description": "A sua satisfação é a nossa prioridade máxima."
+      },
+      "innovation": {
+        "title": "Inovação",
+        "description": "Melhorando continuamente e adaptando-nos para satisfazer as suas necessidades."
+      }
+    },
+    "/contact": {
+      "title": "Contacte-nos - LOFERSIL",
+      "description": "Entre em contacto com a LOFERSIL. Estamos aqui para ajudar com quaisquer perguntas ou suporte de que necessite.",
+      "heroTitle": "Contacte-nos",
+      "heroSubtitle": "Entre em Contacto",
+      "heroDescription": "Tem perguntas? Precisa de suporte? Estamos aqui para ajudar em todos os passos.",
+      "sectionTitle": "Informações de Contacto",
+      "sectionSubtitle": "Contacte-nos através de qualquer um destes canais",
+      "email": {
+        "title": "Email",
+        "description": "info@lofersil.com"
+      },
+      "phone": {
+        "title": "Telefone",
+        "description": "+351 21 123 4567"
+      },
+      "address": {
+        "title": "Endereço",
+        "description": "Rua Premium 123, 1234-567 Lisboa, Portugal"
+      }
+    },
+    "/store": {
+      "title": "Loja - LOFERSIL",
+      "description": "Visite a nossa loja online para navegar e comprar a nossa coleção completa de produtos premium.",
+      "heroTitle": "A Nossa Loja",
+      "heroSubtitle": "Experiência de Compras Premium",
+      "heroDescription": "Navegue pela nossa coleção completa de produtos premium. Artigos de qualidade a preços competitivos.",
+      "browseProducts": "Navegar Produtos",
+      "contactSales": "Contactar Vendas",
+      "sectionTitle": "Características da Loja",
+      "sectionSubtitle": "Porquê comprar connosco",
+      "easyShopping": {
+        "title": "Compras Fáceis",
+        "description": "Interface intuitiva para uma experiência de compras sem interrupções."
+      },
+      "fastShipping": {
+        "title": "Entrega Rápida",
+        "description": "Entrega rápida e fiável à sua porta."
+      },
+      "securePayment": {
+        "title": "Pagamento Seguro",
+        "description": "Processamento de pagamentos seguro e protegido."
+      },
+      "qualityGuarantee": {
+        "title": "Garantia de Qualidade",
+        "description": "Garantia de satisfação de 100% em todas as compras."
+      }
+    }
+  }
+}
