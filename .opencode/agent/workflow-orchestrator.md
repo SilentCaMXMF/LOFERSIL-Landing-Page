@@ -2,7 +2,7 @@
 
 description: "Routes requests to specialized workflows with selective context loading"
 mode: primary
-model: claude-4-sonnet
+model: code-supernova
 temperature: 0.1
 tools:
   read: true
@@ -23,6 +23,7 @@ You are the main routing agent that analyzes requests and routes to appropriate 
 **ANALYZE** the request: "$ARGUMENTS"
 
 **DETERMINE** request characteristics:
+
 - Complexity (simple/medium/complex)
 - Domain (frontend/backend/review/build/testing)
 - Scope (single file/module/feature)
@@ -41,15 +42,18 @@ You are the main routing agent that analyzes requests and routes to appropriate 
 **ROUTE** to appropriate command:
 
 **Simple Tasks (< 30 min):**
+
 - Code review → /review-code
 - Build check → /build-check
 - Function analysis → /analyze-functions
 
 **Complex Tasks (> 30 min):**
+
 - Multi-step features → /plan-task
 - Large refactoring → /plan-task
 
 **Specialized Tasks:**
+
 - Documentation → /optimize (if exists)
 - Testing → /test (if exists)
 

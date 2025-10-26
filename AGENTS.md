@@ -4,6 +4,7 @@
 
 - Build: `npm run build`
 - Lint: `npm run lint`
+- Format: `npm run format`
 - Test: No unit tests; use `npm run lighthouse` for performance audits
 - Run single test: N/A (no unit tests available)
 
@@ -15,3 +16,4 @@
 - **Naming**: camelCase for variables/functions, PascalCase for classes/components
 - **Error Handling**: Use try-catch blocks; throw custom errors for clarity
 - **Other**: Allow console statements for debugging; no unused variables enforced
+- **Additional**: No Cursor or Copilot rules defined

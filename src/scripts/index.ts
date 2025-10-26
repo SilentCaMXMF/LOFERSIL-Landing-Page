@@ -23,6 +23,37 @@ interface Route {
   content: string;
 }
 
+// API Types and Interfaces
+interface ContactRequest {
+  name: string;
+  email: string;
+  message: string;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  error?: string;
+  timestamp: string;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  price: number;
+  category: string;
+}
+
+export interface Service {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  features: string[];
+}
+
 // Configuration
 const config: NavigationConfig = {
   mobileBreakpoint: 768,
@@ -570,12 +601,56 @@ class LOFERSILLandingPage {
   }
 
   /**
-   * Handle clicks outside navigation menu
+   * Submit contact form via API
    */
-  private handleOutsideClick(e: Event): void {
-    if (this.isMenuOpen && this.navMenu && !this.navMenu.contains(e.target as Node)) {
-      this.toggleMobileMenu();
+  private async submitContact(request: ContactRequest): Promise<ApiResponse<{ id: string }>> {
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit contact form');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error submitting contact:', error);
+      return {
+        success: false,
+        data: { id: '' },
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      };
     }
+  }
+
+  /**
+   * Update meta tags for SEO
+   */
+  private updateMetaTags(title: string, description: string): void {
+    const metaTitle = document.querySelector('meta[name="title"]') as HTMLMetaElement;
+    const metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement;
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]') as HTMLMetaElement;
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]') as HTMLMetaElement;
+
+    if (metaTitle) metaTitle.content = title;
+    if (metaDescription) metaDescription.content = description;
+    if (twitterTitle) twitterTitle.content = title;
+    if (twitterDescription) twitterDescription.content = description;
+  }
+
+  /**
+   * Get web vitals metrics
+   */
+  private getWebVitalsMetrics(): void {
+    // Placeholder for web vitals metrics
+    console.log('Web vitals metrics not implemented');
+  }
   }
 
   /**
@@ -726,11 +801,18 @@ class LOFERSILLandingPage {
     }
   }
 
-  /**
-   * Get stored Web Vitals metrics
-   */
-  public getWebVitalsMetrics(): Record<string, number> {
-    return JSON.parse(localStorage.getItem('webVitals') || '{}');
+
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error submitting contact:', error);
+      return {
+        success: false,
+        data: { id: '' },
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      };
+    }
   }
 
   /**

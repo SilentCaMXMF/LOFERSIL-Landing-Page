@@ -2,7 +2,7 @@
 
 description: "Code review, security, and quality assurance agent"
 mode: subagent
-model: claude-4-sonnet
+model: grok-code
 temperature: 0.1
 tools:
   read: true
@@ -42,6 +42,7 @@ Then give a short summary of the review.
 - Risk level (including security risk) and recommended follow-ups
 
 **Context Loading:**
+
 - Load project patterns and security guidelines
 - Analyze code against established conventions
 - Flag deviations from team standards

@@ -1,6 +1,6 @@
 # The OpenCode Agent System Blueprint
 
-_Build Intelligent Workflow Systems with Context-Aware AI_
+Build Intelligent Workflow Systems with Context-Aware AI_
 
 ## The Golden Rule
 
@@ -47,7 +47,7 @@ Create the component now.
 
 **❌ Without @ loading:**
 
-```
+```markdown
 Agent: "I need to create a component but don't know your patterns. Let me search..."
 → Agent uses generic patterns or has to look up files
 → Inconsistent results, slower execution
@@ -55,7 +55,7 @@ Agent: "I need to create a component but don't know your patterns. Let me search
 
 **✅ With @ loading:**
 
-```
+```markdown
 Agent: "I have your React patterns, design system, and validation rules loaded. Creating component..."
 → Agent immediately follows your exact patterns
 → Consistent, fast, high-quality results
@@ -154,7 +154,7 @@ Understanding @ symbol auto-loading is crucial because:
 **What:** Entry points that load immediate context based on request analysis
 **Rule:** Commands are non-deterministic - they adapt context to the request
 
-```
+```markdown
 /workflow                    → Intelligent routing with dynamic context
 /plan-task                   → Task planning with architecture context
 /execute-task               → Step execution with progress tracking
@@ -201,7 +201,7 @@ Execute this [task type] now.
 **What:** Deterministic AI workers with specific capabilities
 **Rule:** Agents can look up additional context but are predictable in behavior
 
-```
+```markdown
 Primary Agents:
 ├── workflow-orchestrator.md  → Routes requests and analyzes complexity
 ├── task-planner.md           → Creates detailed task plans with file tracking
@@ -264,7 +264,7 @@ Execute [task type] now.
 **What:** Layered knowledge system with focused domains
 **Rule:** Single-level loading - no recursive context references
 
-```
+```markdown
 context/
 ├── core/
 │   └── essential-patterns.md    (76 lines - always loaded)
@@ -312,7 +312,7 @@ context/
 - **NEVER** [forbidden action]
 - **USE** [specific tools/methods]
 
-```
+```markdown
 
 ### 4. Task Management (tasks/)
 **What:** File-based progress tracking with checkbox systems
@@ -335,7 +335,7 @@ tasks/
 └── single/ # Simple tasks
 └── [task-name].md
 
-````
+```markdown
 
 **Task Plan File Structure:**
 ```markdown
@@ -384,7 +384,7 @@ tasks/
 **What:** Multi-agent coordination with quality gates
 **Rule:** Complex workflows use multiple agents with validation checkpoints
 
-```
+```markdown
 Workflow Types:
 ├── Simple (< 30 min)     → Direct execution with focused context
 ├── Medium (30min-2hrs)   → Task planning with step tracking
@@ -399,7 +399,8 @@ Quality Gates:
 
 ## System Flow (Intelligent Workflow Management)
 
-```mermaid
+```markdown
+mermaid
 flowchart TD
     A[User Request] --> B[Workflow Orchestrator]
     B --> C{Analyze Request}
@@ -425,7 +426,7 @@ flowchart TD
     style A fill:#E6F3FF
     style J fill:#E6FFE6
     style R fill:#E6FFE6
-```
+```markdown
 
 ## Context Loading Strategy
 
@@ -737,7 +738,7 @@ const validated = schema.safeParse(data);
 if (!validated.success) return { error: "Validation failed" };
 ```
 
-````
+```markdown
 
 ### 5. Test Your System
 ```bash

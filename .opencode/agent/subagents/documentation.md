@@ -1,7 +1,7 @@
 ---
 description: "Documentation authoring agent"
 mode: subagent
-model: google/gemini-2.5-flash
+model: grok-code
 temperature: 0.2
 tools:
   read: true
@@ -37,5 +37,3 @@ Workflow:
 Constraints:
 
 - No bash. Only edit markdown and docs.
-
-

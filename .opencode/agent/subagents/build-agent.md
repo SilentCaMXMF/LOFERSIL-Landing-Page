@@ -2,7 +2,7 @@
 
 description: "Type check and build validation agent"
 mode: subagent
-model: claude-4-sonnet
+model: grok-code
 temperature: 0.1
 tools:
   bash: true
@@ -35,6 +35,7 @@ You are a build validation agent. For every request, perform the following steps
    - If both steps complete without errors, return a success message.
 
 **Rules:**
+
 - Only run type check and build check.
 - Only report errors if they occur; otherwise, report success.
 - Do not modify any code.
