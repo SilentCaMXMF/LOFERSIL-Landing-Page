@@ -47,5 +47,6 @@
     "silent": true
   },
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "outputDirectory": "dist"
 }
