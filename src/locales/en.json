@@ -40,6 +40,44 @@
       "description": "Our team is here to help you every step of the way."
     }
   },
+  "about": {
+    "title": "Welcome to LOFERSIL",
+    "subtitle": "Your trusted local store in the heart of Lisbon",
+    "description": "Step into our welcoming store at R. Gomes Freire 187 B and discover a carefully curated selection of quality products. Our friendly team is here to help you find exactly what you need.",
+    "location": "Central Lisbon Location",
+    "physicalStore": "Physical Store Experience",
+    "expertStaff": "Expert Staff Assistance"
+  },
+  "productsShowcase": {
+    "title": "Our Product Categories",
+    "subtitle": "Discover our wide range of quality products for every need",
+    "babyProducts": {
+      "title": "Baby Products",
+      "description": "Soft toys, dolls, and baby essentials for the little ones"
+    },
+    "jewelryBoxes": {
+      "title": "Jewelry Boxes",
+      "description": "Elegant boxes to store and protect your precious items"
+    },
+    "pens": {
+      "title": "Promotional Pens",
+      "description": "Quality writing instruments for business and personal use"
+    },
+    "binders": {
+      "title": "Office Supplies",
+      "description": "Professional binders and folders for organization"
+    },
+    "backpacks": {
+      "title": "Backpacks",
+      "description": "Durable and stylish backpacks for school and travel"
+    },
+    "ink": {
+      "title": "Ink Cartridges",
+      "description": "Quality ink cartridges for all your printing needs"
+    },
+    "ctaText": "Visit our store to explore our complete collection and find exactly what you're looking for",
+    "ctaButton": "View All Products"
+  },
   "cta": {
     "title": "Ready to Get Started?",
     "description": "Visit our store to explore our complete collection of premium products and services.",
@@ -146,7 +184,7 @@
       },
       "address": {
         "title": "Address",
-        "description": "123 Premium Street, Quality City, QC 12345"
+        "description": "R. Gomes Freire 187 B, 1150-178 Lisboa"
       }
     },
     "/store": {

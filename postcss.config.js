@@ -1,11 +1,11 @@
-module.exports = {
+export default {
   plugins: {
     autoprefixer: {},
     cssnano:
-      process.env.NODE_ENV === "production"
+      process.env.NODE_ENV === 'production'
         ? {
             preset: [
-              "default",
+              'default',
               {
                 discardComments: { removeAll: true },
                 normalizeWhitespace: false,

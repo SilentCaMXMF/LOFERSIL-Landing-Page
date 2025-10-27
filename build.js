@@ -5,9 +5,13 @@
  * Compiles TypeScript, processes CSS, and optimizes assets for production
  */
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -28,6 +32,12 @@ try {
   const tscCommand = isProduction ? 'npx tsc' : 'npx tsc --noEmitOnError';
   execSync(tscCommand, { stdio: 'inherit' });
   console.log('✅ TypeScript compilation successful');
+
+  // Move compiled JS to scripts directory
+  if (fs.existsSync('./dist/index.js')) {
+    fs.mkdirSync('./dist/scripts', { recursive: true });
+    fs.renameSync('./dist/index.js', './dist/scripts/index.js');
+  }
 } catch (error) {
   console.error('❌ TypeScript compilation failed');
   process.exit(1);
@@ -71,10 +81,26 @@ if (isProduction) {
   }
 }
 
-// Copy assets
+// Copy assets (excluding images, which are copied separately)
 console.log('📦 Copying assets...');
 if (fs.existsSync('./assets')) {
-  fs.cpSync('./assets', './dist', { recursive: true });
+  // Copy everything except images
+  const assetsDir = fs.readdirSync('./assets');
+  assetsDir.forEach(item => {
+    if (item !== 'images') {
+      fs.cpSync(`./assets/${item}`, `./dist/${item}`, { recursive: true });
+    }
+  });
+}
+
+// Copy images to root images directory
+if (fs.existsSync('./assets/images')) {
+  fs.cpSync('./assets/images', './dist/images', { recursive: true });
+}
+
+// Copy locales
+if (fs.existsSync('./src/locales')) {
+  fs.cpSync('./src/locales', './dist/locales', { recursive: true });
 }
 
 // Copy web manifest
@@ -206,12 +232,13 @@ console.log(`   - SEO: ✅ Sitemap & robots.txt generated`);
 console.log(`   - Source Maps: ${isProduction ? '✅ Generated' : '✅ Available'}`);
 
 const buildTime = new Date().toISOString();
+const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 fs.writeFileSync(
   './dist/build-info.json',
   JSON.stringify(
     {
       buildTime,
-      version: require('./package.json').version,
+      version: packageJson.version,
       environment: isProduction ? 'production' : 'development',
     },
     null,

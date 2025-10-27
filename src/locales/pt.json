@@ -40,6 +40,44 @@
       "description": "A nossa equipa está aqui para ajudar em todos os passos."
     }
   },
+  "about": {
+    "title": "Bem-vindo à LOFERSIL",
+    "subtitle": "A sua loja local de confiança no coração de Lisboa",
+    "description": "Entre na nossa loja acolhedora na R. Gomes Freire 187 B e descubra uma seleção cuidadosa de produtos de qualidade. A nossa equipa amigável está aqui para ajudar a encontrar exatamente o que precisa.",
+    "location": "Localização Central em Lisboa",
+    "physicalStore": "Experiência de Loja Física",
+    "expertStaff": "Assistência de Equipa Especializada"
+  },
+  "productsShowcase": {
+    "title": "As Nossas Categorias de Produtos",
+    "subtitle": "Descubra a nossa vasta gama de produtos de qualidade para todas as necessidades",
+    "babyProducts": {
+      "title": "Produtos para Bebés",
+      "description": "Brinquedos macios, bonecos e essenciais para os mais pequenos"
+    },
+    "jewelryBoxes": {
+      "title": "Caixas de Joias",
+      "description": "Caixas elegantes para guardar e proteger os seus itens preciosos"
+    },
+    "pens": {
+      "title": "Canetas Promocionais",
+      "description": "Instrumentos de escrita de qualidade para uso profissional e pessoal"
+    },
+    "binders": {
+      "title": "Material de Escritório",
+      "description": "Dossiês e pastas profissionais para organização"
+    },
+    "backpacks": {
+      "title": "Mochilas",
+      "description": "Mochilas duráveis e estilosas para escola e viagens"
+    },
+    "ink": {
+      "title": "Cartuchos de Tinta",
+      "description": "Cartuchos de tinta de qualidade para todas as suas necessidades de impressão"
+    },
+    "ctaText": "Visite a nossa loja para explorar a nossa coleção completa e encontrar exatamente o que procura",
+    "ctaButton": "Ver Todos os Produtos"
+  },
   "cta": {
     "title": "Pronto para Começar?",
     "description": "Visite a nossa loja para explorar a nossa coleção completa de produtos e serviços premium.",
@@ -146,7 +184,7 @@
       },
       "address": {
         "title": "Endereço",
-        "description": "Rua Premium 123, 1234-567 Lisboa, Portugal"
+        "description": "R. Gomes Freire 187 B, 1150-178 Lisboa"
       }
     },
     "/store": {

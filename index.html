@@ -50,17 +50,17 @@
     <link rel="alternate" hreflang="x-default" href="https://lofersil.com/" />
 
     <!-- Preload critical resources -->
-    <link rel="preload" href="/main.css" as="style" />
-    <link rel="preload" href="/scripts/index.js" as="script" />
+    <link rel="preload" href="main.css" as="style" />
+    <link rel="preload" href="scripts/index.js" as="script" />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="main.css" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" href="favicon.svg" />
+    <link rel="manifest" href="site.webmanifest" />
   </head>
   <body>
     <!-- Navigation -->
@@ -115,7 +115,71 @@
             </div>
           </div>
           <div class="hero-image">
-            <img src="/images/hero-image.svg" alt="LOFERSIL Hero" class="hero-img" loading="lazy" />
+            <img
+              src="/assets/images/Frente_loja_100.webp"
+              alt="LOFERSIL Store Front - R. Gomes Freire 187 B, Lisboa"
+              class="hero-img"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- About Us Section -->
+      <section id="about" class="about">
+        <div class="about-container">
+          <div class="section-header">
+            <h2 class="section-title" data-i18n="about.title">Welcome to LOFERSIL</h2>
+            <p class="section-subtitle" data-i18n="about.subtitle">
+              Your trusted local store in the heart of Lisbon
+            </p>
+          </div>
+          <div class="about-content">
+            <div class="about-text">
+              <p class="about-description" data-i18n="about.description">
+                Step into our welcoming store at R. Gomes Freire 187 B and discover a carefully
+                curated selection of quality products. Our friendly team is here to help you find
+                exactly what you need.
+              </p>
+              <div class="about-features">
+                <div class="about-feature">
+                  <span class="about-feature-icon">📍</span>
+                  <span class="about-feature-text" data-i18n="about.location"
+                    >Central Lisbon Location</span
+                  >
+                </div>
+                <div class="about-feature">
+                  <span class="about-feature-icon">🏪</span>
+                  <span class="about-feature-text" data-i18n="about.physicalStore"
+                    >Physical Store Experience</span
+                  >
+                </div>
+                <div class="about-feature">
+                  <span class="about-feature-icon">👥</span>
+                  <span class="about-feature-text" data-i18n="about.expertStaff"
+                    >Expert Staff Assistance</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="about-gallery">
+              <div class="about-gallery-item">
+                <img
+                  src="/assets/images/Interior.jpg"
+                  alt="LOFERSIL Store Interior - Wide view of product displays"
+                  class="about-gallery-img"
+                  loading="lazy"
+                />
+              </div>
+              <div class="about-gallery-item">
+                <img
+                  src="/assets/images/Interior c funcionário.jpg"
+                  alt="LOFERSIL Store Interior - Staff assisting customers"
+                  class="about-gallery-img"
+                  loading="lazy"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -155,6 +219,155 @@
                 Our team is here to help you every step of the way.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products Showcase Section -->
+      <section id="products-showcase" class="products-showcase">
+        <div class="products-showcase-container">
+          <div class="section-header">
+            <h2 class="section-title" data-i18n="productsShowcase.title">Our Product Categories</h2>
+            <p class="section-subtitle" data-i18n="productsShowcase.subtitle">
+              Discover our wide range of quality products for every need
+            </p>
+          </div>
+          <div class="products-grid">
+            <div class="product-category">
+              <div class="product-category-image">
+                <img
+                  src="/assets/images/Bebés_nenucos.jpg"
+                  alt="Baby Products and Dolls Collection"
+                  class="product-category-img"
+                  loading="lazy"
+                />
+              </div>
+              <div class="product-category-content">
+                <h3 class="product-category-title" data-i18n="productsShowcase.babyProducts.title">
+                  Baby Products
+                </h3>
+                <p
+                  class="product-category-description"
+                  data-i18n="productsShowcase.babyProducts.description"
+                >
+                  Soft toys, dolls, and baby essentials for the little ones
+                </p>
+              </div>
+            </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <img
+                  src="/assets/images/Caixas_joias.jpg"
+                  alt="Premium Jewelry Boxes Collection"
+                  class="product-category-img"
+                  loading="lazy"
+                />
+              </div>
+              <div class="product-category-content">
+                <h3 class="product-category-title" data-i18n="productsShowcase.jewelryBoxes.title">
+                  Jewelry Boxes
+                </h3>
+                <p
+                  class="product-category-description"
+                  data-i18n="productsShowcase.jewelryBoxes.description"
+                >
+                  Elegant boxes to store and protect your precious items
+                </p>
+              </div>
+            </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <img
+                  src="/assets/images/Canetas_oferta.jpg"
+                  alt="Promotional Pens and Writing Instruments"
+                  class="product-category-img"
+                  loading="lazy"
+                />
+              </div>
+              <div class="product-category-content">
+                <h3 class="product-category-title" data-i18n="productsShowcase.pens.title">
+                  Promotional Pens
+                </h3>
+                <p
+                  class="product-category-description"
+                  data-i18n="productsShowcase.pens.description"
+                >
+                  Quality writing instruments for business and personal use
+                </p>
+              </div>
+            </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <img
+                  src="/assets/images/Dossiers.jpg"
+                  alt="Office Binders and Folders"
+                  class="product-category-img"
+                  loading="lazy"
+                />
+              </div>
+              <div class="product-category-content">
+                <h3 class="product-category-title" data-i18n="productsShowcase.binders.title">
+                  Office Supplies
+                </h3>
+                <p
+                  class="product-category-description"
+                  data-i18n="productsShowcase.binders.description"
+                >
+                  Professional binders and folders for organization
+                </p>
+              </div>
+            </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <img
+                  src="/assets/images/Mochilas.jpg"
+                  alt="School and Travel Backpacks"
+                  class="product-category-img"
+                  loading="lazy"
+                />
+              </div>
+              <div class="product-category-content">
+                <h3 class="product-category-title" data-i18n="productsShowcase.backpacks.title">
+                  Backpacks
+                </h3>
+                <p
+                  class="product-category-description"
+                  data-i18n="productsShowcase.backpacks.description"
+                >
+                  Durable and stylish backpacks for school and travel
+                </p>
+              </div>
+            </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <img
+                  src="/assets/images/Tinteiros.jpg"
+                  alt="Ink Cartridges and Printer Supplies"
+                  class="product-category-img"
+                  loading="lazy"
+                />
+              </div>
+              <div class="product-category-content">
+                <h3 class="product-category-title" data-i18n="productsShowcase.ink.title">
+                  Ink Cartridges
+                </h3>
+                <p
+                  class="product-category-description"
+                  data-i18n="productsShowcase.ink.description"
+                >
+                  Quality ink cartridges for all your printing needs
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="products-showcase-cta">
+            <p class="products-showcase-text" data-i18n="productsShowcase.ctaText">
+              Visit our store to explore our complete collection and find exactly what you're
+              looking for
+            </p>
+            <a href="/store" class="btn btn-primary" data-i18n="productsShowcase.ctaButton"
+              >View All Products</a
+            >
           </div>
         </div>
       </section>
@@ -211,6 +424,6 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="/scripts/index.js" defer></script>
+    <script src="scripts/index.js" defer></script>
   </body>
 </html>

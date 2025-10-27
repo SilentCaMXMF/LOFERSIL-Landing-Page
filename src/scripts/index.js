@@ -2,81 +2,25 @@
  * LOFERSIL Landing Page - Main TypeScript Entry Point
  * Handles navigation, interactions, and dynamic content loading
  */
-
 import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
-
-// Types
-interface NavigationConfig {
-  mobileBreakpoint: number;
-  scrollThreshold: number;
-}
-
-interface PerformanceMetrics {
-  loadTime: number;
-  domContentLoaded: number;
-  firstContentfulPaint: number;
-}
-
-interface Route {
-  title: string;
-  description: string;
-  content: string;
-}
-
-// Translation types
-interface Translations {
-  [key: string]: string | Translations;
-}
-
-interface LanguageConfig {
-  code: string;
-  name: string;
-  flag: string;
-}
-
-// API Types and Interfaces
-interface ContactRequest {
-  name: string;
-  email: string;
-  message: string;
-}
-
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  error?: string;
-  timestamp: string;
-}
-
-export interface Service {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  features: string[];
-}
-
 // Configuration
-const config: NavigationConfig = {
+const config = {
   mobileBreakpoint: 768,
   scrollThreshold: 100,
 };
-
 // Performance tracking
-const metrics: PerformanceMetrics = {
+const metrics = {
   loadTime: 0,
   domContentLoaded: 0,
   firstContentfulPaint: 0,
 };
-
 // Language configuration
-const languages: LanguageConfig[] = [
+const languages = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
   { code: 'pt', name: 'Português', flag: '🇵🇹' },
 ];
-
 // Routes configuration
-const routes: Record<string, Route> = {
+const routes = {
   '/': {
     title: 'LOFERSIL - Premium Products & Services',
     description:
@@ -385,28 +329,25 @@ const routes: Record<string, Route> = {
     `,
   },
 };
-
 /**
  * Main application class
  */
 class LOFERSILLandingPage {
-  private navToggle: HTMLElement | null = null;
-  private navMenu: HTMLElement | null = null;
-  private navbar: HTMLElement | null = null;
-  private mainContent: HTMLElement | null = null;
-  private langToggle: HTMLElement | null = null;
-  private isMenuOpen: boolean = false;
-  private currentLanguage: string = 'en';
-  private translations: Translations = {};
-
   constructor() {
+    this.navToggle = null;
+    this.navMenu = null;
+    this.navbar = null;
+    this.mainContent = null;
+    this.langToggle = null;
+    this.isMenuOpen = false;
+    this.currentLanguage = 'en';
+    this.translations = {};
     this.initializeApp();
   }
-
   /**
    * Initialize the application
    */
-  private async initializeApp(): Promise<void> {
+  async initializeApp() {
     try {
       this.setupDOMElements();
       this.setupEventListeners();
@@ -415,86 +356,80 @@ class LOFERSILLandingPage {
       this.setupPerformanceTracking();
       this.setupSEO();
       this.setupLanguageSystem();
-
       // Render initial page
       this.renderPage();
-
       console.info('LOFERSIL Landing Page initialized successfully');
     } catch (error) {
       console.error('Failed to initialize LOFERSIL Landing Page:', error);
     }
   }
-
   /**
    * Setup DOM element references
    */
-  private setupDOMElements(): void {
+  setupDOMElements() {
     this.navToggle = document.getElementById('nav-toggle');
     this.navMenu = document.getElementById('nav-menu');
     this.navbar = document.getElementById('main-nav');
     this.mainContent = document.getElementById('main-content');
     this.langToggle = document.getElementById('lang-toggle');
   }
-
   /**
    * Setup event listeners
    */
-  private setupEventListeners(): void {
+  setupEventListeners() {
     // Navigation toggle
     this.navToggle?.addEventListener('click', () => this.toggleMobileMenu());
-
     // Language toggle
     this.langToggle?.addEventListener('click', () => this.toggleLanguage());
-
     // Close menu when clicking outside
     document.addEventListener('click', e => this.handleOutsideClick(e));
-
     // Close menu on escape key
     document.addEventListener('keydown', e => this.handleKeydown(e));
-
     // Handle window resize
     window.addEventListener('resize', () => this.handleResize());
-
     // Smooth scroll for anchor links
     document.addEventListener('click', e => this.handleSmoothScroll(e));
-
     // Performance tracking
     window.addEventListener('load', () => this.trackPerformance());
   }
-
   /**
    * Setup language system
    */
-  private setupLanguageSystem(): void {
+  setupLanguageSystem() {
     // Load saved language or default to English
     this.currentLanguage = localStorage.getItem('language') || 'en';
-
     // Load translations
     this.loadTranslations(this.currentLanguage);
-
     // Update language toggle button
     this.updateLanguageToggle();
-
     // Update HTML lang attribute
     document.documentElement.lang = this.currentLanguage;
-
     // Setup hreflang tags
     this.setupHreflangTags();
   }
-
   /**
    * Load translations for a specific language
    */
-  private async loadTranslations(language: string): Promise<void> {
-    console.log(`Loading translations for ${language}`);
-    try {
-      const response = await fetch(`/locales/${language}.json`);
-      console.log(`Fetch response for ${language}:`, response.status);
-      if (!response.ok) {
-        throw new Error(`Failed to load ${language} translations`);
-      }
+    async loadTranslations(language) {
+        console.log(`Loading translations for ${language}`);
+        try {
+            const response = await fetch(`/locales/${language}.json`);
+            console.log(`Fetch response for ${language}:`, response.status);
+            if (!response.ok) {
+                throw new Error(`Failed to load ${language} translations`);
+            }
+            this.translations = await response.json();
+            console.log(`Translations loaded for ${language}:`, this.translations);
+        }
+        catch (error) {
+            console.error('Error loading translations:', error);
+            // Fallback to English if available
+            if (language !== 'en') {
+                await this.loadTranslations('en');
+            }
+        }
+    }
       this.translations = await response.json();
-      console.log(`Translations loaded for ${language}:`, this.translations);
     } catch (error) {
       console.error('Error loading translations:', error);
       // Fallback to English if available
@@ -503,40 +438,32 @@ class LOFERSILLandingPage {
       }
     }
   }
-
   /**
    * Toggle between languages
    */
-  private async toggleLanguage(): Promise<void> {
-    console.log(`Toggling language from ${this.currentLanguage}`);
-    const currentIndex = languages.findIndex(lang => lang.code === this.currentLanguage);
-    const nextIndex = (currentIndex + 1) % languages.length;
-    const nextLanguage = languages[nextIndex].code;
-
-    this.currentLanguage = nextLanguage;
-    localStorage.setItem('language', nextLanguage);
-
-    // Load new translations
-    await this.loadTranslations(nextLanguage);
-
-    // Update UI
-    this.applyTranslations();
-    this.updateLanguageToggle();
-    document.documentElement.lang = nextLanguage;
-    console.log(`Language toggled to ${this.currentLanguage}`);
-    console.log(`Language toggled to ${this.currentLanguage}`);
-
-    // Update hreflang tags
-    this.updateHreflangTags();
-
-    // Update meta tags
-    this.updateMetaTagsForLanguage();
-  }
-
+    async toggleLanguage() {
+        console.log(`Toggling language from ${this.currentLanguage}`);
+        const currentIndex = languages.findIndex(lang => lang.code === this.currentLanguage);
+        const nextIndex = (currentIndex + 1) % languages.length;
+        const nextLanguage = languages[nextIndex].code;
+        this.currentLanguage = nextLanguage;
+        localStorage.setItem('language', nextLanguage);
+        // Load new translations
+        await this.loadTranslations(nextLanguage);
+        // Update UI
+        this.applyTranslations();
+        this.updateLanguageToggle();
+        document.documentElement.lang = nextLanguage;
+        console.log(`Language toggled to ${this.currentLanguage}`);
+        // Update hreflang tags
+        this.updateHreflangTags();
+        // Update meta tags
+        this.updateMetaTagsForLanguage();
+    }
   /**
    * Update language toggle button
    */
-  private updateLanguageToggle(): void {
+  updateLanguageToggle() {
     if (this.langToggle) {
       const currentLangConfig = languages.find(lang => lang.code === this.currentLanguage);
       if (currentLangConfig) {
@@ -545,45 +472,48 @@ class LOFERSILLandingPage {
       }
     }
   }
-
   /**
    * Apply translations to DOM elements
    */
-  private applyTranslations(): void {
-    const elements = document.querySelectorAll('[data-i18n]');
-    console.log(`Applying translations: Found ${elements.length} elements`);
-    elements.forEach(element => {
-      const key = element.getAttribute('data-i18n');
-      if (key && this.translations) {
-        const translation = this.getNestedTranslation(this.translations, key);
-        if (translation && element instanceof HTMLElement) {
-          // Handle different element types
-          if (element.tagName === 'META') {
-            element.setAttribute('content', translation);
-          } else if (element.tagName === 'TITLE') {
-            element.textContent = translation;
-          } else {
-            element.textContent = translation;
-          }
+    applyTranslations() {
+        const elements = document.querySelectorAll('[data-i18n]');
+        console.log(`Applying translations: Found ${elements.length} elements`);
+        elements.forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            if (key && this.translations) {
+                const translation = this.getNestedTranslation(this.translations, key);
+                if (translation && element instanceof HTMLElement) {
+                    // Handle different element types
+                    if (element.tagName === 'META') {
+                        element.setAttribute('content', translation);
+                    }
+                    else if (element.tagName === 'TITLE') {
+                        element.textContent = translation;
+                    }
+                    else {
+                        element.textContent = translation;
+                    }
+                }
+            }
+        });
+        console.log('Translations applied');
+    }
         }
       }
     });
-    console.log('Translations applied');
   }
-
   /**
    * Get nested translation value
    */
-  private getNestedTranslation(obj: Translations, path: string): string {
-    return path.split('.').reduce((current: any, key: string) => {
+  getNestedTranslation(obj, path) {
+    return path.split('.').reduce((current, key) => {
       return current && typeof current === 'object' ? current[key] : '';
-    }, obj) as string;
+    }, obj);
   }
-
   /**
    * Update meta tags for current language
    */
-  private updateMetaTagsForLanguage(): void {
+  updateMetaTagsForLanguage() {
     const metaKeys = [
       'title',
       'description',
@@ -618,11 +548,10 @@ class LOFERSILLandingPage {
       }
     });
   }
-
   /**
    * Update a specific meta tag
    */
-  private updateMetaTag(name: string, content: string): void {
+  updateMetaTag(name, content) {
     let meta =
       document.querySelector(`meta[name="${name}"]`) ||
       document.querySelector(`meta[property="${name}"]`);
@@ -630,146 +559,117 @@ class LOFERSILLandingPage {
       meta.setAttribute('content', content);
     }
   }
-
   /**
    * Setup hreflang tags for SEO
    */
-  private setupHreflangTags(): void {
+  setupHreflangTags() {
     // Remove existing hreflang tags
     const existingTags = document.querySelectorAll('link[rel="alternate"][hreflang]');
     existingTags.forEach(tag => tag.remove());
-
     // Add new hreflang tags
     const baseUrl = window.location.origin;
-
     // English version
     this.addHreflangTag('en', `${baseUrl}/`);
-
     // Portuguese version (PT-PT)
     this.addHreflangTag('pt-PT', `${baseUrl}/`);
-
     // Default language
     this.addHreflangTag('x-default', `${baseUrl}/`);
   }
-
   /**
    * Update hreflang tags when language changes
    */
-  private updateHreflangTags(): void {
+  updateHreflangTags() {
     // Update the canonical link to reflect current language preference
     this.updateCanonicalLink();
   }
-
   /**
    * Add a single hreflang tag
    */
-  private addHreflangTag(hreflang: string, url: string): void {
+  addHreflangTag(hreflang, url) {
     const link = document.createElement('link');
     link.rel = 'alternate';
     link.hreflang = hreflang;
     link.href = url;
     document.head.appendChild(link);
   }
-
   /**
    * Update canonical link for SEO
    */
-  private updateCanonicalLink(): void {
-    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+  updateCanonicalLink() {
+    let canonical = document.querySelector('link[rel="canonical"]');
     const baseUrl = window.location.origin;
-
     if (!canonical) {
       canonical = document.createElement('link');
       canonical.rel = 'canonical';
       document.head.appendChild(canonical);
     }
-
     // Set canonical URL based on current language
     canonical.href = `${baseUrl}${window.location.pathname}`;
   }
-
   /**
    * Setup navigation functionality
    */
-  private setupNavigation(): void {
+  setupNavigation() {
     // Set active navigation based on current path
     this.setActiveNavigation();
-
     // Handle mobile menu state
     this.handleMobileMenuState();
-
     // Setup routing
     this.setupRouting();
   }
-
   /**
    * Setup routing functionality
    */
-  private setupRouting(): void {
+  setupRouting() {
     // Render initial page
     this.renderPage();
-
     // Handle browser back/forward
     window.addEventListener('popstate', () => this.renderPage());
-
     // Handle navigation clicks
     document.addEventListener('click', e => this.handleNavigation(e));
   }
-
   /**
    * Render the current page based on URL path
    */
-  private renderPage(): void {
+  renderPage() {
     const currentPath = window.location.pathname;
     const route = routes[currentPath] || routes['/'];
-
     if (this.mainContent) {
       this.mainContent.innerHTML = route.content;
     }
-
     // Apply translations after content is loaded
     setTimeout(() => {
       this.applyTranslations();
     }, 0);
-
     // Update meta tags
     this.updateMetaTags(route.title, route.description);
-
     // Update active navigation
     this.setActiveNavigation(currentPath);
-
     // Scroll to top
     window.scrollTo(0, 0);
   }
-
   /**
    * Handle navigation clicks
    */
-  private handleNavigation(e: Event): void {
-    const target = e.target as HTMLElement;
-    const link = target.closest('a[href]') as HTMLAnchorElement;
-
+  handleNavigation(e) {
+    const target = e.target;
+    const link = target.closest('a[href]');
     if (link && link.getAttribute('href')?.startsWith('/')) {
       e.preventDefault();
       const href = link.getAttribute('href') || '/';
-
       // Update URL without page reload
       history.pushState(null, '', href);
-
       // Render new page
       this.renderPage();
     }
   }
-
   /**
    * Setup scroll effects
    */
-  private setupScrollEffects(): void {
+  setupScrollEffects() {
     let ticking = false;
-
-    const updateScrollEffects = (): void => {
+    const updateScrollEffects = () => {
       const scrollY = window.scrollY;
-
       // Navbar background on scroll
       if (this.navbar) {
         if (scrollY > config.scrollThreshold) {
@@ -778,79 +678,66 @@ class LOFERSILLandingPage {
           this.navbar.classList.remove('scrolled');
         }
       }
-
       // Parallax effect for hero section
       const hero = document.getElementById('hero');
       if (hero) {
-        const heroImage = hero.querySelector('.hero-img') as HTMLElement;
+        const heroImage = hero.querySelector('.hero-img');
         if (heroImage) {
           const parallaxOffset = scrollY * 0.5;
           heroImage.style.transform = `translateY(${parallaxOffset}px)`;
         }
       }
-
       ticking = false;
     };
-
-    const requestScrollUpdate = (): void => {
+    const requestScrollUpdate = () => {
       if (!ticking) {
         requestAnimationFrame(updateScrollEffects);
         ticking = true;
       }
     };
-
     window.addEventListener('scroll', requestScrollUpdate, { passive: true });
   }
-
   /**
    * Setup performance tracking
    */
-  private setupPerformanceTracking(): void {
+  setupPerformanceTracking() {
     // Track Core Web Vitals
     if ('web-vital' in window) {
       // This would integrate with web-vitals library if available
       this.trackCoreWebVitals();
     }
   }
-
   /**
    * Setup SEO enhancements
    */
-  private setupSEO(): void {
+  setupSEO() {
     // Dynamic meta tags based on content
     const currentPath = window.location.pathname;
     const route = routes[currentPath] || routes['/'];
     this.updateMetaTags(route.title, route.description);
-
     // Structured data
     this.addStructuredData();
   }
-
   /**
    * Toggle mobile navigation menu
    */
-  private toggleMobileMenu(): void {
+  toggleMobileMenu() {
     this.isMenuOpen = !this.isMenuOpen;
-
     if (this.navMenu) {
       this.navMenu.classList.toggle('active', this.isMenuOpen);
     }
-
     if (this.navToggle) {
       this.navToggle.classList.toggle('active', this.isMenuOpen);
     }
-
     // Prevent body scroll when menu is open
     document.body.classList.toggle('menu-open', this.isMenuOpen);
-
     // Update ARIA attributes
     this.navToggle?.setAttribute('aria-expanded', this.isMenuOpen.toString());
   }
-
   /**
    * Submit contact form via API
    */
-  private async submitContact(request: ContactRequest): Promise<ApiResponse<{ id: string }>> {
+  async submitContact(request) {
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -859,11 +746,9 @@ class LOFERSILLandingPage {
         },
         body: JSON.stringify(request),
       });
-
       if (!response.ok) {
         throw new Error('Failed to submit contact form');
       }
-
       return await response.json();
     } catch (error) {
       console.error('Error submitting contact:', error);
@@ -875,88 +760,70 @@ class LOFERSILLandingPage {
       };
     }
   }
-
   /**
    * Update meta tags for SEO
    */
-  private updateMetaTags(title: string, description: string): void {
+  updateMetaTags(title, description) {
     document.title = title;
-
     // Update meta tags
-    const metaTitle = document.querySelector('meta[property="og:title"]') as HTMLMetaElement;
-    const metaDescription = document.querySelector(
-      'meta[property="og:description"]'
-    ) as HTMLMetaElement;
-    const twitterTitle = document.querySelector(
-      'meta[property="twitter:title"]'
-    ) as HTMLMetaElement;
-    const twitterDescription = document.querySelector(
-      'meta[property="twitter:description"]'
-    ) as HTMLMetaElement;
-
+    const metaTitle = document.querySelector('meta[property="og:title"]');
+    const metaDescription = document.querySelector('meta[property="og:description"]');
+    const twitterTitle = document.querySelector('meta[property="twitter:title"]');
+    const twitterDescription = document.querySelector('meta[property="twitter:description"]');
     if (metaTitle) metaTitle.content = title;
     if (metaDescription) metaDescription.content = description;
     if (twitterTitle) twitterTitle.content = title;
     if (twitterDescription) twitterDescription.content = description;
   }
-
   /**
    * Get web vitals metrics
    */
-  public getWebVitalsMetrics(): void {
+  getWebVitalsMetrics() {
     // Placeholder for web vitals metrics
     console.log('Web vitals metrics not implemented');
   }
-
   /**
    * Handle keyboard navigation
    */
-  private handleKeydown(e: KeyboardEvent): void {
+  handleKeydown(e) {
     if (e.key === 'Escape' && this.isMenuOpen) {
       this.toggleMobileMenu();
     }
   }
-
   /**
    * Handle window resize
    */
-  private handleResize(): void {
+  handleResize() {
     if (window.innerWidth > config.mobileBreakpoint && this.isMenuOpen) {
       this.toggleMobileMenu();
     }
   }
-
   /**
    * Handle smooth scrolling for anchor links
    */
-  private handleSmoothScroll(e: Event): void {
-    const target = e.target as HTMLElement;
+  handleSmoothScroll(e) {
+    const target = e.target;
     const link = target.closest('a[href^="#"]');
-
     if (link) {
       e.preventDefault();
       const href = link.getAttribute('href') || '';
       const element = document.querySelector(href);
-
       if (element) {
         element.scrollIntoView({
           behavior: 'smooth',
           block: 'start',
         });
-
         // Update active navigation
         this.setActiveNavigation(href);
       }
     }
   }
-
   /**
    * Set active navigation based on current path
    */
-  private setActiveNavigation(currentPath?: string): void {
+  setActiveNavigation(currentPath) {
     const currentLocation = currentPath || window.location.pathname;
     const navLinks = document.querySelectorAll('.nav-link');
-
     navLinks.forEach(link => {
       const href = link.getAttribute('href');
       if (href === currentLocation) {
@@ -966,11 +833,10 @@ class LOFERSILLandingPage {
       }
     });
   }
-
   /**
    * Handle mobile menu state on load
    */
-  private handleMobileMenuState(): void {
+  handleMobileMenuState() {
     if (window.innerWidth <= config.mobileBreakpoint) {
       this.isMenuOpen = false;
       if (this.navMenu) {
@@ -978,88 +844,74 @@ class LOFERSILLandingPage {
       }
     }
   }
-
   /**
    * Handle clicks outside the mobile menu
    */
-  private handleOutsideClick(e: Event): void {
-    const target = e.target as HTMLElement;
+  handleOutsideClick(e) {
+    const target = e.target;
     if (this.navMenu && !this.navMenu.contains(target) && !this.navToggle?.contains(target)) {
       if (this.isMenuOpen) {
         this.toggleMobileMenu();
       }
     }
   }
-
   /**
    * Track performance metrics
    */
-  private trackPerformance(): void {
+  trackPerformance() {
     if (window.performance && window.performance.timing) {
       const timing = window.performance.timing;
-
       metrics.loadTime = timing.loadEventEnd - timing.navigationStart;
       metrics.domContentLoaded = timing.domContentLoadedEventEnd - timing.navigationStart;
-
       console.info('Performance Metrics:', metrics);
     }
   }
-
   /**
    * Track Core Web Vitals
    */
-  private trackCoreWebVitals(): void {
+  trackCoreWebVitals() {
     // Track Core Web Vitals using web-vitals library
     onCLS(metric => {
       console.info('CLS:', metric.value);
       this.sendToAnalytics('CLS', metric.value);
     });
-
     onFCP(metric => {
       console.info('FCP:', metric.value);
       this.sendToAnalytics('FCP', metric.value);
     });
-
     onINP(metric => {
       console.info('INP:', metric.value);
       this.sendToAnalytics('INP', metric.value);
     });
-
     onLCP(metric => {
       console.info('LCP:', metric.value);
       this.sendToAnalytics('LCP', metric.value);
     });
-
     onTTFB(metric => {
       console.info('TTFB:', metric.value);
       this.sendToAnalytics('TTFB', metric.value);
     });
-
     // Log all metrics after a delay to ensure collection
     setTimeout(() => {
       this.getWebVitalsMetrics();
       console.info('All Web Vitals Metrics collected');
     }, 5000);
-
     console.info('Core Web Vitals tracking initialized');
   }
-
   /**
    * Send metrics to analytics service
    */
-  private sendToAnalytics(metricName: string, value: number): void {
+  sendToAnalytics(metricName, value) {
     // In a real application, you would send this to your analytics service
     // For now, we'll just log it and store it locally
     const metricsData = JSON.parse(localStorage.getItem('webVitals') || '{}');
     metricsData[metricName] = value;
     localStorage.setItem('webVitals', JSON.stringify(metricsData));
-
     // Log to console for debugging
     console.info(`Web Vital ${metricName}:`, value);
-
     // Example: Send to Google Analytics or other service
-    if (typeof (window as any).gtag !== 'undefined') {
-      (window as any).gtag('event', 'web_vitals', {
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'web_vitals', {
         event_category: 'Web Vitals',
         event_label: metricName,
         value: Math.round(value * 1000), // Convert to milliseconds for GA
@@ -1067,11 +919,10 @@ class LOFERSILLandingPage {
       });
     }
   }
-
   /**
    * Add structured data for SEO
    */
-  private addStructuredData(): void {
+  addStructuredData() {
     const structuredData = {
       '@context': 'https://schema.org',
       '@type': 'Organization',
@@ -1083,47 +934,43 @@ class LOFERSILLandingPage {
         // Add social media URLs here
       ],
     };
-
     const script = document.createElement('script');
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify(structuredData);
     document.head.appendChild(script);
   }
 }
-
 // Utility functions
 const utils = {
   /**
    * Debounce function for performance optimization
    */
   // eslint-disable-next-line no-unused-vars
-  debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
-    let timeout: ReturnType<typeof setTimeout>;
-    return ((...args: any[]) => {
+  debounce(func, wait) {
+    let timeout;
+    return (...args) => {
       clearTimeout(timeout);
       timeout = setTimeout(() => func(...args), wait);
-    }) as T;
+    };
   },
-
   /**
    * Throttle function for scroll events
    */
   // eslint-disable-next-line no-unused-vars
-  throttle<T extends (...args: any[]) => any>(func: T, limit: number): T {
-    let inThrottle: boolean;
-    return ((...args: any[]) => {
+  throttle(func, limit) {
+    let inThrottle;
+    return (...args) => {
       if (!inThrottle) {
         func(...args);
         inThrottle = true;
         setTimeout(() => (inThrottle = false), limit);
       }
-    }) as T;
+    };
   },
-
   /**
    * Check if element is in viewport
    */
-  isInViewport(element: Element): boolean {
+  isInViewport(element) {
     const rect = element.getBoundingClientRect();
     return (
       rect.top >= 0 &&
@@ -1133,19 +980,17 @@ const utils = {
     );
   },
 };
-
 // Initialize the application when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     const app = new LOFERSILLandingPage();
     // Expose metrics globally for debugging
-    (window as any).getWebVitals = () => app.getWebVitalsMetrics();
+    window.getWebVitals = () => app.getWebVitalsMetrics();
   });
 } else {
   const app = new LOFERSILLandingPage();
   // Expose metrics globally for debugging
-  (window as any).getWebVitals = () => app.getWebVitalsMetrics();
+  window.getWebVitals = () => app.getWebVitalsMetrics();
 }
-
 // Export for potential module usage
 export { LOFERSILLandingPage, utils, config, metrics };
