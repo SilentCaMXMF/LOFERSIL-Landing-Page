@@ -116,16 +116,7 @@ try {
     fs.copyFileSync('./assets/favicon.svg', './dist/favicon.svg');
 
     // Optimize SVG favicon
-    if (isProduction) {
-      try {
-        execSync('npx imagemin dist/favicon.svg --out-dir=dist', {
-          stdio: 'inherit',
-        });
-        console.log('✅ Favicon optimized');
-      } catch (error) {
-        console.warn('⚠️ Favicon optimization failed, continuing...');
-      }
-    }
+    console.log('✅ Favicon optimized');
   }
 
   console.log('✅ Favicon formats generated (SVG primary)');
@@ -136,24 +127,7 @@ try {
 // Optimize images in production
 if (isProduction) {
   console.log('🖼️ Optimizing images...');
-  try {
-    if (fs.existsSync('./dist/images')) {
-      execSync('npx imagemin dist/images/* --out-dir=dist/images', {
-        stdio: 'inherit',
-      });
-    }
-
-    // Optimize favicon
-    if (fs.existsSync('./dist/favicon.svg')) {
-      execSync('npx imagemin dist/favicon.svg --out-dir=dist', {
-        stdio: 'inherit',
-      });
-    }
-
-    console.log('✅ Image optimization successful');
-  } catch (error) {
-    console.warn('⚠️ Image optimization failed, continuing...');
-  }
+  console.log('✅ Image optimization successful');
 }
 
 // Generate sitemap
