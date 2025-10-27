@@ -90,6 +90,18 @@
     "connect": "Connect",
     "copyright": "© 2024 LOFERSIL. All rights reserved."
   },
+  "alt": {
+    "storeFront": "LOFERSIL Store Front - R. Gomes Freire 187 B, Lisboa",
+    "storeInterior": "LOFERSIL Store Interior - Wide view of product displays",
+    "storeInteriorStaff": "LOFERSIL Store Interior - Staff assisting customers",
+    "babyProducts": "Baby Products and Dolls Collection",
+    "jewelryBoxes": "Premium Jewelry Boxes Collection",
+    "pens": "Promotional Pens and Writing Instruments",
+    "binders": "Office Binders and Folders",
+    "backpacks": "School and Travel Backpacks",
+    "inkCartridges": "Ink Cartridges and Printer Supplies",
+    "heroImage": "LOFERSIL Hero Image"
+  },
   "routes": {
     "/": {
       "title": "LOFERSIL - Premium Products & Services",

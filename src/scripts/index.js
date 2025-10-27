@@ -50,15 +50,13 @@ const routes = {
         <div class="features-container">
           <div class="section-header">
             <h2 class="section-title" data-i18n="features.title">Why Choose LOFERSIL?</h2>
-            <p class="section-subtitle" data-i18n="features.subtitle">Quality, reliability, and excellence in every aspect</p>
+             <p class="section-subtitle" data-i18n="features.subtitle"></p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">⭐</div>
               <h3 class="feature-title" data-i18n="features.premiumQuality.title">Premium Quality</h3>
-              <p class="feature-description" data-i18n="features.premiumQuality.description">
-                Only the finest products and services make it to our collection.
-              </p>
+               <p class="feature-description" data-i18n="features.premiumQuality.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🚀</div>
@@ -428,16 +426,8 @@ class LOFERSILLandingPage {
                 await this.loadTranslations('en');
             }
         }
-    }
-      this.translations = await response.json();
-    } catch (error) {
-      console.error('Error loading translations:', error);
-      // Fallback to English if available
-      if (language !== 'en') {
-        await this.loadTranslations('en');
-      }
-    }
-  }
+     }
+   }
   /**
    * Toggle between languages
    */

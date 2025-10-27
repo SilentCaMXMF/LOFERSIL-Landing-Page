@@ -106,27 +106,23 @@ const routes: Record<string, Route> = {
         <div class="features-container">
           <div class="section-header">
             <h2 class="section-title" data-i18n="features.title">Why Choose LOFERSIL?</h2>
-            <p class="section-subtitle" data-i18n="features.subtitle">Quality, reliability, and excellence in every aspect</p>
+             <p class="section-subtitle" data-i18n="features.subtitle"></p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">⭐</div>
               <h3 class="feature-title" data-i18n="features.premiumQuality.title">Premium Quality</h3>
-              <p class="feature-description" data-i18n="features.premiumQuality.description">
-                Only the finest products and services make it to our collection.
-              </p>
+               <p class="feature-description" data-i18n="features.premiumQuality.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🚀</div>
               <h3 class="feature-title" data-i18n="features.fastReliable.title">Fast & Reliable</h3>
-              <p class="feature-description" data-i18n="features.fastReliable.description">
-                Quick delivery and dependable service you can count on.
-              </p>
+               <p class="feature-description" data-i18n="features.fastReliable.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">💎</div>
               <h3 class="feature-title" data-i18n="features.exceptionalSupport.title">Exceptional Support</h3>
-              <p class="feature-description" data-i18n="features.exceptionalSupport.description">Our team is here to help you every step of the way.</p>
+               <p class="feature-description" data-i18n="features.exceptionalSupport.description"></p>
             </div>
           </div>
         </div>
@@ -166,28 +162,28 @@ const routes: Record<string, Route> = {
         <div class="features-container">
           <div class="section-header">
             <h2 class="section-title" data-i18n="routes./products.sectionTitle">Product Categories</h2>
-            <p class="section-subtitle" data-i18n="routes./products.sectionSubtitle">Find exactly what you're looking for</p>
+             <p class="section-subtitle" data-i18n="routes./products.sectionSubtitle"></p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">📱</div>
               <h3 class="feature-title" data-i18n="routes./products.electronics.title">Electronics</h3>
-              <p class="feature-description" data-i18n="routes./products.electronics.description">Latest technology and gadgets for modern living.</p>
+               <p class="feature-description" data-i18n="routes./products.electronics.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">👕</div>
               <h3 class="feature-title" data-i18n="routes./products.fashion.title">Fashion</h3>
-              <p class="feature-description" data-i18n="routes./products.fashion.description">Stylish and comfortable clothing for every occasion.</p>
+               <p class="feature-description" data-i18n="routes./products.fashion.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🏠</div>
               <h3 class="feature-title" data-i18n="routes./products.homeGarden.title">Home & Garden</h3>
-              <p class="feature-description" data-i18n="routes./products.homeGarden.description">Everything you need to make your space beautiful.</p>
+               <p class="feature-description" data-i18n="routes./products.homeGarden.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🎮</div>
               <h3 class="feature-title" data-i18n="routes./products.entertainment.title">Entertainment</h3>
-              <p class="feature-description" data-i18n="routes./products.entertainment.description">Fun and engaging products for leisure time.</p>
+               <p class="feature-description" data-i18n="routes./products.entertainment.description"></p>
             </div>
           </div>
         </div>
@@ -215,28 +211,28 @@ const routes: Record<string, Route> = {
         <div class="features-container">
           <div class="section-header">
             <h2 class="section-title" data-i18n="routes./services.sectionTitle">Service Areas</h2>
-            <p class="section-subtitle" data-i18n="routes./services.sectionSubtitle">Comprehensive solutions for your needs</p>
+             <p class="section-subtitle" data-i18n="routes./services.sectionSubtitle"></p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">💼</div>
               <h3 class="feature-title" data-i18n="routes./services.consulting.title">Consulting</h3>
-              <p class="feature-description" data-i18n="routes./services.consulting.description">Expert advice and strategic planning services.</p>
+               <p class="feature-description" data-i18n="routes./services.consulting.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🔧</div>
               <h3 class="feature-title" data-i18n="routes./services.technicalSupport.title">Technical Support</h3>
-              <p class="feature-description" data-i18n="routes./services.technicalSupport.description">Reliable technical assistance and maintenance.</p>
+               <p class="feature-description" data-i18n="routes./services.technicalSupport.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">📊</div>
               <h3 class="feature-title" data-i18n="routes./services.analytics.title">Analytics</h3>
-              <p class="feature-description" data-i18n="routes./services.analytics.description">Data-driven insights to optimize your performance.</p>
+               <p class="feature-description" data-i18n="routes./services.analytics.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🎨</div>
               <h3 class="feature-title" data-i18n="routes./services.design.title">Design</h3>
-              <p class="feature-description" data-i18n="routes./services.design.description">Creative design solutions for your projects.</p>
+               <p class="feature-description" data-i18n="routes./services.design.description"></p>
             </div>
           </div>
         </div>
@@ -264,23 +260,23 @@ const routes: Record<string, Route> = {
         <div class="features-container">
           <div class="section-header">
             <h2 class="section-title" data-i18n="routes./about.sectionTitle">Our Mission</h2>
-            <p class="section-subtitle" data-i18n="routes./about.sectionSubtitle">Delivering excellence in everything we do</p>
+             <p class="section-subtitle" data-i18n="routes./about.sectionSubtitle"></p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">🎯</div>
               <h3 class="feature-title" data-i18n="routes./about.qualityFirst.title">Quality First</h3>
-              <p class="feature-description" data-i18n="routes./about.qualityFirst.description">We prioritize quality in every product and service we offer.</p>
+               <p class="feature-description" data-i18n="routes./about.qualityFirst.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🤝</div>
               <h3 class="feature-title" data-i18n="routes./about.customerFocus.title">Customer Focus</h3>
-              <p class="feature-description" data-i18n="routes./about.customerFocus.description">Your satisfaction is our top priority.</p>
+               <p class="feature-description" data-i18n="routes./about.customerFocus.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🌟</div>
               <h3 class="feature-title" data-i18n="routes./about.innovation.title">Innovation</h3>
-              <p class="feature-description" data-i18n="routes./about.innovation.description">Continuously improving and adapting to meet your needs.</p>
+               <p class="feature-description" data-i18n="routes./about.innovation.description"></p>
             </div>
           </div>
         </div>
@@ -308,23 +304,23 @@ const routes: Record<string, Route> = {
         <div class="features-container">
           <div class="section-header">
             <h2 class="section-title" data-i18n="routes./contact.sectionTitle">Contact Information</h2>
-            <p class="section-subtitle" data-i18n="routes./contact.sectionSubtitle">Reach out to us through any of these channels</p>
+             <p class="section-subtitle" data-i18n="routes./contact.sectionSubtitle"></p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">📧</div>
               <h3 class="feature-title" data-i18n="routes./contact.email.title">Email</h3>
-              <p class="feature-description" data-i18n="routes./contact.email.description">info@lofersil.com</p>
+               <p class="feature-description" data-i18n="routes./contact.email.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">📞</div>
               <h3 class="feature-title" data-i18n="routes./contact.phone.title">Phone</h3>
-              <p class="feature-description" data-i18n="routes./contact.phone.description">+1 (555) 123-4567</p>
+               <p class="feature-description" data-i18n="routes./contact.phone.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">📍</div>
               <h3 class="feature-title" data-i18n="routes./contact.address.title">Address</h3>
-              <p class="feature-description" data-i18n="routes./contact.address.description">123 Premium Street, Quality City, QC 12345</p>
+               <p class="feature-description" data-i18n="routes./contact.address.description"></p>
             </div>
           </div>
         </div>
@@ -340,13 +336,11 @@ const routes: Record<string, Route> = {
         <div class="hero-container">
           <div class="hero-content">
             <h1 class="hero-title" data-i18n="routes./store.heroTitle">Our Store</h1>
-            <p class="hero-subtitle" data-i18n="routes./store.heroSubtitle">Premium Shopping Experience</p>
-            <p class="hero-description" data-i18n="routes./store.heroDescription">
-              Browse our complete collection of premium products. Quality items at competitive prices.
-            </p>
+             <p class="hero-subtitle" data-i18n="routes./store.heroSubtitle"></p>
+             <p class="hero-description" data-i18n="routes./store.heroDescription"></p>
             <div class="hero-actions">
-              <a href="/products" class="btn btn-primary" data-i18n="routes./store.browseProducts">Browse Products</a>
-              <a href="/contact" class="btn btn-secondary" data-i18n="routes./store.contactSales">Contact Sales</a>
+               <a href="/products" class="btn btn-primary" data-i18n="routes./store.browseProducts"></a>
+               <a href="/contact" class="btn btn-secondary" data-i18n="routes./store.contactSales"></a>
             </div>
           </div>
         </div>
@@ -356,28 +350,28 @@ const routes: Record<string, Route> = {
         <div class="features-container">
           <div class="section-header">
             <h2 class="section-title" data-i18n="routes./store.sectionTitle">Store Features</h2>
-            <p class="section-subtitle" data-i18n="routes./store.sectionSubtitle">Why shop with us</p>
+             <p class="section-subtitle" data-i18n="routes./store.sectionSubtitle"></p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">🛒</div>
               <h3 class="feature-title" data-i18n="routes./store.easyShopping.title">Easy Shopping</h3>
-              <p class="feature-description" data-i18n="routes./store.easyShopping.description">Intuitive interface for a seamless shopping experience.</p>
+               <p class="feature-description" data-i18n="routes./store.easyShopping.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🚚</div>
               <h3 class="feature-title" data-i18n="routes./store.fastShipping.title">Fast Shipping</h3>
-              <p class="feature-description" data-i18n="routes./store.fastShipping.description">Quick and reliable delivery to your doorstep.</p>
+               <p class="feature-description" data-i18n="routes./store.fastShipping.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🔒</div>
               <h3 class="feature-title" data-i18n="routes./store.securePayment.title">Secure Payment</h3>
-              <p class="feature-description" data-i18n="routes./store.securePayment.description">Safe and secure payment processing.</p>
+               <p class="feature-description" data-i18n="routes./store.securePayment.description"></p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">💯</div>
               <h3 class="feature-title" data-i18n="routes./store.qualityGuarantee.title">Quality Guarantee</h3>
-              <p class="feature-description" data-i18n="routes./store.qualityGuarantee.description">100% satisfaction guarantee on all purchases.</p>
+               <p class="feature-description" data-i18n="routes./store.qualityGuarantee.description"></p>
             </div>
           </div>
         </div>
@@ -562,6 +556,8 @@ class LOFERSILLandingPage {
             element.setAttribute('content', translation);
           } else if (element.tagName === 'TITLE') {
             element.textContent = translation;
+          } else if (element.tagName === 'IMG') {
+            element.setAttribute('alt', translation);
           } else {
             element.textContent = translation;
           }
