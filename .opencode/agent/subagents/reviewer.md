@@ -2,7 +2,7 @@
 
 description: "Code review, security, and quality assurance agent"
 mode: subagent
-model: grok-code
+model: big-pickle
 temperature: 0.1
 tools:
   read: true

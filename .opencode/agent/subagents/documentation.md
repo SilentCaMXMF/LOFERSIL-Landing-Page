@@ -1,7 +1,7 @@
 ---
 description: "Documentation authoring agent"
 mode: subagent
-model: grok-code
+model: big-pickle
 temperature: 0.2
 tools:
   read: true
