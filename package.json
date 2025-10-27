@@ -10,7 +10,7 @@
     "dev": "tsc --watch",
     "start": "serve dist --port=3000 --open=/",
     "lint": "eslint src/**/*.ts",
-    "format": "prettier --write src/**/*.{ts,css,html}",
+    "format": "prettier --write src/**/*.{ts,css}",
     "optimize-images": "imagemin assets/images/* --out-dir=dist/images",
     "prebuild": "npm run format",
     "lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
