@@ -396,7 +396,7 @@ class LOFERSILLandingPage {
   private mainContent: HTMLElement | null = null;
   private langToggle: HTMLElement | null = null;
   private isMenuOpen: boolean = false;
-  private currentLanguage: string = 'en';
+  private currentLanguage: string = 'pt';
   private translations: Translations = {};
 
   constructor() {
@@ -466,8 +466,8 @@ class LOFERSILLandingPage {
    * Setup language system
    */
   private setupLanguageSystem(): void {
-    // Load saved language or default to English
-    this.currentLanguage = localStorage.getItem('language') || 'en';
+    // Load saved language or default to Portuguese
+    this.currentLanguage = localStorage.getItem('language') || 'pt';
 
     // Load translations
     this.loadTranslations(this.currentLanguage);

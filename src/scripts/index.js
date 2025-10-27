@@ -2,7 +2,7 @@
  * LOFERSIL Landing Page - Main TypeScript Entry Point
  * Handles navigation, interactions, and dynamic content loading
  */
-import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
+import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'https://unpkg.com/web-vitals@5.1.0/dist/web-vitals.js';
 // Configuration
 const config = {
   mobileBreakpoint: 768,
@@ -41,7 +41,7 @@ const routes = {
             </div>
           </div>
           <div class="hero-image">
-            <img src="/assets/images/hero-image.svg" alt="LOFERSIL Hero" class="hero-img" loading="lazy" />
+            <img src="/images/hero-image.svg" alt="LOFERSIL Hero" class="hero-img" loading="lazy" />
           </div>
         </div>
       </section>
