@@ -87,7 +87,7 @@ fi
 
 # Deploy to Vercel
 print_status "Deploying to Vercel..."
-vercel --prod
+vercel --prod --yes
 
 if [ $? -eq 0 ]; then
     print_success "Deployment completed successfully!"

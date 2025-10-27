@@ -64,3 +64,4 @@ temp/
 
 # Bun
 .bun
+.vercel

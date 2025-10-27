@@ -47,9 +47,9 @@ jobs:
             vercel --token=${{ secrets.VERCEL_TOKEN }}
           fi
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.CmZLdal7Rp7Pco6mZ4eqq6E1 }}
+          VERCEL_PROJECT_ID: ${{ secrets.prj_1XKvb2c1dt0tAJdQWz3VsMtrOZCv }}
+          VERCEL_TOKEN: ${{ secrets.uXqdReGkHmThkFAYppS21akd }}
 
       - name: Comment PR
         if: github.event_name == 'pull_request'
