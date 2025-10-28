@@ -17,6 +17,10 @@
     "store": "Visit Store",
     "langToggle": "EN"
   },
+  "skip": {
+    "mainContent": "Skip to main content",
+    "navigation": "Skip to navigation"
+  },
   "hero": {
     "title": "Welcome to LOFERSIL",
     "subtitle": "Premium Products & Services",

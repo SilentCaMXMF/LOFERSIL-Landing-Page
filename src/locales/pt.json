@@ -17,6 +17,10 @@
     "store": "Visitar Loja",
     "langToggle": "PT"
   },
+  "skip": {
+    "mainContent": "Ir para o conteúdo principal",
+    "navigation": "Ir para a navegação"
+  },
   "hero": {
     "title": "Bem-vindo à LOFERSIL",
     "subtitle": "Produtos e Serviços Premium",
