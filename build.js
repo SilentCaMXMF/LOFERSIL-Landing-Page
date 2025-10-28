@@ -140,6 +140,15 @@ const isProduction =
     fs.copyFileSync('./src/scripts/sw.js', './dist/sw.js');
   }
 
+  // Copy DOMPurify
+  console.log('📦 Copying DOMPurify...');
+  if (fs.existsSync('./node_modules/dompurify/dist/purify.min.js')) {
+    fs.copyFileSync('./node_modules/dompurify/dist/purify.min.js', './dist/dompurify.min.js');
+    console.log('✅ DOMPurify copied');
+  } else {
+    console.warn('⚠️ DOMPurify not found in node_modules');
+  }
+
   // Generate favicon formats
   console.log('🎨 Generating favicon formats...');
   try {
@@ -156,39 +165,35 @@ const isProduction =
     console.warn('⚠️ Favicon generation failed, continuing...');
   }
 
-  // Optimize images in production
-  if (isProduction) {
-    console.log('🖼️ Optimizing images...');
-    const optimizeImages = async () => {
-      const imagesDir = './dist/images';
-      if (fs.existsSync(imagesDir)) {
-        const imageFiles = fs
-          .readdirSync(imagesDir)
-          .filter(file => /\.(jpg|jpeg|png)$/i.test(file));
-        for (const file of imageFiles) {
-          const inputPath = path.join(imagesDir, file);
-          const baseName = path.parse(file).name;
-          const webpBase = path.join(imagesDir, baseName);
+  // Optimize images
+  console.log('🖼️ Optimizing images...');
+  const optimizeImages = async () => {
+    const imagesDir = './dist/images';
+    if (fs.existsSync(imagesDir)) {
+      const imageFiles = fs.readdirSync(imagesDir).filter(file => /\.(jpg|jpeg|png)$/i.test(file));
+      for (const file of imageFiles) {
+        const inputPath = path.join(imagesDir, file);
+        const baseName = path.parse(file).name;
+        const webpBase = path.join(imagesDir, baseName);
 
-          // Create responsive WebP versions
-          const sizes = [400, 800, 1200];
-          for (const size of sizes) {
-            await sharp(inputPath)
-              .resize(size, null, { withoutEnlargement: true })
-              .webp({ quality: 80 })
-              .toFile(`${webpBase}-${size}w.webp`);
-          }
-
-          // Also create a full-size WebP
-          await sharp(inputPath).webp({ quality: 80 }).toFile(`${webpBase}.webp`);
-
-          console.log(`✅ Optimized ${file}`);
+        // Create responsive WebP versions
+        const sizes = [400, 800, 1200];
+        for (const size of sizes) {
+          await sharp(inputPath)
+            .resize(size, null, { withoutEnlargement: true })
+            .webp({ quality: 80 })
+            .toFile(`${webpBase}-${size}w.webp`);
         }
+
+        // Also create a full-size WebP
+        await sharp(inputPath).webp({ quality: 80 }).toFile(`${webpBase}.webp`);
+
+        console.log(`✅ Optimized ${file}`);
       }
-    };
-    await optimizeImages();
-    console.log('✅ Image optimization successful');
-  }
+    }
+  };
+  await optimizeImages();
+  console.log('✅ Image optimization successful');
 
   // Generate sitemap
   console.log('🗺️ Generating sitemap...');
