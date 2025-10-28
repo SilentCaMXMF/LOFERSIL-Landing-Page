@@ -5,7 +5,6 @@
 
 // DOMPurify is loaded globally from CDN
 import { validateContactForm, ContactFormValidator } from './validation';
-import { runValidationTests } from './validation.test';
 
 // Development mode check for logging
 const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production';
@@ -441,8 +440,13 @@ class LOFERSILLandingPage {
       if (IS_DEVELOPMENT) {
         console.info('LOFERSIL Landing Page initialized successfully');
         // Run tests after a short delay to ensure everything is loaded
-        setTimeout(() => {
-          runValidationTests();
+        setTimeout(async () => {
+          try {
+            const { runValidationTests } = await import('./validation.test');
+            runValidationTests();
+          } catch (error) {
+            console.warn('Validation tests not available in production');
+          }
         }, 100);
       }
     } catch (error) {

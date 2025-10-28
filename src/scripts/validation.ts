@@ -74,7 +74,7 @@ export function validateName(name: string): ValidationResult {
   }
 
   // Check for valid characters (letters, spaces, hyphens, apostrophes)
-  const nameRegex = /^[a-zA-Z\s\-']+$/;
+  const nameRegex = /^[\p{L}\s\-']+$/u;
   if (!nameRegex.test(trimmedName)) {
     return { isValid: false, error: VALIDATION_MESSAGES.name.invalidChars };
   }

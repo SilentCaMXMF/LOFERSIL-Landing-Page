@@ -14,11 +14,15 @@ import sharp from 'sharp';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction =
+  process.env.NODE_ENV === 'production' || process.env.VERCEL === '1' || process.env.VERCEL_ENV;
 
 (async () => {
   console.log('🚀 Starting LOFERSIL Landing Page build...');
   console.log(`📦 Build mode: ${isProduction ? 'production' : 'development'}`);
+  console.log(
+    `🌍 Environment: NODE_ENV=${process.env.NODE_ENV}, VERCEL=${process.env.VERCEL}, VERCEL_ENV=${process.env.VERCEL_ENV}`
+  );
 
   // Clean dist directory
   if (fs.existsSync('./dist')) {
@@ -35,11 +39,32 @@ const isProduction = process.env.NODE_ENV === 'production';
     execSync(tscCommand, { stdio: 'inherit' });
     console.log('✅ TypeScript compilation successful');
 
+    // Remove test files from production build
+    if (isProduction) {
+      console.log('🧹 Removing test files from production build...');
+      const testFiles = fs.readdirSync('./dist').filter(file => file.endsWith('.test.js'));
+      testFiles.forEach(file => {
+        fs.unlinkSync(`./dist/${file}`);
+        console.log(`✅ Removed ${file}`);
+      });
+    }
+
     // Move compiled JS to scripts directory
     if (fs.existsSync('./dist/index.js')) {
       fs.mkdirSync('./dist/scripts', { recursive: true });
       fs.renameSync('./dist/index.js', './dist/scripts/index.js');
     }
+
+    // Move other non-test JS files to scripts directory
+    const jsFiles = fs
+      .readdirSync('./dist')
+      .filter(file => file.endsWith('.js') && !file.includes('.test.'));
+    jsFiles.forEach(file => {
+      if (file !== 'index.js') {
+        // index.js already moved
+        fs.renameSync(`./dist/${file}`, `./dist/scripts/${file}`);
+      }
+    });
   } catch (error) {
     console.error('❌ TypeScript compilation failed');
     process.exit(1);
@@ -226,10 +251,10 @@ Sitemap: ${baseUrl}/sitemap.xml`;
     let html = fs.readFileSync('./dist/index.html', 'utf8');
 
     // Update CSS links (both preload and stylesheet)
-    html = html.replace(/\/main\.css/g, '/main.min.css');
+    html = html.replace(/main\.css/g, 'main.min.css');
 
     // Update JS script
-    html = html.replace('/scripts/index.js', '/scripts/index.min.js');
+    html = html.replace(/scripts\/index\.js/g, 'scripts/index.min.js');
 
     fs.writeFileSync('./dist/index.html', html);
   }
