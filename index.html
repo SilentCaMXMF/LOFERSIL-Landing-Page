@@ -53,8 +53,8 @@
     <link rel="preload" href="main.css" as="style" />
     <link rel="preload" href="scripts/index.js" as="script" crossorigin="anonymous" />
 
-     <!-- Load DOMPurify locally -->
-     <script src="dompurify.min.js"></script>
+    <!-- Load DOMPurify locally -->
+    <script src="dompurify.min.js"></script>
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="main.css" />
@@ -76,18 +76,18 @@
           <a href="/" class="logo-link">LOFERSIL</a>
         </div>
         <div class="nav-menu" id="nav-menu">
-           <a href="/" class="nav-link active" data-i18n="nav.home"></a>
-           <a href="/products" class="nav-link" data-i18n="nav.products"></a>
-           <a href="/services" class="nav-link" data-i18n="nav.services"></a>
-           <a href="/about" class="nav-link" data-i18n="nav.about"></a>
-           <a href="/contact" class="nav-link" data-i18n="nav.contact"></a>
-           <a href="/store" class="nav-link nav-cta" data-i18n="nav.store"></a>
-           <button
-             id="lang-toggle"
-             class="nav-link lang-toggle"
-             data-i18n="nav.langToggle"
-             aria-label="Toggle language"
-           ></button>
+          <a href="/" class="nav-link active" data-i18n="nav.home"></a>
+          <a href="/products" class="nav-link" data-i18n="nav.products"></a>
+          <a href="/services" class="nav-link" data-i18n="nav.services"></a>
+          <a href="/about" class="nav-link" data-i18n="nav.about"></a>
+          <a href="/contact" class="nav-link" data-i18n="nav.contact"></a>
+          <a href="/store" class="nav-link nav-cta" data-i18n="nav.store"></a>
+          <button
+            id="lang-toggle"
+            class="nav-link lang-toggle"
+            data-i18n="nav.langToggle"
+            aria-label="Toggle language"
+          ></button>
         </div>
         <div class="nav-toggle" id="nav-toggle">
           <span></span>
@@ -118,17 +118,24 @@
               >
             </div>
           </div>
-           <div class="hero-image">
-             <picture>
-                <source srcset="/images/Frente%20loja-400w.webp 400w, /images/Frente%20loja-800w.webp 800w, /images/Frente%20loja-1200w.webp 1200w" type="image/webp">
-                <img
-                  data-src="/images/Frente_loja_100.webp"
-                  alt="LOFERSIL store front exterior view"
-                  data-i18n="alt.storeFront"
-                  class="hero-img lazy"
-                />
-             </picture>
-           </div>
+          <div class="hero-image">
+            <picture>
+              <source
+                srcset="
+                  /images/Frente%20loja-400w.webp   400w,
+                  /images/Frente%20loja-800w.webp   800w,
+                  /images/Frente%20loja-1200w.webp 1200w
+                "
+                type="image/webp"
+              />
+              <img
+                data-src="/images/Frente_loja_100.webp"
+                alt="LOFERSIL store front exterior view"
+                data-i18n="alt.storeFront"
+                class="hero-img lazy"
+              />
+            </picture>
+          </div>
         </div>
       </section>
 
@@ -155,38 +162,52 @@
                 </div>
                 <div class="about-feature">
                   <span class="about-feature-icon">🏪</span>
-                   <span class="about-feature-text" data-i18n="about.physicalStore"></span>
+                  <span class="about-feature-text" data-i18n="about.physicalStore"></span>
                 </div>
                 <div class="about-feature">
                   <span class="about-feature-icon">👥</span>
-                   <span class="about-feature-text" data-i18n="about.expertStaff"></span>
+                  <span class="about-feature-text" data-i18n="about.expertStaff"></span>
                 </div>
               </div>
             </div>
-             <div class="about-gallery">
-               <div class="about-gallery-item">
-                 <picture>
-                   <source srcset="/images/Interior-400w.webp 400w, /images/Interior-800w.webp 800w, /images/Interior-1200w.webp 1200w" type="image/webp">
-                    <img
-                      data-src="/images/Interior.jpg"
-                      alt="LOFERSIL store interior showing products and displays"
-                      data-i18n="alt.storeInterior"
-                      class="about-gallery-img lazy"
-                    />
-                 </picture>
-               </div>
-               <div class="about-gallery-item">
-                 <picture>
-                    <source srcset="/images/Interior%20c%20funcion%C3%A1rio-400w.webp 400w, /images/Interior%20c%20funcion%C3%A1rio-800w.webp 800w, /images/Interior%20c%20funcion%C3%A1rio-1200w.webp 1200w" type="image/webp">
-                     <img
-                       data-src="/images/Interior c funcionário.jpg"
-                       alt="LOFERSIL Store Interior - Staff assisting customers"
-                       data-i18n="alt.storeInteriorStaff"
-                       class="about-gallery-img lazy"
-                     />
-                 </picture>
-               </div>
-             </div>
+            <div class="about-gallery">
+              <div class="about-gallery-item">
+                <picture>
+                  <source
+                    srcset="
+                      /images/Interior-400w.webp   400w,
+                      /images/Interior-800w.webp   800w,
+                      /images/Interior-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
+                  <img
+                    data-src="/images/Interior.jpg"
+                    alt="LOFERSIL store interior showing products and displays"
+                    data-i18n="alt.storeInterior"
+                    class="about-gallery-img lazy"
+                  />
+                </picture>
+              </div>
+              <div class="about-gallery-item">
+                <picture>
+                  <source
+                    srcset="
+                      /images/Interior%20c%20funcion%C3%A1rio-400w.webp   400w,
+                      /images/Interior%20c%20funcion%C3%A1rio-800w.webp   800w,
+                      /images/Interior%20c%20funcion%C3%A1rio-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
+                  <img
+                    data-src="/images/Interior c funcionário.jpg"
+                    alt="LOFERSIL Store Interior - Staff assisting customers"
+                    data-i18n="alt.storeInteriorStaff"
+                    class="about-gallery-img lazy"
+                  />
+                </picture>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -240,18 +261,25 @@
             </p>
           </div>
           <div class="products-grid">
-             <div class="product-category">
-               <div class="product-category-image">
-                 <picture>
-                    <source srcset="/images/Beb%C3%A9s_nenucos-400w.webp 400w, /images/Beb%C3%A9s_nenucos-800w.webp 800w, /images/Beb%C3%A9s_nenucos-1200w.webp 1200w" type="image/webp">
-                     <img
-                       data-src="/images/Bebés_nenucos.jpg"
-                       alt="Baby Products and Dolls Collection"
-                       data-i18n="alt.babyProducts"
-                       class="product-category-img lazy"
-                     />
-                 </picture>
-               </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <picture>
+                  <source
+                    srcset="
+                      /images/Beb%C3%A9s_nenucos-400w.webp   400w,
+                      /images/Beb%C3%A9s_nenucos-800w.webp   800w,
+                      /images/Beb%C3%A9s_nenucos-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
+                  <img
+                    data-src="/images/Bebés_nenucos.jpg"
+                    alt="Baby Products and Dolls Collection"
+                    data-i18n="alt.babyProducts"
+                    class="product-category-img lazy"
+                  />
+                </picture>
+              </div>
               <div class="product-category-content">
                 <h3
                   class="product-category-title"
@@ -263,18 +291,25 @@
                 ></p>
               </div>
             </div>
-             <div class="product-category">
-               <div class="product-category-image">
-                 <picture>
-                   <source srcset="/images/Caixas_joias-400w.webp 400w, /images/Caixas_joias-800w.webp 800w, /images/Caixas_joias-1200w.webp 1200w" type="image/webp">
-                     <img
-                       data-src="/images/Caixas_joias.jpg"
-                       alt="Premium Jewelry Boxes Collection"
-                       data-i18n="alt.jewelryBoxes"
-                       class="product-category-img lazy"
-                     />
-                 </picture>
-               </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <picture>
+                  <source
+                    srcset="
+                      /images/Caixas_joias-400w.webp   400w,
+                      /images/Caixas_joias-800w.webp   800w,
+                      /images/Caixas_joias-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
+                  <img
+                    data-src="/images/Caixas_joias.jpg"
+                    alt="Premium Jewelry Boxes Collection"
+                    data-i18n="alt.jewelryBoxes"
+                    class="product-category-img lazy"
+                  />
+                </picture>
+              </div>
               <div class="product-category-content">
                 <h3
                   class="product-category-title"
@@ -286,18 +321,25 @@
                 ></p>
               </div>
             </div>
-             <div class="product-category">
-               <div class="product-category-image">
-                 <picture>
-                   <source srcset="/images/Canetas_oferta-400w.webp 400w, /images/Canetas_oferta-800w.webp 800w, /images/Canetas_oferta-1200w.webp 1200w" type="image/webp">
-                     <img
-                       data-src="/images/Canetas_oferta.jpg"
-                       alt="Promotional Pens and Writing Instruments"
-                       data-i18n="alt.pens"
-                       class="product-category-img lazy"
-                     />
-                 </picture>
-               </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <picture>
+                  <source
+                    srcset="
+                      /images/Canetas_oferta-400w.webp   400w,
+                      /images/Canetas_oferta-800w.webp   800w,
+                      /images/Canetas_oferta-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
+                  <img
+                    data-src="/images/Canetas_oferta.jpg"
+                    alt="Promotional Pens and Writing Instruments"
+                    data-i18n="alt.pens"
+                    class="product-category-img lazy"
+                  />
+                </picture>
+              </div>
               <div class="product-category-content">
                 <h3 class="product-category-title" data-i18n="productsShowcase.pens.title"></h3>
                 <p
@@ -306,18 +348,25 @@
                 ></p>
               </div>
             </div>
-             <div class="product-category">
-               <div class="product-category-image">
-                 <picture>
-                   <source srcset="/images/Dossiers-400w.webp 400w, /images/Dossiers-800w.webp 800w, /images/Dossiers-1200w.webp 1200w" type="image/webp">
-                     <img
-                       data-src="/images/Dossiers.jpg"
-                       alt="Office Binders and Folders"
-                       data-i18n="alt.binders"
-                       class="product-category-img lazy"
-                     />
-                 </picture>
-               </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <picture>
+                  <source
+                    srcset="
+                      /images/Dossiers-400w.webp   400w,
+                      /images/Dossiers-800w.webp   800w,
+                      /images/Dossiers-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
+                  <img
+                    data-src="/images/Dossiers.jpg"
+                    alt="Office Binders and Folders"
+                    data-i18n="alt.binders"
+                    class="product-category-img lazy"
+                  />
+                </picture>
+              </div>
               <div class="product-category-content">
                 <h3 class="product-category-title" data-i18n="productsShowcase.binders.title"></h3>
                 <p
@@ -326,18 +375,25 @@
                 ></p>
               </div>
             </div>
-             <div class="product-category">
-               <div class="product-category-image">
-                 <picture>
-                   <source srcset="/images/Mochilas-400w.webp 400w, /images/Mochilas-800w.webp 800w, /images/Mochilas-1200w.webp 1200w" type="image/webp">
-                     <img
-                       data-src="/images/Mochilas.jpg"
-                       alt="School and Travel Backpacks"
-                       data-i18n="alt.backpacks"
-                       class="product-category-img lazy"
-                     />
-                 </picture>
-               </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <picture>
+                  <source
+                    srcset="
+                      /images/Mochilas-400w.webp   400w,
+                      /images/Mochilas-800w.webp   800w,
+                      /images/Mochilas-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
+                  <img
+                    data-src="/images/Mochilas.jpg"
+                    alt="School and Travel Backpacks"
+                    data-i18n="alt.backpacks"
+                    class="product-category-img lazy"
+                  />
+                </picture>
+              </div>
               <div class="product-category-content">
                 <h3
                   class="product-category-title"
@@ -349,18 +405,25 @@
                 ></p>
               </div>
             </div>
-             <div class="product-category">
-               <div class="product-category-image">
-                 <picture>
-                   <source srcset="/images/Tinteiros-400w.webp 400w, /images/Tinteiros-800w.webp 800w, /images/Tinteiros-1200w.webp 1200w" type="image/webp">
-                     <img
-                       data-src="/images/Tinteiros.jpg"
-                       alt="Ink Cartridges and Printer Supplies"
-                       data-i18n="alt.inkCartridges"
-                       class="product-category-img lazy"
-                     />
-                 </picture>
-               </div>
+            <div class="product-category">
+              <div class="product-category-image">
+                <picture>
+                  <source
+                    srcset="
+                      /images/Tinteiros-400w.webp   400w,
+                      /images/Tinteiros-800w.webp   800w,
+                      /images/Tinteiros-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
+                  <img
+                    data-src="/images/Tinteiros.jpg"
+                    alt="Ink Cartridges and Printer Supplies"
+                    data-i18n="alt.inkCartridges"
+                    class="product-category-img lazy"
+                  />
+                </picture>
+              </div>
               <div class="product-category-content">
                 <h3 class="product-category-title" data-i18n="productsShowcase.ink.title"></h3>
                 <p
@@ -371,10 +434,13 @@
             </div>
           </div>
           <div class="products-showcase-cta">
-             <p class="products-showcase-text" data-i18n="productsShowcase.ctaText"></p>
+            <p class="products-showcase-text" data-i18n="productsShowcase.ctaText">
+              Visit our store to explore our complete collection and find exactly what you're
               looking for
             </p>
-             <a href="/store" class="btn btn-primary" data-i18n="productsShowcase.ctaButton"></a>
+            <a href="/store" class="btn btn-primary" data-i18n="productsShowcase.ctaButton"
+              >View All Products</a
+            >
           </div>
         </div>
       </section>
@@ -401,29 +467,29 @@
         <div class="footer-content">
           <div class="footer-section">
             <h3 class="footer-title" data-i18n="footer.title">LOFERSIL</h3>
-             <p class="footer-description" data-i18n="footer.description"></p>
+            <p class="footer-description" data-i18n="footer.description"></p>
           </div>
           <div class="footer-section">
             <h4 class="footer-subtitle" data-i18n="footer.quickLinks">Quick Links</h4>
             <ul class="footer-links">
-               <li><a href="/products" data-i18n="nav.products"></a></li>
-               <li><a href="/services" data-i18n="nav.services"></a></li>
-               <li><a href="/about" data-i18n="nav.about"></a></li>
-               <li><a href="/contact" data-i18n="nav.contact"></a></li>
+              <li><a href="/products" data-i18n="nav.products"></a></li>
+              <li><a href="/services" data-i18n="nav.services"></a></li>
+              <li><a href="/about" data-i18n="nav.about"></a></li>
+              <li><a href="/contact" data-i18n="nav.contact"></a></li>
             </ul>
           </div>
           <div class="footer-section">
             <h4 class="footer-subtitle" data-i18n="footer.connect">Connect</h4>
             <ul class="footer-links">
-               <li><a href="/store" data-i18n="nav.store"></a></li>
-               <li><a href="/support" data-i18n="footer.support"></a></li>
-               <li><a href="/privacy" data-i18n="footer.privacy"></a></li>
-               <li><a href="/terms" data-i18n="footer.terms"></a></li>
+              <li><a href="/store" data-i18n="nav.store"></a></li>
+              <li><a href="/support" data-i18n="footer.support"></a></li>
+              <li><a href="/privacy" data-i18n="footer.privacy"></a></li>
+              <li><a href="/terms" data-i18n="footer.terms"></a></li>
             </ul>
           </div>
         </div>
         <div class="footer-bottom">
-           <p data-i18n="footer.copyright"></p>
+          <p data-i18n="footer.copyright"></p>
         </div>
       </div>
     </footer>

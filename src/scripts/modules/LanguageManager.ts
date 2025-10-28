@@ -34,8 +34,17 @@ export class LanguageManager {
   constructor(languages: LanguageConfig[], errorHandler: ErrorHandler) {
     this.languages = languages;
     this.errorHandler = errorHandler;
-    this.setupDOMElements();
-    this.setupLanguageSystem();
+
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.setupDOMElements();
+        this.setupLanguageSystem();
+      });
+    } else {
+      this.setupDOMElements();
+      this.setupLanguageSystem();
+    }
   }
 
   /**
@@ -77,16 +86,41 @@ export class LanguageManager {
    */
   private async loadTranslations(language: string): Promise<void> {
     try {
-      const response = await fetch(`/locales/${language}.json`);
-      if (!response.ok) {
-        throw new Error(`Failed to load ${language} translations`);
+      // Try multiple possible paths for locale files
+      const possiblePaths = [
+        `/locales/${language}.json`, // Production path (after build)
+        `/src/locales/${language}.json`, // Development path
+        `./locales/${language}.json`, // Relative path
+      ];
+
+      let response: Response | null = null;
+      let lastError: Error | null = null;
+
+      for (const path of possiblePaths) {
+        try {
+          response = await fetch(path);
+          if (response.ok) break;
+        } catch (e) {
+          lastError = e as Error;
+          continue;
+        }
       }
+
+      if (!response || !response.ok) {
+        throw new Error(
+          `Failed to load ${language} translations from all paths. Last error: ${lastError?.message || 'Unknown error'}`
+        );
+      }
+
       this.translations = await response.json();
     } catch (error) {
       this.errorHandler.handleError(error, `Error loading translations for ${language}`);
-      // Fallback to English if available
+      // Enhanced fallback logic
       if (language !== 'en') {
         await this.loadTranslations('en');
+      } else {
+        // Use hardcoded fallback if even English fails
+        this.translations = this.getFallbackTranslations();
       }
     }
   }
@@ -96,17 +130,19 @@ export class LanguageManager {
    */
   public async toggleLanguage(): Promise<void> {
     try {
+      console.log(`Switching from ${this.currentLanguage} to next language...`);
       const currentIndex = this.languages.findIndex(lang => lang.code === this.currentLanguage);
       const nextIndex = (currentIndex + 1) % this.languages.length;
       const nextLanguage = this.languages[nextIndex].code;
 
+      console.log(`Next language: ${nextLanguage}`);
+
       this.currentLanguage = nextLanguage;
       localStorage.setItem('language', nextLanguage);
 
-      // Load new translations
       await this.loadTranslations(nextLanguage);
+      console.log('Translations loaded successfully');
 
-      // Update UI
       this.applyTranslations();
       this.updateLanguageToggle();
       document.documentElement.lang = nextLanguage;
@@ -123,7 +159,10 @@ export class LanguageManager {
           detail: { language: nextLanguage, translations: this.translations },
         })
       );
+
+      console.log(`Language switched to ${nextLanguage}`);
     } catch (error) {
+      console.error('Language toggle failed:', error);
       this.errorHandler.handleError(error, 'Failed to toggle language');
     }
   }
@@ -297,6 +336,41 @@ export class LanguageManager {
 
     // Set canonical URL based on current language
     canonical.href = `${baseUrl}${window.location.pathname}`;
+  }
+
+  /**
+   * Get fallback translations when locale files fail to load
+   */
+  private getFallbackTranslations(): Translations {
+    return {
+      nav: {
+        home: 'Home',
+        products: 'Products',
+        services: 'Services',
+        about: 'About',
+        contact: 'Contact',
+        store: 'Visit Store',
+        langToggle: 'EN',
+      },
+      hero: {
+        title: 'Welcome to LOFERSIL',
+        subtitle: 'Premium Products & Services',
+      },
+      meta: {
+        title: 'LOFERSIL - Premium Products & Services',
+        description:
+          "Discover LOFERSIL's premium collection of products and services. Quality and excellence in everything we do.",
+        keywords: 'lofersil, products, services, premium, quality',
+        ogTitle: 'LOFERSIL - Premium Products & Services',
+        ogDescription: "Discover LOFERSIL's premium collection of products and services.",
+        twitterTitle: 'LOFERSIL - Premium Products & Services',
+        twitterDescription: "Discover LOFERSIL's premium collection of products and services.",
+      },
+      skip: {
+        mainContent: 'Skip to main content',
+        navigation: 'Skip to navigation',
+      },
+    };
   }
 
   /**
