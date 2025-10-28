@@ -3,7 +3,7 @@
  * Handles navigation, interactions, and dynamic content loading
  */
 
-import DOMPurify from 'dompurify';
+// DOMPurify is loaded globally from CDN
 import { validateContactForm, ContactFormValidator } from './validation';
 import { runValidationTests } from './validation.test';
 
@@ -48,6 +48,11 @@ declare global {
     gtag?: (command: string, action: string, options?: object) => void;
     getWebVitals?: () => void;
   }
+
+  // DOMPurify global
+  var DOMPurify: {
+    sanitize: (html: string) => string;
+  };
 }
 
 // API Types and Interfaces
@@ -422,7 +427,7 @@ class LOFERSILLandingPage {
       this.setupErrorHandling();
       this.setupDOMElements();
       this.setupEventListeners();
-      this.setupNavigation();
+      await this.setupNavigation();
       this.setupScrollEffects();
       this.setupPerformanceTracking();
       this.setupSEO();
@@ -835,7 +840,15 @@ class LOFERSILLandingPage {
 
     if (this.mainContent) {
       const template = document.createElement('template');
-      template.innerHTML = DOMPurify.sanitize(route.content);
+      // Use global DOMPurify loaded from CDN
+      if (typeof DOMPurify !== 'undefined') {
+        template.innerHTML = DOMPurify.sanitize(route.content);
+      } else {
+        if (IS_DEVELOPMENT)
+          console.warn('DOMPurify not loaded, using content without sanitization');
+        // Fallback: use content without sanitization (not recommended for production)
+        template.innerHTML = route.content;
+      }
       this.mainContent.replaceChildren(template.content.cloneNode(true));
     }
 

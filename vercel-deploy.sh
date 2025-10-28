@@ -60,7 +60,7 @@ fi
 
 # Run production build
 print_status "Building for production..."
-npm run build
+NODE_ENV=production npm run build
 
 if [ $? -eq 0 ]; then
     print_success "Build completed successfully"
