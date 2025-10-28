@@ -22,16 +22,20 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+       - name: Install dependencies
+         run: npm ci
 
-      - name: Run tests
-        run: npm run lint || true # Don't fail on linting for now
+       - name: Audit dependencies
+         run: npm audit --audit-level=high
 
-      - name: Build project
-        run: npm run build
-        env:
-          NODE_ENV: production
+       - name: Run tests
+         run: npm run lint
+
+       - name: Build project
+         run: npm run build
+         env:
+           NODE_ENV: production
+           WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
 
       - name: Install Vercel CLI
         run: npm install -g vercel
@@ -47,9 +51,9 @@ jobs:
             vercel --token=${{ secrets.VERCEL_TOKEN }}
           fi
         env:
-          VERCEL_ORG_ID: ${{ secrets.CmZLdal7Rp7Pco6mZ4eqq6E1 }}
-          VERCEL_PROJECT_ID: ${{ secrets.prj_1XKvb2c1dt0tAJdQWz3VsMtrOZCv }}
-          VERCEL_TOKEN: ${{ secrets.uXqdReGkHmThkFAYppS21akd }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
       - name: Comment PR
         if: github.event_name == 'pull_request'

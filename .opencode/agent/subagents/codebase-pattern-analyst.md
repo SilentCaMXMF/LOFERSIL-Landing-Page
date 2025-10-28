@@ -1,7 +1,8 @@
 ---
+
 description: "TypeScript implementation agent for modular and functional development"
 mode: subagent
-model: big-pickle
+model: opencode/grok-code
 temperature: 0.1
 tools:
   read: true

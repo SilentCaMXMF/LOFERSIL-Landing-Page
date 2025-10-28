@@ -4,6 +4,12 @@
  */
 
 import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
+import DOMPurify from 'dompurify';
+import { validateContactForm, ContactFormValidator } from './validation';
+import { runValidationTests } from './validation.test';
+
+// Development mode check for logging
+const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production';
 
 // Types
 interface NavigationConfig {
@@ -34,10 +40,19 @@ interface LanguageConfig {
   flag: string;
 }
 
+// Window interface extensions for analytics and debugging
+declare global {
+  interface Window {
+    gtag?: (command: string, action: string, options?: object) => void;
+    getWebVitals?: () => void;
+  }
+}
+
 // API Types and Interfaces
 interface ContactRequest {
   name: string;
   email: string;
+  phone?: string;
   message: string;
 }
 
@@ -402,6 +417,7 @@ class LOFERSILLandingPage {
    */
   private async initializeApp(): Promise<void> {
     try {
+      this.setupErrorHandling();
       this.setupDOMElements();
       this.setupEventListeners();
       this.setupNavigation();
@@ -409,14 +425,111 @@ class LOFERSILLandingPage {
       this.setupPerformanceTracking();
       this.setupSEO();
       this.setupLanguageSystem();
+      this.setupServiceWorker();
 
       // Render initial page
       this.renderPage();
 
-      console.info('LOFERSIL Landing Page initialized successfully');
+      // Run validation tests in development
+      if (IS_DEVELOPMENT) {
+        console.info('LOFERSIL Landing Page initialized successfully');
+        // Run tests after a short delay to ensure everything is loaded
+        setTimeout(() => {
+          runValidationTests();
+        }, 100);
+      }
     } catch (error) {
-      console.error('Failed to initialize LOFERSIL Landing Page:', error);
+      if (IS_DEVELOPMENT) console.error('Failed to initialize LOFERSIL Landing Page:', error);
+      this.handleError(error, 'Application initialization failed');
     }
+  }
+
+  /**
+   * Setup global error handling
+   */
+  private setupErrorHandling(): void {
+    // Global error handler for unhandled errors
+    window.addEventListener('error', event => {
+      this.handleError(event.error, `Unhandled error: ${event.message}`);
+    });
+
+    // Global handler for unhandled promise rejections
+    window.addEventListener('unhandledrejection', event => {
+      this.handleError(event.reason, 'Unhandled promise rejection');
+    });
+
+    // Handle missing resources
+    window.addEventListener(
+      'error',
+      event => {
+        const target = event.target as HTMLElement;
+        if (
+          target instanceof HTMLImageElement ||
+          target instanceof HTMLScriptElement ||
+          target instanceof HTMLLinkElement
+        ) {
+          let resourceUrl = '';
+          if (target instanceof HTMLImageElement || target instanceof HTMLScriptElement) {
+            resourceUrl = target.src;
+          } else if (target instanceof HTMLLinkElement) {
+            resourceUrl = target.href;
+          }
+          if (IS_DEVELOPMENT && resourceUrl) {
+            console.warn(`Failed to load resource: ${resourceUrl}`);
+          }
+        }
+      },
+      true
+    );
+  }
+
+  /**
+   * Handle application errors gracefully
+   */
+  private handleError(error: unknown, context: string): void {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : '';
+
+    if (IS_DEVELOPMENT) {
+      console.error(`${context}:`, errorMessage);
+      if (errorStack) console.error(errorStack);
+    }
+
+    // In production, you could send errors to a monitoring service
+    // For now, we'll show a user-friendly message for critical errors
+    if (!IS_DEVELOPMENT && context.includes('Application initialization failed')) {
+      this.showErrorMessage('Failed to load the application. Please refresh the page.');
+    }
+  }
+
+  /**
+   * Show user-friendly error message
+   */
+  private showErrorMessage(message: string): void {
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ff4444;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      z-index: 10000;
+      max-width: 300px;
+      font-family: Arial, sans-serif;
+    `;
+    errorDiv.textContent = message;
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (errorDiv.parentNode) {
+        errorDiv.parentNode.removeChild(errorDiv);
+      }
+    }, 5000);
+
+    document.body.appendChild(errorDiv);
   }
 
   /**
@@ -480,17 +593,17 @@ class LOFERSILLandingPage {
    * Load translations for a specific language
    */
   private async loadTranslations(language: string): Promise<void> {
-    console.log(`Loading translations for ${language}`);
+    if (IS_DEVELOPMENT) console.log(`Loading translations for ${language}`);
     try {
       const response = await fetch(`/locales/${language}.json`);
-      console.log(`Fetch response for ${language}:`, response.status);
+      if (IS_DEVELOPMENT) console.log(`Fetch response for ${language}:`, response.status);
       if (!response.ok) {
         throw new Error(`Failed to load ${language} translations`);
       }
       this.translations = await response.json();
-      console.log(`Translations loaded for ${language}:`, this.translations);
+      if (IS_DEVELOPMENT) console.log(`Translations loaded for ${language}:`, this.translations);
     } catch (error) {
-      console.error('Error loading translations:', error);
+      if (IS_DEVELOPMENT) console.error('Error loading translations:', error);
       // Fallback to English if available
       if (language !== 'en') {
         await this.loadTranslations('en');
@@ -502,7 +615,7 @@ class LOFERSILLandingPage {
    * Toggle between languages
    */
   private async toggleLanguage(): Promise<void> {
-    console.log(`Toggling language from ${this.currentLanguage}`);
+    if (IS_DEVELOPMENT) console.log(`Toggling language from ${this.currentLanguage}`);
     const currentIndex = languages.findIndex(lang => lang.code === this.currentLanguage);
     const nextIndex = (currentIndex + 1) % languages.length;
     const nextLanguage = languages[nextIndex].code;
@@ -517,8 +630,7 @@ class LOFERSILLandingPage {
     this.applyTranslations();
     this.updateLanguageToggle();
     document.documentElement.lang = nextLanguage;
-    console.log(`Language toggled to ${this.currentLanguage}`);
-    console.log(`Language toggled to ${this.currentLanguage}`);
+    if (IS_DEVELOPMENT) console.log(`Language toggled to ${this.currentLanguage}`);
 
     // Update hreflang tags
     this.updateHreflangTags();
@@ -545,7 +657,7 @@ class LOFERSILLandingPage {
    */
   private applyTranslations(): void {
     const elements = document.querySelectorAll('[data-i18n]');
-    console.log(`Applying translations: Found ${elements.length} elements`);
+    if (IS_DEVELOPMENT) console.log(`Applying translations: Found ${elements.length} elements`);
     elements.forEach(element => {
       const key = element.getAttribute('data-i18n');
       if (key && this.translations) {
@@ -564,14 +676,14 @@ class LOFERSILLandingPage {
         }
       }
     });
-    console.log('Translations applied');
+    if (IS_DEVELOPMENT) console.log('Translations applied');
   }
 
   /**
    * Get nested translation value
    */
   private getNestedTranslation(obj: Translations, path: string): string {
-    return path.split('.').reduce((current: any, key: string) => {
+    return path.split('.').reduce((current: Translations | string, key: string) => {
       return current && typeof current === 'object' ? current[key] : '';
     }, obj) as string;
   }
@@ -720,7 +832,9 @@ class LOFERSILLandingPage {
     const route = routes[currentPath] || routes['/'];
 
     if (this.mainContent) {
-      this.mainContent.innerHTML = route.content;
+      const template = document.createElement('template');
+      template.innerHTML = DOMPurify.sanitize(route.content);
+      this.mainContent.replaceChildren(template.content.cloneNode(true));
     }
 
     // Apply translations after content is loaded
@@ -823,6 +937,28 @@ class LOFERSILLandingPage {
   }
 
   /**
+   * Setup service worker for PWA functionality
+   */
+  private setupServiceWorker(): void {
+    if ('serviceWorker' in navigator && !IS_DEVELOPMENT) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/sw.js')
+          .then(registration => {
+            if (IS_DEVELOPMENT) {
+              console.info('Service Worker registered successfully:', registration.scope);
+            }
+          })
+          .catch(error => {
+            if (IS_DEVELOPMENT) {
+              console.error('Service Worker registration failed:', error);
+            }
+          });
+      });
+    }
+  }
+
+  /**
    * Toggle mobile navigation menu
    */
   private toggleMobileMenu(): void {
@@ -844,9 +980,20 @@ class LOFERSILLandingPage {
   }
 
   /**
-   * Submit contact form via API
+   * Submit contact form via API with validation
    */
   private async submitContact(request: ContactRequest): Promise<ApiResponse<{ id: string }>> {
+    // Validate form data before submission
+    const validation = validateContactForm(request);
+    if (!validation.isValid) {
+      return {
+        success: false,
+        data: { id: '' },
+        error: `Validation failed: ${Object.values(validation.errors).join(', ')}`,
+        timestamp: new Date().toISOString(),
+      };
+    }
+
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -862,7 +1009,7 @@ class LOFERSILLandingPage {
 
       return await response.json();
     } catch (error) {
-      console.error('Error submitting contact:', error);
+      if (IS_DEVELOPMENT) console.error('Error submitting contact:', error);
       return {
         success: false,
         data: { id: '' },
@@ -901,7 +1048,7 @@ class LOFERSILLandingPage {
    */
   public getWebVitalsMetrics(): void {
     // Placeholder for web vitals metrics
-    console.log('Web vitals metrics not implemented');
+    if (IS_DEVELOPMENT) console.log('Web vitals metrics not implemented');
   }
 
   /**
@@ -997,7 +1144,7 @@ class LOFERSILLandingPage {
       metrics.loadTime = timing.loadEventEnd - timing.navigationStart;
       metrics.domContentLoaded = timing.domContentLoadedEventEnd - timing.navigationStart;
 
-      console.info('Performance Metrics:', metrics);
+      if (IS_DEVELOPMENT) console.info('Performance Metrics:', metrics);
     }
   }
 
@@ -1007,37 +1154,37 @@ class LOFERSILLandingPage {
   private trackCoreWebVitals(): void {
     // Track Core Web Vitals using web-vitals library
     onCLS(metric => {
-      console.info('CLS:', metric.value);
+      if (IS_DEVELOPMENT) console.info('CLS:', metric.value);
       this.sendToAnalytics('CLS', metric.value);
     });
 
     onFCP(metric => {
-      console.info('FCP:', metric.value);
+      if (IS_DEVELOPMENT) console.info('FCP:', metric.value);
       this.sendToAnalytics('FCP', metric.value);
     });
 
     onINP(metric => {
-      console.info('INP:', metric.value);
+      if (IS_DEVELOPMENT) console.info('INP:', metric.value);
       this.sendToAnalytics('INP', metric.value);
     });
 
     onLCP(metric => {
-      console.info('LCP:', metric.value);
+      if (IS_DEVELOPMENT) console.info('LCP:', metric.value);
       this.sendToAnalytics('LCP', metric.value);
     });
 
     onTTFB(metric => {
-      console.info('TTFB:', metric.value);
+      if (IS_DEVELOPMENT) console.info('TTFB:', metric.value);
       this.sendToAnalytics('TTFB', metric.value);
     });
 
     // Log all metrics after a delay to ensure collection
     setTimeout(() => {
       this.getWebVitalsMetrics();
-      console.info('All Web Vitals Metrics collected');
+      if (IS_DEVELOPMENT) console.info('All Web Vitals Metrics collected');
     }, 5000);
 
-    console.info('Core Web Vitals tracking initialized');
+    if (IS_DEVELOPMENT) console.info('Core Web Vitals tracking initialized');
   }
 
   /**
@@ -1051,11 +1198,11 @@ class LOFERSILLandingPage {
     localStorage.setItem('webVitals', JSON.stringify(metricsData));
 
     // Log to console for debugging
-    console.info(`Web Vital ${metricName}:`, value);
+    if (IS_DEVELOPMENT) console.info(`Web Vital ${metricName}:`, value);
 
     // Example: Send to Google Analytics or other service
-    if (typeof (window as any).gtag !== 'undefined') {
-      (window as any).gtag('event', 'web_vitals', {
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'web_vitals', {
         event_category: 'Web Vitals',
         event_label: metricName,
         value: Math.round(value * 1000), // Convert to milliseconds for GA
@@ -1093,9 +1240,9 @@ const utils = {
    * Debounce function for performance optimization
    */
   // eslint-disable-next-line no-unused-vars
-  debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
+  debounce<T extends (...args: unknown[]) => unknown>(func: T, wait: number): T {
     let timeout: ReturnType<typeof setTimeout>;
-    return ((...args: any[]) => {
+    return ((...args: Parameters<T>) => {
       clearTimeout(timeout);
       timeout = setTimeout(() => func(...args), wait);
     }) as T;
@@ -1105,9 +1252,9 @@ const utils = {
    * Throttle function for scroll events
    */
   // eslint-disable-next-line no-unused-vars
-  throttle<T extends (...args: any[]) => any>(func: T, limit: number): T {
+  throttle<T extends (...args: unknown[]) => unknown>(func: T, limit: number): T {
     let inThrottle: boolean;
-    return ((...args: any[]) => {
+    return ((...args: Parameters<T>) => {
       if (!inThrottle) {
         func(...args);
         inThrottle = true;
@@ -1135,12 +1282,12 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     const app = new LOFERSILLandingPage();
     // Expose metrics globally for debugging
-    (window as any).getWebVitals = () => app.getWebVitalsMetrics();
+    window.getWebVitals = () => app.getWebVitalsMetrics();
   });
 } else {
   const app = new LOFERSILLandingPage();
   // Expose metrics globally for debugging
-  (window as any).getWebVitals = () => app.getWebVitalsMetrics();
+  window.getWebVitals = () => app.getWebVitalsMetrics();
 }
 
 // Export for potential module usage

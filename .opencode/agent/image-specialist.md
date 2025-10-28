@@ -1,7 +1,8 @@
 ---
-description: Specialized agent for image editing and analysis using Gemini AI tools
+
+description: "Specialized agent for image editing and analysis using Gemini AI tools"
 mode: primary
-model: code-supernova
+model: opencode/grok-code
 temperature: 0.3
 permission:
   edit: deny

@@ -2,7 +2,7 @@
 
 description: "Type check and build validation agent"
 mode: subagent
-model: big-pickle
+model: opencode/grok-code
 temperature: 0.1
 tools:
   bash: true

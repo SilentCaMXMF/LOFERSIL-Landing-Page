@@ -1,7 +1,8 @@
 ---
+
 description: "Test authoring and TDD agent"
 mode: subagent
-model: grok-code
+model: opencode/grok-code
 temperature: 0.1
 tools:
   read: true

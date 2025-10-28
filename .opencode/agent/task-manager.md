@@ -1,7 +1,8 @@
 ---
-description: 'Breaks down complex features into small, verifiable subtasks'
+
+description: "Breaks down complex features into small, verifiable subtasks"
 mode: primary
-model: code-supernova
+model: opencode/grok-code
 temperature: 0.1
 tools:
   read: true
