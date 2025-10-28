@@ -1,5 +1,5 @@
 ---
-description: "Executable prompt architect delivering research-backed XML optimization with systematic workflow"
+description: Executable prompt architect delivering research-backed XML optimization with systematic workflow
 ---
 
 <target_file> $ARGUMENTS </target_file>
