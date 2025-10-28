@@ -1,218 +1,262 @@
 # LOFERSIL Landing Page
 
-A modern, static landing page built with vanilla TypeScript, optimized for performance and SEO. Deployed on Vercel with AI-assisted development using OpenCode agents.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://github.com/your-username/lofersil-landing-page/workflows/CI/badge.svg)](https://github.com/your-username/lofersil-landing-page/actions)
+[![Vercel Deployment](https://vercel.com/button)](https://vercel.com)
 
-## 🚀 Features
+A modern, static landing page for LOFERSIL, built with TypeScript and optimized for performance. Features dual language support (Portuguese/English), image optimization, and PWA capabilities for an enhanced user experience.
 
-- **⚡ Fast & Modern**: Built with vanilla TypeScript for optimal performance
-- **📱 Responsive Design**: Mobile-first approach with modern CSS Grid and Flexbox
-- **🔍 SEO Optimized**: Semantic HTML, meta tags, structured data, and sitemap
-- **🤖 AI-Assisted Development**: Powered by OpenCode agents for rapid development
-- **🎨 Modern UI**: Clean, professional design with smooth animations
-- **🌐 Static Deployment**: Optimized for Vercel's global CDN
-- **♿ Accessible**: WCAG compliant with proper ARIA labels and keyboard navigation
+## Table of Contents
 
-## 🛠️ Tech Stack
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Scripts](#scripts)
+- [Configuration](#configuration)
+- [Development Workflow](#development-workflow)
+- [Internationalization](#internationalization)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
-- **Frontend**: Vanilla TypeScript, HTML5, CSS3
-- **Build Tools**: TypeScript Compiler, PostCSS, Terser
-- **Development**: ESLint, Prettier, Live Server
-- **Deployment**: Vercel (free tier)
-- **AI Development**: OpenCode Agents
-- **Performance**: Lighthouse CI, Image optimization
+## Features
 
-## 📦 Project Structure
+- 🌐 **Dual Language Support**: Seamless switching between Portuguese and English
+- 🖼️ **Image Optimization**: Automatic image compression and WebP conversion
+- 📱 **Progressive Web App (PWA)**: Offline capabilities and installable experience
+- ⚡ **Performance Optimized**: Fast loading with modern web technologies
+- 🎨 **Responsive Design**: Mobile-first approach with PostCSS styling
+- 🔍 **SEO Friendly**: Optimized for search engines with meta tags and structured data
+- 🛠️ **TypeScript**: Type-safe development with strict mode
+- 🧪 **Testing**: Unit tests with Vitest and performance audits with Lighthouse
+
+## Tech Stack
+
+- **Language**: TypeScript 5.0.0
+- **Build Tool**: Custom Node.js build script
+- **Styling**: PostCSS 8.4.0 with Autoprefixer and CSSNano
+- **Linting**: ESLint 9.0.0 with TypeScript support
+- **Formatting**: Prettier 3.0.0
+- **Testing**: Vitest 2.1.9
+- **Image Processing**: Sharp 0.33.0
+- **Security**: DOMPurify 3.3.0
+- **Performance**: Web Vitals 5.1.0
+- **Deployment**: Vercel
+
+## Project Structure
 
 ```
 lofersil-landing-page/
-├── .opencode/          # OpenCode agent system
-├── .github/           # GitHub workflows
-├── src/               # Source files
-│   ├── scripts/       # TypeScript source
-│   ├── styles/        # CSS stylesheets
-│   └── components/    # Reusable components
-├── dist/              # Build output (generated)
-├── assets/            # Static assets (images, fonts)
-├── index.html         # Main HTML file
-├── package.json       # Dependencies and scripts
-├── tsconfig.json      # TypeScript configuration
-├── vercel.json        # Vercel deployment config
-└── README.md          # This file
+├── .github/
+│   └── workflows/          # GitHub Actions CI/CD
+├── assets/
+│   └── images/             # Static images and assets
+├── src/
+│   ├── locales/            # Translation files (en.json, pt.json)
+│   ├── scripts/
+│   │   ├── modules/        # Core functionality modules
+│   │   └── *.ts            # Main scripts and service worker
+│   └── styles/             # PostCSS stylesheets
+├── tasks/                  # Development tasks and subtasks
+├── index.html              # Main HTML template
+├── package.json            # Dependencies and scripts
+├── tsconfig.json           # TypeScript configuration
+├── postcss.config.js       # PostCSS configuration
+├── eslint.config.js        # ESLint configuration
+├── vercel.json             # Vercel deployment config
+└── site.webmanifest        # PWA manifest
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- Git
+- Node.js (version 18 or higher)
+- npm (comes with Node.js)
 
 ### Installation
 
-1. **Clone the repository**
+1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/your-username/lofersil-landing-page.git
    cd lofersil-landing-page
    ```
 
-2. **Install dependencies**
+2. Install dependencies:
 
    ```bash
    npm install
    ```
 
-3. **Development**
+3. Build the project:
 
    ```bash
-   # Start development server with live reload
-   npm run dev
-
-   # View the site at http://localhost:3000
+   npm run build
    ```
 
-4. **Build for production**
+4. Start the development server:
 
    ```bash
-   # Create optimized production build
-   npm run build
-
-   # Preview production build
    npm start
    ```
 
-### Deployment
+5. Open your browser to `http://localhost:3000`
 
-**Deploy to Vercel (Recommended)**
+## Scripts
 
-```bash
-# Install Vercel CLI
-npm i -g vercel
+| Script                    | Description                                           |
+| ------------------------- | ----------------------------------------------------- |
+| `npm run build`           | Build the static site using the custom build script   |
+| `npm run build:dev`       | Compile TypeScript and process CSS for development    |
+| `npm run dev`             | Watch TypeScript files for changes during development |
+| `npm run start`           | Serve the built site locally on port 3000             |
+| `npm run test`            | Run tests in watch mode with Vitest                   |
+| `npm run test:run`        | Run tests once and exit                               |
+| `npm run lint`            | Lint TypeScript files with ESLint                     |
+| `npm run format`          | Format code with Prettier                             |
+| `npm run optimize-images` | Optimize images in assets/images/                     |
+| `npm run lighthouse`      | Run Lighthouse performance audit on localhost:3000    |
+| `npm run vercel-deploy`   | Deploy to Vercel using the custom script              |
+| `npm run deploy:preview`  | Deploy a preview build to Vercel                      |
+| `npm run deploy:prod`     | Deploy to production on Vercel                        |
 
-# Deploy
-vercel
+## Configuration
 
-# Or use the script
-npm run vercel-deploy
-```
+### TypeScript
 
-**Manual Deployment**
+Configured in `tsconfig.json` with:
 
-```bash
-# Build the project
-npm run build
+- Target: ES2020
+- Strict mode enabled
+- Module resolution: Node
+- Source maps for debugging
 
-# Upload the dist/ folder to your hosting provider
-```
+### PostCSS
 
-## 🎯 Available Scripts
+Configured in `postcss.config.js` with:
 
-- `npm run dev` - Start development server with TypeScript watching
-- `npm run build` - Create production build with minification
-- `npm run start` - Preview production build locally
-- `npm run lint` - Run ESLint on TypeScript files
-- `npm run format` - Format code with Prettier
-- `npm run lighthouse` - Run Lighthouse performance audit
+- Autoprefixer for browser compatibility
+- CSSNano for production minification
 
-## 🤖 OpenCode Integration
+### ESLint
 
-This project uses OpenCode agents for AI-assisted development. The `.opencode/` directory contains:
+Configured in `eslint.config.js` with:
 
-- **Agents**: Specialized AI workers for different tasks
-- **Commands**: Slash commands for common operations
-- **Context**: Knowledge base for consistent patterns
-- **Plugins**: Extensions and integrations
+- TypeScript support
+- Custom rules for code quality
+- Integration with Prettier
 
-### Using OpenCode Commands
+## Development Workflow
 
-```bash
-# Create hero section component
-/create-hero-section "Premium products showcase"
+1. **Code Changes**: Edit files in `src/`
+2. **Linting**: Run `npm run lint` to check code quality
+3. **Formatting**: Run `npm run format` to auto-format code
+4. **Testing**: Run `npm run test` for unit tests
+5. **Build**: Run `npm run build` to generate production assets
+6. **Performance Audit**: Run `npm run lighthouse` for performance checks
 
-# Optimize for SEO
-/optimize-seo
+### Code Style Guidelines
 
-# Deploy to production
-/deploy-landing
-```
+- **Imports**: ES6 imports, external libraries first, then internal modules
+- **Formatting**: Single quotes, semicolons, trailing commas, 100 char width, 2-space indentation
+- **Types**: Explicit types, avoid `any`
+- **Naming**: camelCase for variables/functions, PascalCase for classes
+- **Error Handling**: Try-catch blocks with custom errors
+- **Console**: Allowed for debugging (warn level), no unused variables
 
-## 🎨 Customization
+## Internationalization
 
-### Styling
+The site supports dual language functionality with JSON-based translations:
 
-- Main styles: `src/styles/main.css`
-- CSS variables for easy theming
-- Responsive design with mobile-first approach
+- **Portuguese**: `src/locales/pt.json`
+- **English**: `src/locales/en.json`
 
-### Content
+Language switching is handled by the `LanguageManager.ts` module, providing a seamless user experience.
 
-- Update text and images in `index.html`
-- Modify TypeScript functionality in `src/scripts/`
-- Add new sections following the existing patterns
+## Deployment
 
-### SEO
+### Vercel (Recommended)
 
-- Update meta tags in `index.html`
-- Modify sitemap generation in `build.js`
-- Add structured data for better search visibility
+1. Install Vercel CLI:
 
-## 🔧 Configuration
+   ```bash
+   npm i -g vercel
+   ```
 
-### Environment Variables
+2. Deploy preview:
 
-Copy `env.example` to `.env` and configure:
+   ```bash
+   npm run deploy:preview
+   ```
 
-```bash
-# Development
-NODE_ENV=development
+3. Deploy to production:
+   ```bash
+   npm run deploy:prod
+   ```
 
-# Production (set by Vercel automatically)
-NODE_ENV=production
-```
+### Alternative Deployment
 
-### Build Configuration
+The site can be deployed to any static hosting service:
 
-- TypeScript: `tsconfig.json`
-- PostCSS: `postcss.config.js`
-- Vercel: `vercel.json`
+1. Build the site: `npm run build`
+2. Upload the `dist/` folder to your hosting provider
+3. Configure redirects if necessary (see `vercel.json`)
 
-## 📊 Performance
+## Contributing
 
-The landing page is optimized for:
-
-- **Fast loading**: Minified CSS/JS, optimized images
-- **Core Web Vitals**: LCP, FID, CLS optimization
-- **SEO**: Semantic HTML, meta tags, structured data
-- **Accessibility**: WCAG 2.1 AA compliance
-
-Run `npm run lighthouse` to audit performance.
-
-## 🌐 Browser Support
-
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-
-## 📝 License
-
-MIT License - see LICENSE file for details.
-
-## 🤝 Contributing
+We welcome contributions! Please follow these guidelines:
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make your changes following the code style guidelines
+4. Run tests: `npm run test:run`
+5. Lint and format: `npm run lint && npm run format`
+6. Commit your changes: `git commit -m 'Add your feature'`
+7. Push to the branch: `git push origin feature/your-feature`
+8. Open a Pull Request
 
-## 📞 Support
+### Code Standards
 
-For support and questions:
+- Follow the established code style (see Development Workflow)
+- Write tests for new features
+- Update documentation as needed
+- Ensure all tests pass before submitting
 
-- Create an issue on GitHub
-- Contact the development team
+## Troubleshooting
 
----
+### Common Issues
 
-Built with ❤️ using vanilla TypeScript and OpenCode agents.
+**Build fails with TypeScript errors**
+
+- Ensure all dependencies are installed: `npm install`
+- Check TypeScript configuration in `tsconfig.json`
+
+**Images not optimizing**
+
+- Verify Sharp is installed: `npm list sharp`
+- Check image formats (supports JPEG, PNG, WebP)
+
+**PWA not working**
+
+- Ensure `site.webmanifest` and `sw.js` are in the root
+- Check browser console for service worker errors
+
+**Language switching not working**
+
+- Verify `src/locales/` contains valid JSON files
+- Check `LanguageManager.ts` for errors
+
+**Performance issues**
+
+- Run `npm run lighthouse` for detailed audit
+- Optimize images with `npm run optimize-images`
+- Minimize unused CSS/JS in build process
+
+For more help, check the [Issues](https://github.com/your-username/lofersil-landing-page/issues) page or create a new issue.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
