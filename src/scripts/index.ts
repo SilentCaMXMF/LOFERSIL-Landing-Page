@@ -9,7 +9,6 @@ import { validateContactForm } from './validation';
 // Import modules
 import { ErrorHandler } from './modules/ErrorHandler';
 import { NavigationManager } from './modules/NavigationManager';
-import { LanguageManager } from './modules/LanguageManager';
 import { SEOManager } from './modules/SEOManager';
 import { PerformanceTracker } from './modules/PerformanceTracker';
 import { UIManager } from './modules/UIManager';
@@ -50,12 +49,6 @@ interface Route {
   content: string;
 }
 
-interface LanguageConfig {
-  code: string;
-  name: string;
-  flag: string;
-}
-
 // Configuration
 const navigationConfig: NavigationConfig = {
   mobileBreakpoint: 768,
@@ -69,9 +62,9 @@ const uiConfig = {
 
 const seoConfig = {
   siteName: 'LOFERSIL',
-  defaultTitle: 'LOFERSIL - Premium Products & Services',
+  defaultTitle: 'LOFERSIL - Produtos e Serviços Premium',
   defaultDescription:
-    "Discover LOFERSIL's premium collection of products and services. Quality and excellence in everything we do.",
+    'LOFERSIL - Produtos e serviços premium. Descubra a nossa coleção e encontre o que procura.',
   siteUrl: window.location.origin,
 };
 
@@ -81,30 +74,25 @@ const performanceConfig = {
   analyticsId: 'GA_MEASUREMENT_ID', // Replace with actual GA ID
 };
 
-const languages: LanguageConfig[] = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
-];
-
 // Routes configuration
 const routes: Record<string, Route> = {
   '/': {
-    title: 'LOFERSIL - Premium Products & Services',
+    title: 'LOFERSIL - Produtos e Serviços Premium',
     description:
-      "Discover LOFERSIL's premium collection of products and services. Quality and excellence in everything we do.",
+      'LOFERSIL - Produtos e serviços premium. Descubra a nossa coleção e encontre o que procura.',
     content: `
       <section id="hero" class="hero">
         <div class="hero-container">
           <div class="hero-content">
-            <h1 class="hero-title" data-i18n="hero.title">Welcome to LOFERSIL</h1>
-            <p class="hero-subtitle" data-i18n="hero.subtitle">Premium Products & Services</p>
-            <p class="hero-description" data-i18n="hero.description">
-              Discover our curated collection of high-quality products and exceptional services.
-              Experience excellence in everything we offer.
+            <h1 class="hero-title">Bem-vindo à LOFERSIL</h1>
+            <p class="hero-subtitle">Produtos e Serviços Premium</p>
+            <p class="hero-description">
+              Descubra a nossa coleção selecionada de produtos de alta qualidade e serviços
+              excecionais. Experimente a excelência em tudo o que oferecemos.
             </p>
             <div class="hero-actions">
-              <a href="/products" class="btn btn-primary" data-i18n="hero.exploreProducts">Explore Products</a>
-              <a href="/services" class="btn btn-secondary" data-i18n="hero.ourServices">Our Services</a>
+              <a href="/products" class="btn btn-primary">Explorar Produtos</a>
+              <a href="/services" class="btn btn-secondary">Nossos Serviços</a>
             </div>
           </div>
           <div class="hero-image">
@@ -116,24 +104,24 @@ const routes: Record<string, Route> = {
       <section id="features" class="features">
         <div class="features-container">
           <div class="section-header">
-            <h2 class="section-title" data-i18n="features.title">Why Choose LOFERSIL?</h2>
-             <p class="section-subtitle" data-i18n="features.subtitle"></p>
+            <h2 class="section-title">Porquê Escolher LOFERSIL?</h2>
+             <p class="section-subtitle">Qualidade, fiabilidade e excelência em todos os aspetos</p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">⭐</div>
-              <h3 class="feature-title" data-i18n="features.premiumQuality.title">Premium Quality</h3>
-               <p class="feature-description" data-i18n="features.premiumQuality.description"></p>
+              <h3 class="feature-title">Qualidade Premium</h3>
+               <p class="feature-description">Apenas os melhores produtos e serviços fazem parte da nossa coleção.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🚀</div>
-              <h3 class="feature-title" data-i18n="features.fastReliable.title">Fast & Reliable</h3>
-               <p class="feature-description" data-i18n="features.fastReliable.description"></p>
+              <h3 class="feature-title">Rápido e Fiável</h3>
+               <p class="feature-description">Entrega rápida e serviço confiável em que pode contar.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">💎</div>
-              <h3 class="feature-title" data-i18n="features.exceptionalSupport.title">Exceptional Support</h3>
-               <p class="feature-description" data-i18n="features.exceptionalSupport.description"></p>
+              <h3 class="feature-title">Suporte Excecional</h3>
+               <p class="feature-description">A nossa equipa está aqui para ajudar em todos os passos.</p>
             </div>
           </div>
         </div>
@@ -142,28 +130,28 @@ const routes: Record<string, Route> = {
       <section id="cta" class="cta">
         <div class="cta-container">
           <div class="cta-content">
-            <h2 class="cta-title" data-i18n="cta.title">Ready to Get Started?</h2>
-            <p class="cta-description" data-i18n="cta.description">
-              Visit our store to explore our complete collection of premium products and services.
+            <h2 class="cta-title">Pronto para Começar?</h2>
+            <p class="cta-description">
+              Visite nossa loja para explorar nossa coleção completa de produtos e serviços premium.
             </p>
-            <a href="/store" class="btn btn-primary btn-large" data-i18n="cta.button">Visit Our Store</a>
+            <a href="/store" class="btn btn-primary btn-large">Visitar Nossa Loja</a>
           </div>
         </div>
       </section>
     `,
   },
   '/products': {
-    title: 'Products - LOFERSIL',
+    title: 'Produtos - LOFERSIL',
     description:
-      'Explore our premium product collection. High-quality items curated for discerning customers.',
+      'Explore nossa coleção premium de produtos. Artigos de alta qualidade selecionados para clientes exigentes.',
     content: `
       <section class="hero">
         <div class="hero-container">
           <div class="hero-content">
-            <h1 class="hero-title" data-i18n="routes./products.heroTitle">Our Products</h1>
-            <p class="hero-subtitle" data-i18n="routes./products.heroSubtitle">Premium Collection</p>
-            <p class="hero-description" data-i18n="routes./products.heroDescription">
-              Discover our carefully curated selection of high-quality products designed to meet your needs.
+            <h1 class="hero-title">Nossos Produtos</h1>
+            <p class="hero-subtitle">Coleção Premium</p>
+            <p class="hero-description">
+              Descubra nossa seleção cuidadosa de produtos de alta qualidade desenhados para satisfazer suas necessidades.
             </p>
           </div>
         </div>
@@ -172,29 +160,29 @@ const routes: Record<string, Route> = {
       <section class="features">
         <div class="features-container">
           <div class="section-header">
-            <h2 class="section-title" data-i18n="routes./products.sectionTitle">Product Categories</h2>
-             <p class="section-subtitle" data-i18n="routes./products.sectionSubtitle"></p>
+            <h2 class="section-title">Categorias de Produtos</h2>
+             <p class="section-subtitle">Encontre exatamente o que procura</p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">📱</div>
-              <h3 class="feature-title" data-i18n="routes./products.electronics.title">Electronics</h3>
-               <p class="feature-description" data-i18n="routes./products.electronics.description"></p>
+              <h3 class="feature-title">Eletrónicos</h3>
+               <p class="feature-description">Última tecnologia e dispositivos para a vida moderna.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">👕</div>
-              <h3 class="feature-title" data-i18n="routes./products.fashion.title">Fashion</h3>
-               <p class="feature-description" data-i18n="routes./products.fashion.description"></p>
+              <h3 class="feature-title">Moda</h3>
+               <p class="feature-description">Roupa elegante e confortável para todas as ocasiões.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🏠</div>
-              <h3 class="feature-title" data-i18n="routes./products.homeGarden.title">Home & Garden</h3>
-               <p class="feature-description" data-i18n="routes./products.homeGarden.description"></p>
+              <h3 class="feature-title">Casa e Jardim</h3>
+               <p class="feature-description">Tudo o que precisa para tornar seu espaço bonito.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🎮</div>
-              <h3 class="feature-title" data-i18n="routes./products.entertainment.title">Entertainment</h3>
-               <p class="feature-description" data-i18n="routes./products.entertainment.description"></p>
+              <h3 class="feature-title">Entretenimento</h3>
+               <p class="feature-description">Produtos divertidos e envolventes para o tempo livre.</p>
             </div>
           </div>
         </div>
@@ -202,17 +190,17 @@ const routes: Record<string, Route> = {
     `,
   },
   '/services': {
-    title: 'Services - LOFERSIL',
+    title: 'Serviços - LOFERSIL',
     description:
-      'Professional services tailored to your needs. Expert solutions for businesses and individuals.',
+      'Serviços profissionais adaptados às suas necessidades. Soluções especializadas para empresas e indivíduos.',
     content: `
       <section class="hero">
         <div class="hero-container">
           <div class="hero-content">
-            <h1 class="hero-title" data-i18n="routes./services.heroTitle">Our Services</h1>
-            <p class="hero-subtitle" data-i18n="routes./services.heroSubtitle">Expert Solutions</p>
-            <p class="hero-description" data-i18n="routes./services.heroDescription">
-              Professional services designed to help you achieve your goals with excellence.
+            <h1 class="hero-title">Nossos Serviços</h1>
+            <p class="hero-subtitle">Soluções Especializadas</p>
+            <p class="hero-description">
+              Serviços profissionais desenhados para ajudar a alcançar seus objetivos com excelência.
             </p>
           </div>
         </div>
@@ -221,29 +209,29 @@ const routes: Record<string, Route> = {
       <section class="features">
         <div class="features-container">
           <div class="section-header">
-            <h2 class="section-title" data-i18n="routes./services.sectionTitle">Service Areas</h2>
-             <p class="section-subtitle" data-i18n="routes./services.sectionSubtitle"></p>
+            <h2 class="section-title">Áreas de Serviço</h2>
+             <p class="section-subtitle">Soluções abrangentes para suas necessidades</p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">💼</div>
-              <h3 class="feature-title" data-i18n="routes./services.consulting.title">Consulting</h3>
-               <p class="feature-description" data-i18n="routes./services.consulting.description"></p>
+              <h3 class="feature-title">Consultoria</h3>
+               <p class="feature-description">Aconselhamento especializado e serviços de planejamento estratégico.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🔧</div>
-              <h3 class="feature-title" data-i18n="routes./services.technicalSupport.title">Technical Support</h3>
-               <p class="feature-description" data-i18n="routes./services.technicalSupport.description"></p>
+              <h3 class="feature-title">Suporte Técnico</h3>
+               <p class="feature-description">Assistência técnica fiável e manutenção.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">📊</div>
-              <h3 class="feature-title" data-i18n="routes./services.analytics.title">Analytics</h3>
-               <p class="feature-description" data-i18n="routes./services.analytics.description"></p>
+              <h3 class="feature-title">Análise</h3>
+               <p class="feature-description">Informações baseadas em dados para otimizar seu desempenho.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🎨</div>
-              <h3 class="feature-title" data-i18n="routes./services.design.title">Design</h3>
-               <p class="feature-description" data-i18n="routes./services.design.description"></p>
+              <h3 class="feature-title">Design</h3>
+               <p class="feature-description">Soluções de design criativo para seus projetos.</p>
             </div>
           </div>
         </div>
@@ -251,17 +239,17 @@ const routes: Record<string, Route> = {
     `,
   },
   '/about': {
-    title: 'About Us - LOFERSIL',
+    title: 'Sobre Nós - LOFERSIL',
     description:
-      "Learn about LOFERSIL's mission, values, and commitment to quality. Discover our story.",
+      'Conheça a missão, valores e compromisso com a qualidade da LOFERSIL. Descubra nossa história.',
     content: `
       <section class="hero">
         <div class="hero-container">
           <div class="hero-content">
-            <h1 class="hero-title" data-i18n="routes./about.heroTitle">About LOFERSIL</h1>
-            <p class="hero-subtitle" data-i18n="routes./about.heroSubtitle">Our Story</p>
-            <p class="hero-description" data-i18n="routes./about.heroDescription">
-              Founded with a passion for quality and excellence, LOFERSIL is committed to providing premium products and services.
+            <h1 class="hero-title">Sobre a LOFERSIL</h1>
+            <p class="hero-subtitle">Nossa História</p>
+            <p class="hero-description">
+              Fundada com paixão pela qualidade e excelência, a LOFERSIL está comprometida em fornecer produtos e serviços premium.
             </p>
           </div>
         </div>
@@ -270,24 +258,24 @@ const routes: Record<string, Route> = {
       <section class="features">
         <div class="features-container">
           <div class="section-header">
-            <h2 class="section-title" data-i18n="routes./about.sectionTitle">Our Mission</h2>
-             <p class="section-subtitle" data-i18n="routes./about.sectionSubtitle"></p>
+            <h2 class="section-title">Nossa Missão</h2>
+             <p class="section-subtitle">Entregar excelência em tudo o que fazemos</p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">🎯</div>
-              <h3 class="feature-title" data-i18n="routes./about.qualityFirst.title">Quality First</h3>
-               <p class="feature-description" data-i18n="routes./about.qualityFirst.description"></p>
+              <h3 class="feature-title">Qualidade Primeiro</h3>
+               <p class="feature-description">Priorizamos a qualidade em todos os produtos e serviços que oferecemos.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🤝</div>
-              <h3 class="feature-title" data-i18n="routes./about.customerFocus.title">Customer Focus</h3>
-               <p class="feature-description" data-i18n="routes./about.customerFocus.description"></p>
+              <h3 class="feature-title">Foco no Cliente</h3>
+               <p class="feature-description">Sua satisfação é nossa prioridade máxima.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🌟</div>
-              <h3 class="feature-title" data-i18n="routes./about.innovation.title">Innovation</h3>
-               <p class="feature-description" data-i18n="routes./about.innovation.description"></p>
+              <h3 class="feature-title">Inovação</h3>
+               <p class="feature-description">Melhorando continuamente e adaptando-nos para satisfazer suas necessidades.</p>
             </div>
           </div>
         </div>
@@ -295,17 +283,17 @@ const routes: Record<string, Route> = {
     `,
   },
   '/contact': {
-    title: 'Contact Us - LOFERSIL',
+    title: 'Contacte-nos - LOFERSIL',
     description:
-      "Get in touch with LOFERSIL. We're here to help with any questions or support you need.",
+      'Entre em contacto com a LOFERSIL. Estamos aqui para ajudar com quaisquer perguntas ou suporte de que necessite.',
     content: `
       <section class="hero">
         <div class="hero-container">
           <div class="hero-content">
-            <h1 class="hero-title" data-i18n="routes./contact.heroTitle">Contact Us</h1>
-            <p class="hero-subtitle" data-i18n="routes./contact.heroSubtitle">Get In Touch</p>
-            <p class="hero-description" data-i18n="routes./contact.heroDescription">
-              Have questions? Need support? We're here to help you every step of the way.
+            <h1 class="hero-title">Contacte-nos</h1>
+            <p class="hero-subtitle">Entre em Contacto</p>
+            <p class="hero-description">
+              Tem perguntas? Precisa de suporte? Estamos aqui para ajudar em todos os passos.
             </p>
           </div>
         </div>
@@ -314,24 +302,24 @@ const routes: Record<string, Route> = {
       <section class="features">
         <div class="features-container">
           <div class="section-header">
-            <h2 class="section-title" data-i18n="routes./contact.sectionTitle">Contact Information</h2>
-             <p class="section-subtitle" data-i18n="routes./contact.sectionSubtitle"></p>
+            <h2 class="section-title">Informações de Contacto</h2>
+             <p class="section-subtitle">Contacte-nos através de qualquer um destes canais</p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">📧</div>
-              <h3 class="feature-title" data-i18n="routes./contact.email.title">Email</h3>
-               <p class="feature-description" data-i18n="routes./contact.email.description"></p>
+              <h3 class="feature-title">Email</h3>
+               <p class="feature-description">info@lofersil.com</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">📞</div>
-              <h3 class="feature-title" data-i18n="routes./contact.phone.title">Phone</h3>
-               <p class="feature-description" data-i18n="routes./contact.phone.description"></p>
+              <h3 class="feature-title">Telefone</h3>
+               <p class="feature-description">+351 21 123 4567</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">📍</div>
-              <h3 class="feature-title" data-i18n="routes./contact.address.title">Address</h3>
-               <p class="feature-description" data-i18n="routes./contact.address.description"></p>
+              <h3 class="feature-title">Endereço</h3>
+               <p class="feature-description">R. Gomes Freire 187 B, 1150-178 Lisboa</p>
             </div>
           </div>
         </div>
@@ -339,19 +327,19 @@ const routes: Record<string, Route> = {
     `,
   },
   '/store': {
-    title: 'Store - LOFERSIL',
+    title: 'Loja - LOFERSIL',
     description:
-      'Visit our online store to browse and purchase our complete collection of premium products.',
+      'Visite nossa loja online para navegar e comprar nossa coleção completa de produtos premium.',
     content: `
       <section class="hero">
         <div class="hero-container">
           <div class="hero-content">
-            <h1 class="hero-title" data-i18n="routes./store.heroTitle">Our Store</h1>
-             <p class="hero-subtitle" data-i18n="routes./store.heroSubtitle"></p>
-             <p class="hero-description" data-i18n="routes./store.heroDescription"></p>
+            <h1 class="hero-title">Nossa Loja</h1>
+             <p class="hero-subtitle">Experiência de Compras Premium</p>
+             <p class="hero-description">Navegue pela nossa coleção completa de produtos premium. Artigos de qualidade a preços competitivos.</p>
             <div class="hero-actions">
-               <a href="/products" class="btn btn-primary" data-i18n="routes./store.browseProducts"></a>
-               <a href="/contact" class="btn btn-secondary" data-i18n="routes./store.contactSales"></a>
+               <a href="/products" class="btn btn-primary">Navegar Produtos</a>
+               <a href="/contact" class="btn btn-secondary">Contactar Vendas</a>
             </div>
           </div>
         </div>
@@ -360,29 +348,29 @@ const routes: Record<string, Route> = {
       <section class="features">
         <div class="features-container">
           <div class="section-header">
-            <h2 class="section-title" data-i18n="routes./store.sectionTitle">Store Features</h2>
-             <p class="section-subtitle" data-i18n="routes./store.sectionSubtitle"></p>
+            <h2 class="section-title">Características da Loja</h2>
+             <p class="section-subtitle">Porquê comprar connosco</p>
           </div>
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">🛒</div>
-              <h3 class="feature-title" data-i18n="routes./store.easyShopping.title">Easy Shopping</h3>
-               <p class="feature-description" data-i18n="routes./store.easyShopping.description"></p>
+              <h3 class="feature-title">Compras Fáceis</h3>
+               <p class="feature-description">Interface intuitiva para uma experiência de compras sem interrupções.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🚚</div>
-              <h3 class="feature-title" data-i18n="routes./store.fastShipping.title">Fast Shipping</h3>
-               <p class="feature-description" data-i18n="routes./store.fastShipping.description"></p>
+              <h3 class="feature-title">Entrega Rápida</h3>
+               <p class="feature-description">Entrega rápida e fiável à sua porta.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🔒</div>
-              <h3 class="feature-title" data-i18n="routes./store.securePayment.title">Secure Payment</h3>
-               <p class="feature-description" data-i18n="routes./store.securePayment.description"></p>
+              <h3 class="feature-title">Pagamento Seguro</h3>
+               <p class="feature-description">Processamento de pagamentos seguro e protegido.</p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">💯</div>
-              <h3 class="feature-title" data-i18n="routes./store.qualityGuarantee.title">Quality Guarantee</h3>
-               <p class="feature-description" data-i18n="routes./store.qualityGuarantee.description"></p>
+              <h3 class="feature-title">Garantia de Qualidade</h3>
+               <p class="feature-description">Garantia de satisfação de 100% em todas as compras.</p>
             </div>
           </div>
         </div>
@@ -397,7 +385,6 @@ const routes: Record<string, Route> = {
 class LOFERSILLandingPage {
   private errorHandler: ErrorHandler;
   private navigationManager: NavigationManager;
-  private languageManager: LanguageManager;
   private seoManager: SEOManager;
   private performanceTracker: PerformanceTracker;
   private uiManager: UIManager;
@@ -408,7 +395,6 @@ class LOFERSILLandingPage {
 
     // Initialize other modules
     this.navigationManager = new NavigationManager(navigationConfig, routes, this.errorHandler);
-    this.languageManager = new LanguageManager(languages, this.errorHandler);
     this.seoManager = new SEOManager(seoConfig, this.errorHandler);
     this.performanceTracker = new PerformanceTracker(performanceConfig, this.errorHandler);
     this.uiManager = new UIManager(uiConfig, this.errorHandler);
@@ -446,17 +432,11 @@ class LOFERSILLandingPage {
    * Setup cross-module event coordination
    */
   private setupCrossModuleEvents(): void {
-    // When page is rendered, update SEO and apply translations
+    // When page is rendered, update SEO
     window.addEventListener('pageRendered', (event: any) => {
       const { path, route } = event.detail;
       this.seoManager.updateMetaTags(route.title, route.description);
-      this.languageManager.applyTranslations();
       this.performanceTracker.trackPageView(path);
-    });
-
-    // When language changes, re-apply translations
-    window.addEventListener('languageChanged', () => {
-      this.languageManager.applyTranslations();
     });
   }
 
@@ -465,13 +445,6 @@ class LOFERSILLandingPage {
    */
   public getWebVitalsMetrics(): any {
     return this.performanceTracker.getWebVitalsMetrics();
-  }
-
-  /**
-   * Get current language
-   */
-  public getCurrentLanguage(): string {
-    return this.languageManager.getCurrentLanguage();
   }
 
   /**

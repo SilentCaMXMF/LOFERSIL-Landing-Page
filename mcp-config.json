@@ -1,0 +1,53 @@
+{
+  // Main MCP configuration object containing server definitions
+  "mcp": {
+    // Context7 remote server configuration for production use
+    "context7": {
+      // Type of server connection (remote or local)
+      "type": "remote",
+      // URL for the MCP server endpoint
+      "url": "https://mcp.context7.com/mcp",
+      // Headers to include in HTTP requests
+      "headers": {
+        // API key from environment variable (replace with actual key)
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}",
+        // Content type for JSON payloads
+        "Content-Type": "application/json"
+      },
+      // Whether this server configuration is enabled
+      "enabled": true,
+      // Timeout in milliseconds for server requests
+      "timeout": 30000,
+      // Retry configuration for failed requests
+      "retry": {
+        // Maximum number of retry attempts
+        "maxAttempts": 5,
+        // Interval between retries in milliseconds
+        "interval": 5000
+      }
+    },
+    // Local development server configuration (disabled by default)
+    "local-dev": {
+      // Type of server connection
+      "type": "remote",
+      // WebSocket URL for local development server
+      "url": "ws://localhost:3000",
+      // Headers for local authentication
+      "headers": {
+        // Bearer token from environment variable
+        "Authorization": "Bearer ${LOCAL_DEV_KEY}"
+      },
+      // Disabled by default for production
+      "enabled": false,
+      // Shorter timeout for development
+      "timeout": 10000,
+      // Different retry settings for local dev
+      "retry": {
+        // Fewer retry attempts for faster feedback
+        "maxAttempts": 3,
+        // Shorter interval between retries
+        "interval": 2000
+      }
+    }
+  }
+}
