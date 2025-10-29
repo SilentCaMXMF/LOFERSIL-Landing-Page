@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Unit tests for LOFERSIL Landing Page main application logic
  */
@@ -325,7 +326,6 @@ describe('LOFERSILLandingPage', () => {
   describe('SEO and Meta Tags', () => {
     it('should update meta tags correctly', () => {
       const title = 'Products - LOFERSIL';
-      const description = 'Explore our premium product collection';
 
       // Simulate meta tag updates
       document.title = title;

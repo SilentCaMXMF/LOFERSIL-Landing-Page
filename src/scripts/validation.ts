@@ -128,14 +128,14 @@ export function validatePhone(phone: string): ValidationResult {
 
   // Flexible phone regex that accepts various formats
   // Allows digits, spaces, hyphens, parentheses, plus signs
-  const phoneRegex = /^[\+]?[\d\s\-\(\)]+$/;
+  const phoneRegex = /^[+]?[\d\s\-()]+$/;
 
   if (!phoneRegex.test(trimmedPhone)) {
     return { isValid: false, error: VALIDATION_MESSAGES.phone.invalid };
   }
 
   // Check for minimum reasonable length (after removing formatting)
-  const digitsOnly = trimmedPhone.replace(/[\s\-\(\)\+]/g, '');
+  const digitsOnly = trimmedPhone.replace(/[\s\-()+]/g, '');
   if (digitsOnly.length < 7) {
     return { isValid: false, error: VALIDATION_MESSAGES.phone.invalid };
   }

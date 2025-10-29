@@ -2,7 +2,7 @@
 
 description: "Specialized agent for image editing and analysis using Gemini AI tools"
 mode: primary
-model: GitHub Models/deepseek/deepseek-v3-0324
+model: openai/gpt-4.1
 temperature: 0.3
 permission:
   edit: deny

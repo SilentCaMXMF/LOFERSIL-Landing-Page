@@ -449,7 +449,7 @@ export const analyze = tool({
     image: tool.schema.string().describe('File path or data URL of image to analyze'),
     question: tool.schema.string().describe('What to analyze about the image'),
   },
-  async execute(args: { image: string; question: string }, context: ToolContext) {
+  async execute(args: { image: string, question: string }, context: ToolContext) {
     try {
       return await analyzeImage(args.image, args.question);
     } catch (error) {

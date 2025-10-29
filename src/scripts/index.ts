@@ -4,7 +4,6 @@
  */
 
 // DOMPurify is loaded globally from CDN
-import { validateContactForm } from './validation';
 
 // Import modules
 import { ErrorHandler } from './modules/ErrorHandler';
@@ -375,7 +374,133 @@ const routes: Record<string, Route> = {
           </div>
         </div>
       </section>
-    `,
+     `,
+  },
+  '/privacy': {
+    title: 'Política de Privacidade - LOFERSIL',
+    description:
+      'Política de Privacidade da LOFERSIL - Saiba como protegemos seus dados pessoais e informações.',
+    content: `
+       <section class="hero">
+         <div class="hero-container">
+           <div class="hero-content">
+             <h1 class="hero-title">Política de Privacidade</h1>
+             <p class="hero-subtitle">Compromisso com a sua privacidade</p>
+             <p class="hero-description">
+               Na LOFERSIL, valorizamos a sua privacidade e estamos comprometidos em proteger
+               as suas informações pessoais. Esta política explica como recolhemos, utilizamos
+               e protegemos os seus dados.
+             </p>
+           </div>
+         </div>
+       </section>
+
+       <section class="privacy-policy">
+         <div class="container">
+           <div class="privacy-content">
+             <div class="privacy-section">
+               <h2 class="privacy-title">1. Introdução</h2>
+               <p class="privacy-text">
+                 A presente Política de Privacidade regula a recolha, tratamento e proteção
+                 dos dados pessoais dos utilizadores do website da LOFERSIL (www.lofersil.pt).
+                 Ao utilizar o nosso website, concorda com as práticas descritas nesta política.
+               </p>
+             </div>
+
+             <div class="privacy-section">
+               <h2 class="privacy-title">2. Dados que Recolhemos</h2>
+               <p class="privacy-text">
+                 Atualmente, o nosso website não inclui formulários de contacto ou registo.
+                 Recolhemos apenas informações técnicas básicas através de cookies para melhorar
+                 a sua experiência de navegação.
+               </p>
+             </div>
+
+             <div class="privacy-section">
+               <h2 class="privacy-title">3. Cookies</h2>
+               <p class="privacy-text">
+                 Utilizamos cookies técnicos para o funcionamento básico do website e cookies
+                 de analytics para analisar o tráfego. Pode gerir as suas preferências de cookies
+                 através das definições do seu navegador.
+               </p>
+             </div>
+
+             <div class="privacy-section">
+               <h2 class="privacy-title">4. Contacto</h2>
+               <p class="privacy-text">
+                 Para questões sobre privacidade, contacte-nos através de info@lofersil.pt
+                 ou visite a nossa loja em Rua Gomes Freire 187 B, Lisboa.
+               </p>
+             </div>
+           </div>
+         </div>
+       </section>
+     `,
+  },
+  '/terms': {
+    title: 'Termos de Serviço - LOFERSIL',
+    description: 'Termos de Serviço da LOFERSIL - Condições de utilização do website e serviços.',
+    content: `
+       <section class="hero">
+         <div class="hero-container">
+           <div class="hero-content">
+             <h1 class="hero-title">Termos de Serviço</h1>
+             <p class="hero-subtitle">Condições de utilização</p>
+             <p class="hero-description">
+               Estes termos regulam a utilização do website da LOFERSIL e os serviços
+               oferecidos. Ao utilizar o nosso website, concorda com estes termos.
+             </p>
+           </div>
+         </div>
+       </section>
+
+       <section class="privacy-policy">
+         <div class="container">
+           <div class="privacy-content">
+             <div class="privacy-section">
+               <h2 class="privacy-title">1. Aceitação dos Termos</h2>
+               <p class="privacy-text">
+                 Ao aceder e utilizar o website da LOFERSIL, concorda em cumprir estes
+                 Termos de Serviço.
+               </p>
+             </div>
+
+             <div class="privacy-section">
+               <h2 class="privacy-title">2. Descrição do Serviço</h2>
+               <p class="privacy-text">
+                 A LOFERSIL oferece uma landing page informativa sobre os nossos produtos
+                 e serviços. Somos uma loja física especializada em artigos de papelaria,
+                 produtos para bebés, joias e material de escritório.
+               </p>
+             </div>
+
+             <div class="privacy-section">
+               <h2 class="privacy-title">3. Utilização do Website</h2>
+               <p class="privacy-text">
+                 Pode utilizar o nosso website para obter informações sobre produtos e serviços,
+                 contactar-nos e visitar a nossa loja física.
+               </p>
+             </div>
+
+             <div class="privacy-section">
+               <h2 class="privacy-title">4. Propriedade Intelectual</h2>
+               <p class="privacy-text">
+                 Todo o conteúdo do website é propriedade da LOFERSIL e está protegido
+                 por leis de direitos de autor.
+               </p>
+             </div>
+
+             <div class="privacy-section">
+               <h2 class="privacy-title">5. Contacto</h2>
+               <p class="privacy-text">
+                 Para questões, contacte-nos através de info@lofersil.pt ou visite
+                 a nossa loja em Lisboa.
+               </p>
+             </div>
+           </div>
+         </div>
+       </section>
+     `,
   },
 };
 
@@ -433,8 +558,9 @@ class LOFERSILLandingPage {
    */
   private setupCrossModuleEvents(): void {
     // When page is rendered, update SEO
-    window.addEventListener('pageRendered', (event: any) => {
-      const { path, route } = event.detail;
+    window.addEventListener('pageRendered', (event: Event) => {
+      const customEvent = event as CustomEvent<{ path: string; route: Route }>;
+      const { path, route } = customEvent.detail;
       this.seoManager.updateMetaTags(route.title, route.description);
       this.performanceTracker.trackPageView(path);
     });
@@ -443,7 +569,7 @@ class LOFERSILLandingPage {
   /**
    * Get web vitals metrics (public API for debugging)
    */
-  public getWebVitalsMetrics(): any {
+  public getWebVitalsMetrics(): unknown {
     return this.performanceTracker.getWebVitalsMetrics();
   }
 
