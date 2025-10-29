@@ -2,7 +2,7 @@
 
 description: "Specialized agent for image editing and analysis using Gemini AI tools"
 mode: primary
-model: opencode/grok-code
+model: GitHub Models/deepseek/deepseek-v3-0324
 temperature: 0.3
 permission:
   edit: deny

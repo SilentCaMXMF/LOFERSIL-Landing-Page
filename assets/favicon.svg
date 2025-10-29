@@ -1,14 +1,3 @@
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="6" fill="#2563eb"/>
-  <!-- Desk -->
-  <path d="M6 18 L26 18 L26 20 L6 20 Z" fill="#1d4ed8"/>
-  <path d="M8 20 L8 26 L10 26 L10 20 Z" fill="#1d4ed8"/>
-  <path d="M22 20 L22 26 L24 26 L24 20 Z" fill="#1d4ed8"/>
-  <!-- Chair -->
-  <path d="M12 14 L20 14 L20 18 L12 18 Z" fill="#3b82f6"/>
-  <path d="M12 18 L20 18 L20 20 L12 20 Z" fill="#3b82f6"/>
-  <path d="M14 20 L14 24 L16 24 L16 20 Z" fill="#3b82f6"/>
-  <path d="M16 20 L16 24 L18 24 L18 20 Z" fill="#3b82f6"/>
-  <!-- L -->
-  <text x="16" y="17" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">L</text>
+  <path d="M8 6C8 4.89543 8.89543 4 10 4H22C23.1046 4 24 4.89543 24 6V8H26C27.1046 8 28 8.89543 28 10V26C28 27.1046 27.1046 28 26 28H6C4.89543 28 4 27.1046 4 26V10C4 8.89543 4.89543 8 6 8H8V6ZM10 6V8H22V6H10ZM6 10V26H26V10H6ZM12 14H20V16H12V14Z" fill="#2563eb"/>
 </svg>

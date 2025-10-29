@@ -1,12 +1,12 @@
 {
   "meta": {
-    "title": "LOFERSIL - Produtos e Serviços Premium",
-    "description": "LOFERSIL - Produtos e serviços premium. Descubra a nossa coleção e encontre o que procura.",
-    "keywords": "lofersil, produtos, serviços, premium, qualidade, portugal",
-    "ogTitle": "LOFERSIL - Produtos e Serviços Premium",
-    "ogDescription": "Descubra a coleção premium de produtos e serviços da LOFERSIL. Qualidade e excelência em tudo o que fazemos.",
-    "twitterTitle": "LOFERSIL - Produtos e Serviços Premium",
-    "twitterDescription": "Descubra a coleção premium de produtos e serviços da LOFERSIL."
+    "title": "LOFERSIL - Produtos Premium & Serviços em Lisboa | Loja de Confiança",
+    "description": "Descubra produtos premium e serviços de confiança na LOFERSIL, sua loja de referência em Lisboa. Papelaria, artigos para bebé, joias e muito mais. Visite-nos!",
+    "keywords": "lofersil lisboa, produtos premium portugal, papelaria lisboa, artigos bebe, caixas joias, canetas promocionais, material escritorio, loja lisboa",
+    "ogTitle": "LOFERSIL - Produtos Premium & Serviços em Lisboa | Loja de Confiança",
+    "ogDescription": "Descubra produtos premium e serviços de confiança na LOFERSIL, sua loja de referência em Lisboa. Papelaria, artigos para bebé, joias e muito mais.",
+    "twitterTitle": "LOFERSIL - Produtos Premium & Serviços em Lisboa | Loja de Confiança",
+    "twitterDescription": "Descubra produtos premium e serviços de confiança na LOFERSIL, sua loja de referência em Lisboa."
   },
   "nav": {
     "home": "Início",
@@ -22,11 +22,11 @@
     "navigation": "Ir para a navegação"
   },
   "hero": {
-    "title": "Bem-vindo à LOFERSIL",
-    "subtitle": "Produtos e Serviços Premium",
-    "description": "Descubra a nossa coleção selecionada de produtos de alta qualidade e serviços excecionais. Experimente a excelência em tudo o que oferecemos.",
-    "exploreProducts": "Explorar Produtos",
-    "ourServices": "Nossos Serviços"
+    "title": "Descubra a Excelência em Lisboa",
+    "subtitle": "Produtos Premium & Serviços de Confiança",
+    "description": "Há mais de 30 anos servindo Lisboa com produtos de qualidade superior e atendimento personalizado. Da papelaria aos artigos para bebé, encontrará tudo o que precisa numa loja de confiança familiar.",
+    "exploreProducts": "Ver Produtos em Destaque",
+    "ourServices": "Conheça Nossos Serviços"
   },
   "features": {
     "title": "Porquê Escolher LOFERSIL?",
@@ -57,35 +57,36 @@
     "subtitle": "Descubra a nossa vasta gama de produtos de qualidade para todas as necessidades",
     "babyProducts": {
       "title": "Produtos para Bebés",
-      "description": "Brinquedos macios, bonecos e essenciais para os mais pequenos"
+      "description": "Coleção completa de brinquedos macios, bonecos adoráveis e acessórios essenciais para bebés. Produtos seguros, de alta qualidade e feitos para durar."
     },
     "jewelryBoxes": {
       "title": "Caixas de Joias",
-      "description": "Caixas elegantes para guardar e proteger os seus itens preciosos"
+      "description": "Caixas de joias premium com design elegante e compartimentos organizados. Proteja e exiba as suas joias mais preciosas com estilo e segurança."
     },
     "pens": {
       "title": "Canetas Promocionais",
-      "description": "Instrumentos de escrita de qualidade para uso profissional e pessoal"
+      "description": "Canetas promocionais premium para empresas e uso pessoal. Escreva com conforto e estilo com as nossas canetas de qualidade superior."
     },
     "binders": {
       "title": "Material de Escritório",
-      "description": "Dossiês e pastas profissionais para organização"
+      "description": "Material de escritório completo incluindo dossiês, pastas e organizadores profissionais. Mantenha os seus documentos organizados e protegidos."
     },
     "backpacks": {
       "title": "Mochilas",
-      "description": "Mochilas duráveis e estilosas para escola e viagens"
+      "description": "Mochilas resistentes e modernas perfeitas para escola, trabalho ou viagens. Design ergonómico com compartimentos inteligentes para máxima organização."
     },
     "ink": {
       "title": "Cartuchos de Tinta",
-      "description": "Cartuchos de tinta de qualidade para todas as suas necessidades de impressão"
+      "description": "Cartuchos de tinta compatíveis de alta qualidade para todas as marcas. Impressões nítidas e económicas para casa e escritório."
     },
     "ctaText": "Visite a nossa loja para explorar a nossa coleção completa e encontrar exatamente o que procura",
-    "ctaButton": "Ver Todos os Produtos"
+    "ctaButton": "Explorar Catálogo Completo"
   },
   "cta": {
-    "title": "Pronto para Começar?",
-    "description": "Visite a nossa loja para explorar a nossa coleção completa de produtos e serviços premium.",
-    "button": "Visitar a Nossa Loja"
+    "title": "Pronto para Descobrir?",
+    "description": "Visite-nos hoje e experimente produtos premium com atendimento personalizado. Ofertas especiais disponíveis enquanto durarem os stocks!",
+    "primaryButton": "Visitar Loja Física",
+    "secondaryButton": "Ver Catálogo Online"
   },
   "footer": {
     "title": "LOFERSIL",
