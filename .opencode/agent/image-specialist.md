@@ -1,9 +1,8 @@
 ---
 
-description: "Specialized agent for image editing and analysis using Gemini AI tools"
+description: "Specialized agent for image editing and analysis using gemini AI tools"
 mode: primary
-model: GitHub Models
-model_name: openai/gpt-4.1
+model: google/gemini-2.0-flash-exp:free
 temperature: 0.3
 permission:
   edit: deny

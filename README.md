@@ -31,6 +31,7 @@ A modern, static landing page for LOFERSIL, built with TypeScript and optimized 
 - 🔍 **SEO Friendly**: Optimized for search engines with meta tags and structured data
 - 🛠️ **TypeScript**: Type-safe development with strict mode
 - 🧪 **Testing**: Unit tests with Vitest and performance audits with Lighthouse
+- 🤖 **AI Image Specialist**: OpenAI GPT-4.1-nano integration for advanced image analysis and editing
 
 ## Tech Stack
 
@@ -43,6 +44,7 @@ A modern, static landing page for LOFERSIL, built with TypeScript and optimized 
 - **Image Processing**: Sharp 0.33.0
 - **Security**: DOMPurify 3.3.0
 - **Performance**: Web Vitals 5.1.0
+- **AI Integration**: OpenAI API 4.0.0 for image processing
 - **Deployment**: Vercel
 
 ## Project Structure
@@ -175,6 +177,55 @@ The site supports dual language functionality with JSON-based translations:
 - **English**: `src/locales/en.json`
 
 Language switching is handled by the `LanguageManager.ts` module, providing a seamless user experience.
+
+## AI Image Specialist
+
+The project includes an advanced AI-powered image specialist using OpenAI's GPT-4.1-nano and image generation models:
+
+### Features
+
+- **Image Analysis**: AI-powered image description and analysis using GPT-4.1-nano vision capabilities
+- **Image Generation**: Create images from text prompts using DALL-E style models
+- **Image Editing**: Edit existing images with natural language instructions
+- **Image Variations**: Generate multiple variations of existing images
+- **Type Safety**: Full TypeScript support with comprehensive interfaces
+- **Error Handling**: Robust error handling with user-friendly messages
+
+### Configuration
+
+Set your OpenAI API key in the environment:
+
+```bash
+OPENAI_API_KEY=your-openai-api-key-here
+```
+
+### Usage Example
+
+```typescript
+import { OpenAIImageSpecialist } from './src/scripts/modules/OpenAIImageSpecialist';
+
+// Initialize the specialist
+const specialist = new OpenAIImageSpecialist();
+
+// Generate an image
+const result = await specialist.generateImage({
+  prompt: 'A beautiful sunset over the ocean',
+  size: '1024x1024',
+  style: 'vivid',
+});
+
+if (result.success) {
+  console.log('Generated image:', result.images[0].url);
+}
+```
+
+### API Reference
+
+- `analyzeImage()`: Analyze images with AI
+- `generateImage()`: Create images from text
+- `editImage()`: Edit existing images
+- `createVariations()`: Generate image variations
+- `getCapabilities()`: Get supported operations and models
 
 ## Deployment
 
