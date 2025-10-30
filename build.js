@@ -75,9 +75,25 @@ const isProduction =
     process.exit(1);
   }
 
-  // Copy HTML file to dist
-  console.log('📄 Copying HTML file...');
+  // Copy HTML files to dist
+  console.log('📄 Copying HTML files...');
   fs.copyFileSync('./index.html', './dist/index.html');
+  
+  // Copy additional HTML pages
+  if (fs.existsSync('./privacy.html')) {
+    fs.copyFileSync('./privacy.html', './dist/privacy.html');
+  }
+  if (fs.existsSync('./terms.html')) {
+    fs.copyFileSync('./terms.html', './dist/terms.html');
+  }
+
+  // Copy additional HTML pages
+  if (fs.existsSync('./privacy.html')) {
+    fs.copyFileSync('./privacy.html', './dist/privacy.html');
+  }
+  if (fs.existsSync('./terms.html')) {
+    fs.copyFileSync('./terms.html', './dist/terms.html');
+  }
 
   // Process CSS with PostCSS
   console.log('🎨 Processing CSS...');
