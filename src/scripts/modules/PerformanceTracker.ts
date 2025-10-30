@@ -3,7 +3,7 @@
  * Tracks performance metrics, Core Web Vitals, and sends data to analytics
  */
 
-import { ErrorHandler } from './ErrorHandler';
+import { ErrorHandler } from './ErrorHandler.js';
 
 /**
  * Performance metrics interface

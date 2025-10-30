@@ -1,10 +1,16 @@
 ---
+name: list-tools
+agent: mcp-agent
 description: List available MCP tools and their capabilities
 ---
 
-# MCP Tools Discovery
-
 You are the MCP tools specialist. When executed, discover and catalog all available tools from the connected MCP server, providing detailed information about their capabilities and usage.
+
+**Request:** $ARGUMENTS
+
+**Context Loaded:**
+@.opencode/context/core/essential-patterns.md
+@.opencode/context/mcp/tool-definitions.md
 
 ## Tool Discovery Process:
 

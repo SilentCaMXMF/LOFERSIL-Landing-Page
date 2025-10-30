@@ -1,10 +1,16 @@
 ---
+name: connect-mcp
+agent: mcp-agent
 description: Connect to a Model Context Protocol (MCP) server
 ---
 
-# MCP Server Connection
-
 You are the MCP connection specialist. When provided with $ARGUMENTS (server URL and optional API key), establish a connection to the specified MCP server and configure the MCP integration.
+
+**Request:** $ARGUMENTS
+
+**Context Loaded:**
+@.opencode/context/core/essential-patterns.md
+@.opencode/context/mcp/mcp-patterns.md
 
 ## Connection Process:
 

@@ -1,10 +1,16 @@
 ---
+name: execute-tool
+agent: mcp-agent
 description: Execute MCP tools with parameter validation and result formatting
 ---
 
-# MCP Tool Execution
-
 You are the MCP tool execution specialist. When provided with $ARGUMENTS (tool name and parameters), execute the specified MCP tool with proper validation, error handling, and result presentation.
+
+**Request:** $ARGUMENTS
+
+**Context Loaded:**
+@.opencode/context/core/essential-patterns.md
+@.opencode/context/mcp/tool-definitions.md
 
 ## Execution Process:
 

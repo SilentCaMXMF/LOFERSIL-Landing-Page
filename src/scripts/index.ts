@@ -6,11 +6,11 @@
 // DOMPurify is loaded globally from CDN
 
 // Import modules
-import { ErrorHandler } from './modules/ErrorHandler';
-import { NavigationManager } from './modules/NavigationManager';
-import { SEOManager } from './modules/SEOManager';
-import { PerformanceTracker } from './modules/PerformanceTracker';
-import { UIManager } from './modules/UIManager';
+import { ErrorHandler } from './modules/ErrorHandler.js';
+import { NavigationManager } from './modules/NavigationManager.js';
+import { SEOManager } from './modules/SEOManager.js';
+import { PerformanceTracker } from './modules/PerformanceTracker.js';
+import { UIManager } from './modules/UIManager.js';
 
 // Development mode check for logging
 const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production';
@@ -543,7 +543,7 @@ class LOFERSILLandingPage {
           try {
             const { runValidationTests } = await import('./validation.test');
             runValidationTests();
-          } catch (error) {
+          } catch {
             console.warn('Validation tests not available in production');
           }
         }, 100);

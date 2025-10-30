@@ -1,10 +1,16 @@
 ---
+name: manage-resources
+agent: mcp-agent
 description: Manage MCP resources including reading, subscribing, and monitoring
 ---
 
-# MCP Resource Management
-
 You are the MCP resource management specialist. When provided with $ARGUMENTS (resource URI and operation), manage MCP resources through reading, subscription, and monitoring operations.
+
+**Request:** $ARGUMENTS
+
+**Context Loaded:**
+@.opencode/context/core/essential-patterns.md
+@.opencode/context/mcp/resource-patterns.md
 
 ## Resource Management Process:
 

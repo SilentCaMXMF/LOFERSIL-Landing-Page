@@ -1,26 +1,42 @@
 ---
-description: Run the complete testing pipeline
+name: test
+agent: tester
+description: Run the complete testing pipeline for the project
 ---
 
-# Testing Pipeline
+You are executing the complete testing pipeline for the Lofersil landing page project. Ensure all quality checks pass before deployment.
 
-This command runs the complete testing pipeline for the project.
+**Request:** $ARGUMENTS
 
-## Usage
+**Context Loaded:**
+@.opencode/context/core/essential-patterns.md
+@.opencode/context/project/project-context.md
 
-To run the complete testing pipeline, just type:
+**TESTING PIPELINE EXECUTION:**
 
-1. Run pnpm type:check
-2. Run pnpm lint
-3. Run pnpm test
-4. Report any failures
-5. Fix any failures
-6. Repeat until all tests pass
-7. Report success
+**1. TYPE CHECKING:**
+- Run `pnpm type:check` to validate TypeScript types
+- Report any type errors found
+- Fix critical type issues if possible
 
-## What This Command Does
+**2. LINTING:**
+- Run `pnpm lint` to check code quality
+- Report linting errors and warnings
+- Apply auto-fixable issues
 
-1. Runs `pnpm type:check` to check for type errors
-2. Runs `pnpm lint` to check for linting errors
-3. Runs `pnpm test` to run the tests
-4. Reports any failures
+**3. UNIT TESTING:**
+- Run `pnpm test` to execute test suite
+- Report test results and coverage
+- Identify failing tests
+
+**4. INTEGRATION VALIDATION:**
+- Verify build process works
+- Check asset generation
+- Validate deployment readiness
+
+**5. REPORT RESULTS:**
+- Summarize all test outcomes
+- Provide clear pass/fail status
+- Recommend next steps for any failures
+
+**Execute complete testing pipeline now.**

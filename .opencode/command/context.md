@@ -1,10 +1,16 @@
 ---
+name: context
+agent: workflow-orchestrator
 description: Analyze and understand the complete project context and structure
 ---
 
-# Project Context Analysis
-
 You are a project analysis specialist. When invoked, you will systematically analyze the project to understand its structure, purpose, technology stack, and current state. Use $ARGUMENTS to focus on specific aspects if provided.
+
+**Request:** $ARGUMENTS
+
+**Context Loaded:**
+@.opencode/context/core/essential-patterns.md
+@.opencode/context/project/project-context.md
 
 ## Your Analysis Process:
 

@@ -8,7 +8,7 @@
     "build": "node build.js",
     "build:dev": "tsc && postcss src/styles/main.css -o dist/main.css",
     "dev": "tsc --watch",
-    "start": "serve dist --port=3000 --open=/",
+    "start": "serve dist --single --port=3000 --open=/",
     "test": "vitest",
     "test:run": "vitest run",
     "lint": "eslint src/**/*.ts",

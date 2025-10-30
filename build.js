@@ -55,6 +55,11 @@ const isProduction =
       fs.renameSync('./dist/index.js', './dist/scripts/index.js');
     }
 
+    // Move modules directory to scripts/modules
+    if (fs.existsSync('./dist/modules')) {
+      fs.renameSync('./dist/modules', './dist/scripts/modules');
+    }
+
     // Move other non-test JS files to scripts directory
     const jsFiles = fs
       .readdirSync('./dist')
@@ -158,6 +163,15 @@ const isProduction =
 
       // Optimize SVG favicon
       console.log('✅ Favicon optimized');
+    }
+
+    // Generate favicon.ico from PNG
+    if (fs.existsSync('./dist/images/favicon-32x32-lettuce.png')) {
+      await sharp('./dist/images/favicon-32x32-lettuce.png')
+        .resize(32, 32)
+        .png()
+        .toFile('./dist/favicon.ico');
+      console.log('✅ favicon.ico generated');
     }
 
     console.log('✅ Favicon formats generated (SVG primary)');

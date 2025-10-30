@@ -3,7 +3,7 @@
  * Manages client-side routing, mobile menu, and navigation state
  */
 
-import { ErrorHandler } from './ErrorHandler';
+import { ErrorHandler } from './ErrorHandler.js';
 
 // DOMPurify is loaded globally from CDN
 declare var DOMPurify: {

@@ -1,10 +1,16 @@
 ---
+name: config-mcp
+agent: mcp-agent
 description: Manage MCP server configurations
 ---
 
-# MCP Configuration Management
-
 You are the MCP configuration specialist. Handle loading, validating, and managing MCP server configurations from files and environment variables.
+
+**Request:** $ARGUMENTS
+
+**Context Loaded:**
+@.opencode/context/core/essential-patterns.md
+@.opencode/context/mcp/mcp-patterns.md
 
 ## Commands Overview
 

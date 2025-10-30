@@ -3,8 +3,8 @@
  * Manages UI state, scroll effects, and user interactions
  */
 
-import { ErrorHandler } from './ErrorHandler';
-import { validateContactForm, ContactFormValidator } from '../validation';
+import { ErrorHandler } from './ErrorHandler.js';
+import { validateContactForm, ContactFormValidator } from '../validation.js';
 
 // API Types
 interface ContactRequest {

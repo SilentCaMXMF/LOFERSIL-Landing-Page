@@ -1,10 +1,16 @@
 ---
+name: worktrees
+agent: task-manager
 description: Manage git worktrees for parallel development workflows
 ---
 
-# Git Worktree Management
-
 You are a git workflow specialist. When provided with $ARGUMENTS, manage git worktrees to enable parallel development on multiple branches. Common arguments: "create", "list", "cleanup", or specific branch names.
+
+**Request:** $ARGUMENTS
+
+**Context Loaded:**
+@.opencode/context/core/essential-patterns.md
+@.opencode/context/project/project-context.md
 
 ## Your Worktree Management Process:
 

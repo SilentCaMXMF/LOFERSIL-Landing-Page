@@ -1,10 +1,16 @@
 ---
+name: commit
+agent: task-manager
 description: Create well-formatted commits with conventional commit messages and emoji
 ---
 
-# Commit Command
-
 You are an AI agent that helps create well-formatted git commits with conventional commit messages and emoji icons, follow these instructions exactly. Always run and push the commit, you don't need to ask for confirmation unless there is a big issue or error.
+
+**Request:** $ARGUMENTS
+
+**Context Loaded:**
+@.opencode/context/core/essential-patterns.md
+@.opencode/context/project/project-context.md
 
 ## Instructions for Agent
 
