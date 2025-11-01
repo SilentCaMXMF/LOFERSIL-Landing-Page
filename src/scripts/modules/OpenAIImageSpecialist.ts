@@ -161,6 +161,141 @@ export class OpenAIImageSpecialist {
   }
 
   /**
+   * Validate image request input
+   */
+  private validateImageRequest(request: ImageRequest): void {
+    // Check if image is required for the operation
+    if (request.operation === ImageOperation.EDIT && !request.image) {
+      throw new Error('Image is required for edit operations');
+    }
+    if (request.operation === ImageOperation.ANALYZE && !request.image) {
+      throw new Error('Image is required for analysis operations');
+    }
+
+    // Validate image data if provided
+    if (request.image) {
+      this.validateImageData(request.image);
+    }
+
+    // Validate mask data if provided
+    if (request.mask) {
+      this.validateImageData(request.mask);
+    }
+
+    // Validate parameters
+    if (request.parameters) {
+      this.validateParameters(request.parameters);
+    }
+  }
+
+  /**
+   * Validate image data (URL or base64)
+   */
+  private validateImageData(imageData: string): void {
+    // Check if it's a data URL (base64)
+    if (imageData.startsWith('data:')) {
+      this.validateBase64Image(imageData);
+    } else {
+      // Assume it's a URL
+      this.validateImageUrl(imageData);
+    }
+  }
+
+  /**
+   * Validate base64 image data
+   */
+  private validateBase64Image(dataUrl: string): void {
+    // Check data URL format: data:image/[format];base64,[data]
+    const dataUrlRegex = /^data:image\/(png|jpeg|jpg|gif|webp);base64,/i;
+    if (!dataUrlRegex.test(dataUrl)) {
+      throw new Error('Invalid base64 image format. Expected data:image/[format];base64,[data]');
+    }
+
+    // Extract base64 data
+    const base64Data = dataUrl.split(',')[1];
+    if (!base64Data) {
+      throw new Error('Missing base64 data in data URL');
+    }
+
+    // Validate base64 format
+    const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+    if (!base64Regex.test(base64Data)) {
+      throw new Error('Invalid base64 encoding');
+    }
+
+    // Basic size check (rough estimate: base64 is ~33% larger than binary)
+    const estimatedSizeBytes = (base64Data.length * 3) / 4;
+    const maxSizeBytes = 20 * 1024 * 1024; // 20MB limit
+    if (estimatedSizeBytes > maxSizeBytes) {
+      throw new Error('Image data too large. Maximum size is 20MB');
+    }
+  }
+
+  /**
+   * Validate image URL
+   */
+  private validateImageUrl(url: string): void {
+    try {
+      const urlObj = new URL(url);
+
+      // Check protocol
+      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+        throw new Error('Image URL must use HTTP or HTTPS protocol');
+      }
+
+      // Check for common image file extensions
+      const pathname = urlObj.pathname.toLowerCase();
+      const supportedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp'];
+      const hasValidExtension = supportedExtensions.some(ext => pathname.endsWith(ext));
+
+      if (!hasValidExtension && !pathname.includes('/')) {
+        // Allow URLs without extensions if they might be dynamic (contain '/')
+        throw new Error(
+          'Image URL should point to a supported image format (PNG, JPEG, GIF, WebP, BMP)'
+        );
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Invalid image URL: ${error.message}`);
+      }
+      throw new Error('Invalid image URL format');
+    }
+  }
+
+  /**
+   * Validate request parameters
+   */
+  private validateParameters(parameters: ImageRequest['parameters']): void {
+    if (!parameters) return;
+
+    // Validate size parameter
+    if (parameters.size) {
+      const validSizes = ['256x256', '512x512', '1024x1024', '1792x1024', '1024x1792'];
+      if (!validSizes.includes(parameters.size)) {
+        throw new Error(`Invalid size parameter. Supported sizes: ${validSizes.join(', ')}`);
+      }
+    }
+
+    // Validate style parameter
+    if (parameters.style) {
+      const validStyles = ['vivid', 'natural'];
+      if (!validStyles.includes(parameters.style)) {
+        throw new Error(`Invalid style parameter. Supported styles: ${validStyles.join(', ')}`);
+      }
+    }
+
+    // Validate quality parameter
+    if (parameters.quality) {
+      const validQualities = ['standard', 'hd'];
+      if (!validQualities.includes(parameters.quality)) {
+        throw new Error(
+          `Invalid quality parameter. Supported qualities: ${validQualities.join(', ')}`
+        );
+      }
+    }
+  }
+
+  /**
    * Process an image request
    */
   async processRequest(request: ImageRequest): Promise<ImageResult> {
@@ -172,6 +307,9 @@ export class OpenAIImageSpecialist {
         hasImage: !!request.image,
         hasMask: !!request.mask,
       });
+
+      // Validate request input
+      this.validateImageRequest(request);
 
       // Enhance prompt if it's a simple instruction
       const enhancedPrompt = await this.enhancePrompt(request.prompt);
@@ -280,7 +418,7 @@ export class OpenAIImageSpecialist {
         operation: ImageOperation.GENERATE,
         processing_time: 0, // Will be set by caller
         model: params.model,
-        cost: this.calculateCost('generation', 1),
+        cost: this.calculateCost('generation', 1, undefined, request.parameters?.quality),
       },
     };
   }
@@ -571,7 +709,7 @@ export class OpenAIImageSpecialist {
    */
   private generateFilename(operation: string, index: number): string {
     const now = new Date();
-    const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const dateStr = now.toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
     const timeStr = now.toISOString().split('T')[1].substring(0, 6).replace(/:/g, ''); // HHMMSS
     const indexStr = index.toString().padStart(3, '0');
 
@@ -581,14 +719,27 @@ export class OpenAIImageSpecialist {
   /**
    * Calculate operation cost (simplified)
    */
-  private calculateCost(operation: string, imageCount: number, tokens?: number): number {
-    const costs: Record<string, number> = {
-      generation: 0.04, // DALL-E 3 standard quality
-      edit: 0.018, // DALL-E 2
-      analysis: 0.00001, // GPT-4 Vision per token
-    };
+  private calculateCost(
+    operation: string,
+    imageCount: number,
+    tokens?: number,
+    quality?: string
+  ): number {
+    let baseCost: number;
 
-    const baseCost = costs[operation] || 0.01;
+    switch (operation) {
+      case 'generation':
+        baseCost = quality === 'hd' ? 0.08 : 0.04; // DALL-E 3 HD vs standard
+        break;
+      case 'edit':
+        baseCost = 0.018; // DALL-E 2
+        break;
+      case 'analysis':
+        baseCost = 0.00001; // GPT-4 Vision per token ($0.01 per 1000 tokens)
+        break;
+      default:
+        baseCost = 0.01;
+    }
 
     if (operation === 'analysis' && tokens) {
       return (tokens / 1000) * baseCost;
@@ -605,18 +756,97 @@ export class OpenAIImageSpecialist {
     technical_details: Record<string, any>;
     suggestions: string[];
   } {
-    // Simple parsing - in production, this could be more sophisticated
+    const lowerText = analysisText.toLowerCase();
+
+    // Extract technical details
+    const technical_details: Record<string, any> = {};
+
+    // Try to extract format information
+    const formatPatterns = [
+      /\b(jpeg|jpg|png|gif|webp|bmp|tiff|svg)\b/gi,
+      /\b(image|photo|picture|graphic)\s+(format|type)/gi,
+    ];
+    for (const pattern of formatPatterns) {
+      const match = analysisText.match(pattern);
+      if (match) {
+        technical_details.format = match[0].replace(/\b(image|photo|picture|graphic)\s+/gi, '');
+        break;
+      }
+    }
+    if (!technical_details.format) {
+      technical_details.format = 'Unknown';
+    }
+
+    // Try to extract resolution/dimensions
+    const resolutionPatterns = [
+      /\b(\d+)\s*x\s*(\d+)\b/gi, // 1920x1080
+      /\b(\d+)\s*×\s*(\d+)\b/gi, // 1920×1080
+      /\b(\d+)\s*by\s*(\d+)\b/gi, // 1920 by 1080
+      /\b(resolution|dimensions?)\s*[:\-]?\s*(\d+)\s*x\s*(\d+)\b/gi,
+    ];
+    for (const pattern of resolutionPatterns) {
+      const match = analysisText.match(pattern);
+      if (match) {
+        if (match.length >= 3) {
+          technical_details.resolution = `${match[1]}x${match[2]}`;
+        } else if (match.length >= 4) {
+          technical_details.resolution = `${match[2]}x${match[3]}`;
+        }
+        break;
+      }
+    }
+    if (!technical_details.resolution) {
+      technical_details.resolution = 'Unknown';
+    }
+
+    // Try to extract color information
+    const colorPatterns = [
+      /\b(color|colors?|palette)\s*[:\-]?\s*([a-zA-Z\s,]+?)(?:\s*[.,]|$)/gi,
+      /\b(primarily|mainly|mostly)\s+([a-zA-Z\s,]+?)(?:\s*[.,]|$)/gi,
+    ];
+    for (const pattern of colorPatterns) {
+      const match = analysisText.match(pattern);
+      if (match && match[2]) {
+        technical_details.colors = match[2].trim();
+        break;
+      }
+    }
+    if (!technical_details.colors) {
+      technical_details.colors = 'Various';
+    }
+
+    // Extract suggestions from the text
+    const suggestions: string[] = [];
+    const suggestionPatterns = [
+      /(?:suggestion|recommend|consider|try|improve|enhance)[:\-]?\s*([^.!?]+[.!?])/gi,
+      /(?:you\s+(?:could|might|should))([^.!?]+[.!?])/gi,
+      /(?:to\s+improve|for\s+better)([^.!?]+[.!?])/gi,
+    ];
+
+    for (const pattern of suggestionPatterns) {
+      let match;
+      while ((match = pattern.exec(analysisText)) !== null) {
+        const suggestion = match[1].trim();
+        if (suggestion.length > 10 && suggestion.length < 200) {
+          // Reasonable length
+          suggestions.push(suggestion);
+        }
+      }
+    }
+
+    // Add default suggestions if none found
+    if (suggestions.length === 0) {
+      suggestions.push('Consider adjusting composition for better visual impact');
+      suggestions.push('Review color balance and contrast');
+    }
+
+    // Limit to top 3 suggestions
+    suggestions.splice(3);
+
     return {
       description: analysisText,
-      technical_details: {
-        format: 'Unknown',
-        resolution: 'Unknown',
-        colors: 'Various',
-      },
-      suggestions: [
-        'Consider adjusting composition for better visual impact',
-        'Review color balance and contrast',
-      ],
+      technical_details,
+      suggestions,
     };
   }
 

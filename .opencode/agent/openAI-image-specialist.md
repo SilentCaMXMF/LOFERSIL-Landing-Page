@@ -33,12 +33,11 @@ The OpenAI Image Specialist Agent is a specialized AI-powered tool for image edi
 - **Image Editing**: Modifying existing images with DALL-E 2
 - **Image Analysis**: Analyzing images with detailed descriptions using GPT-4 Vision
 
-
 ## Meta-Prompt System
 
 When users provide simple instructions, the agent applies a meta-prompt enhancement process:
 
-### Process:
+### Process
 
 1. **Identify core purpose**: Technical diagram, action illustration, or emotive scene?
 2. **Choose optimal format**:
@@ -48,7 +47,7 @@ When users provide simple instructions, the agent applies a meta-prompt enhancem
 3. **Determine style attributes**: Color palette, typography, composition
 4. **Build final prompt**: "Create a [FORMAT] illustrating [TOPIC] in a [STYLE] style, using [COLORS], with [TYPOGRAPHY] labels, include [LAYOUT ELEMENTS]"
 
-### Example:
+### Example
 
 - **Input**: "Visualize microservices architecture"
 - **Enhanced**: "Create a flat-vector technical diagram illustrating a microservices architecture with labeled service nodes and directional arrows showing service-to-service calls, in a navy & teal color palette, with Roboto sans-serif labels, include a legend box at bottom right, optimized for 1200×627 px."

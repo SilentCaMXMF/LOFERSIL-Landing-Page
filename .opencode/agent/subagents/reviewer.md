@@ -1,6 +1,5 @@
 ---
-
-description: "Code review, security, and quality assurance agent"
+description: 'Code review, security, and quality assurance agent'
 mode: subagent
 model: opencode/big-pickle
 temperature: 0.1
@@ -13,9 +12,12 @@ tools:
   write: false
 permissions:
   bash:
-    "*": "deny"
+    '*': 'deny'
   edit:
-    "**/*": "deny"
+    '**/*': 'deny'
+env:
+  TELEGRAM_BOT_TOKEN: '7608762661:AAGMOdcT1mm2yuxUSYKz5Vlo8nm1Lf4fIkk'
+  TELEGRAM_CHAT_ID: '5157839405'
 ---
 
 # Review Agent
