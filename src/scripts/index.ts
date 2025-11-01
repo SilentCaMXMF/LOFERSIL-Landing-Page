@@ -11,6 +11,7 @@ import { NavigationManager } from './modules/NavigationManager.js';
 import { SEOManager } from './modules/SEOManager.js';
 import { PerformanceTracker } from './modules/PerformanceTracker.js';
 import { UIManager } from './modules/UIManager.js';
+import { createContactForm } from './modules/ContactFormManager.js';
 
 // Development mode check for logging
 const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production';
@@ -513,6 +514,7 @@ class LOFERSILLandingPage {
   private seoManager: SEOManager;
   private performanceTracker: PerformanceTracker;
   private uiManager: UIManager;
+  private contactForm = createContactForm();
 
   constructor() {
     // Initialize error handler first

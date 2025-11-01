@@ -8,6 +8,11 @@
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 class SimpleTelegramBot {
   private botToken: string | undefined;
@@ -37,29 +42,24 @@ class SimpleTelegramBot {
   }
 
   /**
-   * Load environment variables from reviewer.md file
+   * Load environment variables from .env file
    */
   private loadEnvFromReviewer(): void {
-    const reviewerPath = path.join(__dirname, '..', 'agent', 'subagents', 'reviewer.md');
-    if (fs.existsSync(reviewerPath)) {
-      const content = fs.readFileSync(reviewerPath, 'utf8');
+    const envPath = path.join(__dirname, '..', '..', '..', '.env');
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, 'utf8');
       const lines = content.split('\n');
-      let inEnv = false;
       for (const line of lines) {
-        if (line.trim() === 'env:') {
-          inEnv = true;
-          continue;
-        }
-        if (inEnv && line.startsWith('  ') && line.includes(':')) {
-          const [key, ...valueParts] = line.trim().split(':');
-          const value = valueParts
-            .join(':')
-            .trim()
-            .replace(/^["']|["']$/g, '');
-          process.env[key] = value;
-        }
-        if (inEnv && line.trim() === '---') {
-          break;
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#')) {
+          const [key, ...valueParts] = trimmed.split('=');
+          if (key && valueParts.length > 0) {
+            const value = valueParts
+              .join('=')
+              .trim()
+              .replace(/^["']|["']$/g, '');
+            process.env[key.trim()] = value;
+          }
         }
       }
     }

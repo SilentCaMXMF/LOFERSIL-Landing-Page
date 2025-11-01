@@ -84,7 +84,7 @@ describe('OpenAIImageSpecialist', () => {
 
       expect(capabilities).toEqual({
         supported_operations: ['generate', 'edit', 'analyze'],
-        supported_models: ['gpt-4-vision-preview', 'dall-e-3', 'dall-e-2'],
+        supported_models: ['gpt-4o', 'dall-e-3', 'dall-e-2'],
         file_organization: 'assets/images/YYYY-MM-DD/',
         meta_prompt_system: true,
       });
@@ -327,7 +327,7 @@ describe('OpenAIImageSpecialist', () => {
             ]),
           }),
         ]),
-        model: 'gpt-4-vision-preview',
+        model: 'gpt-4o',
         max_tokens: 1000,
         temperature: 0.3,
       });

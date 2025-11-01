@@ -7,7 +7,7 @@ import { OpenAIImageSpecialist } from './src/scripts/modules/OpenAIImageSpeciali
 
 // Test configuration
 const testConfig = {
-  model: 'gpt-4-vision-preview',
+  model: 'gpt-4o',
   temperature: 0.3,
   permissions: {
     edit: false,

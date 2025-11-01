@@ -31,6 +31,7 @@ A modern, static landing page for LOFERSIL, built with TypeScript and optimized 
 - 🔍 **SEO Friendly**: Optimized for search engines with meta tags and structured data
 - 🛠️ **TypeScript**: Type-safe development with strict mode
 - 🧪 **Testing**: Unit tests with Vitest and performance audits with Lighthouse
+- 📧 **Contact Form**: Functional contact form with validation and email integration
 - 🤖 **AI Image Specialist**: OpenAI GPT-4.1-nano integration for advanced image analysis and editing
 
 ## Tech Stack
@@ -177,6 +178,42 @@ The site supports dual language functionality with JSON-based translations:
 - **English**: `src/locales/en.json`
 
 Language switching is handled by the `LanguageManager.ts` module, providing a seamless user experience.
+
+## Contact Form
+
+The landing page includes a fully functional contact form with the following features:
+
+### Features
+
+- **Real-time Validation**: Input validation with immediate feedback
+- **Accessibility**: ARIA attributes and screen reader support
+- **Email Integration**: Formspree integration for email delivery
+- **Responsive Design**: Mobile-friendly layout and interactions
+- **Error Handling**: Comprehensive error states and user feedback
+- **Loading States**: Visual feedback during form submission
+
+### Technical Implementation
+
+- **Validation Module**: `src/scripts/validation.ts` with comprehensive validation rules
+- **Form Manager**: `src/scripts/modules/ContactFormManager.ts` for form handling
+- **Email Service**: Formspree integration for secure email delivery
+- **Styling**: Responsive CSS with custom properties and animations
+- **Testing**: Automated test suite in `src/scripts/contact-form.test.ts`
+
+### Configuration
+
+To configure the email service:
+
+1. Create a Formspree account at [formspree.io](https://formspree.io)
+2. Create a new form and get the form ID
+3. Update the form ID in `src/scripts/modules/ContactFormManager.ts`
+4. Configure the recipient email in the Formspree dashboard
+
+### Form Fields
+
+- **Name**: Required, 2-100 characters, valid characters only
+- **Email**: Required, valid email format
+- **Message**: Required, 10-2000 characters
 
 ## AI Image Specialist
 

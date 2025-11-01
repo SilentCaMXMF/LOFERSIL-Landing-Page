@@ -42,3 +42,26 @@ notes:
 
 - Assumptions: Keep form simple with essential fields only
 - Links to relevant docs: Site style guide in styles/main.css
+
+analysis:
+
+- Form fields determined:
+  - Name: text input, required, placeholder="O seu nome"
+  - Email: email input, required, placeholder="o.seu.email@exemplo.com"
+  - Message: textarea, required, placeholder="A sua mensagem...", rows="5"
+  - Submit: button with text "Enviar Mensagem"
+- Layout design:
+  - Responsive two-column layout on desktop, single column on mobile
+  - Form container with max-width 600px, centered
+  - Consistent with existing site design using same button styles and spacing
+  - Section placed before footer, after CTA section
+- Styling approach:
+  - Use existing CSS classes: .section-header, .btn, .btn-primary
+  - Form styling consistent with site's clean, professional aesthetic
+  - Error states with red borders and text
+  - Success state with green confirmation message
+- Accessibility:
+  - Proper labels for all form fields
+  - ARIA attributes for error messages
+  - Keyboard navigation support
+  - Screen reader friendly error announcements

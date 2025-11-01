@@ -122,7 +122,7 @@ export class OpenAIImageSpecialist {
   constructor(config?: Partial<AgentConfig>, errorHandler?: ErrorHandler) {
     // Default configuration based on Gemini model
     this.config = {
-      model: 'gpt-4-vision-preview',
+      model: 'gpt-4o',
       temperature: 0.3,
       permissions: {
         edit: false,

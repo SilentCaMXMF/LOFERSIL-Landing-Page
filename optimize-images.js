@@ -40,4 +40,19 @@ const imageFiles = fs.readdirSync(imagesDir).filter(file => /\.(jpg|jpeg|png)$/i
     console.log(`✅ Optimized ${file}`);
   }
   console.log('✅ Image optimization complete');
+
+  // Generate Facebook favicon PNGs from SVG
+  const svgFile = 'facebook-favicon.svg';
+  const svgPath = path.join(imagesDir, svgFile);
+  if (fs.existsSync(svgPath)) {
+    console.log(`Generating PNGs from ${svgFile}...`);
+    const sizes = [16, 32, 48];
+    for (const size of sizes) {
+      await sharp(svgPath)
+        .resize(size, size)
+        .png()
+        .toFile(path.join(imagesDir, `facebook-favicon-${size}x${size}.png`));
+    }
+    console.log('✅ Facebook favicon PNGs generated');
+  }
 })();
