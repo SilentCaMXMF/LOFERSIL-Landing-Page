@@ -6,19 +6,33 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "node build.js",
+    "build:bun": "bun run build-bun.js",
     "build:dev": "tsc && postcss src/styles/main.css -o dist/main.css",
+    "build:dev:bun": "bun run build:dev",
     "dev": "tsc --watch",
-    "start": "serve dist --single --port=3000 --open=/",
+    "dev:bun": "bun run tsc --watch",
+    "start": "serve dist --single -l 3000",
+    "start:bun": "bun run start",
     "test": "vitest",
+    "test:bun": "bun run vitest",
     "test:run": "vitest run",
+    "test:run:bun": "bun run vitest run",
     "lint": "eslint src/**/*.ts",
+    "lint:bun": "bun run eslint src/**/*.ts",
     "format": "prettier --write src/**/*.{ts,css}",
+    "format:bun": "bun run prettier --write src/**/*.{ts,css}",
     "optimize-images": "imagemin assets/images/* --out-dir=dist/images",
+    "optimize-images:bun": "bun run optimize-images",
     "prebuild": "npm run format",
+    "prebuild:bun": "bun run format:bun",
     "lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
+    "lighthouse:bun": "bun run lighthouse",
     "vercel-deploy": "./vercel-deploy.sh",
+    "vercel-deploy:bun": "bun run vercel-deploy.sh",
     "deploy:preview": "vercel",
-    "deploy:prod": "vercel --prod"
+    "deploy:preview:bun": "bun run vercel",
+    "deploy:prod": "vercel --prod",
+    "deploy:prod:bun": "bun run vercel --prod"
   },
   "keywords": [
     "landing-page",
@@ -51,6 +65,11 @@
     "typescript": "^5.0.0",
     "vitest": "^2.1.9"
   },
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "packageManager": "npm@10.0.0",
   "dependencies": {
     "dompurify": "^3.3.0",
     "openai": "^4.0.0",

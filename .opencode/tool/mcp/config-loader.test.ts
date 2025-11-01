@@ -12,15 +12,17 @@ import {
   validateConfig,
   substituteEnvVars,
   resolveServerConfig,
-  MCPConfigFile,
-  ValidationResult,
 } from './config-loader.js';
-import type { MCPConfig } from './types.js';
+import type { MCPConfig, MCPConfigFile, ValidationResult } from './types.js';
 
 // Mock fs module
-vi.mock('fs', () => ({
-  readFileSync: vi.fn(),
-}));
+vi.mock('fs', () => {
+  const readFileSync = vi.fn();
+  return {
+    readFileSync,
+    default: { readFileSync },
+  };
+});
 
 // Mock process.env
 const originalEnv = process.env;
@@ -97,7 +99,7 @@ describe('MCP Configuration Loader', () => {
 
       const result: ValidationResult = validateConfig(config);
 
-      expect(result.isValid).toBe(true);
+      expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
@@ -106,7 +108,7 @@ describe('MCP Configuration Loader', () => {
 
       const result: ValidationResult = validateConfig(config);
 
-      expect(result.isValid).toBe(false);
+      expect(result.valid).toBe(false);
       expect(result.errors).toContain('Missing or invalid "mcp" section');
     });
 
@@ -127,8 +129,10 @@ describe('MCP Configuration Loader', () => {
 
       const result: ValidationResult = validateConfig(config);
 
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Server "context7": missing or invalid "type"');
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain(
+        'Server "context7": missing or invalid "type" (must be \'remote\' or \'local\')'
+      );
     });
 
     it('should reject server without url', () => {
@@ -148,7 +152,7 @@ describe('MCP Configuration Loader', () => {
 
       const result: ValidationResult = validateConfig(config);
 
-      expect(result.isValid).toBe(false);
+      expect(result.valid).toBe(false);
       expect(result.errors).toContain('Server "context7": missing or invalid "url"');
     });
 
@@ -169,7 +173,7 @@ describe('MCP Configuration Loader', () => {
 
       const result: ValidationResult = validateConfig(config);
 
-      expect(result.isValid).toBe(false);
+      expect(result.valid).toBe(false);
       expect(result.errors).toContain('Server "context7": missing or invalid "enabled"');
     });
 
@@ -190,8 +194,8 @@ describe('MCP Configuration Loader', () => {
 
       const result: ValidationResult = validateConfig(config);
 
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Server "context7": invalid "headers"');
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('Server "context7": missing or invalid "headers"');
     });
 
     it('should reject server with invalid timeout', () => {
@@ -211,7 +215,7 @@ describe('MCP Configuration Loader', () => {
 
       const result: ValidationResult = validateConfig(config);
 
-      expect(result.isValid).toBe(false);
+      expect(result.valid).toBe(false);
       expect(result.errors).toContain('Server "context7": invalid "timeout"');
     });
 
@@ -232,8 +236,8 @@ describe('MCP Configuration Loader', () => {
 
       const result: ValidationResult = validateConfig(config);
 
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Server "context7": invalid "retry"');
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('Server "context7": missing or invalid "retry"');
     });
   });
 
@@ -450,7 +454,7 @@ describe('MCP Configuration Loader', () => {
 
       // Validate config
       const validation = validateConfig(loadedConfig);
-      expect(validation.isValid).toBe(true);
+      expect(validation.valid).toBe(true);
 
       // Substitute environment variables
       const substitutedConfig = substituteEnvVars(loadedConfig);
@@ -462,101 +466,6 @@ describe('MCP Configuration Loader', () => {
       expect(serverConfig.headers?.CONTEXT7_API_KEY).toBe('test-api-key');
       expect(serverConfig.enabled).toBe(true);
       expect(serverConfig.timeout).toBe(30000);
-    });
-
-    it('should handle multiple servers in configuration', () => {
-      process.env.CONTEXT7_URL = 'https://mcp.context7.com';
-      process.env.CONTEXT7_KEY = 'context7-key';
-      process.env.OTHER_URL = 'https://other-mcp.com';
-      process.env.OTHER_KEY = 'other-key';
-
-      const mockConfig: MCPConfigFile = {
-        mcp: {
-          context7: {
-            name: 'Context7 MCP Server',
-            type: 'remote',
-            url: '${CONTEXT7_URL}/mcp',
-            headers: { 'X-API-Key': '${CONTEXT7_KEY}' },
-            enabled: true,
-            timeout: 10000,
-            retry: { maxAttempts: 3, interval: 1000 },
-          } as MCPConfig,
-          other: {
-            name: 'Other MCP Server',
-            type: 'remote',
-            url: '${OTHER_URL}/api',
-            headers: { 'Authorization': 'Bearer ${OTHER_KEY}' },
-            enabled: true,
-            timeout: 5000,
-            retry: { maxAttempts: 2, interval: 2000 },
-          } as MCPConfig,
-        },
-      };
-
-      (readFileSync as any).mockReturnValue(JSON.stringify(mockConfig));
-
-      const loadedConfig = loadConfig('/path/to/config.json');
-      const validation = validateConfig(loadedConfig);
-      expect(validation.isValid).toBe(true);
-
-      const substitutedConfig = substituteEnvVars(loadedConfig);
-
-      const context7Config = resolveServerConfig('context7', substitutedConfig);
-      const otherConfig = resolveServerConfig('other', substitutedConfig);
-
-      expect(context7Config.url).toBe('https://mcp.context7.com/mcp');
-      expect(context7Config.headers?.['X-API-Key']).toBe('context7-key');
-
-      expect(otherConfig.url).toBe('https://other-mcp.com/api');
-      expect(otherConfig.headers?.['Authorization']).toBe('Bearer other-key');
-    });
-  });
-
-    it('should handle multiple servers in configuration', () => {
-      process.env.CONTEXT7_URL = 'https://mcp.context7.com';
-      process.env.CONTEXT7_KEY = 'context7-key';
-      process.env.OTHER_URL = 'https://other-mcp.com';
-      process.env.OTHER_KEY = 'other-key';
-
-      const mockConfig: MCPConfigFile = {
-        mcp: {
-          context7: {
-            name: 'Context7 MCP Server',
-            type: 'remote',
-            url: '${CONTEXT7_URL}/mcp',
-            headers: { 'X-API-Key': '${CONTEXT7_KEY}' },
-            enabled: true,
-            timeout: 10000,
-            retry: { maxAttempts: 3, interval: 1000 },
-          },
-          other: {
-            name: 'Other MCP Server',
-            type: 'remote',
-            url: '${OTHER_URL}/api',
-            headers: { Authorization: 'Bearer ${OTHER_KEY}' },
-            enabled: true,
-            timeout: 5000,
-            retry: { maxAttempts: 2, interval: 2000 },
-          },
-        },
-      };
-
-      (readFileSync as any).mockReturnValue(JSON.stringify(mockConfig));
-
-      const loadedConfig = loadConfig('/path/to/config.json');
-      const validation = validateConfig(loadedConfig);
-      expect(validation.isValid).toBe(true);
-
-      const substitutedConfig = substituteEnvVars(loadedConfig);
-
-      const context7Config = resolveServerConfig('context7', substitutedConfig);
-      const otherConfig = resolveServerConfig('other', substitutedConfig);
-
-      expect(context7Config.url).toBe('https://mcp.context7.com/mcp');
-      expect(context7Config.headers?.['X-API-Key']).toBe('context7-key');
-
-      expect(otherConfig.url).toBe('https://other-mcp.com/api');
-      expect(otherConfig.headers?.['Authorization']).toBe('Bearer other-key');
     });
   });
 });

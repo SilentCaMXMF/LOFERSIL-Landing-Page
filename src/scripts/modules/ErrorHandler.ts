@@ -3,7 +3,8 @@
  * Handles application errors gracefully with user-friendly messages and logging
  */
 
-const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production';
+const IS_DEVELOPMENT =
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 /**
  * Error handler configuration interface
@@ -113,21 +114,7 @@ export class ErrorHandler {
    */
   public showErrorMessage(message: string, duration: number = 5000): void {
     const errorDiv = document.createElement('div');
-    errorDiv.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #ff4444;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 5px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      z-index: 10000;
-      max-width: 300px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      line-height: 1.4;
-    `;
+    errorDiv.className = 'notification error';
     errorDiv.textContent = message;
     errorDiv.setAttribute('role', 'alert');
     errorDiv.setAttribute('aria-live', 'assertive');
@@ -147,21 +134,7 @@ export class ErrorHandler {
    */
   public showSuccessMessage(message: string, duration: number = 3000): void {
     const successDiv = document.createElement('div');
-    successDiv.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #4CAF50;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 5px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      z-index: 10000;
-      max-width: 300px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      line-height: 1.4;
-    `;
+    successDiv.className = 'notification success';
     successDiv.textContent = message;
     successDiv.setAttribute('role', 'status');
     successDiv.setAttribute('aria-live', 'polite');
@@ -181,21 +154,7 @@ export class ErrorHandler {
    */
   public showInfoMessage(message: string, duration: number = 3000): void {
     const infoDiv = document.createElement('div');
-    infoDiv.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #2196F3;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 5px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      z-index: 10000;
-      max-width: 300px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      line-height: 1.4;
-    `;
+    infoDiv.className = 'notification info';
     infoDiv.textContent = message;
     infoDiv.setAttribute('role', 'status');
     infoDiv.setAttribute('aria-live', 'polite');

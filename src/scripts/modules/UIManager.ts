@@ -194,7 +194,8 @@ export class UIManager {
    * Setup service worker for PWA functionality
    */
   private setupServiceWorker(): void {
-    const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production';
+    const IS_DEVELOPMENT =
+      window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
     if ('serviceWorker' in navigator && !IS_DEVELOPMENT) {
       window.addEventListener('load', () => {

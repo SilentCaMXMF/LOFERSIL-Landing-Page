@@ -14,7 +14,8 @@ import { UIManager } from './modules/UIManager.js';
 import { createContactForm } from './modules/ContactFormManager.js';
 
 // Development mode check for logging
-const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production';
+const IS_DEVELOPMENT =
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 // Window interface extensions for analytics and debugging
 declare global {
@@ -537,18 +538,9 @@ class LOFERSILLandingPage {
       // Setup cross-module event listeners
       this.setupCrossModuleEvents();
 
-      // Run validation tests in development
+      // Application initialized successfully
       if (IS_DEVELOPMENT) {
         console.info('LOFERSIL Landing Page initialized successfully');
-        // Run tests after a short delay to ensure everything is loaded
-        setTimeout(async () => {
-          try {
-            const { runValidationTests } = await import('./validation.test');
-            runValidationTests();
-          } catch {
-            console.warn('Validation tests not available in production');
-          }
-        }, 100);
       }
     } catch (error) {
       this.errorHandler.handleError(error, 'Application initialization failed');

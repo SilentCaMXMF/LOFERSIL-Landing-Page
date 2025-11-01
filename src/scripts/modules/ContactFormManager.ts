@@ -56,6 +56,29 @@ export class ContactFormManager {
       return;
     }
 
+    // Ensure success and error messages are hidden on initialization
+    const successElement = document.querySelector(
+      this.config.successMessageSelector
+    ) as HTMLElement;
+    const errorElement = document.querySelector(this.config.errorMessageSelector) as HTMLElement;
+
+    if (successElement) {
+      successElement.classList.add('hidden');
+      successElement.style.display = 'none';
+      successElement.setAttribute('aria-hidden', 'true');
+    }
+
+    if (errorElement) {
+      errorElement.classList.add('hidden');
+      errorElement.style.display = 'none';
+      errorElement.setAttribute('aria-hidden', 'true');
+    }
+
+    if (errorElement) {
+      errorElement.style.display = 'none';
+      errorElement.setAttribute('aria-hidden', 'true');
+    }
+
     // Set up form submission handler
     this.formElement.addEventListener('submit', this.handleSubmit.bind(this));
 
@@ -265,11 +288,13 @@ export class ContactFormManager {
     const errorElement = document.querySelector(this.config.errorMessageSelector) as HTMLElement;
 
     if (successElement) {
+      successElement.classList.remove('hidden');
       (successElement as HTMLElement).style.display = 'block';
       successElement.setAttribute('aria-hidden', 'false');
     }
 
     if (errorElement) {
+      errorElement.classList.add('hidden');
       (errorElement as HTMLElement).style.display = 'none';
       errorElement.setAttribute('aria-hidden', 'true');
     }
@@ -277,6 +302,7 @@ export class ContactFormManager {
     // Hide success message after 5 seconds
     setTimeout(() => {
       if (successElement) {
+        successElement.classList.add('hidden');
         (successElement as HTMLElement).style.display = 'none';
         successElement.setAttribute('aria-hidden', 'true');
       }
@@ -294,11 +320,13 @@ export class ContactFormManager {
 
     if (errorElement) {
       errorElement.textContent = message;
+      errorElement.classList.remove('hidden');
       (errorElement as HTMLElement).style.display = 'block';
       errorElement.setAttribute('aria-hidden', 'false');
     }
 
     if (successElement) {
+      successElement.classList.add('hidden');
       (successElement as HTMLElement).style.display = 'none';
       successElement.setAttribute('aria-hidden', 'true');
     }

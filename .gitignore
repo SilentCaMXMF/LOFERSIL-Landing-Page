@@ -64,4 +64,5 @@ temp/
 
 # Bun
 .bun
+.bun.lockb
 .vercel

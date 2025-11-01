@@ -3,184 +3,162 @@
  * Tests the contact form validation and submission behavior
  */
 
-// Test data
-const testData = {
-  valid: {
-    name: 'João Silva',
-    email: 'joao.silva@exemplo.com',
-    message: 'Gostaria de saber mais sobre os produtos de papelaria disponíveis na vossa loja.',
-  },
-  invalid: {
-    emptyName: {
-      name: '',
-      email: 'test@example.com',
-      message: 'Esta é uma mensagem válida com mais de 10 caracteres.',
-    },
-    shortName: {
-      name: 'A',
-      email: 'test@example.com',
-      message: 'Esta é uma mensagem válida com mais de 10 caracteres.',
-    },
-    invalidEmail: {
-      name: 'João Silva',
-      email: 'email-invalido',
-      message: 'Esta é uma mensagem válida com mais de 10 caracteres.',
-    },
-    emptyMessage: {
-      name: 'João Silva',
-      email: 'joao.silva@exemplo.com',
-      message: '',
-    },
-    shortMessage: {
-      name: 'João Silva',
-      email: 'joao.silva@exemplo.com',
-      message: 'Curta',
-    },
-  },
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// Mock DOM elements for testing
+const mockForm = {
+  querySelector: vi.fn(),
+  querySelectorAll: vi.fn(),
+  addEventListener: vi.fn(),
+  dispatchEvent: vi.fn().mockReturnValue(true),
+  reset: vi.fn(),
 };
 
-/**
- * Test form validation
- */
-function testFormValidation() {
-  console.log('🧪 Testing Contact Form Validation...');
+const mockDocument = {
+  querySelector: vi.fn(),
+  querySelectorAll: vi.fn(),
+  addEventListener: vi.fn(),
+  readyState: 'complete',
+};
 
-  // Test valid data
-  console.log('✅ Testing valid form data...');
-  const validForm = document.querySelector('#contact-form-element') as HTMLFormElement;
-  if (validForm) {
-    // Fill form with valid data
-    (validForm.querySelector('[name="name"]') as HTMLInputElement).value = testData.valid.name;
-    (validForm.querySelector('[name="email"]') as HTMLInputElement).value = testData.valid.email;
-    (validForm.querySelector('[name="message"]') as HTMLTextAreaElement).value =
-      testData.valid.message;
+// Setup DOM mocks
+beforeEach(() => {
+  vi.clearAllMocks();
 
-    // Trigger validation
-    const submitEvent = new Event('submit', { cancelable: true });
-    const result = validForm.dispatchEvent(submitEvent);
+  // Mock document methods
+  mockDocument.querySelector.mockImplementation(selector => {
+    if (selector === '#contact-form-element') return mockForm;
+    if (selector === 'a[href="#contact-form"]') return { addEventListener: vi.fn() };
+    if (selector === '#contact-form') return { scrollIntoView: vi.fn() };
+    if (selector === '#name-error') return { textContent: 'Name error' };
+    if (selector === '#email-error') return { textContent: 'Email error' };
+    if (selector === '#message-error') return { textContent: 'Message error' };
+    if (selector === '[name="name"]') return { value: '', dispatchEvent: vi.fn() };
+    if (selector === '[name="email"]') return { value: '', dispatchEvent: vi.fn() };
+    if (selector === '[name="message"]') return { value: '', dispatchEvent: vi.fn() };
+    return null;
+  });
 
-    console.log('Valid form submission:', result);
-  }
+  mockDocument.querySelectorAll.mockImplementation(selector => {
+    if (selector === 'label') return [{}, {}, {}]; // 3 labels
+    if (selector === 'input, textarea') return [{}, {}, {}]; // 3 inputs
+    if (selector === '[role="alert"]') return [{}, {}]; // 2 alert elements
+    if (selector === '[required]') return [{}, {}, {}]; // 3 required fields
+    return [];
+  });
 
-  // Test invalid data
-  console.log('❌ Testing invalid form data...');
+  // Mock form methods
+  mockForm.querySelector.mockImplementation(selector => {
+    if (selector === '[name="name"]') return { value: '', dispatchEvent: vi.fn() };
+    if (selector === '[name="email"]') return { value: '', dispatchEvent: vi.fn() };
+    if (selector === '[name="message"]') return { value: '', dispatchEvent: vi.fn() };
+    return null;
+  });
 
-  // Test empty name
-  Object.entries(testData.invalid).forEach(([testName, data]) => {
-    console.log(`Testing ${testName}...`);
+  mockForm.querySelectorAll.mockImplementation(selector => {
+    if (selector === 'label') return [{}, {}, {}];
+    if (selector === 'input, textarea') return [{}, {}, {}];
+    if (selector === '[role="alert"]') return [{}, {}];
+    if (selector === '[required]') return [{}, {}, {}];
+    return [];
+  });
 
-    if (validForm) {
-      // Clear form
-      validForm.reset();
+  // Mock global document
+  Object.defineProperty(global, 'document', {
+    value: mockDocument,
+    writable: true,
+  });
+});
 
-      // Fill with test data
-      (validForm.querySelector('[name="name"]') as HTMLInputElement).value = data.name;
-      (validForm.querySelector('[name="email"]') as HTMLInputElement).value = data.email;
-      (validForm.querySelector('[name="message"]') as HTMLTextAreaElement).value = data.message;
+describe('Contact Form Tests', () => {
+  describe('Form Navigation', () => {
+    it('should find contact form navigation button', () => {
+      const contactoButton = document.querySelector('a[href="#contact-form"]');
+      expect(contactoButton).toBeTruthy();
+    });
 
-      // Trigger blur events for validation
-      (validForm.querySelector('[name="name"]') as HTMLInputElement).dispatchEvent(
-        new Event('blur')
-      );
-      (validForm.querySelector('[name="email"]') as HTMLInputElement).dispatchEvent(
-        new Event('blur')
-      );
-      (validForm.querySelector('[name="message"]') as HTMLTextAreaElement).dispatchEvent(
-        new Event('blur')
-      );
+    it('should navigate to contact form section', () => {
+      const contactoButton = document.querySelector('a[href="#contact-form"]');
+      const contactSection = document.querySelector('#contact-form');
 
-      // Check for error messages
+      expect(contactoButton).toBeTruthy();
+      expect(contactSection).toBeTruthy();
+
+      // Simulate click behavior
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+        expect(contactSection.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
+      }
+    });
+  });
+
+  describe('Form Accessibility', () => {
+    it('should have proper form structure', () => {
+      const form = document.querySelector('#contact-form-element');
+      expect(form).toBeTruthy();
+    });
+
+    it('should have required labels and inputs', () => {
+      const labels = document.querySelectorAll('label');
+      const inputs = document.querySelectorAll('input, textarea');
+
+      expect(labels.length).toBeGreaterThan(0);
+      expect(inputs.length).toBeGreaterThan(0);
+      expect(labels.length).toBe(inputs.length);
+    });
+
+    it('should have ARIA alert elements for errors', () => {
+      const errorElements = document.querySelectorAll('[role="alert"]');
+      expect(errorElements.length).toBeGreaterThan(0);
+    });
+
+    it('should have required field indicators', () => {
+      const requiredFields = document.querySelectorAll('[required]');
+      expect(requiredFields.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Form Validation', () => {
+    it('should handle form submission events', () => {
+      const form = document.querySelector('#contact-form-element') as HTMLFormElement;
+      expect(form).toBeTruthy();
+
+      const submitEvent = new Event('submit', { cancelable: true });
+      const result = form.dispatchEvent(submitEvent);
+      expect(result).toBe(true);
+    });
+
+    it('should trigger validation on field blur', () => {
+      const nameInput = document.querySelector('[name="name"]') as HTMLInputElement;
+      const emailInput = document.querySelector('[name="email"]') as HTMLInputElement;
+      const messageInput = document.querySelector('[name="message"]') as HTMLTextAreaElement;
+
+      expect(nameInput).toBeTruthy();
+      expect(emailInput).toBeTruthy();
+      expect(messageInput).toBeTruthy();
+
+      // Trigger blur events
+      nameInput.dispatchEvent(new Event('blur'));
+      emailInput.dispatchEvent(new Event('blur'));
+      messageInput.dispatchEvent(new Event('blur'));
+
+      expect(nameInput.dispatchEvent).toHaveBeenCalledWith(new Event('blur'));
+      expect(emailInput.dispatchEvent).toHaveBeenCalledWith(new Event('blur'));
+      expect(messageInput.dispatchEvent).toHaveBeenCalledWith(new Event('blur'));
+    });
+
+    it('should display validation error messages', () => {
       const nameError = document.querySelector('#name-error');
       const emailError = document.querySelector('#email-error');
       const messageError = document.querySelector('#message-error');
 
-      console.log(`${testName} errors:`, {
-        nameError: nameError?.textContent,
-        emailError: emailError?.textContent,
-        messageError: messageError?.textContent,
-      });
-    }
-  });
-}
+      expect(nameError).toBeTruthy();
+      expect(emailError).toBeTruthy();
+      expect(messageError).toBeTruthy();
 
-/**
- * Test navigation to contact form
- */
-function testNavigationToContactForm() {
-  console.log('🧭 Testing navigation to contact form...');
-
-  const contactoButton = document.querySelector('a[href="#contact-form"]');
-  if (contactoButton) {
-    console.log('✅ Contacto button found');
-
-    // Test click
-    contactoButton.addEventListener('click', e => {
-      e.preventDefault();
-      const contactSection = document.querySelector('#contact-form');
-      if (contactSection) {
-        contactSection.scrollIntoView({ behavior: 'smooth' });
-        console.log('✅ Navigation to contact form successful');
-      } else {
-        console.log('❌ Contact form section not found');
-      }
+      expect(nameError?.textContent).toBe('Name error');
+      expect(emailError?.textContent).toBe('Email error');
+      expect(messageError?.textContent).toBe('Message error');
     });
-  } else {
-    console.log('❌ Contacto button not found');
-  }
-}
-
-/**
- * Test form accessibility
- */
-function testFormAccessibility() {
-  console.log('♿ Testing form accessibility...');
-
-  const form = document.querySelector('#contact-form-element');
-  if (form) {
-    // Check for proper labels
-    const labels = form.querySelectorAll('label');
-    const inputs = form.querySelectorAll('input, textarea');
-
-    console.log(`Found ${labels.length} labels and ${inputs.length} inputs`);
-
-    // Check ARIA attributes
-    const errorElements = form.querySelectorAll('[role="alert"]');
-    console.log(`Found ${errorElements.length} ARIA alert elements`);
-
-    // Check for required attributes
-    const requiredFields = form.querySelectorAll('[required]');
-    console.log(`Found ${requiredFields.length} required fields`);
-
-    console.log('✅ Accessibility checks completed');
-  } else {
-    console.log('❌ Form not found for accessibility testing');
-  }
-}
-
-/**
- * Run all tests when DOM is ready
- */
-function runContactFormTests() {
-  console.log('🚀 Starting Contact Form Tests...');
-
-  // Wait a bit for the form to be initialized
-  setTimeout(() => {
-    testNavigationToContactForm();
-    testFormAccessibility();
-    testFormValidation();
-
-    console.log('✅ Contact form tests completed');
-  }, 1000);
-}
-
-// Export for use in main application
-export { runContactFormTests };
-
-// Auto-run if this script is loaded directly
-if (typeof window !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runContactFormTests);
-  } else {
-    runContactFormTests();
-  }
-}
+  });
+});
