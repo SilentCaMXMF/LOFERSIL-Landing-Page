@@ -1,8 +1,11 @@
+/// <reference types="vite/client" />
+
 /**
  * LOFERSIL Landing Page - Contact Form Module
  * Handles contact form submission, validation, and email service integration
  */
 
+import DOMPurify from 'dompurify';
 import { ContactFormValidator, ContactRequest } from '../validation.js';
 
 // Contact form configuration
@@ -74,13 +77,11 @@ export class ContactFormManager {
       errorElement.setAttribute('aria-hidden', 'true');
     }
 
-    if (errorElement) {
-      errorElement.style.display = 'none';
-      errorElement.setAttribute('aria-hidden', 'true');
-    }
-
     // Set up form submission handler
     this.formElement.addEventListener('submit', this.handleSubmit.bind(this));
+
+    // Initialize security features
+    this.initializeSecurity();
 
     // Set up real-time validation
     this.setupRealtimeValidation();
@@ -112,6 +113,33 @@ export class ContactFormManager {
         });
       }
     });
+  }
+
+  /**
+   * Initialize security features (CSRF token, etc.)
+   */
+  private initializeSecurity(): void {
+    if (!this.formElement) return;
+
+    // Generate and set CSRF token
+    const token = this.generateCsrfToken();
+    const tokenField = this.formElement.querySelector('[name="csrf_token"]') as HTMLInputElement;
+    if (tokenField) {
+      tokenField.value = token;
+    }
+  }
+
+  /**
+   * Generate a simple CSRF token
+   */
+  private generateCsrfToken(): string {
+    const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    try {
+      sessionStorage.setItem('csrf_token', token);
+    } catch (error) {
+      console.warn('Failed to store CSRF token:', error);
+    }
+    return token;
   }
 
   /**
@@ -212,12 +240,121 @@ export class ContactFormManager {
   }
 
   /**
+   * Check rate limiting for form submissions
+   */
+  private checkRateLimit(): boolean {
+    const now = Date.now();
+    const key = 'contact_form_submissions';
+    const maxSubmissions = 3; // Max 3 submissions per hour
+    const windowMs = 60 * 60 * 1000; // 1 hour
+
+    try {
+      const stored = localStorage.getItem(key);
+      const submissions: number[] = stored ? JSON.parse(stored) : [];
+
+      // Filter out submissions outside the time window
+      const validSubmissions = submissions.filter(timestamp => now - timestamp < windowMs);
+
+      if (validSubmissions.length >= maxSubmissions) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      // If localStorage fails, allow submission but log error
+      console.warn('Rate limiting check failed:', error);
+      return true;
+    }
+  }
+
+  /**
+   * Record a successful submission for rate limiting
+   */
+  private recordSubmission(): void {
+    const now = Date.now();
+    const key = 'contact_form_submissions';
+
+    try {
+      const stored = localStorage.getItem(key);
+      const submissions: number[] = stored ? JSON.parse(stored) : [];
+      submissions.push(now);
+
+      // Keep only recent submissions (within 2 hours to be safe)
+      const windowMs = 2 * 60 * 60 * 1000;
+      const validSubmissions = submissions.filter(timestamp => now - timestamp < windowMs);
+
+      localStorage.setItem(key, JSON.stringify(validSubmissions));
+    } catch (error) {
+      console.warn('Failed to record submission:', error);
+    }
+  }
+
+  /**
+   * Check honeypot field for bot protection
+   */
+  private checkHoneypot(): boolean {
+    if (!this.formElement) return true;
+
+    const honeypotField = this.formElement.querySelector('[name="website"]') as HTMLInputElement;
+    if (!honeypotField) return true; // If field doesn't exist, allow submission
+
+    // If honeypot field has any value, it's likely a bot
+    return !honeypotField.value || honeypotField.value.trim() === '';
+  }
+
+  /**
+   * Validate CSRF token
+   */
+  private validateCsrfToken(): boolean {
+    if (!this.formElement) return true;
+
+    const tokenField = this.formElement.querySelector('[name="csrf_token"]') as HTMLInputElement;
+    const storedToken = sessionStorage.getItem('csrf_token');
+
+    if (!tokenField || !storedToken) return true; // If no token system, allow
+
+    return tokenField.value === storedToken;
+  }
+
+  /**
+   * Sanitize form data using DOMPurify
+   */
+  private sanitizeFormData(data: ContactRequest): ContactRequest {
+    return {
+      name: DOMPurify.sanitize(data.name),
+      email: DOMPurify.sanitize(data.email),
+      phone: data.phone ? DOMPurify.sanitize(data.phone) : undefined,
+      message: DOMPurify.sanitize(data.message), // Allow basic formatting
+    };
+  }
+
+  /**
    * Handle form submission
    */
   private async handleSubmit(event: Event): Promise<void> {
     event.preventDefault();
 
     if (this.isSubmitting) {
+      return;
+    }
+
+    // Security checks
+    if (!this.checkRateLimit()) {
+      this.showErrorMessage(
+        'Demasiadas tentativas. Por favor, aguarde alguns minutos antes de tentar novamente.'
+      );
+      return;
+    }
+
+    if (!this.checkHoneypot()) {
+      this.showErrorMessage('Erro de validação. Por favor, tente novamente.');
+      return;
+    }
+
+    if (!this.validateCsrfToken()) {
+      this.showErrorMessage(
+        'Token de segurança inválido. Por favor, recarregue a página e tente novamente.'
+      );
       return;
     }
 
@@ -235,17 +372,21 @@ export class ContactFormManager {
       return;
     }
 
+    // Sanitize inputs
+    const sanitizedData = this.sanitizeFormData(formData);
+
     // Start submission
     this.setSubmittingState(true);
 
     try {
       // Call submit handler if provided
-      const success = (await this.eventHandlers.onSubmit?.(formData)) ?? true;
+      const success = (await this.eventHandlers.onSubmit?.(sanitizedData)) ?? true;
 
       if (success) {
+        this.recordSubmission(); // Record successful submission for rate limiting
         this.showSuccessMessage();
         this.resetForm();
-        this.eventHandlers.onSuccess?.(formData);
+        this.eventHandlers.onSuccess?.(sanitizedData);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
@@ -339,6 +480,8 @@ export class ContactFormManager {
     if (this.formElement) {
       this.formElement.reset();
       this.validator.clearErrors();
+      // Regenerate CSRF token after form reset
+      this.initializeSecurity();
     }
   }
 
@@ -382,16 +525,13 @@ export class ContactFormManager {
 }
 
 /**
- * Email service integration using Formspree
+ * Email service integration using custom backend
  */
 class EmailService {
   private endpoint: string;
-  private formId: string;
 
   constructor() {
-    // Formspree endpoint - replace with actual form ID
-    this.formId = 'xqakpvna'; // This should be replaced with actual Formspree form ID
-    this.endpoint = `https://formspree.io/f/${this.formId}`;
+    this.endpoint = '/api/contact';
   }
 
   /**
@@ -409,20 +549,23 @@ class EmailService {
           name: data.name,
           email: data.email,
           message: data.message,
-          subject: `Nova mensagem de contacto de ${data.name}`,
-          _subject: `LOFERSIL - Contacto de ${data.name}`,
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
-      return result.ok || true;
+      return result.success;
     } catch (error) {
       console.error('Email service error:', error);
-      throw new Error('Falha ao enviar mensagem. Por favor, tente novamente mais tarde.');
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : 'Falha ao enviar mensagem. Por favor, tente novamente mais tarde.'
+      );
     }
   }
 }
@@ -436,14 +579,6 @@ export function createContactForm(): ContactFormManager {
     submitButtonSelector: '#contact-submit',
     successMessageSelector: '#form-success',
     errorMessageSelector: '#form-error',
-    emailService: {
-      endpoint: 'https://formspree.io/f/xqakpvna',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    },
   };
 
   const contactForm = new ContactFormManager(config);
@@ -461,7 +596,11 @@ export function createContactForm(): ContactFormManager {
 
   // Set up error handler
   contactForm.on('onError', (error: Error) => {
-    console.error('Contact form submission error:', error);
+    // Log error message without exposing sensitive information
+    console.error('Contact form submission failed:', {
+      message: error.message,
+      timestamp: new Date().toISOString(),
+    });
   });
 
   return contactForm;

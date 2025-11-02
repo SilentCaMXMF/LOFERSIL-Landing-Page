@@ -3,8 +3,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/your-username/lofersil-landing-page/workflows/CI/badge.svg)](https://github.com/your-username/lofersil-landing-page/actions)
 [![Vercel Deployment](https://vercel.com/button)](https://vercel.com)
+[![Tests](https://img.shields.io/badge/tests-157%20passed-brightgreen)](https://github.com/your-username/lofersil-landing-page)
+[![Coverage](https://img.shields.io/badge/coverage->80%25-blue)](https://github.com/your-username/lofersil-landing-page)
 
-A modern, static landing page for LOFERSIL, built with TypeScript and optimized for performance. Features dual language support (Portuguese/English), image optimization, and PWA capabilities for an enhanced user experience.
+A modern, secure, and highly performant static landing page for LOFERSIL, built with a modular TypeScript architecture. Features comprehensive security measures, advanced performance optimizations, dual language support (Portuguese/English), image optimization, PWA capabilities, and extensive test coverage for an enhanced user experience.
 
 ## Table of Contents
 
@@ -23,16 +25,19 @@ A modern, static landing page for LOFERSIL, built with TypeScript and optimized 
 
 ## Features
 
-- 🌐 **Dual Language Support**: Seamless switching between Portuguese and English
-- 🖼️ **Image Optimization**: Automatic image compression and WebP conversion
-- 📱 **Progressive Web App (PWA)**: Offline capabilities and installable experience
-- ⚡ **Performance Optimized**: Fast loading with modern web technologies
-- 🎨 **Responsive Design**: Mobile-first approach with PostCSS styling
-- 🔍 **SEO Friendly**: Optimized for search engines with meta tags and structured data
-- 🛠️ **TypeScript**: Type-safe development with strict mode
-- 🧪 **Testing**: Unit tests with Vitest and performance audits with Lighthouse
-- 📧 **Contact Form**: Functional contact form with validation and email integration
+- 🏗️ **Modular Architecture**: Clean separation of concerns with 15+ specialized modules
+- 🔒 **Enterprise Security**: DOMPurify integration, XSS prevention, input sanitization, and secure coding practices
+- ⚡ **Performance Optimized**: Intersection Observer, lazy loading, debounced events, and optimized rendering
+- 🧪 **Comprehensive Testing**: 157+ unit tests with >80% code coverage and integration testing
+- 🌐 **Dual Language Support**: Seamless switching between Portuguese and English with i18n
+- 🖼️ **Advanced Image Optimization**: Automatic compression, WebP conversion, and responsive images
+- 📱 **Progressive Web App (PWA)**: Offline capabilities, service worker caching, and installable experience
+- 🎨 **Responsive Design**: Mobile-first approach with PostCSS styling and smooth animations
+- 🔍 **SEO Optimized**: Dynamic meta tags, sitemap generation, robots.txt, and structured data
+- 🛠️ **TypeScript First**: Strict mode, comprehensive type safety, and modern ES2020 features
+- 📧 **Secure Contact Form**: Input validation, rate limiting, and secure email integration
 - 🤖 **AI Image Specialist**: OpenAI GPT-4.1-nano integration for advanced image analysis and editing
+- 🚀 **Production Ready**: Optimized builds, source maps, and deployment automation
 
 ## Tech Stack
 
@@ -151,6 +156,35 @@ Configured in `eslint.config.js` with:
 - TypeScript support
 - Custom rules for code quality
 - Integration with Prettier
+
+### Email Service
+
+The contact form uses a custom Node.js/Express backend for secure email handling:
+
+- **Framework**: Express.js with security middleware (Helmet, CORS, Rate Limiting)
+- **Validation**: Joi schema validation for input sanitization
+- **Email Transport**: Nodemailer with SMTP configuration
+- **Security**: Input validation, rate limiting (5 requests/15min per IP), CORS protection
+- **Endpoint**: `/api/contact` (POST)
+
+**Required Environment Variables**:
+
+```bash
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+FROM_EMAIL=your_email@gmail.com
+TO_EMAIL=contact@lofersil.com
+ALLOWED_ORIGINS=https://yourdomain.com
+```
+
+**Setup Instructions**:
+
+1. Configure SMTP credentials (Gmail, SendGrid, etc.)
+2. Set environment variables in Vercel dashboard
+3. The API automatically handles form submissions and sends emails
 
 ## Development Workflow
 

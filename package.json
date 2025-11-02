@@ -13,6 +13,7 @@
     "dev:bun": "bun run tsc --watch",
     "start": "serve dist --single -l 3000",
     "start:bun": "bun run start",
+    "serve-8000": "bun run build && cd dist && python -m http.server 8000",
     "test": "vitest",
     "test:bun": "bun run vitest",
     "test:run": "vitest run",
@@ -32,7 +33,8 @@
     "deploy:preview": "vercel",
     "deploy:preview:bun": "bun run vercel",
     "deploy:prod": "vercel --prod",
-    "deploy:prod:bun": "bun run vercel --prod"
+    "deploy:prod:bun": "bun run vercel --prod",
+    "build-and-serve-8000": "bun run build:bun && serve dist --single -l 8000"
   },
   "keywords": [
     "landing-page",
@@ -49,6 +51,7 @@
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "@vitest/coverage-v8": "^2.1.9",
     "autoprefixer": "^10.4.0",
     "bun-types": "^1.3.1",
     "cssnano": "^6.0.0",
@@ -71,7 +74,13 @@
   },
   "packageManager": "npm@10.0.0",
   "dependencies": {
+    "cors": "^2.8.5",
     "dompurify": "^3.3.0",
+    "express": "^4.18.0",
+    "express-rate-limit": "^7.0.0",
+    "helmet": "^7.0.0",
+    "joi": "^17.9.0",
+    "nodemailer": "^6.9.0",
     "openai": "^4.0.0",
     "sharp": "^0.33.0",
     "web-vitals": "^5.1.0"

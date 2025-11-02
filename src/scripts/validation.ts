@@ -3,6 +3,8 @@
  * Comprehensive input validation system for contact forms
  */
 
+const DOMPurify = (globalThis as any).DOMPurify;
+
 // Extended contact request interface with phone field
 export interface ContactRequest {
   name: string;
@@ -466,11 +468,18 @@ export class ContactFormValidator {
     }
 
     const formData: ContactRequest = {
-      name: (this.formElement.querySelector('[name="name"]') as HTMLInputElement)?.value || '',
-      email: (this.formElement.querySelector('[name="email"]') as HTMLInputElement)?.value || '',
-      phone: (this.formElement.querySelector('[name="phone"]') as HTMLInputElement)?.value || '',
-      message:
-        (this.formElement.querySelector('[name="message"]') as HTMLTextAreaElement)?.value || '',
+      name: DOMPurify.sanitize(
+        (this.formElement.querySelector('[name="name"]') as HTMLInputElement)?.value || ''
+      ),
+      email: DOMPurify.sanitize(
+        (this.formElement.querySelector('[name="email"]') as HTMLInputElement)?.value || ''
+      ),
+      phone: DOMPurify.sanitize(
+        (this.formElement.querySelector('[name="phone"]') as HTMLInputElement)?.value || ''
+      ),
+      message: DOMPurify.sanitize(
+        (this.formElement.querySelector('[name="message"]') as HTMLTextAreaElement)?.value || ''
+      ),
     };
 
     const result = validateContactForm(formData);
@@ -493,15 +502,19 @@ export class ContactFormValidator {
     if (!this.formElement) return null;
 
     return {
-      name:
-        (this.formElement.querySelector('[name="name"]') as HTMLInputElement)?.value.trim() || '',
-      email:
-        (this.formElement.querySelector('[name="email"]') as HTMLInputElement)?.value.trim() || '',
-      phone:
-        (this.formElement.querySelector('[name="phone"]') as HTMLInputElement)?.value.trim() || '',
-      message:
+      name: DOMPurify.sanitize(
+        (this.formElement.querySelector('[name="name"]') as HTMLInputElement)?.value.trim() || ''
+      ),
+      email: DOMPurify.sanitize(
+        (this.formElement.querySelector('[name="email"]') as HTMLInputElement)?.value.trim() || ''
+      ),
+      phone: DOMPurify.sanitize(
+        (this.formElement.querySelector('[name="phone"]') as HTMLInputElement)?.value.trim() || ''
+      ),
+      message: DOMPurify.sanitize(
         (this.formElement.querySelector('[name="message"]') as HTMLTextAreaElement)?.value.trim() ||
-        '',
+          ''
+      ),
     };
   }
 

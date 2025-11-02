@@ -3,17 +3,20 @@
  * Provides basic caching for offline functionality
  */
 
-const CACHE_NAME = 'lofersil-v1.0.0';
-const STATIC_CACHE = 'lofersil-static-v1.0.0';
+const CACHE_NAME = 'lofersil-v1.0.1';
+const STATIC_CACHE = 'lofersil-static-v1.0.1';
 
 // Resources to cache immediately
 const STATIC_ASSETS = [
   '/',
   '/main.css',
   '/scripts/index.js',
-  '/favicon.svg',
-  '/locales/en.json',
+  '/scripts/modules/ErrorHandler.js',
+  '/scripts/modules/Router.js',
+  '/scripts/modules/UIManager.js',
+  '/images/favicon-48x48-lettuce.svg',
   '/locales/pt.json',
+  '/images/logo.jpg',
 ];
 
 // Install event - cache static assets
@@ -57,40 +60,37 @@ self.addEventListener('fetch', event => {
   if (!event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      // Return cached version if available
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+    (async () => {
+      try {
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) return cachedResponse;
 
-      // Otherwise fetch from network
-      return fetch(event.request)
-        .then(response => {
-          // Don't cache non-successful responses
-          if (!response.ok) return response;
+        const response = await fetch(event.request);
+        if (!response.ok) return response;
 
-          // Cache successful responses for future use
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseClone);
-          });
-
-          return response;
-        })
-        .catch(() => {
-          // If both cache and network fail, show offline page
-          if (event.request.destination === 'document') {
-            return caches.match('/').then(response => {
-              return (
-                response ||
-                new Response('Offline - Please check your connection', {
-                  status: 503,
-                  statusText: 'Service Unavailable',
-                })
-              );
-            });
-          }
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseClone);
         });
-    })
+        return response;
+      } catch (error) {
+        // If both cache and network fail, show offline page for documents, 503 for others
+        if (event.request.destination === 'document') {
+          const offlineResponse = await caches.match('/');
+          return (
+            offlineResponse ||
+            new Response('Offline - Please check your connection', {
+              status: 503,
+              statusText: 'Service Unavailable',
+            })
+          );
+        } else {
+          return new Response('Service Unavailable', {
+            status: 503,
+            statusText: 'Service Unavailable',
+          });
+        }
+      }
+    })()
   );
 });

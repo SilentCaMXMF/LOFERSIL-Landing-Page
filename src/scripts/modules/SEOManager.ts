@@ -3,6 +3,7 @@
  * Manages SEO-related functionality including meta tags and structured data
  */
 
+import DOMPurify from 'dompurify';
 import { ErrorHandler } from './ErrorHandler.js';
 
 /**
@@ -61,28 +62,44 @@ export class SEOManager {
    */
   public updateMetaTags(title: string, description: string, options?: MetaTagOptions): void {
     try {
+      // Sanitize and validate inputs
+      const sanitizedTitle = this.sanitizeText(title);
+      const sanitizedDescription = this.sanitizeText(description);
+
       // Update document title
-      document.title = title;
+      document.title = sanitizedTitle;
 
       // Update meta tags
-      this.updateMetaTag('description', description);
+      this.updateMetaTag('description', sanitizedDescription);
 
       // Open Graph tags
-      this.updateMetaTag('og:title', options?.title || title);
-      this.updateMetaTag('og:description', options?.description || description);
+      this.updateMetaTag(
+        'og:title',
+        options?.title ? this.sanitizeText(options.title) : sanitizedTitle
+      );
+      this.updateMetaTag(
+        'og:description',
+        options?.description ? this.sanitizeText(options.description) : sanitizedDescription
+      );
       this.updateMetaTag('og:url', options?.url || window.location.href);
       this.updateMetaTag('og:type', options?.type || 'website');
       this.updateMetaTag('og:site_name', this.config.siteName);
 
       if (options?.image) {
         this.updateMetaTag('og:image', options.image);
-        this.updateMetaTag('og:image:alt', title);
+        this.updateMetaTag('og:image:alt', sanitizedTitle);
       }
 
       // Twitter Card tags
       this.updateMetaTag('twitter:card', 'summary_large_image');
-      this.updateMetaTag('twitter:title', options?.title || title);
-      this.updateMetaTag('twitter:description', options?.description || description);
+      this.updateMetaTag(
+        'twitter:title',
+        options?.title ? this.sanitizeText(options.title) : sanitizedTitle
+      );
+      this.updateMetaTag(
+        'twitter:description',
+        options?.description ? this.sanitizeText(options.description) : sanitizedDescription
+      );
 
       if (this.config.twitterHandle) {
         this.updateMetaTag('twitter:site', this.config.twitterHandle);
@@ -102,6 +119,32 @@ export class SEOManager {
       this.updateCanonicalLink(options?.url);
     } catch (error) {
       this.errorHandler.handleError(error, 'Failed to update meta tags');
+    }
+  }
+
+  /**
+   * Sanitize text input to prevent XSS
+   */
+  private sanitizeText(text: string): string {
+    // Use DOMPurify to sanitize text content
+    return DOMPurify.sanitize(text, { ALLOWED_TAGS: [] });
+  }
+
+  /**
+   * Sanitize URL input to prevent XSS
+   */
+  private sanitizeUrl(url: string): string {
+    // Basic URL validation and sanitization
+    try {
+      const urlObj = new URL(url, window.location.origin);
+      // Only allow http and https protocols
+      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+        throw new Error('Invalid protocol');
+      }
+      return urlObj.href;
+    } catch {
+      // If URL is invalid, return empty string
+      return '';
     }
   }
 
@@ -233,13 +276,19 @@ export class SEOManager {
     availability?: string;
   }): void {
     try {
+      // Validate and sanitize inputs
+      const sanitizedName = this.sanitizeText(product.name);
+      const sanitizedDescription = this.sanitizeText(product.description);
+      const sanitizedImage = this.sanitizeUrl(product.image);
+      const sanitizedUrl = this.sanitizeUrl(product.url);
+
       const productData = {
         '@context': 'https://schema.org',
         '@type': 'Product',
-        name: product.name,
-        description: product.description,
-        image: product.image,
-        url: product.url,
+        name: sanitizedName,
+        description: sanitizedDescription,
+        image: sanitizedImage,
+        url: sanitizedUrl,
         ...(product.price && {
           offers: {
             '@type': 'Offer',
@@ -272,19 +321,29 @@ export class SEOManager {
     };
   }): void {
     try {
+      // Validate and sanitize inputs
+      const sanitizedHeadline = this.sanitizeText(article.headline);
+      const sanitizedDescription = this.sanitizeText(article.description);
+      const sanitizedImage = this.sanitizeUrl(article.image);
+      const sanitizedUrl = this.sanitizeUrl(article.url);
+      const sanitizedAuthorName = this.sanitizeText(article.author.name);
+      const sanitizedAuthorUrl = article.author.url
+        ? this.sanitizeUrl(article.author.url)
+        : undefined;
+
       const articleData = {
         '@context': 'https://schema.org',
         '@type': 'Article',
-        headline: article.headline,
-        description: article.description,
-        image: article.image,
-        url: article.url,
+        headline: sanitizedHeadline,
+        description: sanitizedDescription,
+        image: sanitizedImage,
+        url: sanitizedUrl,
         datePublished: article.datePublished,
         dateModified: article.dateModified || article.datePublished,
         author: {
           '@type': 'Person',
-          name: article.author.name,
-          ...(article.author.url && { url: article.author.url }),
+          name: sanitizedAuthorName,
+          ...(sanitizedAuthorUrl && { url: sanitizedAuthorUrl }),
         },
         publisher: {
           '@type': 'Organization',

@@ -1,52 +1,20 @@
 /**
- * NavigationManager - Handles routing, navigation, and URL management
- * Manages client-side routing, mobile menu, and navigation state
+ * Navigation Manager for LOFERSIL Landing Page
+ * Handles mobile menu, navigation state, and UI interactions
  */
 
-import { ErrorHandler } from './ErrorHandler.js';
-
-// DOMPurify is loaded globally from CDN
-declare var DOMPurify: {
-  sanitize: (html: string) => string;
-};
-
-/**
- * Navigation configuration interface
- */
-interface NavigationConfig {
-  mobileBreakpoint: number;
-  scrollThreshold: number;
-}
-
-/**
- * Route configuration interface
- */
-interface Route {
-  title: string;
-  description: string;
-  content: string;
-}
-
-/**
- * NavigationManager class for handling all navigation functionality
- */
 export class NavigationManager {
-  private navToggle: HTMLElement | null = null;
-  private navMenu: HTMLElement | null = null;
-  private navbar: HTMLElement | null = null;
-  private mainContent: HTMLElement | null = null;
-  private isMenuOpen: boolean = false;
-  private config: NavigationConfig;
-  private routes: Record<string, Route>;
-  private errorHandler: ErrorHandler;
+  private navToggle: HTMLElement | null;
+  private navMenu: HTMLElement | null;
+  private navbar: HTMLElement | null;
+  private isMenuOpen: boolean;
 
-  constructor(config: NavigationConfig, routes: Record<string, Route>, errorHandler: ErrorHandler) {
-    this.config = config;
-    this.routes = routes;
-    this.errorHandler = errorHandler;
+  constructor() {
+    this.navToggle = null;
+    this.navMenu = null;
+    this.navbar = null;
+    this.isMenuOpen = false;
     this.setupDOMElements();
-    this.setupNavigation();
-    this.setupRouting();
     this.setupEventListeners();
   }
 
@@ -57,32 +25,6 @@ export class NavigationManager {
     this.navToggle = document.getElementById('nav-toggle');
     this.navMenu = document.getElementById('nav-menu');
     this.navbar = document.getElementById('main-nav');
-    this.mainContent = document.getElementById('main-content');
-  }
-
-  /**
-   * Setup navigation functionality
-   */
-  private setupNavigation(): void {
-    // Set active navigation based on current path
-    this.setActiveNavigation();
-
-    // Handle mobile menu state
-    this.handleMobileMenuState();
-  }
-
-  /**
-   * Setup routing functionality
-   */
-  private setupRouting(): void {
-    // Render initial page
-    this.renderPage();
-
-    // Handle browser back/forward
-    window.addEventListener('popstate', () => this.renderPage());
-
-    // Handle navigation clicks
-    document.addEventListener('click', e => this.handleNavigation(e));
   }
 
   /**
@@ -91,99 +33,27 @@ export class NavigationManager {
   private setupEventListeners(): void {
     // Navigation toggle
     this.navToggle?.addEventListener('click', () => this.toggleMobileMenu());
-
     // Close menu when clicking outside
     document.addEventListener('click', e => this.handleOutsideClick(e));
-
     // Close menu on escape key
     document.addEventListener('keydown', e => this.handleKeydown(e));
-
     // Handle window resize
     window.addEventListener('resize', () => this.handleResize());
-
-    // Smooth scroll for anchor links
-    document.addEventListener('click', e => this.handleSmoothScroll(e));
-  }
-
-  /**
-   * Render the current page based on URL path
-   */
-  public renderPage(): void {
-    try {
-      const currentPath = window.location.pathname;
-      const route = this.routes[currentPath] || this.routes['/'];
-
-      if (this.mainContent) {
-        const template = document.createElement('template');
-        // Use DOMPurify for XSS protection - required for security
-        if (typeof DOMPurify !== 'undefined') {
-          template.innerHTML = DOMPurify.sanitize(route.content);
-        } else {
-          // Critical security error - DOMPurify must be available
-          throw new Error('DOMPurify library required for secure content rendering');
-        }
-        this.mainContent.replaceChildren(template.content.cloneNode(true));
-      }
-
-      // Update active navigation
-      this.setActiveNavigation(currentPath);
-
-      // Scroll to top
-      window.scrollTo(0, 0);
-
-      // Dispatch custom event for other modules to react
-      window.dispatchEvent(
-        new CustomEvent('pageRendered', { detail: { path: currentPath, route } })
-      );
-    } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to render page');
-    }
-  }
-
-  /**
-   * Handle navigation clicks with error boundary
-   */
-  private handleNavigation(e: Event): void {
-    try {
-      const target = e.target as HTMLElement;
-      const link = target.closest('a[href]') as HTMLAnchorElement;
-
-      if (link && link.getAttribute('href')?.startsWith('/')) {
-        e.preventDefault();
-        const href = link.getAttribute('href') || '/';
-
-        // Update URL without page reload
-        history.pushState(null, '', href);
-
-        // Render new page
-        this.renderPage();
-      }
-    } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to handle navigation', {
-        component: 'NavigationManager',
-        action: 'handleNavigation',
-        timestamp: new Date().toISOString(),
-      });
-    }
   }
 
   /**
    * Toggle mobile navigation menu
    */
-  public toggleMobileMenu(): void {
+  toggleMobileMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
-
     if (this.navMenu) {
       this.navMenu.classList.toggle('active', this.isMenuOpen);
     }
-
     if (this.navToggle) {
       this.navToggle.classList.toggle('active', this.isMenuOpen);
     }
-
     // Prevent body scroll when menu is open
     document.body.classList.toggle('menu-open', this.isMenuOpen);
-
     // Update ARIA attributes
     this.navToggle?.setAttribute('aria-expanded', this.isMenuOpen.toString());
   }
@@ -201,31 +71,19 @@ export class NavigationManager {
    * Handle window resize
    */
   private handleResize(): void {
-    if (window.innerWidth > this.config.mobileBreakpoint && this.isMenuOpen) {
+    if (window.innerWidth > 768 && this.isMenuOpen) {
       this.toggleMobileMenu();
     }
   }
 
   /**
-   * Handle smooth scrolling for anchor links
+   * Handle clicks outside the mobile menu
    */
-  private handleSmoothScroll(e: Event): void {
-    const target = e.target as HTMLElement;
-    const link = target.closest('a[href^="#"]');
-
-    if (link) {
-      e.preventDefault();
-      const href = link.getAttribute('href') || '';
-      const element = document.querySelector(href);
-
-      if (element) {
-        element.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-
-        // Update active navigation
-        this.setActiveNavigation(href);
+  private handleOutsideClick(e: Event): void {
+    const target = e.target as Element;
+    if (this.navMenu && !this.navMenu.contains(target) && !this.navToggle?.contains(target)) {
+      if (this.isMenuOpen) {
+        this.toggleMobileMenu();
       }
     }
   }
@@ -233,10 +91,9 @@ export class NavigationManager {
   /**
    * Set active navigation based on current path
    */
-  private setActiveNavigation(currentPath?: string): void {
+  setActiveNavigation(currentPath?: string): void {
     const currentLocation = currentPath || window.location.pathname;
     const navLinks = document.querySelectorAll('.nav-link');
-
     navLinks.forEach(link => {
       const href = link.getAttribute('href');
       if (href === currentLocation) {
@@ -250,8 +107,8 @@ export class NavigationManager {
   /**
    * Handle mobile menu state on load
    */
-  private handleMobileMenuState(): void {
-    if (window.innerWidth <= this.config.mobileBreakpoint) {
+  handleMobileMenuState(): void {
+    if (window.innerWidth <= 768) {
       this.isMenuOpen = false;
       if (this.navMenu) {
         this.navMenu.classList.remove('active');
@@ -260,38 +117,38 @@ export class NavigationManager {
   }
 
   /**
-   * Handle clicks outside the mobile menu
+   * Setup navigation functionality
    */
-  private handleOutsideClick(e: Event): void {
-    const target = e.target as HTMLElement;
-    if (this.navMenu && !this.navMenu.contains(target) && !this.navToggle?.contains(target)) {
-      if (this.isMenuOpen) {
-        this.toggleMobileMenu();
+  setupNavigation(): void {
+    // Set active navigation based on current path
+    this.setActiveNavigation();
+    // Handle mobile menu state
+    this.handleMobileMenuState();
+  }
+
+  /**
+   * Update navbar background on scroll
+   */
+  updateNavbarOnScroll(scrollThreshold: number): void {
+    const scrollY = window.scrollY;
+    if (this.navbar) {
+      if (scrollY > scrollThreshold) {
+        this.navbar.classList.add('scrolled');
+      } else {
+        this.navbar.classList.remove('scrolled');
       }
     }
   }
 
   /**
-   * Navigate to a specific path programmatically
+   * Get navigation elements for external access
    */
-  public navigateTo(path: string): void {
-    if (path !== window.location.pathname) {
-      history.pushState(null, '', path);
-      this.renderPage();
-    }
-  }
-
-  /**
-   * Get current path
-   */
-  public getCurrentPath(): string {
-    return window.location.pathname;
-  }
-
-  /**
-   * Check if mobile menu is open
-   */
-  public isMobileMenuOpen(): boolean {
-    return this.isMenuOpen;
+  getElements() {
+    return {
+      navToggle: this.navToggle,
+      navMenu: this.navMenu,
+      navbar: this.navbar,
+      isMenuOpen: this.isMenuOpen,
+    };
   }
 }

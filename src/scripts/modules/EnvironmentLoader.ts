@@ -13,6 +13,9 @@ interface EnvironmentConfig {
   MCP_API_KEY?: string;
   MCP_SERVER_URL?: string;
   ENABLE_MCP_INTEGRATION?: string;
+  EMAILJS_SERVICE_ID?: string;
+  EMAILJS_TEMPLATE_ID?: string;
+  EMAILJS_PUBLIC_KEY?: string;
   [key: string]: string | undefined;
 }
 

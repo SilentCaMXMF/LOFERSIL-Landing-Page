@@ -78,14 +78,6 @@ const isProduction =
   // Copy HTML files to dist
   console.log('📄 Copying HTML files...');
   fs.copyFileSync('./index.html', './dist/index.html');
-  
-  // Copy additional HTML pages
-  if (fs.existsSync('./privacy.html')) {
-    fs.copyFileSync('./privacy.html', './dist/privacy.html');
-  }
-  if (fs.existsSync('./terms.html')) {
-    fs.copyFileSync('./terms.html', './dist/terms.html');
-  }
 
   // Copy additional HTML pages
   if (fs.existsSync('./privacy.html')) {
@@ -158,14 +150,31 @@ const isProduction =
 
   // Copy service worker
   if (fs.existsSync('./src/scripts/sw.js')) {
-    fs.copyFileSync('./src/scripts/sw.js', './dist/sw.js');
+    let swContent = fs.readFileSync('./src/scripts/sw.js', 'utf8');
+
+    // Update asset paths for production
+    if (isProduction) {
+      swContent = swContent.replace('/main.css', '/main.min.css');
+      swContent = swContent.replace('/scripts/index.js', '/scripts/index.min.js');
+      swContent = swContent.replace('/scripts/modules/', '/scripts/modules/');
+      // Note: Module paths don't change in production since they're not minified individually
+    }
+
+    fs.writeFileSync('./dist/sw.js', swContent);
   }
 
   // Copy DOMPurify
   console.log('📦 Copying DOMPurify...');
   if (fs.existsSync('./node_modules/dompurify/dist/purify.min.js')) {
     fs.copyFileSync('./node_modules/dompurify/dist/purify.min.js', './dist/dompurify.min.js');
-    console.log('✅ DOMPurify copied');
+    // Also copy the source map
+    if (fs.existsSync('./node_modules/dompurify/dist/purify.min.js.map')) {
+      fs.copyFileSync(
+        './node_modules/dompurify/dist/purify.min.js.map',
+        './dist/dompurify.min.js.map'
+      );
+    }
+    console.log('✅ DOMPurify and source map copied');
   } else {
     console.warn('⚠️ DOMPurify not found in node_modules');
   }
@@ -174,23 +183,35 @@ const isProduction =
   console.log('🎨 Generating favicon formats...');
   try {
     // Copy SVG favicon
-    if (fs.existsSync('./assets/favicon.svg')) {
-      fs.copyFileSync('./assets/favicon.svg', './dist/favicon.svg');
+    if (fs.existsSync('./logo.svg')) {
+      fs.copyFileSync('./logo.svg', './dist/favicon.svg');
 
       // Optimize SVG favicon
       console.log('✅ Favicon optimized');
     }
 
-    // Generate favicon.ico from PNG
-    if (fs.existsSync('./dist/images/favicon-32x32-lettuce.png')) {
-      await sharp('./dist/images/favicon-32x32-lettuce.png')
-        .resize(32, 32)
-        .png()
-        .toFile('./dist/favicon.ico');
-      console.log('✅ favicon.ico generated');
+    // Generate PNG favicons from logo.jpg
+    if (fs.existsSync('./dist/images/logo.jpg')) {
+      const sizes = [16, 32, 48];
+      for (const size of sizes) {
+        await sharp('./dist/images/logo.jpg')
+          .resize(size, size)
+          .png()
+          .toFile(`./dist/images/favicon-${size}x${size}.png`);
+      }
+      console.log('✅ PNG favicons generated from logo.jpg');
     }
 
-    console.log('✅ Favicon formats generated (SVG primary)');
+    // Generate favicon.ico from logo.jpg
+    if (fs.existsSync('./assets/images/logo.jpg')) {
+      await sharp('./assets/images/logo.jpg')
+        .resize(32, 32)
+        .toFormat('ico')
+        .toFile('./dist/favicon.ico');
+      console.log('✅ favicon.ico generated from logo.jpg');
+    }
+
+    console.log('✅ Favicon formats generated');
   } catch (error) {
     console.warn('⚠️ Favicon generation failed, continuing...');
   }
@@ -222,8 +243,12 @@ const isProduction =
       }
     }
   };
-  await optimizeImages();
-  console.log('✅ Image optimization successful');
+  try {
+    await optimizeImages();
+    console.log('✅ Image optimization successful');
+  } catch (error) {
+    console.warn('⚠️ Image optimization failed, continuing...');
+  }
 
   // Generate sitemap
   console.log('🗺️ Generating sitemap...');
@@ -288,7 +313,7 @@ Sitemap: ${baseUrl}/sitemap.xml`;
     // Update CSS links (both preload and stylesheet)
     html = html.replace(/main\.css/g, 'main.min.css');
 
-    // Update JS script
+    // Update JS script and preload links
     html = html.replace(/scripts\/index\.js/g, 'scripts/index.min.js');
 
     fs.writeFileSync('./dist/index.html', html);

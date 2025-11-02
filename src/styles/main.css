@@ -160,6 +160,16 @@ body {
   display: none;
 }
 
+/* Lazy Loading Images */
+img.lazy {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+img.lazy-loaded {
+  opacity: 1;
+}
+
 /* Navigation Styles */
 .navbar {
   position: fixed;

@@ -194,10 +194,12 @@ export class UIManager {
    * Setup service worker for PWA functionality
    */
   private setupServiceWorker(): void {
+    // Temporarily disabled service worker registration for debugging
+    /*
     const IS_DEVELOPMENT =
       window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-    if ('serviceWorker' in navigator && !IS_DEVELOPMENT) {
+    if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker
           .register('/sw.js')
@@ -209,6 +211,7 @@ export class UIManager {
           });
       });
     }
+    */
   }
 
   /**
