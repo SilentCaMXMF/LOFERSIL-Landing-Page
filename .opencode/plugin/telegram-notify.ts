@@ -1,5 +1,5 @@
 import type { Plugin } from "@opencode-ai/plugin"
-import { SimpleTelegramBot } from "../lib/telegram-bot"
+import { SimpleTelegramBot } from "./lib/telegram-bot"
 
 export const TelegramNotify: Plugin = async ({ $ }) => {
   // Initialize Telegram bot
