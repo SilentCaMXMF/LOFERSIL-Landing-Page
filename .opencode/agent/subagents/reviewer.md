@@ -15,9 +15,7 @@ permissions:
     '*': 'deny'
   edit:
     '**/*': 'deny'
-env:
-  TELEGRAM_BOT_TOKEN: '7608762661:AAGMOdcT1mm2yuxUSYKz5Vlo8nm1Lf4fIkk'
-  TELEGRAM_CHAT_ID: '5157839405'
+
 ---
 
 # Review Agent
