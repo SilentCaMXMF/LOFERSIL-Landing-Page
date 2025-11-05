@@ -93,6 +93,22 @@ if command -v lighthouse &> /dev/null; then
     npm run lighthouse || print_warning "Lighthouse audit failed, but continuing deployment"
 fi
 
+# Check Vercel project settings
+print_status "Checking Vercel project settings..."
+if command -v vercel &> /dev/null; then
+    print_status "Checking if project is accessible..."
+    # Try to get project info
+    if vercel project ls 2>/dev/null | grep -q "lofersil-landing-page"; then
+        print_success "Vercel project found"
+    else
+        print_warning "Vercel project not found or not accessible"
+        print_status "You may need to:"
+        echo "  1. Login to Vercel: vercel login"
+        echo "  2. Link project: vercel link"
+        echo "  3. Make deployment public in Vercel dashboard"
+    fi
+fi
+
 # Deploy to Vercel
 print_status "Deploying to Vercel..."
 vercel --prod --yes

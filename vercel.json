@@ -22,7 +22,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://vercel.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https:; media-src 'self'; object-src 'none'; frame-src 'none';"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://vercel.com https://vercel.app; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self'; connect-src 'self' https: wss:; media-src 'self'; object-src 'none'; frame-src 'none';"
         },
         {
           "key": "Strict-Transport-Security",
@@ -66,6 +66,11 @@
   "regions": ["fra1"],
   "github": {
     "silent": true
+  },
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
   },
   "cleanUrls": true,
   "trailingSlash": false,

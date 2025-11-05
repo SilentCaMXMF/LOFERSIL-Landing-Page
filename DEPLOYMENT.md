@@ -1,5 +1,43 @@
 # LOFERSIL Landing Page - Deployment Guide
 
+## 🚨 Critical: 401 Authentication Error Fix
+
+If you're seeing 401 errors, your Vercel deployment is **protected/private**. Here's how to fix it:
+
+### **Immediate Solution**
+
+1. **Go to Vercel Dashboard**: https://vercel.com/dashboard
+2. **Find your project**: `lofersil-landing-page`
+3. **Go to Settings → General**
+4. **Change Privacy**: Set to **"Public"** (not "Protected" or "Private")
+5. **Redeploy**: `npm run vercel-deploy`
+
+### **Why This Happens**
+
+- Vercel projects default to protected when linked to private repositories
+- Team accounts may have authentication enabled by default
+- SSO settings can cause 401 errors for static sites
+
+### **Alternative: Environment-Based Access**
+
+If you need authentication, add password protection:
+
+```bash
+# Set environment variables in Vercel dashboard
+VERCEL_ENV_PASSWORD=your_password_here
+
+# Then add to vercel.json:
+{
+  "functions": {
+    "api/auth.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}
+```
+
+---
+
 ## 🚀 Deployment Options
 
 ### 1. Vercel (Recommended)
