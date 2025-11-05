@@ -67,11 +67,6 @@
   "github": {
     "silent": true
   },
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "cleanUrls": true,
   "trailingSlash": false,
   "outputDirectory": "dist",
