@@ -4,10 +4,12 @@
  * Provides MCP server functionality for handling client connections and tool execution.
  */
 
+import { MCPLogger } from './logger.js';
 import type { MCPMessage, MCPServerConfig, MCPTool, MCPResource, MCPError } from './types.js';
 
 export class MCPServer {
   private config: MCPServerConfig;
+  private logger = MCPLogger.getInstance();
   private tools: Map<string, MCPTool> = new Map();
   private resources: Map<string, MCPResource> = new Map();
   private connections: Set<WebSocket> = new Set();
@@ -96,19 +98,22 @@ export class MCPServer {
   async start(): Promise<void> {
     // In a real implementation, this would start an HTTP/WebSocket server
     // For now, this is a placeholder
-    console.log(`MCP Server starting on ${this.config.host}:${this.config.port}`);
+    this.logger.info('MCPServer', 'Starting MCP server', {
+      host: this.config.host,
+      port: this.config.port,
+    });
 
     // Simulate server startup
     return new Promise(resolve => {
       setTimeout(() => {
-        console.log('MCP Server started successfully');
+        this.logger.info('MCPServer', 'MCP server started successfully');
         resolve();
       }, 100);
     });
   }
 
   async stop(): Promise<void> {
-    console.log('MCP Server stopping');
+    this.logger.info('MCPServer', 'Stopping MCP server');
 
     // Close all connections
     for (const connection of this.connections) {
@@ -122,7 +127,7 @@ export class MCPServer {
       this.httpServer = null;
     }
 
-    console.log('MCP Server stopped');
+    this.logger.info('MCPServer', 'MCP server stopped');
   }
 
   async handleMessage(connection: WebSocket, message: MCPMessage): Promise<void> {

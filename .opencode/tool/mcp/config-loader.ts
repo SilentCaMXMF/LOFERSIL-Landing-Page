@@ -23,12 +23,25 @@ function loadConfig(filePath: string): MCPConfigFile {
  * @throws Error if an environment variable is not set.
  */
 function substituteEnvVars(config: MCPConfigFile): MCPConfigFile {
+  // Validate environment variable names to prevent injection
+  const validateEnvVarName = (varName: string): boolean => {
+    // Allow only valid environment variable names: start with letter/underscore, followed by letters/digits/underscores
+    return /^[A-Z_][A-Z0-9_]*$/.test(varName);
+  };
+
   const substitute = (obj: any): any => {
     if (typeof obj === 'string') {
       return obj.replace(/\$\{([^}]+)\}/g, (_, varName) => {
+        if (!validateEnvVarName(varName)) {
+          throw new Error(`Invalid environment variable name: ${varName}`);
+        }
         const value = process.env[varName];
         if (value === undefined) {
-          throw new Error(`Environment variable ${varName} is not set`);
+          throw new Error(
+            `Environment variable ${varName} is not set. ` +
+              `Please set this variable in your environment or .env file. ` +
+              `For example: export ${varName}="your-value-here"`
+          );
         }
         return value;
       });

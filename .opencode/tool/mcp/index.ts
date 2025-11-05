@@ -11,6 +11,8 @@ export { MCPClient } from './client.js';
 export { MCPServer } from './server.js';
 export { MCPTools } from './tools.js';
 export { MCPResources } from './resources.js';
+export { MCPLogger, LogLevel } from './logger.js';
+export { MCPHealthMonitor, HealthMetrics } from './health-monitor.js';
 
 // Re-export types
 export type {
@@ -27,24 +29,31 @@ export type {
 import { MCPClient } from './client.js';
 import { MCPTools } from './tools.js';
 import { MCPResources } from './resources.js';
+import { MCPHealthMonitor } from './health-monitor.js';
 import type { MCPClientConfig, MCPConfig, MCPConfigFile } from './types.js';
 
 export class MCP {
   private client: MCPClient;
   private tools: MCPTools;
   private resources: MCPResources;
+  private healthMonitor: MCPHealthMonitor;
 
   constructor(config: MCPClientConfig) {
     this.client = new MCPClient(config);
     this.tools = new MCPTools(this.client);
     this.resources = new MCPResources(this.client);
+    this.healthMonitor = new MCPHealthMonitor(this.client);
   }
 
   async connect(): Promise<void> {
     await this.client.connect();
+    // Start health monitoring automatically
+    this.healthMonitor.startMonitoring();
   }
 
   async disconnect(): Promise<void> {
+    // Stop health monitoring
+    this.healthMonitor.stopMonitoring();
     await this.client.disconnect();
   }
 
@@ -58,6 +67,10 @@ export class MCP {
 
   getClient(): MCPClient {
     return this.client;
+  }
+
+  getHealthMonitor(): MCPHealthMonitor {
+    return this.healthMonitor;
   }
 }
 

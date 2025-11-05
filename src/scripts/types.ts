@@ -24,7 +24,7 @@ export interface Metrics {
 }
 
 export interface Translations {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface WebVitalsMetric {

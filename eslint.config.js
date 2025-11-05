@@ -42,6 +42,27 @@ export default [
     },
   },
   {
+    files: ['.opencode/plugin/**/*.ts'],
+    languageOptions: {
+      parser: tsparser,
+      globals: {
+        ...globals.browser,
+        ...globals.es2021,
+        ...globals.node,
+      },
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+    plugins: {
+      '@typescript-eslint': tseslint,
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      'no-console': 'warn',
+      'no-unused-vars': 'off',
+    },
+  },
+  {
     ignores: ['dist/', 'node_modules/', '*.js'],
   },
 ];

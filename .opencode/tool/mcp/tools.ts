@@ -5,10 +5,12 @@
  */
 
 import { MCPClient } from './client.js';
+import { MCPLogger } from './logger.js';
 import type { MCPTool, MCPToolCall, MCPToolResult } from './types.js';
 
 export class MCPTools {
   private client: MCPClient;
+  private logger = MCPLogger.getInstance();
   private cachedTools: MCPTool[] = [];
   private cacheExpiry: number = 0;
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -28,7 +30,7 @@ export class MCPTools {
       this.cacheExpiry = Date.now() + this.CACHE_DURATION;
       return this.cachedTools;
     } catch (error) {
-      console.error('Failed to list MCP tools:', error);
+      this.logger.error('MCPTools', 'Failed to list MCP tools', error as Error);
       // Return cached tools if available, even if expired
       if (this.cachedTools.length > 0) {
         return this.cachedTools;
@@ -57,7 +59,7 @@ export class MCPTools {
 
       return response.content;
     } catch (error) {
-      console.error(`Failed to call tool '${name}':`, error);
+      this.logger.error('MCPTools', `Failed to call tool '${name}'`, error as Error);
       throw error;
     }
   }
@@ -107,7 +109,7 @@ export class MCPTools {
     for (const [param, value] of Object.entries(parameters)) {
       const paramSchema = schema.properties[param];
       if (!paramSchema) {
-        console.warn(`Unknown parameter: ${param}`);
+        this.logger.warn('MCPTools', `Unknown parameter: ${param}`);
         continue;
       }
 

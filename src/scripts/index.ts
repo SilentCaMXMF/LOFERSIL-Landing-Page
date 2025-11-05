@@ -3,8 +3,6 @@
  * Handles navigation, interactions, and dynamic content loading
  */
 import { ContactRequest, ContactResponse } from './types.js';
-import { config, metrics } from './modules/Config.js';
-import { debounce, throttle, isInViewport } from './modules/Utils.js';
 import { TranslationManager } from './modules/TranslationManager.js';
 import { NavigationManager } from './modules/NavigationManager.js';
 import { Router } from './modules/Router.js';
@@ -12,11 +10,13 @@ import { PerformanceTracker } from './modules/PerformanceTracker.js';
 import { ErrorHandler } from './modules/ErrorHandler.js';
 import { SEOManager } from './modules/SEOManager.js';
 import { ScrollManager } from './modules/ScrollManager.js';
+import { Logger } from './modules/Logger.js';
+import { SimpleTelegramBot } from './modules/SimpleTelegramBot.js';
 
 // Extend Window interface for global properties
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
+    gtag?: (...args: unknown[]) => void;
     getWebVitals?: () => void;
   }
 }
@@ -33,6 +33,8 @@ class LOFERSILLandingPage {
   private errorHandler!: ErrorHandler;
   private seoManager!: SEOManager;
   private scrollManager!: ScrollManager;
+  private logger!: Logger;
+  private telegramBot!: SimpleTelegramBot;
 
   constructor() {
     this.mainContent = null;
@@ -46,6 +48,10 @@ class LOFERSILLandingPage {
       this.setupDOMElements();
       // Initialize error handler
       this.errorHandler = new ErrorHandler();
+      // Initialize logger
+      this.logger = Logger.getInstance();
+      // Initialize telegram bot
+      this.telegramBot = new SimpleTelegramBot(this.logger);
       // Initialize translation manager
       this.translationManager = new TranslationManager(this.errorHandler);
       // Initialize navigation manager
@@ -82,18 +88,12 @@ class LOFERSILLandingPage {
       this.navigationManager.setupNavigation();
       this.router.setupRouting();
       await this.translationManager.initialize();
-      console.info('LOFERSIL Landing Page initialized successfully');
     } catch (error) {
-      // Use error handler if available, otherwise fallback to console
-      if (this.errorHandler) {
-        this.errorHandler.handleError(error, 'Application initialization failed', {
-          component: 'LOFERSILLandingPage',
-          action: 'initializeApp',
-          timestamp: new Date().toISOString(),
-        });
-      } else {
-        console.error('Failed to initialize LOFERSIL Landing Page:', error);
-      }
+      this.errorHandler.handleError(error, 'Application initialization failed', {
+        component: 'LOFERSILLandingPage',
+        action: 'initializeApp',
+        timestamp: new Date().toISOString(),
+      });
     }
   }
   /**

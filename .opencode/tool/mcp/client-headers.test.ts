@@ -56,12 +56,14 @@ describe('MCP Client Header Functionality', () => {
 
       client.connect();
 
-      // Verify that sensitive headers are masked in console output
+      // Verify that sensitive headers are masked in structured log output
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Initializing MCP connection with headers:',
+        expect.stringContaining('INFO [MCPClient] Initializing MCP connection with headers'),
         expect.objectContaining({
-          CONTEXT7_API_KEY: 'test****',
-          'X-Custom-Header': 'custom-value',
+          headers: expect.objectContaining({
+            CONTEXT7_API_KEY: 'test****',
+            'X-Custom-Header': 'custom-value',
+          }),
         })
       );
 
@@ -87,13 +89,15 @@ describe('MCP Client Header Functionality', () => {
 
       client.connect();
 
-      // Verify that non-sensitive headers are not masked
+      // Verify that non-sensitive headers are not masked in structured log output
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Initializing MCP connection with headers:',
+        expect.stringContaining('INFO [MCPClient] Initializing MCP connection with headers'),
         expect.objectContaining({
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          'User-Agent': 'test-client',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'User-Agent': 'test-client',
+          }),
         })
       );
 
@@ -392,17 +396,21 @@ describe('MCP Client Header Functionality', () => {
 
       await client.connect();
 
-      // Check that logs contain masked versions
+      // Check that logs contain masked versions in structured format
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Initializing MCP connection with headers:',
+        expect.stringContaining('INFO [MCPClient] Initializing MCP connection with headers'),
         expect.objectContaining({
-          Authorization: 'Bear****',
-          'API-Key': 'supe****',
-          'X-Auth-Token': 'anot****',
-          'Content-Type': 'application/json',
+          headers: expect.objectContaining({
+            Authorization: 'Bear****',
+            'API-Key': 'supe****',
+            'X-Auth-Token': 'anot****',
+            'Content-Type': 'application/json',
+          }),
         })
       );
-      expect(consoleSpy).toHaveBeenCalledWith('MCP HTTP initialized successfully');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('INFO [MCPClient] MCP HTTP initialized successfully')
+      );
 
       consoleSpy.mockRestore();
     });
