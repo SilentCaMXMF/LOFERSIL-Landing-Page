@@ -24,7 +24,7 @@ export class NavigationManager {
   private setupDOMElements(): void {
     this.navToggle = document.getElementById('nav-toggle');
     this.navMenu = document.getElementById('nav-menu');
-    this.navbar = document.getElementById('main-nav');
+    this.navbar = document.getElementById('main-header');
   }
 
   /**

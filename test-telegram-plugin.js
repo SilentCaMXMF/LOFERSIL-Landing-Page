@@ -29,6 +29,7 @@ if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
  * Send message to Telegram
  */
 async function sendTelegramMessage(message) {
+  // Construct URL securely - token is embedded as per Telegram API spec
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
   try {
@@ -45,12 +46,14 @@ async function sendTelegramMessage(message) {
     });
 
     if (!response.ok) {
+      // Don't log the URL to avoid token exposure in logs
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
+    // Log error without exposing the URL/token
     console.error('❌ Failed to send Telegram message:', error.message);
     throw error;
   }

@@ -1,0 +1,299 @@
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .features-grid {
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-6);
+  }
+
+  .about-gallery {
+    grid-template-columns: 1fr 1fr;
+    min-height: 20rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-padding: 1rem;
+    --section-padding: 2.5rem 0;
+  }
+
+  #nav-menu {
+    position: fixed;
+    top: 4rem;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    flex-direction: column;
+    padding: var(--space-6);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition-base);
+  }
+
+  #nav-menu.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #nav-toggle {
+    display: flex;
+  }
+
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    text-align: center;
+  }
+
+  .about-content {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    text-align: center;
+  }
+
+  .about-text {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .about-features {
+    align-items: center;
+  }
+
+  .about-gallery {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 16rem;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-4);
+  }
+
+  .hero-title {
+    font-size: clamp(var(--text-3xl), 6vw, var(--text-4xl));
+  }
+
+  .hero-subtitle {
+    font-size: clamp(var(--text-lg), 5vw, var(--text-xl));
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .section-title {
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+  }
+
+  .cta-title {
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    text-align: center;
+  }
+
+  .hero {
+    padding: calc(3rem + var(--space-12)) 0 var(--space-12);
+  }
+
+  .about {
+    padding: var(--section-padding);
+  }
+
+  .features {
+    padding: var(--section-padding);
+  }
+
+  .products-showcase {
+    padding: var(--section-padding);
+  }
+
+  .cta {
+    padding: var(--section-padding);
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --section-padding: 2rem 0;
+  }
+
+  .hero-title {
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+  }
+
+  .about-gallery {
+    min-height: 12rem;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .product-category-image {
+    height: 8rem;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(var(--text-base), 4vw, var(--text-lg));
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 16rem;
+    min-height: 44px;
+    padding: var(--space-4) var(--space-6);
+  }
+
+  .section-title {
+    font-size: clamp(var(--text-xl), 4vw, var(--text-2xl));
+  }
+
+  .cta-title {
+    font-size: clamp(var(--text-xl), 4vw, var(--text-2xl));
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .about-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: calc(2rem + var(--space-8)) 0 var(--space-8);
+  }
+
+  .about {
+    padding: var(--section-padding);
+  }
+
+  .features {
+    padding: var(--section-padding);
+  }
+
+  .products-showcase {
+    padding: var(--section-padding);
+  }
+
+  .cta {
+    padding: var(--section-padding);
+  }
+
+  .footer {
+    padding: var(--space-12) 0 var(--space-6);
+  }
+}
+
+/* Print Styles */
+@media print {
+  #main-header,
+  #nav-toggle,
+  .cta,
+  .footer {
+    display: none;
+  }
+
+  .hero {
+    padding-top: var(--space-8);
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  .hero-title {
+    font-size: 18pt;
+  }
+
+  .section-title {
+    font-size: 14pt;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --primary-color: #0000ff;
+    --gray-600: #000000;
+    --gray-700: #000000;
+    --gray-900: #000000;
+  }
+
+  .btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .hero-img:hover {
+    transform: none;
+  }
+
+  .feature-card:hover {
+    transform: none;
+  }
+
+  .btn:hover {
+    transform: none;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .btn:hover,
+  .feature-card:hover,
+  .product-category:hover,
+  .about-gallery-item:hover {
+    transform: none;
+  }
+
+  .nav-link:hover {
+    background-color: transparent;
+  }
+}
+
+/* Focus Styles for Accessibility */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.nav-link:focus,
+.btn:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}

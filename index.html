@@ -12,6 +12,7 @@
       content="lofersil lisboa, produtos premium portugal, papelaria lisboa, artigos bebe, caixas joias, canetas promocionais, material escritorio, loja lisboa"
     />
     <meta name="author" content="LOFERSIL" />
+    <meta name="theme-color" content="#ffffff" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -24,7 +25,7 @@
       content="Descubra produtos premium e serviços de confiança na LOFERSIL, sua loja de referência em Lisboa. Papelaria, artigos para bebé, joias e muito mais."
     />
     <meta property="og:site_name" content="LOFERSIL" />
-    <meta property="og:image" content="images/Frente loja.jpg" />
+    <meta property="og:image" content="images/Frente%20loja.jpg" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -35,15 +36,6 @@
     <meta
       property="twitter:description"
       content="Descubra produtos premium e serviços de confiança na LOFERSIL, sua loja de referência em Lisboa."
-    />
-    <meta property="og:site_name" content="LOFERSIL" />
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content="LOFERSIL - Produtos e Serviços Premium" />
-    <meta
-      property="twitter:description"
-      content="Descubra a coleção premium de produtos e serviços da LOFERSIL."
     />
 
     <title>LOFERSIL - Produtos Premium & Serviços em Lisboa | Loja de Confiança</title>
@@ -76,7 +68,17 @@
         <div class="logo">
           <img src="images/logo.jpg" alt="Logo da LOFERSIL" />
         </div>
-        <nav id="main-nav">
+        <button
+          id="nav-toggle"
+          class="nav-toggle"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <nav id="nav-menu" class="nav-menu">
           <ul class="nav-list">
             <li><a href="#about">Sobre Nós</a></li>
             <li><a href="#features">Serviços</a></li>
@@ -84,6 +86,21 @@
             <li><a href="#contact-form">Contacto</a></li>
           </ul>
         </nav>
+        <button
+          id="theme-toggle"
+          class="theme-toggle"
+          aria-label="Switch to dark theme"
+          type="button"
+        >
+          <svg class="theme-toggle-icon sun" viewBox="0 0 24 24" aria-hidden="false">
+            <path
+              d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"
+            ></path>
+          </svg>
+          <svg class="theme-toggle-icon moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+          </svg>
+        </button>
       </div>
     </header>
 
@@ -93,7 +110,7 @@
           <div class="hero-content">
             <picture>
               <img
-                data-src="images/Frente loja.jpg"
+                data-src="images/Frente%20loja.jpg"
                 alt="Imagem da frente da loja LOFERSIL na Rua Gomes Freire 187 B, Lisboa"
                 class="hero-img lazy"
               />
@@ -103,13 +120,13 @@
       </section>
 
       <!-- About Us Section -->
-      <section id="about" class="about">
+      <section id="about" class="about" data-animate="fade-in">
         <div class="about-container">
-          <div class="section-header">
+          <div class="section-header" data-animate="slide-up">
             <h2 class="section-title">Bem-vindo à LOFERSIL</h2>
             <p class="section-subtitle">A sua loja local de confiança no coração de Lisboa</p>
           </div>
-          <div class="about-content">
+          <div class="about-content" data-animate="slide-up">
             <div class="about-text">
               <p class="about-description">
                 Entre na nossa loja acolhedora na R. Gomes Freire 187 B e descubra uma seleção
@@ -161,7 +178,7 @@
                     type="image/webp"
                   />
                   <img
-                    data-src="images/Interior c funcionário.jpg"
+                    data-src="images/Interior%20c%20funcion%C3%A1rio.jpg"
                     alt="Imagem do interior da loja LOFERSIL - Funcionários a assistir clientes"
                     class="about-gallery-img lazy"
                     loading="lazy"
@@ -174,13 +191,13 @@
       </section>
 
       <!-- Features Section -->
-      <section id="features" class="features">
+      <section id="features" class="features" data-animate="fade-in">
         <div class="features-container">
-          <div class="section-header">
+          <div class="section-header" data-animate="slide-up">
             <h2 class="section-title">Porquê Escolher LOFERSIL?</h2>
             <p class="section-subtitle">Qualidade, fiabilidade e excelência em todos os aspetos</p>
           </div>
-          <div class="features-grid">
+          <div class="features-grid" data-animate="scale-in">
             <div class="feature-card">
               <div class="feature-icon">⭐</div>
               <h3 class="feature-title">Qualidade Premium</h3>
@@ -207,15 +224,13 @@
       </section>
 
       <!-- Products Showcase Section -->
-      <section id="products-showcase" class="products-showcase">
+      <section id="products-showcase" class="products-showcase" data-animate="fade-in">
         <div class="products-showcase-container">
-          <div class="section-header">
+          <div class="section-header" data-animate="slide-up">
             <h2 class="section-title">As Nossas Categorias de Produtos</h2>
-            <p class="section-subtitle">
-              Descubra a nossa vasta gama de produtos de qualidade para todas as necessidades
-            </p>
+            <p class="section-subtitle">Explore a nossa diversidade de produtos premium</p>
           </div>
-          <div class="products-grid">
+          <div class="products-grid" data-animate="scale-in">
             <div class="product-category">
               <div class="product-category-image">
                 <picture>
@@ -228,7 +243,7 @@
                     type="image/webp"
                   />
                   <img
-                    data-src="images/Bebés_nenucos.jpg"
+                    data-src="images/Beb%C3%A9s_nenucos.jpg"
                     alt="Imagem da coleção de produtos para bebés e bonecos"
                     class="product-category-img lazy"
                     loading="lazy"
@@ -390,9 +405,9 @@
       </section>
 
       <!-- CTA Section -->
-      <section id="cta" class="cta">
+      <section id="cta" class="cta" data-animate="fade-in">
         <div class="cta-container">
-          <div class="cta-content">
+          <div class="cta-content" data-animate="slide-up">
             <h2 class="cta-title">Pronto para Descobrir?</h2>
             <p class="cta-description">
               Visite-nos hoje e experimente produtos premium com atendimento personalizado. Ofertas

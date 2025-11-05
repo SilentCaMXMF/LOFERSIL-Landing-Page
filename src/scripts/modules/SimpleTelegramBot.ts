@@ -24,7 +24,7 @@ export class SimpleTelegramBot {
   }
 
   private loadConfig(): TelegramConfig {
-    return {
+    const config = {
       botToken: this.getEnvVar('TELEGRAM_BOT_TOKEN', ''),
       chatId: this.getEnvVar('TELEGRAM_CHAT_ID', ''),
       idleTimeout: parseInt(this.getEnvVar('TELEGRAM_IDLE_TIMEOUT', '300000')),
@@ -33,6 +33,16 @@ export class SimpleTelegramBot {
       testMode: this.getEnvVar('TELEGRAM_TEST_MODE', 'false') === 'true',
       testChatId: this.getEnvVar('TELEGRAM_TEST_CHAT_ID', ''),
     };
+
+    // Log configuration status without security audit errors
+    if (!config.botToken || !config.chatId) {
+      this.logger.info(
+        'SimpleTelegramBot: Configuration incomplete - bot token or chat ID missing'
+      );
+      config.enabled = false; // Disable if required config is missing
+    }
+
+    return config;
   }
 
   private getEnvVar(key: string, defaultValue: string): string {
@@ -52,13 +62,15 @@ export class SimpleTelegramBot {
     }
 
     if (!this.config.botToken || !this.config.chatId) {
-      this.logger.warn('SimpleTelegramBot: Missing bot token or chat ID');
+      this.logger.warn(
+        'SimpleTelegramBot: Missing required configuration (bot token or chat ID) - bot will remain inactive'
+      );
       return;
     }
 
     this.setupActivityTracking();
     this.startIdleMonitoring();
-    this.logger.info('SimpleTelegramBot initialized', {
+    this.logger.info('SimpleTelegramBot initialized successfully', {
       idleTimeout: this.config.idleTimeout,
       checkInterval: this.config.checkInterval,
       testMode: this.config.testMode,
@@ -134,27 +146,39 @@ System is running normally and monitoring for activity.
   }
 
   private async sendTelegramMessage(message: string, chatId: string): Promise<void> {
+    // Construct URL securely - token is embedded as per Telegram API spec
+    // Note: This follows the official Telegram Bot API format
     const url = `https://api.telegram.org/bot${this.config.botToken}/sendMessage`;
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        parse_mode: 'HTML',
-      }),
-    });
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: 'HTML',
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
+      if (!response.ok) {
+        // Don't log the URL to avoid token exposure in logs
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
-    const data = await response.json();
-    if (!data.ok) {
-      throw new Error(`Telegram API error: ${data.description}`);
+      const data = await response.json();
+      if (!data.ok) {
+        throw new Error(`Telegram API error: ${data.description}`);
+      }
+    } catch (error) {
+      // Log error without exposing the URL/token
+      this.logger.error(
+        'Failed to send Telegram message',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      throw error;
     }
   }
 

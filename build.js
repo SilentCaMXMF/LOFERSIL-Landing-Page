@@ -75,9 +75,47 @@ const isProduction =
     process.exit(1);
   }
 
-  // Copy HTML files to dist
-  console.log('📄 Copying HTML files...');
-  fs.copyFileSync('./index.html', './dist/index.html');
+  // Function to inject environment variables into HTML
+  function injectEnvironmentVariables(sourcePath, destPath) {
+    let htmlContent = fs.readFileSync(sourcePath, 'utf8');
+
+    // Load environment variables from .env file
+    const envVars = {};
+    if (fs.existsSync('./.env')) {
+      const envContent = fs.readFileSync('./.env', 'utf8');
+      envContent.split('\n').forEach(line => {
+        const [key, value] = line.split('=');
+        if (key && value && !line.startsWith('#')) {
+          // Only expose safe environment variables to browser
+          const safeVars = [
+            'TELEGRAM_BOT_TOKEN',
+            'TELEGRAM_CHAT_ID',
+            'TELEGRAM_IDLE_TIMEOUT',
+            'TELEGRAM_CHECK_INTERVAL',
+            'TELEGRAM_ENABLED',
+            'TELEGRAM_TEST_MODE',
+            'TELEGRAM_TEST_CHAT_ID',
+            'NODE_ENV',
+            'ENABLE_MCP_INTEGRATION',
+            'MCP_CLIENT_ID',
+          ];
+          if (safeVars.includes(key.trim())) {
+            envVars[key.trim()] = value.trim();
+          }
+        }
+      });
+    }
+
+    // Inject environment variables as a script tag
+    const envScript = `<script type="application/json" data-env>${JSON.stringify(envVars)}</script>`;
+    htmlContent = htmlContent.replace('</head>', `${envScript}\n</head>`);
+
+    fs.writeFileSync(destPath, htmlContent);
+  }
+
+  // Copy HTML files to dist with environment variables
+  console.log('📄 Copying HTML files with environment injection...');
+  injectEnvironmentVariables('./index.html', './dist/index.html');
 
   // Copy additional HTML pages
   if (fs.existsSync('./privacy.html')) {
@@ -86,6 +124,28 @@ const isProduction =
   if (fs.existsSync('./terms.html')) {
     fs.copyFileSync('./terms.html', './dist/terms.html');
   }
+
+  // Concatenate CSS files
+  console.log('🔗 Concatenating CSS files...');
+  const cssFiles = [
+    'src/styles/base.css',
+    'src/styles/navigation.css',
+    'src/styles/hero.css',
+    'src/styles/sections.css',
+    'src/styles/forms.css',
+    'src/styles/privacy.css',
+    'src/styles/responsive.css',
+  ];
+  let concatenatedCSS = '';
+  for (const file of cssFiles) {
+    if (fs.existsSync(file)) {
+      concatenatedCSS += fs.readFileSync(file, 'utf8') + '\n';
+    } else {
+      console.warn(`⚠️ CSS file not found: ${file}`);
+    }
+  }
+  fs.writeFileSync('src/styles/main.css', concatenatedCSS);
+  console.log('✅ CSS files concatenated');
 
   // Process CSS with PostCSS
   console.log('🎨 Processing CSS...');

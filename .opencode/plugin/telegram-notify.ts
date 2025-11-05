@@ -1,5 +1,5 @@
 import type { Plugin } from '@opencode-ai/plugin';
-import SimpleTelegramBot from './lib/SimpleTelegramBot.js';
+import SimpleTelegramBot from './lib/SimpleTelegramBot';
 
 // Define event interfaces for better type safety
 interface BaseEvent {
@@ -32,6 +32,7 @@ type OpenCodeEvent =
   | MessagePartUpdatedEvent;
 
 export const TelegramNotify: Plugin = async ({ $ }) => {
+  console.log('📲 TelegramNotify plugin loaded');
   // Initialize Telegram bot
   const bot = await SimpleTelegramBot.create();
   if (!bot) {
@@ -52,10 +53,10 @@ export const TelegramNotify: Plugin = async ({ $ }) => {
   };
 
   return {
-    async event(input) {
-      const event = input.event as OpenCodeEvent;
+    event: async ({ event }) => {
+      const e = event as OpenCodeEvent;
 
-      if (event.type === 'session.idle') {
+      if (e.type === 'session.idle') {
         // Send the last message content along with idle notification
         const message = lastMessage
           ? `🟡 Session idle! Here's your last message:\n\n${lastMessage}`
@@ -70,11 +71,11 @@ export const TelegramNotify: Plugin = async ({ $ }) => {
         }
       }
 
-      if (event.type === 'message.updated') {
+      if (e.type === 'message.updated') {
         // Reset idle timer when user sends messages
         bot.resetActivity();
 
-        const messageContent = extractMessageContent(event);
+        const messageContent = extractMessageContent(e);
 
         // Check if it's a command to send last message
         if (messageContent.includes('/send-last') || messageContent.includes('/last')) {
@@ -138,18 +139,17 @@ export const TelegramNotify: Plugin = async ({ $ }) => {
         }
       }
 
-      if (event.type === 'file.edited') {
+      if (e.type === 'file.edited') {
         // Reset idle timer when user edits files
         bot.resetActivity();
       }
 
       // Also listen for message parts being updated
-      if (event.type === 'message.part.updated') {
+      if (e.type === 'message.part.updated') {
         bot.resetActivity();
 
         try {
-          const partContent =
-            event.part?.content || extractMessageContent(event) || 'Message part updated';
+          const partContent = e.part?.content || extractMessageContent(e) || 'Message part updated';
 
           if (partContent && partContent !== 'Message part updated') {
             lastMessage =

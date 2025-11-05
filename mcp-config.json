@@ -15,6 +15,21 @@
         "interval": 5000
       }
     },
+    "gemini": {
+      "name": "gemini",
+      "type": "remote",
+      "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent",
+      "headers": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "Content-Type": "application/json"
+      },
+      "enabled": false,
+      "timeout": 60000,
+      "retry": {
+        "maxAttempts": 3,
+        "interval": 2000
+      }
+    },
     "local-dev": {
       "name": "local-dev",
       "type": "remote",

@@ -5,7 +5,8 @@
 import { ContactRequest, ContactResponse } from './types.js';
 import { TranslationManager } from './modules/TranslationManager.js';
 import { NavigationManager } from './modules/NavigationManager.js';
-import { Router } from './modules/Router.js';
+import { ContactFormManager } from './modules/ContactFormManager.js';
+
 import { PerformanceTracker } from './modules/PerformanceTracker.js';
 import { ErrorHandler } from './modules/ErrorHandler.js';
 import { SEOManager } from './modules/SEOManager.js';
@@ -28,13 +29,13 @@ class LOFERSILLandingPage {
   private mainContent: HTMLElement | null;
   private translationManager!: TranslationManager;
   private navigationManager!: NavigationManager;
-  private router!: Router;
   private performanceTracker!: PerformanceTracker;
   private errorHandler!: ErrorHandler;
   private seoManager!: SEOManager;
   private scrollManager!: ScrollManager;
   private logger!: Logger;
-  private telegramBot!: SimpleTelegramBot;
+  private telegramBot!: SimpleTelegramBot | null;
+  private contactFormManager: ContactFormManager | null = null;
 
   constructor() {
     this.mainContent = null;
@@ -50,8 +51,15 @@ class LOFERSILLandingPage {
       this.errorHandler = new ErrorHandler();
       // Initialize logger
       this.logger = Logger.getInstance();
-      // Initialize telegram bot
-      this.telegramBot = new SimpleTelegramBot(this.logger);
+      // Initialize telegram bot (with error handling)
+      try {
+        this.telegramBot = new SimpleTelegramBot(this.logger);
+      } catch (error) {
+        this.logger.warn('Failed to initialize Telegram bot, continuing without it', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        this.telegramBot = null;
+      }
       // Initialize translation manager
       this.translationManager = new TranslationManager(this.errorHandler);
       // Initialize navigation manager
@@ -75,19 +83,12 @@ class LOFERSILLandingPage {
         },
         this.errorHandler
       );
-      // Initialize router after DOM elements are set up
-      this.router = new Router(
-        this.mainContent,
-        this.translationManager,
-        this.navigationManager,
-        this.seoManager.updateMetaTags.bind(this.seoManager),
-        this.errorHandler
-      );
       // Initialize scroll manager
       this.scrollManager = new ScrollManager(this.navigationManager);
       this.navigationManager.setupNavigation();
-      this.router.setupRouting();
       await this.translationManager.initialize();
+      // Initialize contact form manager lazily
+      this.initializeContactFormLazily();
     } catch (error) {
       this.errorHandler.handleError(error, 'Application initialization failed', {
         component: 'LOFERSILLandingPage',
@@ -133,6 +134,48 @@ class LOFERSILLandingPage {
       };
     }
   }
+  /**
+   * Initialize contact form manager lazily when needed
+   */
+  private async initializeContactFormLazily(): Promise<void> {
+    // Wait for user interaction or scroll to contact section
+    const contactSection = document.getElementById('contact-form');
+    if (contactSection) {
+      // Use Intersection Observer to load when contact section is visible
+      const observer = new IntersectionObserver(
+        async entries => {
+          if (entries[0].isIntersecting) {
+            observer.disconnect();
+            try {
+              const { createContactForm } = await import('./modules/ContactFormManager.js');
+              this.contactFormManager = createContactForm();
+            } catch (error) {
+              this.errorHandler.handleError(error, 'Failed to load contact form manager', {
+                component: 'LOFERSILLandingPage',
+                action: 'initializeContactFormLazily',
+                timestamp: new Date().toISOString(),
+              });
+            }
+          }
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(contactSection);
+    } else {
+      // Fallback: load immediately if section not found
+      try {
+        const { createContactForm } = await import('./modules/ContactFormManager.js');
+        this.contactFormManager = createContactForm();
+      } catch (error) {
+        this.errorHandler.handleError(error, 'Failed to load contact form manager', {
+          component: 'LOFERSILLandingPage',
+          action: 'initializeContactFormLazily',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+  }
+
   /**
    * Get web vitals metrics (public API)
    */

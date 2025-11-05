@@ -1,15 +1,15 @@
 import { MCPFactory } from './.opencode/tool/mcp/index.js';
 
 /**
- * Test script to discover and display available MCP tools
+ * Test script to discover and display available Gemini MCP tools
  */
-async function discoverMCPTools() {
-  console.log('🔍 Discovering MCP Tools...\n');
+async function discoverGeminiMCPTools() {
+  console.log('🔍 Discovering Gemini MCP Tools...\n');
 
   try {
-    // Try to create Context7 MCP instance
-    console.log('📡 Connecting to Context7 MCP server...');
-    const mcp = await MCPFactory.createContext7();
+    // Try to create Gemini MCP instance
+    console.log('🤖 Connecting to Gemini MCP server...');
+    const mcp = await MCPFactory.createGemini();
 
     console.log('✅ Connected successfully!\n');
 
@@ -57,18 +57,20 @@ async function discoverMCPTools() {
 
     // Cleanup
     await mcp.disconnect();
-    console.log('🔌 Disconnected from MCP server');
+    console.log('🔌 Disconnected from Gemini MCP server');
   } catch (error) {
-    console.error('❌ Failed to connect to MCP server:');
+    console.error('❌ Failed to connect to Gemini MCP server:');
     console.error('Error:', error.message);
 
-    if (error.message.includes('CONTEXT7_API_KEY') || error.message.includes('CONTEXT7_MCP_URL')) {
+    if (error.message.includes('GEMINI_API_KEY')) {
       console.log('\n💡 Make sure your .env file contains:');
-      console.log('   CONTEXT7_API_KEY=your-api-key');
-      console.log('   CONTEXT7_MCP_URL=https://mcp.context7.com/mcp');
+      console.log('   GEMINI_API_KEY=your-gemini-api-key');
+      console.log(
+        '   GEMINI_MCP_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent'
+      );
     }
   }
 }
 
 // Run the discovery
-discoverMCPTools().catch(console.error);
+discoverGeminiMCPTools().catch(console.error);

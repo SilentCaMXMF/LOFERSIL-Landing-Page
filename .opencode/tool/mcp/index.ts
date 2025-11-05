@@ -8,6 +8,7 @@
 import { loadConfig, validateConfig, substituteEnvVars } from './config-loader.js';
 
 export { MCPClient } from './client.js';
+export { GeminiMCPClient } from './gemini-client.js';
 export { MCPServer } from './server.js';
 export { MCPTools } from './tools.js';
 export { MCPResources } from './resources.js';
@@ -27,6 +28,7 @@ export type {
 
 // Main MCP instance for easy access
 import { MCPClient } from './client.js';
+import { GeminiMCPClient } from './gemini-client.js';
 import { MCPTools } from './tools.js';
 import { MCPResources } from './resources.js';
 import { MCPHealthMonitor } from './health-monitor.js';
@@ -38,8 +40,12 @@ export class MCP {
   private resources: MCPResources;
   private healthMonitor: MCPHealthMonitor;
 
-  constructor(config: MCPClientConfig) {
-    this.client = new MCPClient(config);
+  constructor(configOrClient: MCPClientConfig | MCPClient) {
+    if (configOrClient instanceof MCPClient) {
+      this.client = configOrClient;
+    } else {
+      this.client = new MCPClient(configOrClient);
+    }
     this.tools = new MCPTools(this.client);
     this.resources = new MCPResources(this.client);
     this.healthMonitor = new MCPHealthMonitor(this.client);
@@ -129,6 +135,33 @@ export class MCPFactory {
       },
       timeout,
     });
+  }
+
+  /**
+   * Creates an MCP instance specifically for Gemini
+   * @returns MCP instance configured for Gemini
+   */
+  static async createGemini(): Promise<MCP> {
+    const serverUrl =
+      process.env.GEMINI_MCP_URL || 'https://generativelanguage.googleapis.com/v1beta';
+    const apiKey = process.env.GEMINI_API_KEY;
+    const timeout = parseInt(process.env.GEMINI_API_TIMEOUT || '60000');
+
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY environment variable must be set');
+    }
+
+    // Use GeminiMCPClient for specialized Gemini functionality
+    const geminiClient = new GeminiMCPClient({
+      serverUrl,
+      headers: {
+        GEMINI_API_KEY: apiKey,
+      },
+      timeout,
+      geminiApiKey: apiKey,
+    });
+
+    return new MCP(geminiClient);
   }
 
   /**
