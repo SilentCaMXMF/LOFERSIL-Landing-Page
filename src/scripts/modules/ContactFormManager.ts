@@ -5,7 +5,6 @@
  * Handles contact form submission, validation, and email service integration
  */
 
-import DOMPurify from 'dompurify';
 import { ContactFormValidator, ContactRequest } from '../validation.js';
 
 // Contact form configuration
@@ -321,10 +320,10 @@ export class ContactFormManager {
    */
   private sanitizeFormData(data: ContactRequest): ContactRequest {
     return {
-      name: DOMPurify.sanitize(data.name),
-      email: DOMPurify.sanitize(data.email),
-      phone: data.phone ? DOMPurify.sanitize(data.phone) : undefined,
-      message: DOMPurify.sanitize(data.message), // Allow basic formatting
+      name: window.DOMPurify.sanitize(data.name),
+      email: window.DOMPurify.sanitize(data.email),
+      phone: data.phone ? window.DOMPurify.sanitize(data.phone) : undefined,
+      message: window.DOMPurify.sanitize(data.message), // Allow basic formatting
     };
   }
 

@@ -2,7 +2,6 @@
  * Router Module
  * Handles client-side routing, URL parsing, and page rendering
  */
-import DOMPurify from 'dompurify';
 import { routes } from './Routes.js';
 import { TranslationManager } from './TranslationManager.js';
 import { NavigationManager } from './NavigationManager.js';
@@ -121,7 +120,7 @@ export class Router {
 
       if (this.mainContent) {
         // Sanitize HTML content before insertion to prevent XSS
-        const sanitizedContent = DOMPurify.sanitize(route.content, {
+        const sanitizedContent = window.DOMPurify.sanitize(route.content, {
           ALLOWED_TAGS: [
             'h1',
             'h2',

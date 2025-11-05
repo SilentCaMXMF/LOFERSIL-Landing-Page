@@ -1,5 +1,14 @@
 // TypeScript interfaces for the LOFERSIL Landing Page application
 
+// Global declarations for external libraries
+declare global {
+  interface Window {
+    DOMPurify: {
+      sanitize: (dirty: string | Node, config?: Record<string, unknown>) => string;
+    };
+  }
+}
+
 export interface Config {
   mobileBreakpoint: number;
   scrollThreshold: number;

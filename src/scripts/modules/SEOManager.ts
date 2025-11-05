@@ -3,7 +3,6 @@
  * Manages SEO-related functionality including meta tags and structured data
  */
 
-import DOMPurify from 'dompurify';
 import { ErrorHandler } from './ErrorHandler.js';
 
 /**
@@ -127,7 +126,7 @@ export class SEOManager {
    */
   private sanitizeText(text: string): string {
     // Use DOMPurify to sanitize text content
-    return DOMPurify.sanitize(text, { ALLOWED_TAGS: [] });
+    return window.DOMPurify.sanitize(text, { ALLOWED_TAGS: [] });
   }
 
   /**
