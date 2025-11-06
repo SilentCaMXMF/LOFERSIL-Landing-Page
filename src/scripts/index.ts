@@ -13,6 +13,7 @@ import { SEOManager } from './modules/SEOManager.js';
 import { ScrollManager } from './modules/ScrollManager.js';
 import { Logger } from './modules/Logger.js';
 import { SimpleTelegramBot } from './modules/SimpleTelegramBot.js';
+import { EventManager } from './modules/EventManager.js';
 
 // Extend Window interface for global properties
 declare global {
@@ -36,6 +37,7 @@ class LOFERSILLandingPage {
   private logger!: Logger;
   private telegramBot!: SimpleTelegramBot | null;
   private contactFormManager: ContactFormManager | null = null;
+  private eventManager!: EventManager;
 
   constructor() {
     this.mainContent = null;
@@ -51,6 +53,8 @@ class LOFERSILLandingPage {
       this.errorHandler = new ErrorHandler();
       // Initialize logger
       this.logger = Logger.getInstance();
+      // Initialize event manager
+      this.eventManager = new EventManager(this.logger, this.errorHandler);
       // Initialize telegram bot (with error handling)
       try {
         this.telegramBot = new SimpleTelegramBot(this.logger);

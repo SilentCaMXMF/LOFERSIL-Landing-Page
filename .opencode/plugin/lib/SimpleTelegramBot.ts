@@ -1,21 +1,27 @@
 import DOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
+import { promises as fs } from 'fs';
+import { config } from 'dotenv';
 import { SecurityAuditLogger } from './security-utils.js';
+import { 
+  TelegramError, 
+  TelegramValidationError, 
+  TelegramRateLimitError, 
+  TelegramApiError,
+  ErrorHandler 
+} from './errors.js';
+import { messageConfig, rateLimitConfig, timeoutConfig, validationConfig } from './config.js';
 
-/**
- * Custom error class for Telegram bot operations
- * Provides security-conscious error messages that don't leak sensitive information
- */
-export class TelegramError extends Error {
-  constructor(
-    message: string,
-    public readonly code?: string,
-    public readonly isRetryable: boolean = false
-  ) {
-    super(message);
-    this.name = 'TelegramError';
-  }
-}
+// Load environment variables from project root (absolute path for security)
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const projectRoot = join(__dirname, '../../../');
+config({ path: join(projectRoot, '.env') });
+
+// TelegramError is now imported from './errors.js'
 
 /**
  * Secure configuration interface for Telegram bot
@@ -26,8 +32,27 @@ interface TelegramConfig {
   enabled: boolean;
   idleTimeout: number;
   checkInterval: number;
+  maxMessages: number;
   maxRetries: number;
   rateLimitMs: number;
+  notificationDelayMs: number;
+}
+
+/**
+ * JSON configuration file structure as documented in README
+ */
+interface TelegramJsonConfig {
+  telegramIdle?: {
+    enabled?: boolean;
+    botToken?: string;
+    chatId?: string;
+    idleTimeout?: number;
+    checkInterval?: number;
+    maxMessages?: number;
+    maxRetries?: number;
+    rateLimitMs?: number;
+    notificationDelayMs?: number;
+  };
 }
 
 /**
@@ -37,24 +62,28 @@ export class TelegramConfigManager {
   private static config: TelegramConfig | null = null;
 
   /**
-   * Load and validate configuration from environment variables
+   * Load and validate configuration from JSON file or environment variables
    */
-  static load(): TelegramConfig | null {
+  static async load(): Promise<TelegramConfig | null> {
     // Return cached config if already loaded
     if (this.config) {
       return this.config;
     }
 
     try {
-      const config: TelegramConfig = {
-        botToken: this.getRequiredEnvVar('TELEGRAM_BOT_TOKEN'),
-        chatId: this.getRequiredEnvVar('TELEGRAM_CHAT_ID'),
-        enabled: this.getBooleanEnvVar('TELEGRAM_ENABLED', true),
-        idleTimeout: this.getNumberEnvVar('TELEGRAM_IDLE_TIMEOUT', 300000), // 5 minutes
-        checkInterval: this.getNumberEnvVar('TELEGRAM_CHECK_INTERVAL', 30000), // 30 seconds
-        maxRetries: this.getNumberEnvVar('TELEGRAM_MAX_RETRIES', 3),
-        rateLimitMs: this.getNumberEnvVar('TELEGRAM_RATE_LIMIT_MS', 1000), // 1 second
-      };
+      // Try to load from JSON file first
+      let config = await this.loadFromJsonFile();
+      let configSource = 'json';
+
+      // Fall back to environment variables if JSON loading failed
+      if (!config) {
+        config = this.loadFromEnvironment();
+        configSource = 'environment';
+      }
+
+      if (!config) {
+        return null;
+      }
 
       // Validate the loaded configuration
       if (!this.validateConfig(config)) {
@@ -63,6 +92,7 @@ export class TelegramConfigManager {
 
       this.config = config;
       SecurityAuditLogger.info('telegram_config_loaded', {
+        source: configSource,
         enabled: config.enabled,
         idleTimeout: config.idleTimeout,
         checkInterval: config.checkInterval,
@@ -70,6 +100,100 @@ export class TelegramConfigManager {
       return config;
     } catch (error) {
       SecurityAuditLogger.error('telegram_config_load_failed', { error: String(error) });
+      return null;
+    }
+  }
+
+  /**
+   * Substitute environment variables in configuration values
+   * Supports ${VAR_NAME} syntax
+   */
+  private static substituteEnvVars(value: string): string {
+    return value.replace(/\$\{([^}]+)\}/g, (match, varName) => {
+      const envValue = process.env[varName];
+      if (envValue === undefined) {
+        SecurityAuditLogger.warn('telegram_config_env_var_missing', { 
+          variable: varName,
+          placeholder: match 
+        });
+        throw new Error(`Environment variable ${varName} is required but not set`);
+      }
+      return envValue;
+    });
+  }
+
+  /**
+   * Validate config file path to prevent directory traversal
+   */
+  private static validateConfigPath(configPath: string): string {
+    // Normalize the path and resolve against the plugin directory
+    const resolvedPath = join(__dirname, '..', configPath);
+    
+    // Ensure the resolved path is still within the plugin directory
+    if (!resolvedPath.startsWith(join(__dirname, '..'))) {
+      SecurityAuditLogger.error('telegram_config_path_traversal_attempt', { 
+        requestedPath: configPath,
+        resolvedPath 
+      });
+      throw new Error('Invalid configuration file path: directory traversal detected');
+    }
+    
+    return resolvedPath;
+  }
+
+  /**
+   * Load configuration from JSON file with environment variable substitution
+   */
+  private static async loadFromJsonFile(): Promise<TelegramConfig | null> {
+    try {
+      const configPath = this.validateConfigPath('telegram-config.json');
+      const configContent = await fs.readFile(configPath, 'utf-8');
+      const jsonConfig: TelegramJsonConfig = JSON.parse(configContent);
+
+      if (!jsonConfig.telegramIdle) {
+        SecurityAuditLogger.warn('telegram_json_config_missing_telegramIdle');
+        return null;
+      }
+
+      const idleConfig = jsonConfig.telegramIdle;
+      const config: TelegramConfig = {
+        botToken: idleConfig.botToken ? this.substituteEnvVars(idleConfig.botToken) : '',
+        chatId: idleConfig.chatId ? this.substituteEnvVars(idleConfig.chatId) : '',
+        enabled: idleConfig.enabled ?? true,
+        idleTimeout: idleConfig.idleTimeout ?? timeoutConfig.DEFAULT_IDLE_TIMEOUT,
+        checkInterval: idleConfig.checkInterval ?? timeoutConfig.DEFAULT_CHECK_INTERVAL,
+        maxMessages: idleConfig.maxMessages ?? timeoutConfig.DEFAULT_MAX_MESSAGES,
+        maxRetries: idleConfig.maxRetries ?? timeoutConfig.DEFAULT_MAX_RETRIES,
+        rateLimitMs: idleConfig.rateLimitMs ?? rateLimitConfig.DEFAULT_RATE_LIMIT_MS,
+        notificationDelayMs: idleConfig.notificationDelayMs ?? timeoutConfig.DEFAULT_NOTIFICATION_DELAY
+      };
+
+      return config;
+    } catch (error) {
+      SecurityAuditLogger.warn('telegram_json_config_load_failed', { error: String(error) });
+      return null;
+    }
+  }
+
+  /**
+   * Load configuration from environment variables (original implementation)
+   */
+  private static loadFromEnvironment(): TelegramConfig | null {
+    try {
+      const config: TelegramConfig = {
+        botToken: this.getRequiredEnvVar('TELEGRAM_BOT_TOKEN'),
+        chatId: this.getRequiredEnvVar('TELEGRAM_CHAT_ID'),
+        enabled: this.getBooleanEnvVar('TELEGRAM_ENABLED', true),
+        idleTimeout: this.getNumberEnvVar('TELEGRAM_IDLE_TIMEOUT', timeoutConfig.DEFAULT_IDLE_TIMEOUT),
+        checkInterval: this.getNumberEnvVar('TELEGRAM_CHECK_INTERVAL', timeoutConfig.DEFAULT_CHECK_INTERVAL),
+        maxMessages: this.getNumberEnvVar('TELEGRAM_MAX_MESSAGES', timeoutConfig.DEFAULT_MAX_MESSAGES),
+        maxRetries: this.getNumberEnvVar('TELEGRAM_MAX_RETRIES', timeoutConfig.DEFAULT_MAX_RETRIES),
+        rateLimitMs: this.getNumberEnvVar('TELEGRAM_RATE_LIMIT_MS', rateLimitConfig.DEFAULT_RATE_LIMIT_MS),
+        notificationDelayMs: this.getNumberEnvVar('TELEGRAM_NOTIFICATION_DELAY_MS', timeoutConfig.DEFAULT_NOTIFICATION_DELAY),
+      };
+      return config;
+    } catch (error) {
+      SecurityAuditLogger.error('telegram_env_config_load_failed', { error: String(error) });
       return null;
     }
   }
@@ -115,10 +239,30 @@ export class TelegramConfigManager {
   private static validateConfig(config: TelegramConfig): boolean {
     // Validate bot token format
     if (!config.botToken.match(/^\d+:[a-zA-Z0-9_-]{35}$/)) {
-      SecurityAuditLogger.error('telegram_config_validation_failed', {
-        reason: 'invalid_token_format',
-      });
-      return false;
+      throw new TelegramValidationError('Invalid bot token format', 'botToken', config.botToken);
+    }
+
+    // Validate chat ID (must be numeric)
+    if (!config.chatId.match(/^-?\d+$/) || 
+        config.chatId.length < validationConfig.MIN_CHAT_ID_LENGTH || 
+        config.chatId.length > validationConfig.MAX_CHAT_ID_LENGTH) {
+      throw new TelegramValidationError('Invalid chat ID format', 'chatId', config.chatId);
+    }
+
+    // Validate timeouts
+    if (config.idleTimeout < validationConfig.MIN_IDLE_TIMEOUT || config.idleTimeout > validationConfig.MAX_IDLE_TIMEOUT) {
+      console.warn(`⚠️ Idle timeout outside recommended range (${validationConfig.MIN_IDLE_TIMEOUT}-${validationConfig.MAX_IDLE_TIMEOUT}ms), using default: ${timeoutConfig.DEFAULT_IDLE_TIMEOUT}ms`);
+      config.idleTimeout = timeoutConfig.DEFAULT_IDLE_TIMEOUT;
+    }
+
+    if (config.checkInterval < validationConfig.MIN_CHECK_INTERVAL || config.checkInterval > validationConfig.MAX_CHECK_INTERVAL) {
+      console.warn(`⚠️ Check interval outside recommended range (${validationConfig.MIN_CHECK_INTERVAL}-${validationConfig.MAX_CHECK_INTERVAL}ms), using default: ${timeoutConfig.DEFAULT_CHECK_INTERVAL}ms`);
+      config.checkInterval = timeoutConfig.DEFAULT_CHECK_INTERVAL;
+    }
+
+    if (config.rateLimitMs < validationConfig.MIN_RATE_LIMIT || config.rateLimitMs > validationConfig.MAX_RATE_LIMIT) {
+      console.warn(`⚠️ Rate limit outside recommended range (${validationConfig.MIN_RATE_LIMIT}-${validationConfig.MAX_RATE_LIMIT}ms), using default: ${rateLimitConfig.DEFAULT_RATE_LIMIT_MS}ms`);
+      config.rateLimitMs = rateLimitConfig.DEFAULT_RATE_LIMIT_MS;
     }
 
     // Validate chat ID format
@@ -163,9 +307,9 @@ export default class SimpleTelegramBot {
   // Rate limiting properties
   private lastMessageTime: number = 0;
   private messageCount: number = 0;
-  private readonly rateLimitWindow: number = 60000; // 1 minute
-  private readonly maxMessagesPerWindow: number = 20; // Conservative limit
-  private readonly minIntervalMs: number = 1000; // Minimum 1 second between messages
+  private readonly rateLimitWindow: number = rateLimitConfig.RATE_LIMIT_WINDOW;
+  private readonly maxMessagesPerWindow: number = rateLimitConfig.MAX_MESSAGES_PER_WINDOW;
+  private readonly minIntervalMs: number = rateLimitConfig.MIN_INTERVAL_MS;
 
   private constructor(token: string, chatId: string) {
     this.token = token;
@@ -191,7 +335,7 @@ export default class SimpleTelegramBot {
     }
 
     // Load configuration securely
-    const config = TelegramConfigManager.load();
+    const config = await TelegramConfigManager.load();
     if (!config || !config.enabled) {
       SecurityAuditLogger.warn('telegram_bot_creation_skipped', {
         reason: 'disabled_or_invalid_config',
@@ -207,48 +351,60 @@ export default class SimpleTelegramBot {
   async sendMessage(text: string): Promise<boolean> {
     // Comprehensive input validation with security-conscious error messages
     if (!text || typeof text !== 'string') {
-      SecurityAuditLogger.warn('telegram_message_validation_failed', {
-        reason: 'invalid_content_type',
+      const errorContext = ErrorHandler.createErrorContext('message_validation', { 
+        reason: 'invalid_content_type' 
       });
-      throw new TelegramError(
+      SecurityAuditLogger.warn('telegram_message_validation_failed', errorContext);
+      throw new TelegramValidationError(
         'Message validation failed: invalid content type',
-        'VALIDATION_ERROR'
+        'content_type',
+        typeof text
       );
     }
 
     // Check for null bytes and control characters (except newlines and tabs)
     if (text.includes('\0') || /[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/.test(text)) {
-      SecurityAuditLogger.warn('telegram_message_validation_failed', {
-        reason: 'control_characters',
+      const errorContext = ErrorHandler.createErrorContext('message_validation', { 
+        reason: 'control_characters' 
       });
-      throw new TelegramError(
+      SecurityAuditLogger.warn('telegram_message_validation_failed', errorContext);
+      throw new TelegramValidationError(
         'Message validation failed: contains invalid characters',
-        'VALIDATION_ERROR'
+        'content',
+        'contains_control_characters'
       );
     }
 
-    // Check message length (Telegram limit is 4096 characters)
-    if (text.length > 4096) {
-      SecurityAuditLogger.warn('telegram_message_validation_failed', {
-        reason: 'too_long',
-        length: text.length,
-      });
-      throw new TelegramError('Message validation failed: content too long', 'VALIDATION_ERROR');
+    // Check message length (Telegram limit)
+    if (text.length > messageConfig.MAX_MESSAGE_LENGTH) {
+      throw new TelegramValidationError('Message too long', 'text', text.length);
     }
 
     // Check for extremely long lines that might indicate abuse
     const lines = text.split('\n');
-    const maxLineLength = 200;
+    const maxLineLength = messageConfig.MAX_LINE_LENGTH;
     if (lines.some(line => line.length > maxLineLength)) {
-      SecurityAuditLogger.warn('telegram_message_validation_failed', { reason: 'line_too_long' });
-      throw new TelegramError('Message validation failed: line too long', 'VALIDATION_ERROR');
+      const errorContext = ErrorHandler.createErrorContext('message_validation', { 
+        reason: 'line_too_long' 
+      });
+      SecurityAuditLogger.warn('telegram_message_validation_failed', errorContext);
+      throw new TelegramValidationError(
+        'Message validation failed: line too long',
+        'line_length',
+        Math.max(...lines.map(line => line.length))
+      );
     }
 
     // Apply rate limiting
     const now = Date.now();
     if (now - this.lastMessageTime < this.minIntervalMs) {
-      SecurityAuditLogger.warn('telegram_rate_limit_exceeded', { reason: 'min_interval' });
-      throw new TelegramError('Rate limit exceeded: too many requests', 'RATE_LIMIT_ERROR');
+      const errorContext = ErrorHandler.createErrorContext('rate_limit', { 
+        reason: 'min_interval',
+        timeSinceLastMessage: now - this.lastMessageTime,
+        minInterval: this.minIntervalMs
+      });
+      SecurityAuditLogger.warn('telegram_rate_limit_exceeded', errorContext);
+      throw new TelegramRateLimitError();
     }
 
     // Reset counter if window has passed
@@ -258,10 +414,13 @@ export default class SimpleTelegramBot {
 
     // Check message count limit
     if (this.messageCount >= this.maxMessagesPerWindow) {
-      SecurityAuditLogger.warn('telegram_rate_limit_exceeded', {
+      const errorContext = ErrorHandler.createErrorContext('rate_limit', { 
         reason: 'max_messages_per_window',
+        currentCount: this.messageCount,
+        maxMessages: this.maxMessagesPerWindow
       });
-      throw new TelegramError('Rate limit exceeded: too many messages', 'RATE_LIMIT_ERROR');
+      SecurityAuditLogger.warn('telegram_rate_limit_exceeded', errorContext);
+      throw new TelegramRateLimitError();
     }
 
     // Sanitize message content
@@ -282,20 +441,23 @@ export default class SimpleTelegramBot {
           text: sanitizedText,
           parse_mode: 'HTML', // Enable HTML parsing for better formatting
         }),
-        signal: AbortSignal.timeout(10000), // 10 second timeout
+        signal: AbortSignal.timeout(timeoutConfig.HTTP_TIMEOUT),
       });
 
       if (!response.ok) {
         // Extract error details without exposing sensitive information
         const isRetryable = response.status >= 500 || response.status === 429;
-        SecurityAuditLogger.error('telegram_api_error', {
-          status: response.status,
-          retryable: isRetryable,
-        });
-        throw new TelegramError(
-          `Message delivery failed: service temporarily unavailable`,
-          `API_ERROR_${response.status}`,
+        const errorContext = ErrorHandler.createErrorContext('api_call', {
+          statusCode: response.status,
+          statusText: response.statusText,
           isRetryable
+        });
+        SecurityAuditLogger.error('telegram_api_error', errorContext);
+        throw new TelegramApiError(
+          'Message delivery failed: service temporarily unavailable',
+          response.status,
+          isRetryable,
+          errorContext
         );
       }
 
@@ -307,14 +469,24 @@ export default class SimpleTelegramBot {
       return true;
     } catch (error) {
       if (error instanceof TelegramError) {
-        SecurityAuditLogger.error('telegram_operation_failed', {
-          code: error.code,
-          retryable: error.isRetryable,
-        });
+        const errorContext = ErrorHandler.sanitizeErrorForLogging(error);
+        SecurityAuditLogger.error('telegram_operation_failed', errorContext);
+        // Re-throw for upstream handling
+        throw error;
       } else {
-        SecurityAuditLogger.error('telegram_unexpected_error', { error: String(error) });
+        const unexpectedError = new TelegramError(
+          'Unexpected telegram operation failure',
+          'UNEXPECTED_ERROR',
+          false,
+          ErrorHandler.createErrorContext('unexpected_error', {
+            originalError: error instanceof Error ? error.message : String(error),
+            errorType: error instanceof Error ? error.constructor.name : typeof error
+          })
+        );
+        const errorContext = ErrorHandler.sanitizeErrorForLogging(unexpectedError);
+        SecurityAuditLogger.error('telegram_unexpected_error', errorContext);
+        throw unexpectedError;
       }
-      return false;
     }
   }
 
@@ -358,5 +530,11 @@ export default class SimpleTelegramBot {
   resetActivity() {
     // Reset rate limiting counters when user activity is detected
     SecurityAuditLogger.info('telegram_activity_reset');
+  }
+
+  getNotificationDelay(): number {
+    // Access the cached config to get the notification delay
+    const config = TelegramConfigManager['config'];
+    return config?.notificationDelayMs ?? timeoutConfig.DEFAULT_NOTIFICATION_DELAY;
   }
 }

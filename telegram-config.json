@@ -1,0 +1,12 @@
+{
+  "telegramIdle": {
+    "enabled": true,
+    "botToken": "7608762661:AAGMOdcT1mm2yuxUSYKz5Vlo8nm1Lf4fIkk",
+    "chatId": "5157839405",
+    "idleTimeout": 300000,
+    "checkInterval": 30000,
+    "maxRetries": 3,
+    "rateLimitMs": 1000,
+    "notificationDelayMs": 5000
+  }
+}

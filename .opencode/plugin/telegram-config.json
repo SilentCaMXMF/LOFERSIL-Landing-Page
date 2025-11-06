@@ -1,0 +1,12 @@
+{
+  "telegramIdle": {
+    "enabled": true,
+    "botToken": "${TELEGRAM_BOT_TOKEN}",
+    "chatId": "${TELEGRAM_CHAT_ID}",
+    "idleTimeout": 300000,
+    "checkInterval": 30000,
+    "maxRetries": 3,
+    "rateLimitMs": 1000,
+    "notificationDelayMs": 5000
+  }
+}

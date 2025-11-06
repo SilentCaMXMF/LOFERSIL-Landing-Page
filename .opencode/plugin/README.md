@@ -23,14 +23,16 @@ Secure Telegram notifications for OpenCode sessions with comprehensive security 
 
 ## Features
 
-- 🕐 Session idle detection and notifications
-- 📱 Telegram messages for session events
-- 📝 Last message capture and forwarding
-- 🚀 Session start/end tracking
-- ✅ Task completion notifications
-- ❌ Error notifications
-- 🛡️ Automatic .env file loading with validation
-- 💬 Commands: `/send-last`, `/send-to-phone`
+- 🕐 **Enhanced Session Idle Detection**: Comprehensive idle notifications with 5-second delay and last message context
+- 📱 **Advanced Telegram Integration**: Secure message delivery with rate limiting and sanitization
+- 📝 **Intelligent Message Capture**: Captures messages from multiple event types (message.updated, message.part.updated) for idle notifications
+- 🚀 **Session Lifecycle Tracking**: Monitors complete session activity and idle states
+- ✅ **Task Completion Notifications**: Tracks and reports on completed work sessions
+- ❌ **Error Notifications**: Comprehensive error handling and reporting
+- 🛡️ **Security Hardened**: Input validation, message sanitization, and audit logging
+- 💬 **Interactive Commands**: `/send-last`, `/send-to-phone` for manual message forwarding
+- 🔍 **Debug Logging**: Extensive logging for troubleshooting session.idle events
+- 🚫 **No Message Spam**: Message previews disabled by default to prevent notification overload
 
 ## Usage
 
@@ -47,6 +49,7 @@ import { TelegramNotify } from './telegram-notify.js';
 - `/send-to-phone` - Send the last message to your phone
 - `/last` - Same as `/send-last`
 - `/phone` - Same as `/send-to-phone`
+
 
 ### Standalone Bot
 
@@ -105,6 +108,7 @@ You can customize the plugin behavior by modifying the configuration:
 
 - `idleTimeout`: Time in milliseconds before considering session idle
 - `checkInterval`: How often to check for idle state
+- `notificationDelayMs`: Delay in milliseconds before sending idle notifications
 - `messages`: Customize notification messages
 
 ### Integration with OpenCode
@@ -220,6 +224,14 @@ npm run test:run .opencode/plugin/lib/SimpleTelegramBot.test.ts
 - **"Failed to send message"**: Check bot token and chat ID are correct
 - **No notifications**: Ensure bot is started and chat is active
 
+### Session Idle Issues
+
+- **No idle notifications**: Check OpenCode console logs for `📥 TelegramNotify received event: session.idle` messages
+- **Missing message context**: Verify that `message.updated` or `message.part.updated` events are being received before idle
+- **Plugin not loading**: Look for `📲 TelegramNotify plugin loaded` in OpenCode logs
+- **Event structure issues**: Check for `⏰ DEBUG: session.idle event received` logs with full event details
+- **Bot configuration**: Ensure `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` are properly set
+
 ### Environment Variables
 
 | Variable                  | Required | Default  | Description                           |
@@ -229,8 +241,9 @@ npm run test:run .opencode/plugin/lib/SimpleTelegramBot.test.ts
 | `TELEGRAM_ENABLED`        | No       | `true`   | Enable/disable the plugin             |
 | `TELEGRAM_IDLE_TIMEOUT`   | No       | `300000` | Idle timeout in ms (5 min)            |
 | `TELEGRAM_CHECK_INTERVAL` | No       | `30000`  | Check interval in ms (30 sec)         |
-| `TELEGRAM_MAX_RETRIES`    | No       | `3`      | Max retry attempts                    |
-| `TELEGRAM_RATE_LIMIT_MS`  | No       | `1000`   | Min interval between messages (1 sec) |
+| `TELEGRAM_MAX_RETRIES`           | No       | `3`      | Max retry attempts                    |
+| `TELEGRAM_RATE_LIMIT_MS`         | No       | `1000`   | Min interval between messages (1 sec) |
+| `TELEGRAM_NOTIFICATION_DELAY_MS` | No       | `5000`   | Delay before sending idle notifications (5 sec) |
 
 ## Security Best Practices
 

@@ -1,4 +1,6 @@
 import { Logger } from './Logger';
+import { ErrorHandler } from './ErrorHandler';
+import { TelegramSender, MessageFormatter } from './TelegramNotify';
 
 interface TelegramConfig {
   botToken: string;
@@ -13,13 +15,26 @@ interface TelegramConfig {
 export class SimpleTelegramBot {
   private config: TelegramConfig;
   private logger: Logger;
+  private errorHandler: ErrorHandler;
+  private telegramSender: TelegramSender;
   private lastActivityTime: number = Date.now();
   private checkIntervalId?: NodeJS.Timeout;
   private isIdle: boolean = false;
 
-  constructor(logger: Logger) {
+  constructor(logger: Logger, errorHandler?: ErrorHandler) {
     this.logger = logger;
+    this.errorHandler = errorHandler || new ErrorHandler();
     this.config = this.loadConfig();
+    this.telegramSender = new TelegramSender(
+      {
+        botToken: this.config.botToken,
+        chatId: this.config.chatId,
+        testMode: this.config.testMode,
+        testChatId: this.config.testChatId,
+      },
+      this.logger,
+      this.errorHandler
+    );
     this.initialize();
   }
 
@@ -117,70 +132,24 @@ export class SimpleTelegramBot {
   }
 
   private async sendIdleMessage(): Promise<void> {
-    if (this.config.testMode) {
-      this.logger.info('SimpleTelegramBot: Test mode - would send idle message');
-      return;
-    }
-
-    const message = `
-🤖 <b>LOFERSIL System Status</b>
-
-📊 <i>Idle State Detected</i>
-⏰ Timestamp: ${new Date().toISOString()}
-🏢 System: LOFERSIL Landing Page
-📍 Status: Idle (No active operations)
-
-System is running normally and monitoring for activity.
-    `.trim();
+    const message = MessageFormatter.formatMessage(
+      'LOFERSIL System Status',
+      [
+        { label: 'Idle State Detected', value: 'System is running normally and monitoring for activity.', emoji: '📊' },
+        { label: 'Timestamp', value: new Date().toISOString(), emoji: '⏰' },
+        { label: 'Status', value: 'Idle (No active operations)', emoji: '📍' },
+      ]
+    );
 
     try {
-      const chatId = this.config.testChatId || this.config.chatId;
-      await this.sendTelegramMessage(message, chatId);
+      await this.telegramSender.sendMessage(message);
       this.logger.info('Idle message sent to Telegram');
     } catch (error) {
-      this.logger.error(
-        'Failed to send idle message',
-        error instanceof Error ? error : new Error(String(error))
-      );
+      // Error already handled by TelegramSender
     }
   }
 
-  private async sendTelegramMessage(message: string, chatId: string): Promise<void> {
-    // Construct URL securely - token is embedded as per Telegram API spec
-    // Note: This follows the official Telegram Bot API format
-    const url = `https://api.telegram.org/bot${this.config.botToken}/sendMessage`;
 
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: message,
-          parse_mode: 'HTML',
-        }),
-      });
-
-      if (!response.ok) {
-        // Don't log the URL to avoid token exposure in logs
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      if (!data.ok) {
-        throw new Error(`Telegram API error: ${data.description}`);
-      }
-    } catch (error) {
-      // Log error without exposing the URL/token
-      this.logger.error(
-        'Failed to send Telegram message',
-        error instanceof Error ? error : new Error(String(error))
-      );
-      throw error;
-    }
-  }
 
   public destroy(): void {
     if (this.checkIntervalId) {
