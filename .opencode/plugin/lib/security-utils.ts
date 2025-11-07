@@ -27,7 +27,10 @@ export class SecurityAuditLogger {
         ...(details || {}),
       };
 
-      console.log(`[SECURITY-AUDIT] ${JSON.stringify(logEntry)}`);
+      // Only log security audits when TELEGRAM_DEBUG is enabled
+      if (process.env.TELEGRAM_DEBUG) {
+        console.log(`[SECURITY-AUDIT] ${JSON.stringify(logEntry)}`);
+      }
     }
   }
 
@@ -41,6 +44,33 @@ export class SecurityAuditLogger {
 
   static error(event: string, details?: Record<string, any>): void {
     this.log('error', event, details);
+  }
+
+  /**
+   * Log operation with standardized context
+   */
+  static logOperation(
+    level: 'info' | 'warn' | 'error',
+    operation: string,
+    result: 'success' | 'failed' | 'attempt',
+    details?: Record<string, any>
+  ): void {
+    this.log(level, `telegram_${operation}_${result}`, {
+      operation,
+      result,
+      ...details
+    });
+  }
+
+  /**
+   * Log error with context from ErrorHandler
+   */
+  static logError(error: any, operation: string): void {
+    this.error(`telegram_${operation}_failed`, {
+      operation,
+      error: error instanceof Error ? error.message : String(error),
+      ...(error.context || {})
+    });
   }
 
   private static shouldLog(level: 'info' | 'warn' | 'error'): boolean {

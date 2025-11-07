@@ -27,11 +27,10 @@ export class MessageFormatter {
     content: string,
     options: {
       includeTimestamp?: boolean;
-      useHtml?: boolean;
       emoji?: string;
     } = {}
   ): string {
-    const { includeTimestamp = false, useHtml = true, emoji = '' } = options;
+    const { includeTimestamp = false, emoji = '' } = options;
     
     let message = '';
     
@@ -46,7 +45,7 @@ export class MessageFormatter {
     
     // Add content with proper spacing
     if (content) {
-      message += '\\n\\n' + content;
+      message += '\n\n' + content;
     }
     
     return message;
@@ -76,23 +75,13 @@ export class MessageFormatter {
   } {
     return {
       length: content.length,
-      words: content.split(/\\s+/).filter(word => word.length > 0).length,
-      lines: content.split('\\n').length,
+      words: content.split(/\s+/).filter(word => word.length > 0).length,
+      lines: content.split('\n').length,
       hasHtml: /<[^>]*>/.test(content)
     };
   }
 
-  /**
-   * Escape HTML characters for security
-   */
-  static escapeHtml(text: string): string {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;');
-  }
+
 
   /**
    * Format timestamp consistently
@@ -116,8 +105,8 @@ export class MessageValidator {
     const errors: string[] = [];
 
     // Check content type
-    if (typeof content !== 'string') {
-      errors.push('Content must be a string');
+    if (!content || typeof content !== 'string') {
+      errors.push('Content must be a non-empty string');
     }
 
     // Check length
@@ -126,14 +115,14 @@ export class MessageValidator {
     }
 
     // Check for control characters
-    if (content.includes('\\0') || /[\\x01-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/.test(content)) {
+    if (content.includes('\0') || /[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/.test(content)) {
       errors.push('Content contains invalid control characters');
     }
 
     // Check for extremely long lines
     const lines = content.split('\n');
     const maxLineLength = messageConfig.MAX_LINE_LENGTH;
-    if (lines.some(line => line.length > maxLineLength)) {
+    if (lines.some((line: string) => line.length > maxLineLength)) {
       errors.push(`Line too long: max ${maxLineLength} characters`);
     }
 
@@ -144,12 +133,28 @@ export class MessageValidator {
   }
 
   /**
+   * Validate bot token format
+   */
+  static validateBotToken(token: string): boolean {
+    return /^\d+:[a-zA-Z0-9_-]{35}$/.test(token);
+  }
+
+  /**
+   * Validate chat ID format
+   */
+  static validateChatId(chatId: string): boolean {
+    return /^-?\d+$/.test(chatId) && 
+           chatId.length >= 5 && 
+           chatId.length <= 15;
+  }
+
+  /**
    * Sanitize message content for security
    */
   static sanitizeMessage(content: string): string {
     // Basic sanitization - remove potentially dangerous content
     return content
-      .replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, '') // Remove control chars
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Remove control chars
       .trim();
   }
 }
@@ -173,11 +178,9 @@ export class TelegramSender {
     content: string,
     options: {
       operation?: string;
-      disablePreview?: boolean;
-      parseMode?: 'HTML' | 'Markdown';
     } = {}
   ): Promise<boolean> {
-    const { operation = 'send_message', disablePreview = false, parseMode = 'HTML' } = options;
+    const { operation = 'send_message' } = options;
 
     try {
       // Validate content
@@ -269,7 +272,7 @@ export class MessageTemplates {
   static sessionIdle(lastMessage?: string): string {
     const title = '🟡 Session idle!';
     const content = lastMessage 
-      ? `Here's your last message:\\n\\n${lastMessage}`
+      ? `Here's your last message:\n\n${lastMessage}`
       : "Hey! Your OpenCode session is idle - time to check your work!";
     
     return MessageFormatter.formatMessage(title, content);
@@ -320,7 +323,7 @@ export class MessageTemplates {
    */
   static errorNotification(error: BasePluginError): string {
     const title = '🚨 Plugin Error';
-    const content = `Operation: ${error.code}\\nMessage: ${error.getSafeMessage()}`;
+    const content = `Operation: ${error.code}\nMessage: ${error.getSafeMessage()}`;
     
     return MessageFormatter.formatMessage(title, content, {
       includeTimestamp: true

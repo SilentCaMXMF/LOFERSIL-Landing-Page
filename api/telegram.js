@@ -14,7 +14,6 @@ class ServerTelegramBot {
       console.warn('ServerTelegramBot: Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID environment variables');
     }
   }
-  }
 
   /**
    * Send a contact form notification to Telegram

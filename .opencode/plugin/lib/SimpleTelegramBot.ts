@@ -11,6 +11,7 @@ import {
   ErrorHandler 
 } from './errors.js';
 import { messageConfig, rateLimitConfig, timeoutConfig, validationConfig } from './config.js';
+import { MessageValidator } from './message-utils.js';
 
 // Load environment variables from project root (absolute path for security)
 import { fileURLToPath } from 'url';
@@ -181,15 +182,15 @@ export class TelegramConfigManager {
   private static loadFromEnvironment(): TelegramConfig | null {
     try {
       const config: TelegramConfig = {
-        botToken: this.getRequiredEnvVar('TELEGRAM_BOT_TOKEN'),
-        chatId: this.getRequiredEnvVar('TELEGRAM_CHAT_ID'),
-        enabled: this.getBooleanEnvVar('TELEGRAM_ENABLED', true),
-        idleTimeout: this.getNumberEnvVar('TELEGRAM_IDLE_TIMEOUT', timeoutConfig.DEFAULT_IDLE_TIMEOUT),
-        checkInterval: this.getNumberEnvVar('TELEGRAM_CHECK_INTERVAL', timeoutConfig.DEFAULT_CHECK_INTERVAL),
-        maxMessages: this.getNumberEnvVar('TELEGRAM_MAX_MESSAGES', timeoutConfig.DEFAULT_MAX_MESSAGES),
-        maxRetries: this.getNumberEnvVar('TELEGRAM_MAX_RETRIES', timeoutConfig.DEFAULT_MAX_RETRIES),
-        rateLimitMs: this.getNumberEnvVar('TELEGRAM_RATE_LIMIT_MS', rateLimitConfig.DEFAULT_RATE_LIMIT_MS),
-        notificationDelayMs: this.getNumberEnvVar('TELEGRAM_NOTIFICATION_DELAY_MS', timeoutConfig.DEFAULT_NOTIFICATION_DELAY),
+        botToken: this.getEnvVar('TELEGRAM_BOT_TOKEN', '', true),
+        chatId: this.getEnvVar('TELEGRAM_CHAT_ID', '', true),
+        enabled: this.getEnvVar('TELEGRAM_ENABLED', true),
+        idleTimeout: this.getEnvVar('TELEGRAM_IDLE_TIMEOUT', timeoutConfig.DEFAULT_IDLE_TIMEOUT),
+        checkInterval: this.getEnvVar('TELEGRAM_CHECK_INTERVAL', timeoutConfig.DEFAULT_CHECK_INTERVAL),
+        maxMessages: this.getEnvVar('TELEGRAM_MAX_MESSAGES', timeoutConfig.DEFAULT_MAX_MESSAGES),
+        maxRetries: this.getEnvVar('TELEGRAM_MAX_RETRIES', timeoutConfig.DEFAULT_MAX_RETRIES),
+        rateLimitMs: this.getEnvVar('TELEGRAM_RATE_LIMIT_MS', rateLimitConfig.DEFAULT_RATE_LIMIT_MS),
+        notificationDelayMs: this.getEnvVar('TELEGRAM_NOTIFICATION_DELAY_MS', timeoutConfig.DEFAULT_NOTIFICATION_DELAY),
       };
       return config;
     } catch (error) {
@@ -199,92 +200,71 @@ export class TelegramConfigManager {
   }
 
   /**
-   * Get required environment variable with validation
+   * Get environment variable with type validation
    */
-  private static getRequiredEnvVar(name: string): string {
+  private static getEnvVar<T>(name: string, defaultValue: T, required: boolean = false): T {
     const value = process.env[name];
-    if (!value || typeof value !== 'string' || value.trim().length === 0) {
-      throw new Error(`Required environment variable ${name} is missing or empty`);
-    }
-    return value.trim();
-  }
-
-  /**
-   * Get optional boolean environment variable
-   */
-  private static getBooleanEnvVar(name: string, defaultValue: boolean): boolean {
-    const value = process.env[name];
-    if (value === undefined) return defaultValue;
-    return value.toLowerCase() === 'true';
-  }
-
-  /**
-   * Get optional number environment variable
-   */
-  private static getNumberEnvVar(name: string, defaultValue: number): number {
-    const value = process.env[name];
-    if (value === undefined) return defaultValue;
-
-    const parsed = parseInt(value, 10);
-    if (isNaN(parsed)) {
-      console.warn(`Invalid number value for ${name}, using default: ${defaultValue}`);
+    
+    if (value === undefined) {
+      if (required) {
+        throw new Error(`Required environment variable ${name} is missing`);
+      }
       return defaultValue;
     }
-    return parsed;
+
+    // Type conversion based on default value type
+    if (typeof defaultValue === 'boolean') {
+      return (value.toLowerCase() === 'true') as T;
+    }
+    
+    if (typeof defaultValue === 'number') {
+      const parsed = parseInt(value, 10);
+      if (isNaN(parsed)) {
+        if (process.env.TELEGRAM_DEBUG) {
+          console.warn(`Invalid number value for ${name}, using default: ${defaultValue}`);
+        }
+        return defaultValue;
+      }
+      return parsed as T;
+    }
+    
+    return value.trim() as T;
   }
 
   /**
    * Validate configuration values
    */
   private static validateConfig(config: TelegramConfig): boolean {
-    // Validate bot token format
-    if (!config.botToken.match(/^\d+:[a-zA-Z0-9_-]{35}$/)) {
+    // Validate bot token format using centralized validator
+    if (!MessageValidator.validateBotToken(config.botToken)) {
       throw new TelegramValidationError('Invalid bot token format', 'botToken', config.botToken);
     }
 
-    // Validate chat ID (must be numeric)
-    if (!config.chatId.match(/^-?\d+$/) || 
-        config.chatId.length < validationConfig.MIN_CHAT_ID_LENGTH || 
-        config.chatId.length > validationConfig.MAX_CHAT_ID_LENGTH) {
+    // Validate chat ID using centralized validator
+    if (!MessageValidator.validateChatId(config.chatId)) {
       throw new TelegramValidationError('Invalid chat ID format', 'chatId', config.chatId);
     }
 
     // Validate timeouts
     if (config.idleTimeout < validationConfig.MIN_IDLE_TIMEOUT || config.idleTimeout > validationConfig.MAX_IDLE_TIMEOUT) {
-      console.warn(`⚠️ Idle timeout outside recommended range (${validationConfig.MIN_IDLE_TIMEOUT}-${validationConfig.MAX_IDLE_TIMEOUT}ms), using default: ${timeoutConfig.DEFAULT_IDLE_TIMEOUT}ms`);
+      if (process.env.TELEGRAM_DEBUG) {
+        console.warn(`⚠️ Idle timeout outside recommended range (${validationConfig.MIN_IDLE_TIMEOUT}-${validationConfig.MAX_IDLE_TIMEOUT}ms), using default: ${timeoutConfig.DEFAULT_IDLE_TIMEOUT}ms`);
+      }
       config.idleTimeout = timeoutConfig.DEFAULT_IDLE_TIMEOUT;
     }
 
     if (config.checkInterval < validationConfig.MIN_CHECK_INTERVAL || config.checkInterval > validationConfig.MAX_CHECK_INTERVAL) {
-      console.warn(`⚠️ Check interval outside recommended range (${validationConfig.MIN_CHECK_INTERVAL}-${validationConfig.MAX_CHECK_INTERVAL}ms), using default: ${timeoutConfig.DEFAULT_CHECK_INTERVAL}ms`);
+      if (process.env.TELEGRAM_DEBUG) {
+        console.warn(`⚠️ Check interval outside recommended range (${validationConfig.MIN_CHECK_INTERVAL}-${validationConfig.MAX_CHECK_INTERVAL}ms), using default: ${timeoutConfig.DEFAULT_CHECK_INTERVAL}ms`);
+      }
       config.checkInterval = timeoutConfig.DEFAULT_CHECK_INTERVAL;
     }
 
     if (config.rateLimitMs < validationConfig.MIN_RATE_LIMIT || config.rateLimitMs > validationConfig.MAX_RATE_LIMIT) {
-      console.warn(`⚠️ Rate limit outside recommended range (${validationConfig.MIN_RATE_LIMIT}-${validationConfig.MAX_RATE_LIMIT}ms), using default: ${rateLimitConfig.DEFAULT_RATE_LIMIT_MS}ms`);
+      if (process.env.TELEGRAM_DEBUG) {
+        console.warn(`⚠️ Rate limit outside recommended range (${validationConfig.MIN_RATE_LIMIT}-${validationConfig.MAX_RATE_LIMIT}ms), using default: ${rateLimitConfig.DEFAULT_RATE_LIMIT_MS}ms`);
+      }
       config.rateLimitMs = rateLimitConfig.DEFAULT_RATE_LIMIT_MS;
-    }
-
-    // Validate chat ID format
-    if (!config.chatId.match(/^-?\d+$/) || config.chatId.length < 5 || config.chatId.length > 15) {
-      SecurityAuditLogger.error('telegram_config_validation_failed', { reason: 'invalid_chat_id' });
-      return false;
-    }
-
-    // Validate numeric constraints
-    if (config.idleTimeout < 60000 || config.idleTimeout > 3600000) {
-      console.warn('⚠️ Idle timeout outside recommended range (1-60 minutes), using default');
-      config.idleTimeout = 300000;
-    }
-
-    if (config.checkInterval < 5000 || config.checkInterval > 300000) {
-      console.warn('⚠️ Check interval outside recommended range (5s-5min), using default');
-      config.checkInterval = 30000;
-    }
-
-    if (config.rateLimitMs < 500 || config.rateLimitMs > 10000) {
-      console.warn('⚠️ Rate limit outside recommended range (0.5-10s), using default');
-      config.rateLimitMs = 1000;
     }
 
     return true;
@@ -321,7 +301,9 @@ export default class SimpleTelegramBot {
       const window = new JSDOM('').window;
       this.domPurify = (DOMPurify as any)(window);
     } catch (error) {
-      console.warn('DOMPurify initialization failed, falling back to basic sanitization');
+      if (process.env.TELEGRAM_DEBUG) {
+        console.warn('DOMPurify initialization failed, falling back to basic sanitization');
+      }
       this.domPurify = null;
     }
 
@@ -349,49 +331,17 @@ export default class SimpleTelegramBot {
   }
 
   async sendMessage(text: string): Promise<boolean> {
-    // Comprehensive input validation with security-conscious error messages
-    if (!text || typeof text !== 'string') {
+    // Use centralized validation
+    const validation = MessageValidator.validateMessage(text);
+    if (!validation.isValid) {
       const errorContext = ErrorHandler.createErrorContext('message_validation', { 
-        reason: 'invalid_content_type' 
+        errors: validation.errors 
       });
       SecurityAuditLogger.warn('telegram_message_validation_failed', errorContext);
       throw new TelegramValidationError(
-        'Message validation failed: invalid content type',
-        'content_type',
-        typeof text
-      );
-    }
-
-    // Check for null bytes and control characters (except newlines and tabs)
-    if (text.includes('\0') || /[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/.test(text)) {
-      const errorContext = ErrorHandler.createErrorContext('message_validation', { 
-        reason: 'control_characters' 
-      });
-      SecurityAuditLogger.warn('telegram_message_validation_failed', errorContext);
-      throw new TelegramValidationError(
-        'Message validation failed: contains invalid characters',
+        `Message validation failed: ${validation.errors.join(', ')}`,
         'content',
-        'contains_control_characters'
-      );
-    }
-
-    // Check message length (Telegram limit)
-    if (text.length > messageConfig.MAX_MESSAGE_LENGTH) {
-      throw new TelegramValidationError('Message too long', 'text', text.length);
-    }
-
-    // Check for extremely long lines that might indicate abuse
-    const lines = text.split('\n');
-    const maxLineLength = messageConfig.MAX_LINE_LENGTH;
-    if (lines.some(line => line.length > maxLineLength)) {
-      const errorContext = ErrorHandler.createErrorContext('message_validation', { 
-        reason: 'line_too_long' 
-      });
-      SecurityAuditLogger.warn('telegram_message_validation_failed', errorContext);
-      throw new TelegramValidationError(
-        'Message validation failed: line too long',
-        'line_length',
-        Math.max(...lines.map(line => line.length))
+        validation.errors
       );
     }
 
@@ -423,8 +373,8 @@ export default class SimpleTelegramBot {
       throw new TelegramRateLimitError();
     }
 
-    // Sanitize message content
-    const sanitizedText = this.sanitizeMessage(text);
+    // Sanitize message content using centralized validator
+    const sanitizedText = MessageValidator.sanitizeMessage(text);
     const url = `https://api.telegram.org/bot${this.token}/sendMessage`;
 
     try {
@@ -490,41 +440,17 @@ export default class SimpleTelegramBot {
     }
   }
 
-  private sanitizeMessage(text: string): string {
-    // Use DOMPurify if available, otherwise fall back to basic sanitization
-    if (this.domPurify) {
-      // Telegram supports: <b>, <i>, <u>, <s>, <code>, <pre>
-      // We allow only safe formatting tags for security
-      return this.domPurify
-        .sanitize(text, {
-          ALLOWED_TAGS: ['b', 'i', 'u', 's', 'code', 'pre'],
-          ALLOWED_ATTR: [],
-          ALLOW_DATA_ATTR: false,
-        })
-        .trim();
-    } else {
-      // Fallback: basic HTML escaping (less secure but better than nothing)
-      return text
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#x27;')
-        .trim();
-    }
-  }
+
 
   async init(): Promise<void> {
     // Initialize the bot (currently no-op, but can be extended for future features)
     SecurityAuditLogger.info('telegram_bot_init_called');
-    console.log('📲 Telegram bot initialized');
   }
 
   cleanup(): void {
     // Clear the singleton instance and any resources
     SimpleTelegramBot.instance = null;
     SecurityAuditLogger.info('telegram_bot_cleanup_called');
-    console.log('📲 Telegram bot cleaned up');
   }
 
   resetActivity() {
