@@ -420,17 +420,17 @@ export class ContactFormManager {
     this.isSubmitting = isSubmitting;
 
     if (this.submitButton) {
-      const buttonText = this.submitButton.querySelector('.btn-text');
-      const loadingText = this.submitButton.querySelector('.btn-loading');
+      const buttonText = this.submitButton.querySelector('.btn-text') as HTMLElement;
+      const loadingText = this.submitButton.querySelector('.btn-loading') as HTMLElement;
 
       if (isSubmitting) {
         this.submitButton.disabled = true;
-        if (buttonText) (buttonText as HTMLElement).style.display = 'none';
-        if (loadingText) (loadingText as HTMLElement).style.display = 'inline-flex';
+        if (buttonText) buttonText.classList.add('hidden');
+        if (loadingText) loadingText.classList.remove('hidden');
       } else {
         this.submitButton.disabled = false;
-        if (buttonText) (buttonText as HTMLElement).style.display = 'inline';
-        if (loadingText) (loadingText as HTMLElement).style.display = 'none';
+        if (buttonText) buttonText.classList.remove('hidden');
+        if (loadingText) loadingText.classList.add('hidden');
       }
     }
   }

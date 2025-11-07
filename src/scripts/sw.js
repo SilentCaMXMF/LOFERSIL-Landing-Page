@@ -20,7 +20,7 @@ const STATIC_ASSETS = [
   '/scripts/modules/ContactFormManager.js',
   '/scripts/modules/NavigationManager.js',
   '/scripts/modules/SEOManager.js',
-  '/assets/images/favicon-192.png',
+   '/assets/images/favicon-48x48-lettuce.png',
   '/assets/images/logo.jpg',
   '/locales/pt.json',
   '/offline.html',
@@ -217,8 +217,8 @@ self.addEventListener('push', event => {
 
   const options = {
     body: data.body,
-    icon: '/assets/images/icon-192.png',
-    badge: '/assets/images/badge-72.png',
+    icon: '/assets/images/favicon-48x48-lettuce.png',
+    badge: '/assets/images/favicon-32x32-lettuce.png',
     vibrate: [100, 50, 100],
     data: {
       url: data.url || '/',
@@ -227,7 +227,7 @@ self.addEventListener('push', event => {
       {
         action: 'view',
         title: 'Ver',
-        icon: '/assets/images/view-action.png',
+        icon: '/assets/images/favicon-16x16-lettuce.png',
       },
       {
         action: 'dismiss',

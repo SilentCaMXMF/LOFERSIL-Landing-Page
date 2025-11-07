@@ -196,7 +196,7 @@ class LOFERSILLandingPage {
   private async registerServiceWorker(): Promise<void> {
     if ('serviceWorker' in navigator) {
       try {
-        await navigator.serviceWorker.register('/src/scripts/sw.js', {
+        await navigator.serviceWorker.register('/sw.js', {
           scope: '/',
         });
       } catch (error) {
