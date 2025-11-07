@@ -35,8 +35,11 @@ export class NavigationManager {
     this.navToggle?.addEventListener('click', () => this.toggleMobileMenu());
     // Close menu when clicking outside
     document.addEventListener('click', e => this.handleOutsideClick(e));
-    // Close menu on escape key
-    document.addEventListener('keydown', e => this.handleKeydown(e));
+    // Close menu on escape key and handle focus trap
+    document.addEventListener('keydown', e => {
+      this.handleKeydown(e);
+      this.handleFocusTrap(e);
+    });
     // Handle window resize
     window.addEventListener('resize', () => this.handleResize());
   }
@@ -64,6 +67,35 @@ export class NavigationManager {
   private handleKeydown(e: KeyboardEvent): void {
     if (e.key === 'Escape' && this.isMenuOpen) {
       this.toggleMobileMenu();
+    }
+  }
+
+  /**
+   * Handle focus trap for mobile menu
+   */
+  private handleFocusTrap(e: KeyboardEvent): void {
+    if (!this.isMenuOpen || e.key !== 'Tab') return;
+
+    const focusableElements = this.navMenu?.querySelectorAll(
+      'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusableElements) return;
+
+    const firstElement = focusableElements[0] as HTMLElement;
+    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+    if (e.shiftKey) {
+      // Shift + Tab
+      if (document.activeElement === firstElement) {
+        lastElement.focus();
+        e.preventDefault();
+      }
+    } else {
+      // Tab
+      if (document.activeElement === lastElement) {
+        firstElement.focus();
+        e.preventDefault();
+      }
     }
   }
 

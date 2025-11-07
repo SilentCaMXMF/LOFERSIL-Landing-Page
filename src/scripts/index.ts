@@ -17,6 +17,7 @@ import { EventManager } from './modules/EventManager.js';
 import { PWAInstaller } from './modules/PWAInstaller.js';
 import { PushNotificationManager } from './modules/PushNotificationManager.js';
 import { PWAUpdater } from './modules/PWAUpdater.js';
+import { ThemeManager } from './modules/ThemeManager.js';
 
 // Extend Window interface for global properties
 declare global {
@@ -44,6 +45,7 @@ class LOFERSILLandingPage {
   private pwaInstaller!: PWAInstaller;
   private pushManager!: PushNotificationManager;
   private pwaUpdater!: PWAUpdater;
+  private themeManager!: ThemeManager;
 
   constructor() {
     this.mainContent = null;
@@ -89,6 +91,9 @@ class LOFERSILLandingPage {
       this.scrollManager = new ScrollManager(this.navigationManager);
       this.navigationManager.setupNavigation();
       await this.translationManager.initialize();
+
+      // Initialize theme manager
+      this.themeManager = new ThemeManager();
 
       // Initialize PWA installer
       this.pwaInstaller = new PWAInstaller();
