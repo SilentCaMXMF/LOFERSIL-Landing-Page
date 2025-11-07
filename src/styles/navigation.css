@@ -132,10 +132,11 @@
 }
 
 #nav-toggle {
-  display: none;
+  display: flex;
   flex-direction: column;
   cursor: pointer;
   padding: var(--space-2);
+  margin-left: var(--space-4);
 }
 
 #nav-toggle span {

@@ -1,6 +1,6 @@
 /**
  * Navigation Manager for LOFERSIL Landing Page
- * Handles mobile menu, navigation state, and UI interactions
+ * Handles dropdown menu, navigation state, and UI interactions
  */
 
 export class NavigationManager {
@@ -45,7 +45,7 @@ export class NavigationManager {
   }
 
   /**
-   * Toggle mobile navigation menu
+   * Toggle dropdown navigation menu
    */
   toggleMobileMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
@@ -103,13 +103,12 @@ export class NavigationManager {
    * Handle window resize
    */
   private handleResize(): void {
-    if (window.innerWidth > 768 && this.isMenuOpen) {
-      this.toggleMobileMenu();
-    }
+    // Menu now stays open/closed regardless of screen size
+    // No action needed on resize
   }
 
   /**
-   * Handle clicks outside the mobile menu
+   * Handle clicks outside the dropdown menu
    */
   private handleOutsideClick(e: Event): void {
     const target = e.target as Element;
@@ -137,14 +136,13 @@ export class NavigationManager {
   }
 
   /**
-   * Handle mobile menu state on load
+   * Handle menu state on load
    */
-  handleMobileMenuState(): void {
-    if (window.innerWidth <= 768) {
-      this.isMenuOpen = false;
-      if (this.navMenu) {
-        this.navMenu.classList.remove('active');
-      }
+  handleMenuState(): void {
+    // Menu starts closed by default
+    this.isMenuOpen = false;
+    if (this.navMenu) {
+      this.navMenu.classList.remove('active');
     }
   }
 
@@ -154,8 +152,8 @@ export class NavigationManager {
   setupNavigation(): void {
     // Set active navigation based on current path
     this.setActiveNavigation();
-    // Handle mobile menu state
-    this.handleMobileMenuState();
+    // Handle menu state
+    this.handleMenuState();
   }
 
   /**
