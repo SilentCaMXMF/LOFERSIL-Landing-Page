@@ -47,9 +47,9 @@ body {
 /* CSS Custom Properties (Variables) */
 :root {
   /* Colors */
-  --primary-color: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #3b82f6;
+  --primary-color: #228b22;
+  --primary-dark: #1e6b1e;
+  --primary-light: #32a032;
   --secondary-color: #64748b;
   --accent-color: #f59e0b;
   --success-color: #10b981;
