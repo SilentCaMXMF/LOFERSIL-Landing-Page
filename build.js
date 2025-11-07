@@ -124,6 +124,9 @@ const isProduction =
   if (fs.existsSync('./terms.html')) {
     fs.copyFileSync('./terms.html', './dist/terms.html');
   }
+  if (fs.existsSync('./offline.html')) {
+    fs.copyFileSync('./offline.html', './dist/offline.html');
+  }
 
   // Concatenate CSS files
   console.log('🔗 Concatenating CSS files...');

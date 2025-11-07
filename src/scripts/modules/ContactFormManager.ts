@@ -6,6 +6,7 @@
  */
 
 import { ContactFormValidator, ContactRequest } from '../validation.js';
+import { BackgroundSync } from './BackgroundSync.js';
 
 // Contact form configuration
 interface ContactFormConfig {
@@ -389,6 +390,22 @@ export class ContactFormManager {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+
+      // Check if we're offline
+      if (!navigator.onLine) {
+        // Try to register for background sync
+        try {
+          await BackgroundSync.registerContactForm(sanitizedData);
+          this.showSuccessMessage('Mensagem registada para envio quando a ligação for restaurada.');
+          this.resetForm();
+          this.eventHandlers.onSuccess?.(sanitizedData);
+          return;
+        } catch (syncError) {
+          console.warn('Background sync not available:', syncError);
+          // Fall through to normal error handling
+        }
+      }
+
       this.showErrorMessage(errorMessage);
       this.eventHandlers.onError?.(error instanceof Error ? error : new Error(errorMessage));
     } finally {
@@ -421,13 +438,16 @@ export class ContactFormManager {
   /**
    * Show success message
    */
-  private showSuccessMessage(): void {
+  private showSuccessMessage(message?: string): void {
     const successElement = document.querySelector(
       this.config.successMessageSelector
     ) as HTMLElement;
     const errorElement = document.querySelector(this.config.errorMessageSelector) as HTMLElement;
 
     if (successElement) {
+      if (message) {
+        successElement.textContent = message;
+      }
       successElement.classList.remove('hidden');
       (successElement as HTMLElement).style.display = 'block';
       successElement.setAttribute('aria-hidden', 'false');
@@ -445,6 +465,9 @@ export class ContactFormManager {
         successElement.classList.add('hidden');
         (successElement as HTMLElement).style.display = 'none';
         successElement.setAttribute('aria-hidden', 'true');
+        // Reset to default message
+        successElement.textContent =
+          'Mensagem enviada com sucesso! Entraremos em contacto brevemente.';
       }
     }, 5000);
   }

@@ -14,6 +14,9 @@ import { ScrollManager } from './modules/ScrollManager.js';
 import { Logger } from './modules/Logger.js';
 
 import { EventManager } from './modules/EventManager.js';
+import { PWAInstaller } from './modules/PWAInstaller.js';
+import { PushNotificationManager } from './modules/PushNotificationManager.js';
+import { PWAUpdater } from './modules/PWAUpdater.js';
 
 // Extend Window interface for global properties
 declare global {
@@ -38,6 +41,9 @@ class LOFERSILLandingPage {
 
   private contactFormManager: ContactFormManager | null = null;
   private eventManager!: EventManager;
+  private pwaInstaller!: PWAInstaller;
+  private pushManager!: PushNotificationManager;
+  private pwaUpdater!: PWAUpdater;
 
   constructor() {
     this.mainContent = null;
@@ -83,6 +89,18 @@ class LOFERSILLandingPage {
       this.scrollManager = new ScrollManager(this.navigationManager);
       this.navigationManager.setupNavigation();
       await this.translationManager.initialize();
+
+      // Initialize PWA installer
+      this.pwaInstaller = new PWAInstaller();
+
+      // Initialize push notification manager
+      this.pushManager = new PushNotificationManager('YOUR_VAPID_PUBLIC_KEY'); // TODO: Configure VAPID key
+
+      // Initialize PWA updater
+      this.pwaUpdater = new PWAUpdater();
+
+      // Register service worker
+      this.registerServiceWorker();
       // Initialize contact form manager lazily
       this.initializeContactFormLazily();
     } catch (error) {
@@ -166,6 +184,25 @@ class LOFERSILLandingPage {
         this.errorHandler.handleError(error, 'Failed to load contact form manager', {
           component: 'LOFERSILLandingPage',
           action: 'initializeContactFormLazily',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+  }
+
+  /**
+   * Register service worker for PWA functionality
+   */
+  private async registerServiceWorker(): Promise<void> {
+    if ('serviceWorker' in navigator) {
+      try {
+        await navigator.serviceWorker.register('/src/scripts/sw.js', {
+          scope: '/',
+        });
+      } catch (error) {
+        this.errorHandler.handleError(error, 'Service worker registration failed', {
+          component: 'LOFERSILLandingPage',
+          action: 'registerServiceWorker',
           timestamp: new Date().toISOString(),
         });
       }
