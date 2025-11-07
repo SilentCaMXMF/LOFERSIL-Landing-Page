@@ -13,51 +13,27 @@
   "categories": ["shopping", "business", "education"],
   "icons": [
     {
-      "src": "/assets/images/favicon-72.png",
-      "sizes": "72x72",
+      "src": "/images/favicon-32x32-lettuce.png",
+      "sizes": "32x32",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/assets/images/favicon-96.png",
-      "sizes": "96x96",
+      "src": "/images/favicon-48x48-lettuce.png",
+      "sizes": "48x48",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/assets/images/favicon-128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/images/favicon-144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/images/favicon-152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/images/favicon-192.png",
+      "src": "/images/favicon-32x32-lettuce.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/images/favicon-384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/images/favicon-512.png",
+      "src": "/images/logo.jpg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ],
@@ -66,11 +42,11 @@
       "name": "Produtos",
       "short_name": "Produtos",
       "description": "Ver catálogo de produtos",
-      "url": "/produtos",
+      "url": "/#products-showcase",
       "icons": [
         {
-          "src": "/assets/images/favicon-96.png",
-          "sizes": "96x96"
+          "src": "/images/favicon-48x48-lettuce.png",
+          "sizes": "48x48"
         }
       ]
     },
@@ -78,11 +54,11 @@
       "name": "Contato",
       "short_name": "Contato",
       "description": "Entrar em contato",
-      "url": "/contato",
+      "url": "/#contact-form",
       "icons": [
         {
-          "src": "/assets/images/favicon-96.png",
-          "sizes": "96x96"
+          "src": "/images/favicon-48x48-lettuce.png",
+          "sizes": "48x48"
         }
       ]
     }
@@ -91,22 +67,10 @@
   "prefer_related_applications": false,
   "screenshots": [
     {
-      "src": "/assets/images/Frente_loja_100.webp",
+      "src": "/images/Frente_loja_100.webp",
       "sizes": "800x600",
       "type": "image/webp",
       "label": "Frente da loja LOFERSIL"
-    },
-    {
-      "src": "/assets/images/Frente_loja_100.webp",
-      "sizes": "390x844",
-      "type": "image/webp",
-      "label": "Página inicial no mobile"
-    },
-    {
-      "src": "/assets/images/Frente_loja_100.webp",
-      "sizes": "1280x720",
-      "type": "image/webp",
-      "label": "Página inicial no desktop"
     }
   ]
 }

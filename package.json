@@ -6,35 +6,21 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "node build.js",
-    "build:bun": "bun run build-bun.js",
     "build:dev": "tsc && postcss src/styles/main.css -o dist/main.css",
-    "build:dev:bun": "bun run build:dev",
     "dev": "tsc --watch",
-    "dev:bun": "bun run tsc --watch",
     "start": "serve dist --single -l 3000",
-    "start:bun": "bun run start",
-    "serve-8000": "bun run build && cd dist && python -m http.server 8000",
+    "serve-8000": "npm run build && cd dist && python -m http.server 8000",
     "test": "vitest",
-    "test:bun": "bun run vitest",
     "test:run": "vitest run",
-    "test:run:bun": "bun run vitest run",
     "lint": "eslint src/**/*.ts",
-    "lint:bun": "bun run eslint src/**/*.ts",
     "format": "prettier --write src/**/*.{ts,css}",
-    "format:bun": "bun run prettier --write src/**/*.{ts,css}",
     "optimize-images": "imagemin assets/images/* --out-dir=dist/images",
-    "optimize-images:bun": "bun run optimize-images",
     "prebuild": "npm run format",
-    "prebuild:bun": "bun run format:bun",
     "lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
-    "lighthouse:bun": "bun run lighthouse",
     "vercel-deploy": "./vercel-deploy.sh",
-    "vercel-deploy:bun": "bun run vercel-deploy.sh",
     "deploy:preview": "vercel",
-    "deploy:preview:bun": "bun run vercel",
     "deploy:prod": "vercel --prod",
-    "deploy:prod:bun": "bun run vercel --prod",
-    "build-and-serve-8000": "bun run build:bun && serve dist --single -l 8000"
+    "build-and-serve-8000": "npm run build && serve dist --single -l 8000"
   },
   "keywords": [
     "landing-page",
@@ -54,7 +40,6 @@
     "@typescript-eslint/parser": "^8.0.0",
     "@vitest/coverage-v8": "^2.1.9",
     "autoprefixer": "^10.4.0",
-    "bun-types": "^1.3.1",
     "cssnano": "^6.0.0",
     "eslint": "^9.0.0",
     "favicons": "^7.2.0",
@@ -70,8 +55,7 @@
     "vitest": "^2.1.9"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "bun": ">=1.0.0"
+    "node": ">=18.0.0"
   },
   "packageManager": "npm@10.0.0",
   "dependencies": {

@@ -220,7 +220,7 @@ export class TelegramConfigManager {
     if (typeof defaultValue === 'number') {
       const parsed = parseInt(value, 10);
       if (isNaN(parsed)) {
-        if (process.env.TELEGRAM_DEBUG) {
+        if (process.env.TELEGRAM_DEBUG === 'true') {
           console.warn(`Invalid number value for ${name}, using default: ${defaultValue}`);
         }
         return defaultValue;
@@ -247,21 +247,21 @@ export class TelegramConfigManager {
 
     // Validate timeouts
     if (config.idleTimeout < validationConfig.MIN_IDLE_TIMEOUT || config.idleTimeout > validationConfig.MAX_IDLE_TIMEOUT) {
-      if (process.env.TELEGRAM_DEBUG) {
+      if (process.env.TELEGRAM_DEBUG === 'true') {
         console.warn(`⚠️ Idle timeout outside recommended range (${validationConfig.MIN_IDLE_TIMEOUT}-${validationConfig.MAX_IDLE_TIMEOUT}ms), using default: ${timeoutConfig.DEFAULT_IDLE_TIMEOUT}ms`);
       }
       config.idleTimeout = timeoutConfig.DEFAULT_IDLE_TIMEOUT;
     }
 
     if (config.checkInterval < validationConfig.MIN_CHECK_INTERVAL || config.checkInterval > validationConfig.MAX_CHECK_INTERVAL) {
-      if (process.env.TELEGRAM_DEBUG) {
+      if (process.env.TELEGRAM_DEBUG === 'true') {
         console.warn(`⚠️ Check interval outside recommended range (${validationConfig.MIN_CHECK_INTERVAL}-${validationConfig.MAX_CHECK_INTERVAL}ms), using default: ${timeoutConfig.DEFAULT_CHECK_INTERVAL}ms`);
       }
       config.checkInterval = timeoutConfig.DEFAULT_CHECK_INTERVAL;
     }
 
     if (config.rateLimitMs < validationConfig.MIN_RATE_LIMIT || config.rateLimitMs > validationConfig.MAX_RATE_LIMIT) {
-      if (process.env.TELEGRAM_DEBUG) {
+      if (process.env.TELEGRAM_DEBUG === 'true') {
         console.warn(`⚠️ Rate limit outside recommended range (${validationConfig.MIN_RATE_LIMIT}-${validationConfig.MAX_RATE_LIMIT}ms), using default: ${rateLimitConfig.DEFAULT_RATE_LIMIT_MS}ms`);
       }
       config.rateLimitMs = rateLimitConfig.DEFAULT_RATE_LIMIT_MS;
@@ -301,7 +301,7 @@ export default class SimpleTelegramBot {
       const window = new JSDOM('').window;
       this.domPurify = (DOMPurify as any)(window);
     } catch (error) {
-      if (process.env.TELEGRAM_DEBUG) {
+      if (process.env.TELEGRAM_DEBUG === 'true') {
         console.warn('DOMPurify initialization failed, falling back to basic sanitization');
       }
       this.domPurify = null;

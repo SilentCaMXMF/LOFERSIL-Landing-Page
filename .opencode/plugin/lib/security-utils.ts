@@ -27,8 +27,8 @@ export class SecurityAuditLogger {
         ...(details || {}),
       };
 
-      // Only log security audits when TELEGRAM_DEBUG is enabled
-      if (process.env.TELEGRAM_DEBUG) {
+      // Only log security audits when TELEGRAM_DEBUG is explicitly enabled
+      if (process.env.TELEGRAM_DEBUG === 'true') {
         console.log(`[SECURITY-AUDIT] ${JSON.stringify(logEntry)}`);
       }
     }

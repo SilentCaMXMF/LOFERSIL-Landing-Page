@@ -1,8 +1,8 @@
 ---
 
-description: "Specialized agent for image editing and analysis using gemini AI tools"
+description: "Specialized agent for image editing and analysis using image AI tools"
 mode: primary
-model: google/gemini-2.0-flash-exp:free
+model: cloudflare-workers-ai/dreamshaper-8-lcm
 temperature: 0.3
 permission:
   edit: deny

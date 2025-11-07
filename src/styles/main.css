@@ -1112,11 +1112,30 @@ img.lazy-loaded {
   margin-top: var(--space-6);
 }
 
+/* Button Text State */
+.btn-text {
+  display: inline-block;
+  transition: opacity 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
 /* Button Loading State */
 .btn-loading {
-  display: inline-flex;
+  display: inline-block;
   align-items: center;
   gap: var(--space-2);
+  transition: opacity 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+/* Failsafe CSS rules to ensure proper button state management */
+.btn .btn-text.hidden,
+.btn .btn-loading.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .btn-loading::before {
@@ -1345,22 +1364,19 @@ img.lazy-loaded {
   }
 
   #nav-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    left: 0;
-    background: var(--white);
+    display: flex;
+    position: static;
+    background: transparent;
     flex-direction: column;
-    padding: var(--space-4);
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-10px);
-    opacity: 0;
-    visibility: hidden;
-    transition: var(--transition-base);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    border-top: 1px solid var(--gray-200);
-    z-index: 1000;
+    padding: var(--space-2) 0;
+    box-shadow: none;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+    border-radius: 0;
+    border-top: none;
+    z-index: auto;
   }
 
   [data-theme='dark'] #nav-menu {
@@ -1382,11 +1398,12 @@ img.lazy-loaded {
 
   #nav-menu .nav-link {
     justify-content: center;
-    padding: var(--space-3) var(--space-4);
+    padding: var(--space-2) var(--space-3);
     border-radius: var(--radius);
     margin: 0;
     width: 100%;
     text-align: center;
+    font-size: 0.9rem;
   }
 
   #nav-toggle {

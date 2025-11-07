@@ -80,6 +80,12 @@ self.addEventListener('fetch', event => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
+  // Skip chrome-extension requests (causes cache errors)
+  if (url.protocol === 'chrome-extension:') return;
+
+  // Skip GitHub Codespaces auth requests
+  if (url.hostname.includes('github.dev') && url.pathname.includes('/pf-signin')) return;
+
   // Handle different request types
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(handleApiRequest(request));
