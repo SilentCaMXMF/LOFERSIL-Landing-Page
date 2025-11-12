@@ -49,11 +49,13 @@ export class NavigationManager {
    */
   toggleMobileMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
-    // Menu is always visible on mobile/tablet, only toggle hamburger animation
     if (this.navToggle) {
       this.navToggle.classList.toggle('active', this.isMenuOpen);
     }
-    // Prevent body scroll when menu is open (for future enhancements)
+    if (this.navMenu) {
+      this.navMenu.classList.toggle('active', this.isMenuOpen);
+    }
+    // Prevent body scroll when menu is open
     document.body.classList.toggle('menu-open', this.isMenuOpen);
     // Update ARIA attributes
     this.navToggle?.setAttribute('aria-expanded', this.isMenuOpen.toString());
@@ -137,7 +139,6 @@ export class NavigationManager {
    * Handle menu state on load
    */
   handleMenuState(): void {
-    // Menu is always visible on mobile/tablet, toggle functionality still works for hamburger animation
     this.isMenuOpen = false;
     if (this.navMenu) {
       this.navMenu.classList.remove('active');

@@ -40,8 +40,18 @@
 
     <title>LOFERSIL - Produtos Premium & Serviços em Lisboa | Loja de Confiança</title>
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Preload critical resources -->
     <link rel="preload" href="main.css" as="style" />
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
     <!-- Load DOMPurify locally -->
     <script src="dompurify.min.js"></script>
@@ -80,7 +90,7 @@
           <span></span>
           <span></span>
         </button>
-        <nav id="nav-menu" class="nav-menu">
+        <nav id="nav-menu" class="nav-menu" aria-label="Menu principal">
           <ul class="nav-list">
             <li><a href="#about">Sobre Nós</a></li>
             <li><a href="#features">Serviços</a></li>
@@ -114,8 +124,9 @@
               <h1 class="hero-title">Bem-vindo à LOFERSIL</h1>
               <p class="hero-subtitle">Produtos Premium & Serviços de Confiança</p>
               <p class="hero-description">
-                Descubra nossa coleção completa de material escolar, escritório e artigos criativos.
-                Qualidade excepcional e atendimento personalizado no coração de Lisboa.
+                Há mais de 30 anos encantando famílias e empresas com produtos premium e atendimento
+                excepcional. Descubra nossa curadoria exclusiva de itens que combinam qualidade,
+                estilo e funcionalidade.
               </p>
               <div class="hero-actions">
                 <a href="#products-showcase" class="btn btn-primary btn-large">Explorar Produtos</a>
@@ -126,7 +137,7 @@
               <picture>
                 <img
                   data-src="images/Frente%20loja.jpg"
-                  alt="Imagem da frente da loja LOFERSIL na Rua Gomes Freire 187 B, Lisboa"
+                  alt="Fachada da LOFERSIL, loja tradicional em Lisboa com mais de 30 anos de história, localizada na Rua Gomes Freire 187 B"
                   class="hero-img lazy"
                 />
               </picture>
@@ -136,18 +147,20 @@
       </section>
 
       <!-- About Us Section -->
-      <section id="about" class="about" data-animate="fade-in">
+      <section id="about" class="about" data-animate="fade-in" aria-labelledby="about-title">
         <div class="about-container">
           <div class="section-header" data-animate="slide-up">
-            <h2 class="section-title">Bem-vindo à LOFERSIL</h2>
+            <h2 id="about-title" class="section-title">Bem-vindo à LOFERSIL</h2>
             <p class="section-subtitle">A sua loja local de confiança no coração de Lisboa</p>
           </div>
           <div class="about-content" data-animate="slide-up">
             <div class="about-text">
               <p class="about-description">
-                Entre na nossa loja acolhedora na R. Gomes Freire 187 B e descubra uma seleção
-                cuidadosa de produtos de qualidade. A nossa equipa amigável está aqui para ajudar a
-                encontrar exatamente o que precisa.
+                Há mais de três décadas, somos a referência em produtos premium em Lisboa. Nossa
+                loja na R. Gomes Freire 187 B oferece uma experiência única, onde qualidade encontra
+                atendimento personalizado. Cada produto é selecionado com cuidado para garantir que
+                nossos clientes encontrem exatamente o que procuram, com a confiança de uma loja
+                familiar.
               </p>
               <div class="about-features">
                 <div class="about-feature">
@@ -177,9 +190,10 @@
                   />
                   <img
                     data-src="images/Interior.jpg"
-                    alt="Imagem do interior da loja LOFERSIL - Vista ampla das exposições de produtos"
+                    alt="Interior acolhedor da LOFERSIL mostrando exposições organizadas de produtos premium e atendimento personalizado"
                     class="about-gallery-img lazy"
                     loading="lazy"
+                    decoding="async"
                   />
                 </picture>
               </div>
@@ -195,9 +209,10 @@
                   />
                   <img
                     data-src="images/Interior%20c%20funcion%C3%A1rio.jpg"
-                    alt="Imagem do interior da loja LOFERSIL - Funcionários a assistir clientes"
+                    alt="Funcionários especializados da LOFERSIL oferecendo atendimento personalizado aos clientes na loja"
                     class="about-gallery-img lazy"
                     loading="lazy"
+                    decoding="async"
                   />
                 </picture>
               </div>
@@ -207,32 +222,42 @@
       </section>
 
       <!-- Features Section -->
-      <section id="features" class="features" data-animate="fade-in">
+      <section
+        id="features"
+        class="features"
+        data-animate="fade-in"
+        aria-labelledby="features-title"
+      >
         <div class="features-container">
           <div class="section-header" data-animate="slide-up">
-            <h2 class="section-title">Porquê Escolher LOFERSIL?</h2>
-            <p class="section-subtitle">Qualidade, fiabilidade e excelência em todos os aspetos</p>
+            <h2 id="features-title" class="section-title">Por que Confiar na LOFERSIL?</h2>
+            <p class="section-subtitle">
+              Tradição, qualidade e atendimento que fazem a diferença há mais de 30 anos
+            </p>
           </div>
           <div class="features-grid" data-animate="scale-in">
             <div class="feature-card">
               <div class="feature-icon">⭐</div>
               <h3 class="feature-title">Qualidade Premium</h3>
               <p class="feature-description">
-                Apenas os melhores produtos e serviços fazem parte da nossa coleção.
+                Selecionamos apenas produtos de excelência, testados e aprovados por nossa equipe
+                especializada.
               </p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">🚀</div>
-              <h3 class="feature-title">Rápido e Fiável</h3>
+              <h3 class="feature-title">Atendimento Personalizado</h3>
               <p class="feature-description">
-                Entrega rápida e serviço confiável em que pode contar.
+                Nossa equipe conhece cada produto e está pronta para oferecer consultoria
+                especializada para suas necessidades.
               </p>
             </div>
             <div class="feature-card">
               <div class="feature-icon">💎</div>
-              <h3 class="feature-title">Suporte Excecional</h3>
+              <h3 class="feature-title">Tradição & Confiança</h3>
               <p class="feature-description">
-                A nossa equipa está aqui para ajudar em todos os passos.
+                Há mais de 30 anos conquistando a confiança de famílias e empresas em Lisboa com
+                integridade e qualidade.
               </p>
             </div>
           </div>
@@ -240,15 +265,23 @@
       </section>
 
       <!-- Products Showcase Section -->
-      <section id="products-showcase" class="products-showcase" data-animate="fade-in">
+      <section
+        id="products-showcase"
+        class="products-showcase"
+        data-animate="fade-in"
+        aria-labelledby="products-title"
+      >
         <div class="products-showcase-container">
           <div class="section-header" data-animate="slide-up">
-            <h2 class="section-title">As Nossas Categorias de Produtos</h2>
-            <p class="section-subtitle">Explore a nossa diversidade de produtos premium</p>
+            <h2 id="products-title" class="section-title">Nossa Coleção Premium</h2>
+            <p class="section-subtitle">
+              Descubra produtos selecionados com cuidado para encantar e surpreender
+            </p>
           </div>
           <div class="products-grid" data-animate="scale-in">
             <div class="product-category">
               <div class="product-category-image">
+                <div class="product-badge product-badge-popular">Mais Vendido</div>
                 <picture>
                   <source
                     srcset="
@@ -260,22 +293,28 @@
                   />
                   <img
                     data-src="images/Beb%C3%A9s_nenucos.jpg"
-                    alt="Imagem da coleção de produtos para bebés e bonecos"
+                    alt="Coleção premium de brinquedos macios e bonecos adoráveis para bebés, com materiais seguros e designs encantadores"
                     class="product-category-img lazy"
                     loading="lazy"
+                    decoding="async"
                   />
                 </picture>
               </div>
               <div class="product-category-content">
+                <div class="product-rating">
+                  <span class="stars" aria-label="4.9 de 5 estrelas">★★★★★</span>
+                  <span class="rating-text">(4.9/5)</span>
+                </div>
                 <h3 class="product-category-title">Produtos para Bebés</h3>
                 <p class="product-category-description">
-                  Coleção completa de brinquedos macios, bonecos adoráveis e acessórios essenciais
-                  para bebés. Produtos seguros, de alta qualidade e feitos para durar.
+                  Brinquedos macios e seguros que encantam e desenvolvem. Bonecos adoráveis e
+                  acessórios essenciais para bebés com qualidade premium e durabilidade excepcional.
                 </p>
               </div>
             </div>
             <div class="product-category">
               <div class="product-category-image">
+                <div class="product-badge product-badge-new">Novo</div>
                 <picture>
                   <source
                     srcset="
@@ -294,15 +333,21 @@
                 </picture>
               </div>
               <div class="product-category-content">
+                <div class="product-rating">
+                  <span class="stars" aria-label="4.8 de 5 estrelas">★★★★★</span>
+                  <span class="rating-text">(4.8/5)</span>
+                </div>
                 <h3 class="product-category-title">Caixas de Joias</h3>
                 <p class="product-category-description">
-                  Caixas de joias premium com design elegante e compartimentos organizados. Proteja
-                  e exiba as suas joias mais preciosas com estilo e segurança.
+                  Elegância atemporal para guardar suas joias mais preciosas. Design sofisticado com
+                  compartimentos organizados e acabamentos premium que combinam luxo e
+                  funcionalidade.
                 </p>
               </div>
             </div>
             <div class="product-category">
               <div class="product-category-image">
+                <div class="product-badge product-badge-offer">Oferta</div>
                 <picture>
                   <source
                     srcset="
@@ -321,15 +366,20 @@
                 </picture>
               </div>
               <div class="product-category-content">
+                <div class="product-rating">
+                  <span class="stars" aria-label="4.7 de 5 estrelas">★★★★★</span>
+                  <span class="rating-text">(4.7/5)</span>
+                </div>
                 <h3 class="product-category-title">Canetas Promocionais</h3>
                 <p class="product-category-description">
-                  Canetas promocionais premium para empresas e uso pessoal. Escreva com conforto e
-                  estilo com as nossas canetas de qualidade superior.
+                  Canetas premium que escrevem com suavidade e elegância. Perfeitas para empresas
+                  que querem deixar uma marca duradoura com qualidade e estilo excepcionais.
                 </p>
               </div>
             </div>
             <div class="product-category">
               <div class="product-category-image">
+                <div class="product-badge product-badge-professional">Profissional</div>
                 <picture>
                   <source
                     srcset="
@@ -348,15 +398,20 @@
                 </picture>
               </div>
               <div class="product-category-content">
+                <div class="product-rating">
+                  <span class="stars" aria-label="4.6 de 5 estrelas">★★★★★</span>
+                  <span class="rating-text">(4.6/5)</span>
+                </div>
                 <h3 class="product-category-title">Material de Escritório</h3>
                 <p class="product-category-description">
-                  Material de escritório completo incluindo dossiês, pastas e organizadores
-                  profissionais. Mantenha os seus documentos organizados e protegidos.
+                  Organização profissional para o seu espaço de trabalho. Dossiês elegantes, pastas
+                  organizadas e acessórios que combinam funcionalidade com design sofisticado.
                 </p>
               </div>
             </div>
             <div class="product-category">
               <div class="product-category-image">
+                <div class="product-badge product-badge-trending">Tendência</div>
                 <picture>
                   <source
                     srcset="
@@ -375,15 +430,21 @@
                 </picture>
               </div>
               <div class="product-category-content">
+                <div class="product-rating">
+                  <span class="stars" aria-label="4.8 de 5 estrelas">★★★★★</span>
+                  <span class="rating-text">(4.8/5)</span>
+                </div>
                 <h3 class="product-category-title">Mochilas</h3>
                 <p class="product-category-description">
-                  Mochilas resistentes e modernas perfeitas para escola, trabalho ou viagens. Design
-                  ergonómico com compartimentos inteligentes para máxima organização.
+                  Mochilas modernas e resistentes para todos os momentos. Design ergonómico com
+                  compartimentos inteligentes, materiais premium e estilo que acompanha sua rotina
+                  diária.
                 </p>
               </div>
             </div>
             <div class="product-category">
               <div class="product-category-image">
+                <div class="product-badge product-badge-eco">Económico</div>
                 <picture>
                   <source
                     srcset="
@@ -402,10 +463,15 @@
                 </picture>
               </div>
               <div class="product-category-content">
+                <div class="product-rating">
+                  <span class="stars" aria-label="4.5 de 5 estrelas">★★★★★</span>
+                  <span class="rating-text">(4.5/5)</span>
+                </div>
                 <h3 class="product-category-title">Cartuchos de Tinta</h3>
                 <p class="product-category-description">
-                  Cartuchos de tinta compatíveis de alta qualidade para todas as marcas. Impressões
-                  nítidas e económicas para casa e escritório.
+                  Cartuchos compatíveis de alta qualidade que garantem impressões nítidas e
+                  vibrantes. Solução económica e confiável para todas as suas necessidades de
+                  impressão.
                 </p>
               </div>
             </div>
@@ -424,10 +490,10 @@
       <section id="cta" class="cta" data-animate="fade-in">
         <div class="cta-container">
           <div class="cta-content" data-animate="slide-up">
-            <h2 class="cta-title">Pronto para Descobrir?</h2>
+            <h2 class="cta-title">Venha nos Visitar</h2>
             <p class="cta-description">
-              Visite-nos hoje e experimente produtos premium com atendimento personalizado. Ofertas
-              especiais disponíveis enquanto durarem os stocks!
+              Descubra por que milhares de clientes confiam na LOFERSIL há mais de 30 anos. Produtos
+              premium, atendimento personalizado e a qualidade que você merece.
             </p>
             <div class="cta-actions">
               <a href="#main-footer" class="btn btn-primary btn-large">Visitar Loja Física</a>
@@ -440,12 +506,13 @@
       </section>
 
       <!-- Contact Form Section -->
-      <section id="contact-form" class="contact-form">
+      <section id="contact-form" class="contact-form" aria-labelledby="contact-title">
         <div class="contact-form-container">
           <div class="section-header">
-            <h2 class="section-title">Entre em Contacto</h2>
+            <h2 id="contact-title" class="section-title">Fale Conosco</h2>
             <p class="section-subtitle">
-              Envie-nos a sua mensagem e responderemos o mais breve possível
+              Estamos aqui para ajudar. Entre em contato e nossa equipe responderá rapidamente com
+              todo o cuidado que você merece.
             </p>
           </div>
           <form id="contact-form-element" class="contact-form-element" novalidate>
@@ -576,6 +643,6 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="scripts/index.js" defer type="module"></script>
+    <script src="scripts/index.js" defer type="module" crossorigin="anonymous"></script>
   </body>
 </html>
