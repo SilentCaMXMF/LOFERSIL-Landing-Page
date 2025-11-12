@@ -69,18 +69,5 @@
   },
   "cleanUrls": true,
   "trailingSlash": false,
-  "outputDirectory": "dist",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html",
-      "has": [
-        {
-          "type": "header",
-          "key": "accept",
-          "value": "text/html"
-        }
-      ]
-    }
-  ]
+  "outputDirectory": "dist"
 }
