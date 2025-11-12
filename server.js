@@ -29,7 +29,21 @@ const server = http.createServer((req, res) => {
       res.end('File not found');
       return;
     }
-    res.writeHead(200, { 'Content-Type': contentType });
+
+    // Set CSP headers for local development (matching Vercel config)
+    const cspValue =
+      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://vercel.com https://vercel.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https: wss:; media-src 'self'; object-src 'none'; frame-src 'self' https://vercel.live https://vercel.com;";
+
+    const headers = {
+      'Content-Type': contentType,
+      'Content-Security-Policy': cspValue,
+      'X-Frame-Options': 'DENY',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    };
+
+    res.writeHead(200, headers);
     res.end(data);
   });
 });
