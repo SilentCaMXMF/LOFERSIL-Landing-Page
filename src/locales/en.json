@@ -33,7 +33,7 @@
     "subtitle": "Tradition, quality and service that make a difference for over 30 years",
     "premiumQuality": {
       "title": "Premium Quality",
-      "description": "We select only excellence products, tested and approved by our specialized team."
+      "description": "We select only excellent products, tested and approved by our specialized team."
     },
     "personalizedService": {
       "title": "Personalized Service",
@@ -41,7 +41,7 @@
     },
     "traditionTrust": {
       "title": "Tradition & Trust",
-      "description": "Over 30 years earning the trust of families and businesses in Lisbon with integrity and quality."
+      "description": "For over 30 years, we've been earning the trust of families and businesses in Lisbon with integrity and quality."
     },
     "freeDelivery": {
       "title": "Free Delivery",
@@ -104,6 +104,17 @@
     "description": "Visit us today and experience premium products with personalized service. Special offers available while stocks last!",
     "primaryButton": "Visit Physical Store",
     "secondaryButton": "View Online Catalog"
+  },
+  "contact": {
+    "title": "Get In Touch",
+    "subtitle": "We're here to help. Get in touch with our team and we'll respond quickly with the care you deserve.",
+    "nameLabel": "Name *",
+    "emailLabel": "Email *",
+    "messageLabel": "Message *",
+    "submitButton": "Send Message",
+    "submitButtonLoading": "Sending...",
+    "successMessage": "Message sent successfully! We'll get back to you shortly.",
+    "errorMessage": "An error occurred while sending the message. Please try again."
   },
   "footer": {
     "title": "LOFERSIL",

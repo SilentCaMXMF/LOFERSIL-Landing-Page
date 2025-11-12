@@ -105,6 +105,17 @@
     "primaryButton": "Visitar Loja Física",
     "secondaryButton": "Ver Catálogo Online"
   },
+  "contact": {
+    "title": "Fale Conosco",
+    "subtitle": "Estamos aqui para ajudar. Entre em contato e nossa equipe responderá rapidamente com todo o cuidado que você merece.",
+    "nameLabel": "Nome *",
+    "emailLabel": "Email *",
+    "messageLabel": "Mensagem *",
+    "submitButton": "Enviar Mensagem",
+    "submitButtonLoading": "A enviar...",
+    "successMessage": "Mensagem enviada com sucesso! Entraremos em contacto brevemente.",
+    "errorMessage": "Ocorreu um erro ao enviar a mensagem. Por favor, tente novamente."
+  },
   "footer": {
     "title": "LOFERSIL",
     "description": "Produtos e serviços premium para clientes exigentes.",
