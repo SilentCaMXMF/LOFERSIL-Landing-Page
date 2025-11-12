@@ -1312,6 +1312,24 @@ img.lazy-loaded {
 .footer-description {
   color: var(--gray-300);
   line-height: 1.6;
+  margin-bottom: var(--space-4);
+}
+
+.footer-contact {
+  margin-top: var(--space-4);
+}
+
+.footer-address {
+  font-size: var(--text-sm);
+  color: var(--gray-300);
+  font-weight: 500;
+  margin-bottom: var(--space-1);
+}
+
+.footer-phone {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--primary-light);
 }
 
 .footer-links {
