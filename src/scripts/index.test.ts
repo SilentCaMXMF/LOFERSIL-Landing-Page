@@ -192,7 +192,7 @@ describe('LOFERSILLandingPage', () => {
       mockDOM.document.querySelectorAll.mockReturnValue([mockElement]);
 
       // Simulate translation application
-      const key = mockElement.getAttribute('data-i18n');
+      const key = mockElement.getAttribute('data-translate');
       const translation = translations[key as keyof typeof translations];
 
       if (translation) {

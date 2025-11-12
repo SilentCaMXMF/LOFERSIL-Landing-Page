@@ -63,7 +63,7 @@ print_status "Building for production..."
 NODE_ENV=production npm run build
 
 # Verify image generation
-if [ ! -f "dist/images/Frente%20loja-1200w.webp" ]; then
+if [ ! -f "dist/images/Frente_loja_100.webp" ]; then
     print_error "WebP images not generated properly!"
     exit 1
 else

@@ -91,6 +91,7 @@ class LOFERSILLandingPage {
       this.scrollManager = new ScrollManager(this.navigationManager);
       this.navigationManager.setupNavigation();
       await this.translationManager.initialize();
+      this.setupLanguageToggle();
 
       // Initialize theme manager
       this.themeManager = new ThemeManager();
@@ -121,6 +122,25 @@ class LOFERSILLandingPage {
    */
   setupDOMElements() {
     this.mainContent = document.getElementById('main-content');
+  }
+
+  /**
+   * Setup language toggle functionality
+   */
+  setupLanguageToggle() {
+    const langToggle = document.getElementById('lang-toggle') as HTMLButtonElement;
+    if (langToggle) {
+      // Set initial text
+      const currentLang = this.translationManager.getCurrentLanguage();
+      langToggle.textContent = currentLang.toUpperCase();
+      langToggle.setAttribute('data-translate', `nav.langToggle`);
+
+      langToggle.addEventListener('click', () => {
+        const newLang = currentLang === 'pt' ? 'en' : 'pt';
+        this.translationManager.switchLanguage(newLang);
+        // The applyTranslations in switchLanguage will update the button
+      });
+    }
   }
 
   /**
