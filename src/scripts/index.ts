@@ -136,6 +136,7 @@ class LOFERSILLandingPage {
       langToggle.setAttribute('data-translate', `nav.langToggle`);
 
       langToggle.addEventListener('click', () => {
+        const currentLang = this.translationManager.getCurrentLanguage();
         const newLang = currentLang === 'pt' ? 'en' : 'pt';
         this.translationManager.switchLanguage(newLang);
         // The applyTranslations in switchLanguage will update the button
