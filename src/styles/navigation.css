@@ -46,7 +46,7 @@
 .nav-contact {
   display: none;
   flex-direction: column;
-  margin-left: var(--space-4);
+  margin-left: var(--space-2);
   font-size: var(--text-sm);
   color: var(--gray-700);
   line-height: 1.2;
