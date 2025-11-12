@@ -49,27 +49,22 @@ const isProduction =
       });
     }
 
-    // Move compiled JS to scripts directory
-    if (fs.existsSync('./dist/index.js')) {
+    // Move compiled JS from dist/src/scripts to dist/scripts
+    if (fs.existsSync('./dist/src/scripts')) {
       fs.mkdirSync('./dist/scripts', { recursive: true });
-      fs.renameSync('./dist/index.js', './dist/scripts/index.js');
+      // Move all files from dist/src/scripts to dist/scripts
+      const srcScriptsFiles = fs.readdirSync('./dist/src/scripts');
+      srcScriptsFiles.forEach(file => {
+        fs.renameSync(`./dist/src/scripts/${file}`, `./dist/scripts/${file}`);
+      });
+      // Remove empty src directory
+      fs.rmSync('./dist/src', { recursive: true, force: true });
     }
 
-    // Move modules directory to scripts/modules
-    if (fs.existsSync('./dist/modules')) {
-      fs.renameSync('./dist/modules', './dist/scripts/modules');
+    // Move API files if they exist
+    if (fs.existsSync('./dist/api')) {
+      // API files are already in the right place
     }
-
-    // Move other non-test JS files to scripts directory
-    const jsFiles = fs
-      .readdirSync('./dist')
-      .filter(file => file.endsWith('.js') && !file.includes('.test.'));
-    jsFiles.forEach(file => {
-      if (file !== 'index.js') {
-        // index.js already moved
-        fs.renameSync(`./dist/${file}`, `./dist/scripts/${file}`);
-      }
-    });
   } catch (error) {
     console.error('❌ TypeScript compilation failed');
     process.exit(1);
@@ -79,18 +74,34 @@ const isProduction =
   function injectEnvironmentVariables(sourcePath, destPath) {
     let htmlContent = fs.readFileSync(sourcePath, 'utf8');
 
-    // Load environment variables from .env file
+    // Load safe environment variables from process.env (for CI/CD) or .env file (for local development)
     const envVars = {};
-    if (fs.existsSync('./.env')) {
+
+    // Define which environment variables are safe to expose to the browser
+    const safeVars = [
+      'NODE_ENV',
+      'ENABLE_MCP_INTEGRATION',
+      'MCP_CLIENT_ID',
+      'ENABLE_ANALYTICS',
+      'ENABLE_ERROR_TRACKING',
+      'ENABLE_PERFORMANCE_MONITORING',
+    ];
+
+    // First, try to get variables from process.env (GitHub Actions/CI)
+    safeVars.forEach(key => {
+      if (process.env[key]) {
+        envVars[key] = process.env[key];
+      }
+    });
+
+    // For local development, also check .env file if no CI variables found
+    if (Object.keys(envVars).length === 0 && fs.existsSync('./.env') && !isProduction) {
+      console.log('📄 Loading environment variables from .env file for local development...');
       const envContent = fs.readFileSync('./.env', 'utf8');
       envContent.split('\n').forEach(line => {
         const [key, value] = line.split('=');
-        if (key && value && !line.startsWith('#')) {
-          // Only expose safe environment variables to browser
-          const safeVars = ['NODE_ENV', 'ENABLE_MCP_INTEGRATION', 'MCP_CLIENT_ID'];
-          if (safeVars.includes(key.trim())) {
-            envVars[key.trim()] = value.trim();
-          }
+        if (key && value && !line.startsWith('#') && safeVars.includes(key.trim())) {
+          envVars[key.trim()] = value.trim();
         }
       });
     }

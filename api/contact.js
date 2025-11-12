@@ -1,4 +1,5 @@
 // Vercel serverless function for contact form
+import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -43,11 +44,61 @@ export default async function handler(req, res) {
     }
 
     // Log the contact attempt
-    console.log('Contact form submission:', { name, email, message });
+    console.log('Contact form submission:', {
+      name,
+      email,
+      message,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Try to send email if SMTP is configured
+    let emailSent = false;
+    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+      try {
+        const transporter = nodemailer.createTransporter({
+          host: process.env.SMTP_HOST,
+          port: parseInt(process.env.SMTP_PORT || '587'),
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        });
+
+        const mailOptions = {
+          from: process.env.FROM_EMAIL || process.env.SMTP_USER,
+          to: process.env.TO_EMAIL || process.env.SMTP_USER,
+          subject: `Nova mensagem de contacto - ${name}`,
+          html: `
+            <h2>Nova mensagem de contacto</h2>
+            <p><strong>Nome:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Mensagem:</strong></p>
+            <p>${message.replace(/\n/g, '<br>')}</p>
+            <hr>
+            <p><small>Enviado através do formulário de contacto em ${new Date().toLocaleString('pt-PT')}</small></p>
+          `,
+          replyTo: email,
+        };
+
+        await transporter.sendMail(mailOptions);
+        emailSent = true;
+        console.log('Email sent successfully to:', process.env.TO_EMAIL);
+      } catch (emailError) {
+        console.error('Email sending failed:', emailError);
+        // Continue with success response even if email fails
+        // This ensures the user gets a positive response
+      }
+    } else {
+      console.log('SMTP not configured, skipping email send');
+    }
 
     res.status(200).json({
       success: true,
-      message: 'Mensagem enviada com sucesso! Entraremos em contacto em breve.',
+      message: emailSent
+        ? 'Mensagem enviada com sucesso! Entraremos em contacto em breve.'
+        : 'Mensagem registada com sucesso! Entraremos em contacto em breve.',
+      emailSent,
     });
   } catch (error) {
     console.error('Contact form error:', error);
