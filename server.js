@@ -32,7 +32,7 @@ const server = http.createServer((req, res) => {
 
     // Set CSP headers for local development (matching Vercel config)
     const cspValue =
-      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://vercel.com https://vercel.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https: wss:; media-src 'self'; object-src 'none'; frame-src 'self' https://vercel.live https://vercel.com;";
+      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://vercel.com https://vercel.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https: wss:; media-src 'self'; object-src 'none'; frame-src 'self' https://vercel.live https://vercel.com; base-uri 'self'; form-action 'self'";
 
     const headers = {
       'Content-Type': contentType,
