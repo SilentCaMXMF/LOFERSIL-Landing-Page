@@ -6,17 +6,17 @@ Status legend: [ ] todo, [~] in-progress, [x] done
 
 Tasks
 
-- [ ] 01 — design-agent-architecture → `01-design-agent-architecture.md`
-- [ ] 02 — implement-agent-core → `02-implement-agent-core.md`
+- [x] 01 — design-agent-architecture → `01-design-agent-architecture.md`
+- [x] 02 — implement-agent-core → `02-implement-agent-core.md`
 - [ ] 03 — add-workflow-orchestration → `03-add-workflow-orchestration.md`
-- [ ] 04 — integrate-image-specialist → `04-integrate-image-specialist.md`
+- [x] 04 — integrate-image-specialist → `04-integrate-image-specialist.md`
 - [ ] 05 — add-intelligent-decision-making → `05-add-intelligent-decision-making.md`
 - [ ] 06 — implement-error-recovery → `06-implement-error-recovery.md`
 - [ ] 07 — add-performance-optimization → `07-add-performance-optimization.md`
 - [ ] 08 — create-agent-interface → `08-create-agent-interface.md`
 - [ ] 09 — add-monitoring-logging → `09-add-monitoring-logging.md`
-- [ ] 10 — test-agent-functionality → `10-test-agent-functionality.md`
-- [ ] 11 — document-agent-usage → `11-document-agent-usage.md`
+- [x] 10 — test-agent-functionality → `10-test-agent-functionality.md`
+- [x] 11 — document-agent-usage → `11-document-agent-usage.md`
 
 Dependencies
 

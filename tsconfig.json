@@ -22,6 +22,6 @@
     "emitDecoratorMetadata": false,
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "api/**/*"],
   "exclude": ["src/**/*.test.ts", "node_modules", "dist"]
 }

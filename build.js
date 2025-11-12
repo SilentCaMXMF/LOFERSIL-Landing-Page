@@ -87,18 +87,7 @@ const isProduction =
         const [key, value] = line.split('=');
         if (key && value && !line.startsWith('#')) {
           // Only expose safe environment variables to browser
-          const safeVars = [
-            'TELEGRAM_BOT_TOKEN',
-            'TELEGRAM_CHAT_ID',
-            'TELEGRAM_IDLE_TIMEOUT',
-            'TELEGRAM_CHECK_INTERVAL',
-            'TELEGRAM_ENABLED',
-            'TELEGRAM_TEST_MODE',
-            'TELEGRAM_TEST_CHAT_ID',
-            'NODE_ENV',
-            'ENABLE_MCP_INTEGRATION',
-            'MCP_CLIENT_ID',
-          ];
+          const safeVars = ['NODE_ENV', 'ENABLE_MCP_INTEGRATION', 'MCP_CLIENT_ID'];
           if (safeVars.includes(key.trim())) {
             envVars[key.trim()] = value.trim();
           }

@@ -20,7 +20,8 @@
     "vercel-deploy": "./vercel-deploy.sh",
     "deploy:preview": "vercel",
     "deploy:prod": "vercel --prod",
-    "build-and-serve-8000": "npm run build && serve dist --single -l 8000"
+    "build-and-serve-8000": "npm run build && serve dist --single -l 8000",
+    "test:context7-docs": "tsx .opencode/tool/mcp/test-context7-docs.ts"
   },
   "keywords": [
     "landing-page",
