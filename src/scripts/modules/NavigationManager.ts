@@ -8,14 +8,23 @@ export class NavigationManager {
   private navMenu: HTMLElement | null;
   private navbar: HTMLElement | null;
   private isMenuOpen: boolean;
+  private isDesktop: boolean;
 
   constructor() {
     this.navToggle = null;
     this.navMenu = null;
     this.navbar = null;
     this.isMenuOpen = false;
+    this.isDesktop = this.checkIsDesktop();
     this.setupDOMElements();
     this.setupEventListeners();
+  }
+
+  /**
+   * Check if current viewport is desktop size
+   */
+  private checkIsDesktop(): boolean {
+    return window.innerWidth >= 769;
   }
 
   /**
@@ -45,9 +54,12 @@ export class NavigationManager {
   }
 
   /**
-   * Toggle dropdown navigation menu
+   * Toggle dropdown navigation menu (mobile only)
    */
   toggleMobileMenu(): void {
+    // Only allow toggling on mobile devices
+    if (this.isDesktop) return;
+
     this.isMenuOpen = !this.isMenuOpen;
     if (this.navToggle) {
       this.navToggle.classList.toggle('active', this.isMenuOpen);
@@ -103,8 +115,28 @@ export class NavigationManager {
    * Handle window resize
    */
   private handleResize(): void {
-    // Menu is always visible on mobile/tablet, no resize handling needed
-    // No action needed on resize
+    const wasDesktop = this.isDesktop;
+    this.isDesktop = this.checkIsDesktop();
+
+    // If switching from mobile to desktop, close the menu
+    if (!wasDesktop && this.isDesktop && this.isMenuOpen) {
+      this.closeMobileMenu();
+    }
+  }
+
+  /**
+   * Close mobile menu and reset state
+   */
+  private closeMobileMenu(): void {
+    this.isMenuOpen = false;
+    if (this.navToggle) {
+      this.navToggle.classList.remove('active');
+    }
+    if (this.navMenu) {
+      this.navMenu.classList.remove('active');
+    }
+    document.body.classList.remove('menu-open');
+    this.navToggle?.setAttribute('aria-expanded', 'false');
   }
 
   /**
@@ -139,9 +171,15 @@ export class NavigationManager {
    * Handle menu state on load
    */
   handleMenuState(): void {
-    this.isMenuOpen = false;
-    if (this.navMenu) {
-      this.navMenu.classList.remove('active');
+    // On desktop, menu is always visible, so no "open" state
+    if (this.isDesktop) {
+      this.isMenuOpen = false;
+      if (this.navMenu) {
+        this.navMenu.classList.remove('active');
+      }
+    } else {
+      // On mobile, ensure menu starts closed
+      this.closeMobileMenu();
     }
   }
 
