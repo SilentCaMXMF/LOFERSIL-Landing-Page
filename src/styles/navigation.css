@@ -43,6 +43,32 @@
   transform: scale(1.05);
 }
 
+.nav-contact {
+  display: none;
+  flex-direction: column;
+  margin-left: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--gray-700);
+  line-height: 1.2;
+}
+
+.nav-address {
+  font-weight: 500;
+}
+
+.nav-phone {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+[data-theme='dark'] .nav-contact {
+  color: var(--gray-300);
+}
+
+[data-theme='dark'] .nav-phone {
+  color: var(--primary-color);
+}
+
 #nav-menu {
   display: none;
   align-items: center;
@@ -344,6 +370,11 @@
   /* Hide mobile toggle button on desktop */
   #nav-toggle {
     display: none !important;
+  }
+
+  /* Show contact info on desktop */
+  .nav-contact {
+    display: flex;
   }
 
   /* Adjust header container for desktop */
