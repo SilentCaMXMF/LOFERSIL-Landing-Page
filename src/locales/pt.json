@@ -29,19 +29,36 @@
     "ourServices": "Conheça Nossos Serviços"
   },
   "features": {
-    "title": "Porquê Escolher LOFERSIL?",
-    "subtitle": "Qualidade, fiabilidade e excelência em todos os aspetos",
+    "title": "Por que Confiar na LOFERSIL?",
+    "subtitle": "Tradição, qualidade e atendimento que fazem a diferença há mais de 30 anos",
     "premiumQuality": {
       "title": "Qualidade Premium",
-      "description": "Apenas os melhores produtos e serviços fazem parte da nossa coleção."
+      "description": "Selecionamos apenas produtos de excelência, testados e aprovados por nossa equipe especializada."
     },
-    "fastReliable": {
-      "title": "Rápido e Fiável",
-      "description": "Entrega rápida e serviço confiável em que pode contar."
+    "personalizedService": {
+      "title": "Atendimento Personalizado",
+      "description": "A nossa equipe conhece cada produto e está pronta para oferecer consultoria especializada para suas necessidades."
     },
-    "exceptionalSupport": {
-      "title": "Suporte Excecional",
-      "description": "A nossa equipa está aqui para ajudar em todos os passos."
+    "traditionTrust": {
+      "title": "Tradição & Confiança",
+      "description": "Há mais de 30 anos conquistando a confiança de famílias e empresas em Lisboa com integridade e qualidade."
+    },
+    "freeDelivery": {
+      "title": "Entrega Gratuita",
+      "description": "Entrega gratuita em Lisboa para encomendas superiores a 100€. Serviço rápido e confiável diretamente na sua porta."
+    },
+    "accountingServices": {
+      "title": "Serviços Contabilísticos",
+      "description": "Apoio contabilístico para particulares e empresas. Gestão de faturas, declarações fiscais e consultoria especializada."
+    },
+    "bindingLamination": {
+      "title": "Encadernação & Plastificação",
+      "description": "Serviços profissionais de encadernação e plastificação. Proteja e organize seus documentos com acabamento premium."
+    },
+    "dhlService": {
+      "title": "Ponto de Serviço DHL",
+      "description": "Recolha e envio de encomendas através do nosso ponto de serviço DHL autorizado. Acompanhe suas encomendas em tempo real.",
+      "linkText": "Rastrear Encomenda"
     }
   },
   "about": {
