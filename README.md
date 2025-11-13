@@ -176,7 +176,7 @@ SMTP_SECURE=false
 SMTP_USER=your_email@gmail.com
 SMTP_PASS=your_app_password
 FROM_EMAIL=your_email@gmail.com
-TO_EMAIL=contact@lofersil.com
+TO_EMAIL=contact@lofersil.com,pedroocalado@gmail.com
 ALLOWED_ORIGINS=https://yourdomain.com
 ```
 
