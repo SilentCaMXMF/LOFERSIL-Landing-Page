@@ -56,8 +56,8 @@ jobs:
         if: matrix.runtime == 'bun'
         run: bun run lint:bun
 
-       - name: Build project (npm)
-         if: matrix.runtime == 'npm'
+      - name: Build project (npm)
+        if: matrix.runtime == 'npm'
          run: npm run build
          env:
            NODE_ENV: production
@@ -106,8 +106,8 @@ jobs:
            MCP_RECONNECT_INTERVAL: ${{ secrets.MCP_RECONNECT_INTERVAL }}
            MCP_MAX_RECONNECT_ATTEMPTS: ${{ secrets.MCP_MAX_RECONNECT_ATTEMPTS }}
 
-       - name: Build project (bun)
-         if: matrix.runtime == 'bun'
+      - name: Build project (bun)
+        if: matrix.runtime == 'bun'
          run: bun run build:bun
          env:
            NODE_ENV: production
