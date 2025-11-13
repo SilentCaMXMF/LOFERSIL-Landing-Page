@@ -286,23 +286,27 @@ const isProduction =
     if (fs.existsSync(imagesDir)) {
       const imageFiles = fs.readdirSync(imagesDir).filter(file => /\.(jpg|jpeg|png)$/i.test(file));
       for (const file of imageFiles) {
-        const inputPath = path.join(imagesDir, file);
-        const baseName = path.parse(file).name;
-        const webpBase = path.join(imagesDir, baseName);
+        try {
+          const inputPath = path.join(imagesDir, file);
+          const baseName = path.parse(file).name;
+          const webpBase = path.join(imagesDir, baseName);
 
-        // Create responsive WebP versions
-        const sizes = [400, 800, 1200];
-        for (const size of sizes) {
-          await sharp(inputPath)
-            .resize(size, null, { withoutEnlargement: true })
-            .webp({ quality: 80 })
-            .toFile(`${webpBase}-${size}w.webp`);
+          // Create responsive WebP versions
+          const sizes = [400, 800, 1200];
+          for (const size of sizes) {
+            await sharp(inputPath)
+              .resize(size, null, { withoutEnlargement: true })
+              .webp({ quality: 80 })
+              .toFile(`${webpBase}-${size}w.webp`);
+          }
+
+          // Also create a full-size WebP
+          await sharp(inputPath).webp({ quality: 80 }).toFile(`${webpBase}.webp`);
+
+          console.log(`✅ Optimized ${file}`);
+        } catch (error) {
+          console.warn(`⚠️ Failed to optimize ${file}: ${error.message}`);
         }
-
-        // Also create a full-size WebP
-        await sharp(inputPath).webp({ quality: 80 }).toFile(`${webpBase}.webp`);
-
-        console.log(`✅ Optimized ${file}`);
       }
     }
   };
