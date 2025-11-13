@@ -113,6 +113,27 @@ const isProduction =
     // Transform image paths from assets/images/ to images/ for production
     htmlContent = htmlContent.replace(/assets\/images\//g, 'images/');
 
+    // Fix srcset URL encoding for filenames with spaces
+    htmlContent = htmlContent.replace(/srcset="([^"]*)"/g, (match, srcsetContent) => {
+      // Split srcset into descriptors and encode each URL
+      const descriptors = srcsetContent.split(',').map(desc => desc.trim());
+      const encodedDescriptors = descriptors.map(descriptor => {
+        // Find the URL part (ends with image extension) and the descriptors part
+        const urlMatch = descriptor.match(/(images\/[^.]+\.(?:webp|jpg|jpeg|png))\s*(.*)/);
+        if (urlMatch) {
+          const [, url, descriptors] = urlMatch;
+          // Encode spaces and special chars in the URL
+          const encodedUrl = url
+            .replace(/ /g, '%20')
+            .replace(/ã/g, '%C3%A3')
+            .replace(/é/g, '%C3%A9');
+          return `${encodedUrl}${descriptors ? ' ' + descriptors : ''}`;
+        }
+        return descriptor;
+      });
+      return `srcset="${encodedDescriptors.join(', ')}"`;
+    });
+
     fs.writeFileSync(destPath, htmlContent);
   }
 
@@ -338,14 +359,18 @@ const isProduction =
         descriptors.forEach(descriptor => {
           const [url] = descriptor.split(/\s+/);
           if (url && !url.startsWith('http') && !url.startsWith('data:')) {
-            const imagePath = path.join('./dist', url);
+            // Decode URL-encoded characters for filesystem check
+            const decodedUrl = decodeURIComponent(url);
+            const imagePath = path.join('./dist', decodedUrl);
             if (!fs.existsSync(imagePath)) {
               missingImages.push(url);
             }
           }
         });
       } else if (src && !src.startsWith('http') && !src.startsWith('data:')) {
-        const imagePath = path.join('./dist', src);
+        // Decode URL-encoded characters for filesystem check
+        const decodedSrc = decodeURIComponent(src);
+        const imagePath = path.join('./dist', decodedSrc);
         if (!fs.existsSync(imagePath)) {
           missingImages.push(src);
         }
