@@ -12,6 +12,8 @@ export class TranslationManager {
   private readonly defaultLanguage = 'pt';
   private readonly supportedLanguages = ['pt', 'en'];
   private errorHandler: ErrorHandler;
+  private isInitialized = false;
+  private isSwitchingLanguage = false;
 
   constructor(errorHandler: ErrorHandler) {
     this.translations = {};
@@ -45,11 +47,16 @@ export class TranslationManager {
    * Initialize the translation system
    */
   async initialize(): Promise<void> {
+    if (this.isInitialized) {
+      return; // Prevent multiple initializations
+    }
+
     await this.loadTranslations();
     this.applyTranslations();
     this.updateMetaTagsForLanguage();
     this.setupHreflangTags();
     this.updateHtmlLangAttribute();
+    this.isInitialized = true;
   }
 
   /**
@@ -244,12 +251,23 @@ export class TranslationManager {
       return;
     }
 
+    if (this.isSwitchingLanguage) {
+      return; // Prevent rapid switching
+    }
+
+    this.isSwitchingLanguage = true;
+
     this.currentLanguage = lang;
     localStorage.setItem('language', lang);
     this.applyTranslations();
     this.updateMetaTagsForLanguage();
     this.updateHtmlLangAttribute();
     console.log(`Switched to language: ${lang}`);
+
+    // Reset the flag after a short delay to allow subsequent switches
+    setTimeout(() => {
+      this.isSwitchingLanguage = false;
+    }, 100);
   }
 
   /**

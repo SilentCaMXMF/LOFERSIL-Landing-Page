@@ -110,6 +110,9 @@ const isProduction =
     const envScript = `<script type="application/json" data-env>${JSON.stringify(envVars)}</script>`;
     htmlContent = htmlContent.replace('</head>', `${envScript}\n</head>`);
 
+    // Transform image paths from assets/images/ to images/ for production
+    htmlContent = htmlContent.replace(/assets\/images\//g, 'images/');
+
     fs.writeFileSync(destPath, htmlContent);
   }
 
@@ -315,6 +318,52 @@ const isProduction =
     console.log('✅ Image optimization successful');
   } catch (error) {
     console.warn('⚠️ Image optimization failed, continuing...');
+  }
+
+  // Validate image references
+  console.log('🔍 Validating image references...');
+  const validateImageReferences = () => {
+    const htmlContent = fs.readFileSync('./dist/index.html', 'utf8');
+    const imageRegex = /srcset="([^"]*)"|"([^"]*\.(jpg|jpeg|png|webp|svg))"/g;
+    const missingImages = [];
+
+    let match;
+    while ((match = imageRegex.exec(htmlContent)) !== null) {
+      const srcset = match[1];
+      const src = match[2];
+
+      if (srcset) {
+        // Parse srcset attributes
+        const descriptors = srcset.split(',').map(s => s.trim());
+        descriptors.forEach(descriptor => {
+          const [url] = descriptor.split(/\s+/);
+          if (url && !url.startsWith('http') && !url.startsWith('data:')) {
+            const imagePath = path.join('./dist', url);
+            if (!fs.existsSync(imagePath)) {
+              missingImages.push(url);
+            }
+          }
+        });
+      } else if (src && !src.startsWith('http') && !src.startsWith('data:')) {
+        const imagePath = path.join('./dist', src);
+        if (!fs.existsSync(imagePath)) {
+          missingImages.push(src);
+        }
+      }
+    }
+
+    if (missingImages.length > 0) {
+      console.warn('⚠️ Missing images found:');
+      missingImages.forEach(img => console.warn(`  - ${img}`));
+    } else {
+      console.log('✅ All image references are valid');
+    }
+  };
+
+  try {
+    validateImageReferences();
+  } catch (error) {
+    console.warn('⚠️ Image validation failed, continuing...');
   }
 
   // Generate sitemap

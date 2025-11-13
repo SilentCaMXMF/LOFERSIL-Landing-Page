@@ -20,8 +20,8 @@ const STATIC_ASSETS = [
   '/scripts/modules/ContactFormManager.js',
   '/scripts/modules/NavigationManager.js',
   '/scripts/modules/SEOManager.js',
-   '/assets/images/favicon-48x48-lettuce.png',
-  '/assets/images/logo.jpg',
+  '/images/favicon-48x48-lettuce.png',
+  '/images/logo.jpg',
   '/locales/pt.json',
   '/offline.html',
 ];
@@ -161,7 +161,7 @@ async function handleStaticRequest(request) {
     console.log('[SW] Failed to fetch static asset:', request.url);
     // Return offline fallback for images
     if (request.destination === 'image') {
-      return caches.match('/assets/images/logo.jpg');
+      return caches.match('/images/logo.jpg');
     }
   }
 }
@@ -223,8 +223,8 @@ self.addEventListener('push', event => {
 
   const options = {
     body: data.body,
-    icon: '/assets/images/favicon-48x48-lettuce.png',
-    badge: '/assets/images/favicon-32x32-lettuce.png',
+    icon: '/images/favicon-48x48-lettuce.png',
+    badge: '/images/favicon-32x32-lettuce.png',
     vibrate: [100, 50, 100],
     data: {
       url: data.url || '/',
@@ -233,7 +233,7 @@ self.addEventListener('push', event => {
       {
         action: 'view',
         title: 'Ver',
-        icon: '/assets/images/favicon-16x16-lettuce.png',
+        icon: '/images/favicon-16x16-lettuce.png',
       },
       {
         action: 'dismiss',
