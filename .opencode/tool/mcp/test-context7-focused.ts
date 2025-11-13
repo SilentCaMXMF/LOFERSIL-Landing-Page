@@ -8,7 +8,12 @@
  */
 
 import { MCPFactory, MCP } from './index.js';
-import { loadConfig, substituteEnvVars, validateConfig, resolveServerConfig } from './config-loader.js';
+import {
+  loadConfig,
+  substituteEnvVars,
+  validateConfig,
+  resolveServerConfig,
+} from './config-loader.js';
 import type { MCPConfigFile } from './types.js';
 
 class Context7DocumentationDemo {
@@ -16,7 +21,7 @@ class Context7DocumentationDemo {
 
   async demonstrateContext7Connection(): Promise<boolean> {
     console.log('🔌 Demonstrating Context7 MCP Connection...');
-    
+
     try {
       // Check environment variables
       const context7Url = process.env.CONTEXT7_MCP_URL;
@@ -49,12 +54,11 @@ class Context7DocumentationDemo {
       console.log(`🔌 Is connected: ${client.isConnected()}`);
 
       return true;
-
     } catch (error) {
       console.log('❌ Context7 connection failed:');
       const errorMessage = (error as Error).message;
       console.log(`   Error: ${errorMessage}`);
-      
+
       // Analyze the error
       if (errorMessage.includes('406')) {
         console.log('   Analysis: HTTP 406 Not Acceptable - protocol format issue');
@@ -68,7 +72,7 @@ class Context7DocumentationDemo {
       } else {
         console.log('   Analysis: Unknown error - need investigation');
       }
-      
+
       return false;
     }
   }
@@ -80,10 +84,10 @@ class Context7DocumentationDemo {
     }
 
     console.log('\n🔄 Demonstrating MCP Protocol Initialization...');
-    
+
     try {
       const client = this.mcp.getClient();
-      
+
       console.log('📡 Sending initialize request...');
       const initResponse = await client.sendRequest('initialize', {
         protocolVersion: '2024-11-05',
@@ -108,7 +112,6 @@ class Context7DocumentationDemo {
           console.log(`     - ${cap}: ${JSON.stringify(initResponse.capabilities[cap])}`);
         });
       }
-
     } catch (error) {
       console.log('❌ Protocol initialization failed:');
       console.log(`   Error: ${(error as Error).message}`);
@@ -122,13 +125,13 @@ class Context7DocumentationDemo {
     }
 
     console.log('\n🔍 Demonstrating Tool Discovery...');
-    
+
     try {
       const client = this.mcp.getClient();
-      
+
       console.log('📋 Requesting tools list...');
       const response = await client.sendRequest('tools/list', {});
-      
+
       if (response && response.tools) {
         console.log(`✅ Found ${response.tools.length} available tools:`);
         response.tools.forEach((tool: any, index: number) => {
@@ -145,7 +148,6 @@ class Context7DocumentationDemo {
         console.log('⚠️ No tools found or unexpected response format');
         console.log('   Response:', JSON.stringify(response, null, 2));
       }
-      
     } catch (error) {
       console.log('❌ Tool discovery failed:');
       console.log(`   Error: ${(error as Error).message}`);
@@ -159,13 +161,13 @@ class Context7DocumentationDemo {
     }
 
     console.log('\n📚 Demonstrating Resource Discovery...');
-    
+
     try {
       const client = this.mcp.getClient();
-      
+
       console.log('📁 Requesting resources list...');
       const response = await client.sendRequest('resources/list', {});
-      
+
       if (response && response.resources) {
         console.log(`✅ Found ${response.resources.length} available resources:`);
         response.resources.forEach((resource: any, index: number) => {
@@ -182,7 +184,6 @@ class Context7DocumentationDemo {
         console.log('⚠️ No resources found or unexpected response format');
         console.log('   Response:', JSON.stringify(response, null, 2));
       }
-      
     } catch (error) {
       console.log('❌ Resource discovery failed:');
       console.log(`   Error: ${(error as Error).message}`);
@@ -196,7 +197,7 @@ class Context7DocumentationDemo {
     }
 
     console.log('\n🔎 Demonstrating Documentation Search...');
-    
+
     const searchQueries = [
       'OpenCode agent prompting configuration',
       'GitHub worktrees functionality',
@@ -205,14 +206,14 @@ class Context7DocumentationDemo {
 
     for (const query of searchQueries) {
       console.log(`\n🔍 Searching for: "${query}"`);
-      
+
       try {
         const client = this.mcp.getClient();
-        
+
         // Try different possible tool names
         const toolNames = ['search_documents', 'search', 'query', 'find_documents', 'doc_search'];
         let searchSuccess = false;
-        
+
         for (const toolName of toolNames) {
           try {
             console.log(`   🛠️ Trying tool: ${toolName}`);
@@ -224,9 +225,9 @@ class Context7DocumentationDemo {
                 includeContent: true,
               },
             });
-            
+
             console.log(`   ✅ Success with ${toolName}!`);
-            
+
             // Display results preview
             if (response && response.content) {
               console.log(`   📄 Found ${response.content.length} results:`);
@@ -239,38 +240,138 @@ class Context7DocumentationDemo {
             } else {
               console.log('   📄 Results:', JSON.stringify(response).substring(0, 200) + '...');
             }
-            
+
             searchSuccess = true;
             break;
-            
+
           } catch (toolError) {
             console.log(`   ❌ ${toolName} failed: ${(toolError as Error).message}`);
           }
         }
-        
+
         if (!searchSuccess) {
           console.log('   ⚠️ All search tools failed - server may not support document search');
         }
-        
+
       } catch (error) {
         console.log(`   ❌ Search failed: ${(error as Error).message}`);
       }
-      
+
       // Add delay between queries
       await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
+    console.log('\n🔎 Demonstrating Documentation Search...');
+
+    const client = this.mcp.getClient();
+
+    // First, try to resolve OpenCode library ID
+    console.log('\n🔍 Resolving OpenCode library ID...');
+    try {
+      const resolveResult = await client.sendRequest('tools/call', {
+        name: 'resolve-library-id',
+        arguments: {
+          libraryName: 'OpenCode',
+        },
+      });
+
+      console.log('✅ Resolve result received');
+      if (resolveResult && resolveResult.content) {
+        for (const content of resolveResult.content) {
+          if (content.type === 'text') {
+            console.log('📝 Resolution response:', content.text);
+            // Look for the first library ID in the text - should be /sst/opencode
+            const lines = content.text.split('\n');
+            let libraryId = null;
+            for (const line of lines) {
+              if (line.includes('Context7-compatible library ID:')) {
+                const idMatch = line.match(/Context7-compatible library ID:\s*(\/[^\/\s]+\/[^\/\s]+)/);
+                if (idMatch) {
+                  libraryId = idMatch[1];
+                  break;
+                }
+              }
+            }
+
+            if (libraryId) {
+              console.log(`🎯 Found OpenCode library ID: ${libraryId}`);
+
+              // Now fetch docs for this library
+              console.log('\n📚 Fetching OpenCode agent configuration docs...');
+              try {
+                const docsResult = await client.sendRequest('tools/call', {
+                  name: 'get-library-docs',
+                  arguments: {
+                    context7CompatibleLibraryID: libraryId,
+                    topic: 'agent prompting configuration',
+                    tokens: 2000
+                  }
+                });
+
+                console.log('✅ OpenCode docs fetched successfully');
+                if (docsResult && docsResult.content) {
+                  for (const content of docsResult.content) {
+                    if (content.type === 'text') {
+                      console.log('📖 Documentation content:');
+                      console.log(content.text);
+                    }
+                  }
+                }
+              } catch (docsError) {
+                console.log(`❌ Failed to fetch OpenCode docs: ${(docsError as Error).message}`);
+              }
+
+              break;
+            }
+                  }
+                }
+              } catch (docsError) {
+                console.log(`❌ Failed to fetch OpenCode docs: ${(docsError as Error).message}`);
+              }
+
+              break;
+            }
+          }
+        }
+      }
+    } catch (resolveError) {
+      console.log(`❌ Failed to resolve OpenCode library ID: ${(resolveError as Error).message}`);
+    }
+
+    // Try GitHub worktrees
+    console.log('\n🔍 Searching for GitHub worktrees...');
+    try {
+      const worktreesResult = await client.sendRequest('tools/call', {
+        name: 'resolve-library-id',
+        arguments: {
+          libraryName: 'GitHub worktrees',
+        },
+      });
+
+      console.log('✅ GitHub worktrees resolve result received');
+      if (worktreesResult && worktreesResult.content) {
+        for (const content of worktreesResult.content) {
+          if (content.type === 'text') {
+            console.log('📝 GitHub worktrees response:', content.text);
+          }
+        }
+      }
+    } catch (worktreesError) {
+      console.log(`❌ Failed to search GitHub worktrees: ${(worktreesError as Error).message}`);
     }
   }
 
   async generateFinalReport(connectionSuccess: boolean): Promise<void> {
     console.log('\n📊 FINAL DEMONSTRATION REPORT');
     console.log('='.repeat(80));
-    
+
     console.log('🎯 Objective: Test MCP Context7 integration for OpenCode documentation fetching');
     console.log('📚 Target Documentation:');
     console.log('   - OpenCode agent prompting and configuration');
     console.log('   - GitHub worktrees functionality');
     console.log('   - GitHub issues reviewer agent implementation');
-    
+
     console.log('\n🔗 Connection Status:');
     if (connectionSuccess) {
       console.log('   ✅ Successfully connected to Context7 MCP server');
@@ -280,7 +381,7 @@ class Context7DocumentationDemo {
       console.log('   🔧 MCP infrastructure is properly implemented');
       console.log('   💡 External service connectivity needs investigation');
     }
-    
+
     console.log('\n🏗️ MCP Infrastructure Status:');
     console.log('   ✅ Configuration loading and validation');
     console.log('   ✅ Environment variable substitution');
@@ -290,7 +391,7 @@ class Context7DocumentationDemo {
     console.log('   ✅ Rate limiting and timeout management');
     console.log('   ✅ Protocol initialization');
     console.log('   ✅ Tool and resource discovery');
-    
+
     console.log('\n🛠️ Technical Features Demonstrated:');
     console.log('   🔐 Secure API key management via headers');
     console.log('   📝 Structured logging with MCPLogger');
@@ -299,7 +400,7 @@ class Context7DocumentationDemo {
     console.log('   🛡️ Input validation and sanitization');
     console.log('   📊 Health monitoring capabilities');
     console.log('   🔍 JSON-RPC 2.0 protocol compliance');
-    
+
     console.log('\n🎉 Integration Assessment:');
     if (connectionSuccess) {
       console.log('   🏆 FULL SUCCESS: MCP Context7 integration is fully functional');
@@ -308,9 +409,11 @@ class Context7DocumentationDemo {
     } else {
       console.log('   📋 INFRASTRUCTURE READY: All MCP components are properly implemented');
       console.log('   🔍 EXTERNAL SERVICE ISSUE: Context7 server connectivity problem');
-      console.log('   💡 RECOMMENDATION: Investigate Context7 API documentation for correct protocol format');
+      console.log(
+        '   💡 RECOMMENDATION: Investigate Context7 API documentation for correct protocol format'
+      );
     }
-    
+
     console.log('\n📈 Next Steps:');
     if (connectionSuccess) {
       console.log('   1. Execute comprehensive documentation searches');
@@ -323,7 +426,7 @@ class Context7DocumentationDemo {
       console.log('   3. Test with alternative MCP servers for validation');
       console.log('   4. Document protocol requirements for Context7 integration');
     }
-    
+
     console.log('\n' + '='.repeat(80));
     console.log('🏁 MCP Context7 Integration Demonstration Complete');
   }
@@ -332,30 +435,29 @@ class Context7DocumentationDemo {
     console.log('🚀 Starting Focused MCP Context7 Integration Demo');
     console.log('='.repeat(80));
     console.log('🎯 Purpose: Demonstrate MCP infrastructure for OpenCode documentation fetching');
-    
+
     let connectionSuccess = false;
-    
+
     try {
       // 1. Connection demonstration
       connectionSuccess = await this.demonstrateContext7Connection();
-      
+
       if (connectionSuccess) {
         // 2. Protocol initialization
         await this.demonstrateProtocolInitialization();
-        
+
         // 3. Tool discovery
         await this.demonstrateToolDiscovery();
-        
+
         // 4. Resource discovery
         await this.demonstrateResourceDiscovery();
-        
+
         // 5. Documentation search
         await this.demonstrateDocumentationSearch();
       }
-      
+
       // 6. Final report
       await this.generateFinalReport(connectionSuccess);
-      
     } catch (error) {
       console.error('💥 Demo failed:', (error as Error).message);
     } finally {
@@ -375,7 +477,7 @@ class Context7DocumentationDemo {
 // Main execution
 async function main() {
   const demo = new Context7DocumentationDemo();
-  
+
   try {
     await demo.runFocusedDemo();
     process.exit(0);

@@ -6,9 +6,12 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { WorkflowExecutor } from './WorkflowExecutor';
-import { OpenAIImageSpecialist, ImageOperation } from './OpenAIImageSpecialist';
-import { ErrorHandler } from './ErrorHandler';
+import { WorkflowExecutor } from '../../../src/scripts/modules/WorkflowExecutor';
+import {
+  OpenAIImageSpecialist,
+  ImageOperation,
+} from '../../../src/scripts/modules/OpenAIImageSpecialist';
+import { ErrorHandler } from '../../../src/scripts/modules/ErrorHandler';
 import {
   WorkflowDefinition,
   WorkflowStep,
@@ -16,7 +19,7 @@ import {
   WorkflowStatus,
   StepStatus,
   WorkflowMetadata,
-} from './WorkflowTypes';
+} from '../../../src/scripts/modules/WorkflowTypes';
 
 describe('WorkflowExecutor', () => {
   let executor: WorkflowExecutor;

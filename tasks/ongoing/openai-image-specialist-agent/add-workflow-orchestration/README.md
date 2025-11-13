@@ -6,7 +6,7 @@ Status legend: [ ] todo, [~] in-progress, [x] done
 
 Tasks
 
-- [ ] 01 — design-workflow-data-structures → `01-design-workflow-data-structures.md`
+- [x] 01 — design-workflow-data-structures → `01-design-workflow-data-structures.md`
 - [ ] 02 — implement-workflow-validation → `02-implement-workflow-validation.md`
 - [ ] 03 — create-workflow-executor-engine → `03-create-workflow-executor-engine.md`
 - [ ] 04 — add-step-execution-management → `04-add-step-execution-management.md`

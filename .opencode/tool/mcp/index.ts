@@ -131,7 +131,7 @@ export class MCPFactory {
     return new MCP({
       serverUrl,
       headers: {
-        CONTEXT7_API_KEY: apiKey,
+        Authorization: `Bearer ${apiKey}`,
       },
       timeout,
     });

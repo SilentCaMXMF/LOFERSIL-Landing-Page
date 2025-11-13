@@ -19,8 +19,14 @@ import {
   BranchResult,
 } from './WorkflowTypes';
 import { WorkflowValidator } from './WorkflowValidator';
-import { OpenAIImageSpecialist, ImageOperation } from './OpenAIImageSpecialist';
+import { OpenAIImageSpecialist, ImageOperation, ImageRequest } from './OpenAIImageSpecialist';
 import { ErrorHandler } from './ErrorHandler';
+
+type ImageParameters = {
+  size?: '256x256' | '512x512' | '1024x1024' | '1792x1024' | '1024x1792';
+  style?: 'vivid' | 'natural';
+  quality?: 'standard' | 'hd';
+};
 
 export interface StepExecutionContext {
   workflowId: string;
@@ -457,11 +463,7 @@ export class WorkflowExecutor {
 
     // Check conditional dependencies if any
     if (step.conditions) {
-      return this.evaluateConditions(
-        step.conditions,
-        context,
-        step.conditions[0]?.operator || 'and'
-      );
+      return this.evaluateConditions(step.conditions, context, step.conditionsOperator || 'and');
     }
 
     return true;
@@ -502,7 +504,9 @@ export class WorkflowExecutor {
     condition: WorkflowCondition,
     context: StepExecutionContext
   ): BranchResult | null {
-    const result = this.evaluateExpression(condition.expression, context);
+    const expr = condition.expression;
+    if (!expr) return null;
+    const result = this.evaluateExpression(expr, context);
 
     if (result) {
       return {
@@ -526,10 +530,14 @@ export class WorkflowExecutor {
     condition: WorkflowCondition,
     context: StepExecutionContext
   ): BranchResult | null {
-    const switchValue =
-      condition.value !== undefined
-        ? condition.value
-        : this.evaluateExpression(condition.expression, context);
+    let switchValue: unknown;
+    if (condition.value !== undefined) {
+      switchValue = condition.value;
+    } else if (condition.expression) {
+      switchValue = this.evaluateExpression(condition.expression, context);
+    } else {
+      switchValue = undefined;
+    }
     const branchKey = String(switchValue);
 
     if (condition.branches[branchKey]) {
@@ -556,7 +564,9 @@ export class WorkflowExecutor {
     condition: WorkflowCondition,
     context: StepExecutionContext
   ): BranchResult | null {
-    const result = this.evaluateExpression(condition.expression, context);
+    const expr = condition.expression;
+    if (!expr) return null;
+    const result = this.evaluateExpression(expr, context);
 
     return {
       branch: result ? 'true' : 'false',
@@ -570,7 +580,7 @@ export class WorkflowExecutor {
    */
   private evaluateExpression(expression: string, context: StepExecutionContext): any {
     // Create a safe evaluation context
-    const evalContext = {
+    const evalContext: Record<string, any> = {
       step: (stepId: string) => context.stepResults.get(stepId),
       shared: (key: string) => context.sharedData.get(key),
       workflow: {
@@ -786,7 +796,7 @@ export class WorkflowExecutor {
     context: StepExecutionContext
   ): Promise<any> {
     // Resolve dynamic values from context
-    const resolvedConfig = this.resolveStepConfig(step.config, context);
+    const resolvedConfig = this.resolveStepConfig(step.config, context) as Record<string, any>;
 
     switch (step.type) {
       case StepType.GENERATE_IMAGE:
@@ -794,7 +804,7 @@ export class WorkflowExecutor {
           operation: ImageOperation.GENERATE,
           prompt: resolvedConfig.prompt,
           parameters: resolvedConfig.parameters,
-        });
+        } as ImageRequest);
 
       case StepType.EDIT_IMAGE:
         return await this.imageSpecialist.processRequest({
@@ -803,6 +813,53 @@ export class WorkflowExecutor {
           image: resolvedConfig.image,
           mask: resolvedConfig.mask,
           parameters: resolvedConfig.parameters,
+        } as ImageRequest);
+
+      case StepType.ANALYZE_IMAGE:
+        return await this.imageSpecialist.processRequest({
+          operation: ImageOperation.ANALYZE,
+          prompt: resolvedConfig.prompt,
+          image: resolvedConfig.image,
+        } as ImageRequest);
+
+      case StepType.EDIT_IMAGE: {
+        const config = resolvedConfig as {
+          prompt: string;
+          image: string;
+          mask?: string;
+          parameters?: ImageParameters;
+        };
+        return await this.imageSpecialist.processRequest({
+          operation: ImageOperation.EDIT,
+          prompt: config.prompt,
+          image: config.image,
+          mask: config.mask,
+          parameters: config.parameters,
+        });
+      }
+
+      case StepType.ANALYZE_IMAGE: {
+        const config = resolvedConfig as { prompt: string; image: string };
+        return await this.imageSpecialist.processRequest({
+          operation: ImageOperation.ANALYZE,
+          prompt: config.prompt,
+          image: config.image,
+        });
+      }
+
+      case StepType.EDIT_IMAGE:
+        return await this.imageSpecialist.processRequest({
+          operation: ImageOperation.EDIT,
+          prompt: resolvedConfig.prompt as string,
+          image: resolvedConfig.image as string,
+          mask: resolvedConfig.mask as string,
+          parameters: resolvedConfig.parameters as
+            | {
+                size?: '256x256' | '512x512' | '1024x1024' | '1792x1024' | '1024x1792' | undefined;
+                style?: 'vivid' | 'natural' | undefined;
+                quality?: 'standard' | 'hd' | undefined;
+              }
+            | undefined,
         });
 
       case StepType.ANALYZE_IMAGE:
@@ -832,7 +889,7 @@ export class WorkflowExecutor {
    * Resolve dynamic configuration values from execution context
    */
   private resolveStepConfig(config: any, context: StepExecutionContext): any {
-    const resolved = { ...config };
+    const resolved: any = { ...config };
 
     // Simple template resolution - can be enhanced
     Object.keys(resolved).forEach(key => {
@@ -851,7 +908,7 @@ export class WorkflowExecutor {
               // Simple dot notation support with array index handling
               const normalizedPath = fieldPath.replace(/\[(\d+)\]/g, '.$1');
               const fields = normalizedPath.split('.');
-              let current = stepResult.result;
+              let current: any = stepResult.result;
               for (const field of fields) {
                 current = current?.[field];
               }
@@ -961,7 +1018,7 @@ export class WorkflowExecutor {
           operation: ImageOperation.GENERATE,
           prompt: step.config.prompt,
           parameters: step.config.parameters,
-        });
+        } as ImageRequest);
 
       case StepType.EDIT_IMAGE:
         return await this.imageSpecialist.processRequest({
@@ -970,14 +1027,14 @@ export class WorkflowExecutor {
           image: step.config.image,
           mask: step.config.mask,
           parameters: step.config.parameters,
-        });
+        } as ImageRequest);
 
       case StepType.ANALYZE_IMAGE:
         return await this.imageSpecialist.processRequest({
           operation: ImageOperation.ANALYZE,
           prompt: step.config.prompt,
           image: step.config.image,
-        });
+        } as ImageRequest);
 
       case StepType.CONDITIONAL:
         // Conditional steps are handled at orchestration level

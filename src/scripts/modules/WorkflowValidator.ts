@@ -405,7 +405,7 @@ export class WorkflowValidator {
       step.conditions.forEach((condition, condIndex) => {
         const condPath = `steps[${index}].conditions[${condIndex}]`;
 
-        if (!condition.type || !['if', 'switch'].includes(condition.type)) {
+        if (!condition.type || !['if', 'switch', 'expression'].includes(condition.type)) {
           errors.push(
             new ValidationError(
               `Invalid condition type: ${condition.type}`,

@@ -157,6 +157,7 @@ export class MCPClient {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Accept: 'application/json, text/event-stream',
         ...this.config.headers,
       },
       body: JSON.stringify(initMessage),
@@ -361,6 +362,7 @@ export class MCPClient {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Accept: 'application/json, text/event-stream',
             ...this.config.headers,
           },
           body: JSON.stringify(message),
@@ -584,6 +586,7 @@ export class MCPClient {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Accept: 'application/json, text/event-stream',
           ...this.config.headers,
         },
         body: JSON.stringify(message),
