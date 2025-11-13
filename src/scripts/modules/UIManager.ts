@@ -239,7 +239,7 @@ export class UIManager {
     loadingOverlay.innerHTML = `
       <div style="text-align: center;">
         <div style="border: 2px solid #f3f3f3; border-top: 2px solid #3498db; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
-        ${message}
+        ${window.DOMPurify ? window.DOMPurify.sanitize(message) : message}
       </div>
       <style>
         @keyframes spin {
