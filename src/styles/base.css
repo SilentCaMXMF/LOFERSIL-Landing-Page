@@ -25,6 +25,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Dark mode body styles */
+[data-theme='dark'] body {
+  color: var(--body-text);
+  background-color: var(--body-bg);
+}
+
 /* Skip Navigation Links */
 .skip-link {
   position: absolute;
@@ -194,6 +200,43 @@ body {
   --z-modal: 1050;
   --z-popover: 1060;
   --z-tooltip: 1070;
+}
+
+/* Dark Mode Variables */
+[data-theme='dark'] {
+  /* Dark mode color overrides */
+  --body-bg: var(--gray-900);
+  --body-text: var(--gray-100);
+  --surface-bg: var(--gray-800);
+  --surface-text: var(--gray-200);
+  --surface-border: var(--gray-700);
+
+  /* Card backgrounds */
+  --card-bg: var(--gray-800);
+  --card-text: var(--gray-200);
+  --card-border: var(--gray-700);
+
+  /* Section backgrounds */
+  --section-bg-primary: var(--gray-900);
+  --section-bg-secondary: var(--gray-800);
+  --section-bg-accent: var(--gray-700);
+
+  /* Text colors */
+  --text-primary: var(--gray-100);
+  --text-secondary: var(--gray-300);
+  --text-muted: var(--gray-400);
+
+  /* Interactive elements */
+  --hover-bg: rgba(255, 255, 255, 0.05);
+  --active-bg: rgba(255, 255, 255, 0.1);
+  --focus-ring: rgba(34, 139, 34, 0.3);
+
+  /* Shadows for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
 }
 
 /* Utility Classes */
