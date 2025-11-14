@@ -43,6 +43,19 @@ const result = await mcp.getTools().executeTool('read_file', {
   encoding: 'utf-8',
 });
 
+// Execute Cloudflare text generation tool
+const textResult = await mcp.getTools().executeTool('text_generation', {
+  prompt: 'Write a short story about AI',
+  max_tokens: 500,
+});
+
+// Execute Cloudflare image generation tool
+const imageResult = await mcp.getTools().executeTool('image_generation', {
+  prompt: 'A futuristic city at sunset',
+  width: 1024,
+  height: 1024,
+});
+
 console.log('Tool result:', result);
 ```
 
@@ -64,6 +77,49 @@ try {
 - Invalid parameters result in validation errors
 - Tools support caching for improved performance
 - Batch processing is available for multiple tool executions
+
+## Cloudflare Workers AI Tools
+
+Cloudflare Workers AI provides several AI-powered tools optimized for the free tier:
+
+### Available Tools
+
+1. **text_generation**: Generate text using Llama models
+   - Model: `@cf/meta/llama-3.1-8b-instruct`
+   - Parameters: `prompt` (required), `max_tokens` (optional, default: 1000)
+
+2. **image_generation**: Generate images using Flux model
+   - Model: `@cf/blackforestlabs/flux-1-schnell`
+   - Parameters: `prompt` (required), `width` (optional), `height` (optional)
+
+3. **text_embedding**: Generate text embeddings
+   - Model: `@cf/baai/bge-large-en-v1.5`
+   - Parameters: `text` (required)
+
+### Usage Example
+
+```typescript
+import { MCPFactory } from './modules/MCPFactory.js';
+
+const mcp = await MCPFactory.createCloudflare();
+
+// List available Cloudflare tools
+const tools = await mcp.getTools().listTools();
+console.log('Cloudflare tools:', tools);
+
+// Generate text
+const text = await mcp.getTools().executeTool('text_generation', {
+  prompt: 'Explain quantum computing in simple terms',
+  max_tokens: 300,
+});
+
+// Generate image
+const image = await mcp.getTools().executeTool('image_generation', {
+  prompt: 'A serene mountain landscape at dawn',
+  width: 512,
+  height: 512,
+});
+```
 
 ### Advanced Features
 

@@ -39,6 +39,8 @@ Configure these variables in your Vercel project dashboard under **Settings → 
 | `MCP_API_KEY`                   | Your MCP API key      | No       | MCP server authentication     |
 | `MCP_SERVER_URL`                | Your MCP server URL   | No       | MCP server endpoint           |
 | `MCP_CLIENT_ID`                 | Your client ID        | No       | MCP client identifier         |
+| `CLOUDFLARE_API_TOKEN`          | Your Cloudflare token | No       | Cloudflare Workers AI token   |
+| `CLOUDFLARE_ACCOUNT_ID`         | Your account ID       | No       | Cloudflare account identifier |
 
 ## How to Configure in Vercel
 

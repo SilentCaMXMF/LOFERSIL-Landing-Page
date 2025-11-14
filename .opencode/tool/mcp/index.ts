@@ -9,6 +9,10 @@ import { loadConfig, validateConfig, substituteEnvVars } from './config-loader.j
 
 export { MCPClient } from './client.js';
 export { GeminiMCPClient } from './gemini-client.js';
+export {
+  CloudflareWorkersAIMCPClient,
+  createCloudflareWorkersAIClient,
+} from './cloudflare-client.js';
 export { MCPServer } from './server.js';
 export { MCPTools } from './tools.js';
 export { MCPResources } from './resources.js';
@@ -29,6 +33,7 @@ export type {
 // Main MCP instance for easy access
 import { MCPClient } from './client.js';
 import { GeminiMCPClient } from './gemini-client.js';
+import { CloudflareWorkersAIMCPClient } from './cloudflare-client.js';
 import { MCPTools } from './tools.js';
 import { MCPResources } from './resources.js';
 import { MCPHealthMonitor } from './health-monitor.js';
@@ -162,6 +167,35 @@ export class MCPFactory {
     });
 
     return new MCP(geminiClient);
+  }
+
+  /**
+   * Creates an MCP instance specifically for Cloudflare Workers AI
+   * @returns MCP instance configured for Cloudflare Workers AI
+   */
+  static async createCloudflareWorkersAI(): Promise<MCP> {
+    const apiToken = process.env.CLOUDFLARE_API_TOKEN;
+    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+    const baseUrl = process.env.CLOUDFLARE_BASE_URL || 'https://api.cloudflare.com/client/v4';
+    const timeout = parseInt(process.env.CLOUDFLARE_API_TIMEOUT || '60000');
+
+    if (!apiToken) {
+      throw new Error('CLOUDFLARE_API_TOKEN environment variable must be set');
+    }
+    if (!accountId) {
+      throw new Error('CLOUDFLARE_ACCOUNT_ID environment variable must be set');
+    }
+
+    // Use CloudflareWorkersAIMCPClient for specialized Cloudflare functionality
+    const cloudflareClient = new CloudflareWorkersAIMCPClient({
+      serverUrl: baseUrl,
+      timeout,
+      apiToken,
+      accountId,
+      baseUrl,
+    });
+
+    return new MCP(cloudflareClient);
   }
 
   /**

@@ -14,6 +14,8 @@ const mockEnv = {
   MCP_API_KEY: 'test-mcp-key',
   MCP_SERVER_URL: 'ws://test-server:3000',
   ENABLE_MCP_INTEGRATION: 'true',
+  CLOUDFLARE_API_TOKEN: 'test-cloudflare-token',
+  CLOUDFLARE_ACCOUNT_ID: 'test-cloudflare-account-id',
   EMAILJS_SERVICE_ID: 'test-service-id',
   EMAILJS_TEMPLATE_ID: 'test-template-id',
   EMAILJS_PUBLIC_KEY: 'test-public-key',
@@ -142,6 +144,8 @@ describe('EnvironmentLoader', () => {
       expect(allConfig).toHaveProperty('MCP_API_KEY', 'test-mcp-key');
       expect(allConfig).toHaveProperty('MCP_SERVER_URL', 'ws://test-server:3000');
       expect(allConfig).toHaveProperty('ENABLE_MCP_INTEGRATION', 'true');
+      expect(allConfig).toHaveProperty('CLOUDFLARE_API_TOKEN', 'test-cloudflare-token');
+      expect(allConfig).toHaveProperty('CLOUDFLARE_ACCOUNT_ID', 'test-cloudflare-account-id');
       expect(allConfig).toHaveProperty('EMAILJS_SERVICE_ID', 'test-service-id');
       expect(allConfig).toHaveProperty('EMAILJS_TEMPLATE_ID', 'test-template-id');
       expect(allConfig).toHaveProperty('EMAILJS_PUBLIC_KEY', 'test-public-key');

@@ -43,6 +43,27 @@
         "maxAttempts": 3,
         "interval": 2000
       }
+    },
+    "cloudflare": {
+      "name": "cloudflare",
+      "type": "remote",
+      "url": "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run",
+      "headers": {
+        "Authorization": "Bearer ${CLOUDFLARE_API_TOKEN}",
+        "Content-Type": "application/json"
+      },
+      "enabled": true,
+      "timeout": 30000,
+      "retry": {
+        "maxAttempts": 5,
+        "interval": 2000
+      },
+      "accountId": "${CLOUDFLARE_ACCOUNT_ID}",
+      "models": {
+        "text": "@cf/meta/llama-3.1-8b-instruct",
+        "image": "@cf/blackforestlabs/flux-1-schnell",
+        "embedding": "@cf/baai/bge-large-en-v1.5"
+      }
     }
   }
 }

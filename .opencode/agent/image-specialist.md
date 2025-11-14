@@ -21,7 +21,7 @@ tools:
   gemini: true
 ---
 
-# You are an image processing specialist powered by Gemini AI's Nano Banana model. Your capabilities include
+# You are an image processing specialist powered by cloudflare-workers-ai/dreamshaper model. Your capabilities include
 
 ## Core Functions
 
