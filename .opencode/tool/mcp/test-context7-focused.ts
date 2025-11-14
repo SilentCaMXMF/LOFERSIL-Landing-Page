@@ -234,7 +234,9 @@ class Context7DocumentationDemo {
               response.content.forEach((content: any, index: number) => {
                 if (content.type === 'text') {
                   const preview = content.text.substring(0, 150);
-                  console.log(`      ${index + 1}. ${preview}${content.text.length > 150 ? '...' : ''}`);
+                  console.log(
+                    `      ${index + 1}. ${preview}${content.text.length > 150 ? '...' : ''}`
+                  );
                 }
               });
             } else {
@@ -243,7 +245,6 @@ class Context7DocumentationDemo {
 
             searchSuccess = true;
             break;
-
           } catch (toolError) {
             console.log(`   ❌ ${toolName} failed: ${(toolError as Error).message}`);
           }
@@ -252,113 +253,12 @@ class Context7DocumentationDemo {
         if (!searchSuccess) {
           console.log('   ⚠️ All search tools failed - server may not support document search');
         }
-
       } catch (error) {
         console.log(`   ❌ Search failed: ${(error as Error).message}`);
       }
 
       // Add delay between queries
       await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-  }
-
-    console.log('\n🔎 Demonstrating Documentation Search...');
-
-    const client = this.mcp.getClient();
-
-    // First, try to resolve OpenCode library ID
-    console.log('\n🔍 Resolving OpenCode library ID...');
-    try {
-      const resolveResult = await client.sendRequest('tools/call', {
-        name: 'resolve-library-id',
-        arguments: {
-          libraryName: 'OpenCode',
-        },
-      });
-
-      console.log('✅ Resolve result received');
-      if (resolveResult && resolveResult.content) {
-        for (const content of resolveResult.content) {
-          if (content.type === 'text') {
-            console.log('📝 Resolution response:', content.text);
-            // Look for the first library ID in the text - should be /sst/opencode
-            const lines = content.text.split('\n');
-            let libraryId = null;
-            for (const line of lines) {
-              if (line.includes('Context7-compatible library ID:')) {
-                const idMatch = line.match(/Context7-compatible library ID:\s*(\/[^\/\s]+\/[^\/\s]+)/);
-                if (idMatch) {
-                  libraryId = idMatch[1];
-                  break;
-                }
-              }
-            }
-
-            if (libraryId) {
-              console.log(`🎯 Found OpenCode library ID: ${libraryId}`);
-
-              // Now fetch docs for this library
-              console.log('\n📚 Fetching OpenCode agent configuration docs...');
-              try {
-                const docsResult = await client.sendRequest('tools/call', {
-                  name: 'get-library-docs',
-                  arguments: {
-                    context7CompatibleLibraryID: libraryId,
-                    topic: 'agent prompting configuration',
-                    tokens: 2000
-                  }
-                });
-
-                console.log('✅ OpenCode docs fetched successfully');
-                if (docsResult && docsResult.content) {
-                  for (const content of docsResult.content) {
-                    if (content.type === 'text') {
-                      console.log('📖 Documentation content:');
-                      console.log(content.text);
-                    }
-                  }
-                }
-              } catch (docsError) {
-                console.log(`❌ Failed to fetch OpenCode docs: ${(docsError as Error).message}`);
-              }
-
-              break;
-            }
-                  }
-                }
-              } catch (docsError) {
-                console.log(`❌ Failed to fetch OpenCode docs: ${(docsError as Error).message}`);
-              }
-
-              break;
-            }
-          }
-        }
-      }
-    } catch (resolveError) {
-      console.log(`❌ Failed to resolve OpenCode library ID: ${(resolveError as Error).message}`);
-    }
-
-    // Try GitHub worktrees
-    console.log('\n🔍 Searching for GitHub worktrees...');
-    try {
-      const worktreesResult = await client.sendRequest('tools/call', {
-        name: 'resolve-library-id',
-        arguments: {
-          libraryName: 'GitHub worktrees',
-        },
-      });
-
-      console.log('✅ GitHub worktrees resolve result received');
-      if (worktreesResult && worktreesResult.content) {
-        for (const content of worktreesResult.content) {
-          if (content.type === 'text') {
-            console.log('📝 GitHub worktrees response:', content.text);
-          }
-        }
-      }
-    } catch (worktreesError) {
-      console.log(`❌ Failed to search GitHub worktrees: ${(worktreesError as Error).message}`);
     }
   }
 

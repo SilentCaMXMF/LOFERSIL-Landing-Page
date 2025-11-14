@@ -32,7 +32,7 @@ const isProduction =
 
   fs.mkdirSync('./dist', { recursive: true });
 
-  // Compile TypeScript
+  // Compile TypeScript (excludes .opencode directory - MCP tools are development-only)
   console.log('📝 Compiling TypeScript...');
   try {
     const tscCommand = isProduction ? 'npx tsc' : 'npx tsc --noEmitOnError';

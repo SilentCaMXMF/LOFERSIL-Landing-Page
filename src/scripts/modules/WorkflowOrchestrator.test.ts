@@ -218,37 +218,6 @@ describe('WorkflowOrchestrator', () => {
         reasoning: 'Rejected due to security issues',
       };
 
-      const mockCodeResult = {
-        success: true,
-        changes: [],
-        testsAdded: [],
-        validationResults: {
-          syntaxCheck: true,
-          typeCheck: true,
-          testsPass: true,
-          lintingPass: true,
-        },
-        reasoning: 'Success',
-        confidence: 0.9,
-        requiresHumanReview: false,
-      };
-
-      const mockReviewResult = {
-        overallAssessment: 'reject',
-        issues: [
-          {
-            severity: 'critical',
-            category: 'security',
-            description: 'Critical vulnerability',
-          },
-        ],
-        strengths: [],
-        recommendations: ['Fix security issue'],
-        confidence: 0.9,
-        requiresHumanReview: true,
-        reasoning: 'Rejected due to security issues',
-      };
-
       const IssueAnalyzerModule = await import('./IssueAnalyzer');
       const WorktreeManagerModule = await import('./WorktreeManager');
       const SWEResolverModule = await import('./SWEResolver');

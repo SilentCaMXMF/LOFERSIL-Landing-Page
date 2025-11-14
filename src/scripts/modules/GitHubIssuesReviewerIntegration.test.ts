@@ -8,6 +8,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { WorkflowOrchestrator, WorkflowState } from './WorkflowOrchestrator';
 import { GitHubIssuesReviewerConfigManager } from './GitHubIssuesReviewerConfig';
 import { SystemMonitor } from './MonitoringSystem';
+import { IssueAnalyzer } from './IssueAnalyzer';
 
 // Mock all external dependencies
 vi.mock('./IssueAnalyzer');
@@ -286,7 +287,6 @@ This is a test issue for integration testing.
       const IssueAnalyzerModule = await import('./IssueAnalyzer');
       const WorktreeManagerModule = await import('./WorktreeManager');
       const SWEResolverModule = await import('./SWEResolver');
-      const CodeReviewerModule = await import('./CodeReviewer');
       const CodeReviewerModule = await import('./CodeReviewer');
 
       const mockIssueAnalyzer = vi.mocked(IssueAnalyzer.prototype);
