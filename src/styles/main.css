@@ -1056,6 +1056,38 @@ img.lazy-loaded {
   min-height: 48px;
 }
 
+/* Dark Mode Styles for Hero Section */
+[data-theme='dark'] .hero {
+  background: linear-gradient(
+    135deg,
+    var(--section-bg-primary) 0%,
+    var(--section-bg-secondary) 100%
+  );
+}
+
+[data-theme='dark'] .hero-title {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .hero-subtitle {
+  color: var(--brand-primary-light);
+}
+
+[data-theme='dark'] .hero-description {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .btn-secondary {
+  background-color: var(--surface-bg);
+  color: var(--text-primary);
+  border-color: var(--surface-border);
+}
+
+[data-theme='dark'] .btn-secondary:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+}
+
 /* About Us Section */
 .about {
   padding: var(--section-padding);
@@ -1550,6 +1582,108 @@ img.lazy-loaded {
   color: var(--gray-400);
 }
 
+/* Dark Mode Styles for Sections */
+
+/* About Section */
+[data-theme='dark'] .about {
+  background-color: var(--section-bg-secondary);
+}
+
+[data-theme='dark'] .about-description {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .about-feature-text {
+  color: var(--text-primary);
+}
+
+/* Features Section */
+[data-theme='dark'] .features {
+  background-color: var(--section-bg-primary);
+}
+
+[data-theme='dark'] .section-title {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .section-subtitle {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .feature-card {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+  color: var(--card-text);
+}
+
+[data-theme='dark'] .feature-card:hover {
+  border-color: var(--brand-primary-light);
+}
+
+[data-theme='dark'] .feature-title {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .feature-description {
+  color: var(--text-secondary);
+}
+
+/* Products Showcase Section */
+[data-theme='dark'] .products-showcase {
+  background-color: var(--section-bg-secondary);
+}
+
+[data-theme='dark'] .product-category {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+[data-theme='dark'] .product-category-title {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .product-category-description {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .rating-text {
+  color: var(--text-muted);
+}
+
+[data-theme='dark'] .products-showcase-text {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .products-showcase-cta {
+  border-top-color: var(--surface-border);
+}
+
+/* Footer */
+[data-theme='dark'] .footer {
+  background-color: var(--gray-800);
+}
+
+[data-theme='dark'] .footer-description {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .footer-address {
+  color: var(--text-muted);
+}
+
+[data-theme='dark'] .footer-links a {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .footer-links a:hover {
+  color: var(--brand-primary-light);
+}
+
+[data-theme='dark'] .footer-bottom {
+  border-top-color: var(--surface-border);
+  color: var(--text-muted);
+}
+
 /* Form Validation Styles */
 .form-errors {
   display: none;
@@ -1836,6 +1970,103 @@ img.lazy-loaded {
   .form-actions {
     margin-top: var(--space-6);
   }
+}
+
+/* Dark Mode Styles for Forms */
+
+/* Form Validation Styles */
+[data-theme='dark'] .form-errors {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+[data-theme='dark'] .form-errors[role='status'] {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #86efac;
+}
+
+/* Form Fields */
+[data-theme='dark'] .form-field label {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .form-field input,
+[data-theme='dark'] .form-field textarea,
+[data-theme='dark'] .form-field select {
+  border-bottom-color: var(--surface-border);
+  color: var(--text-primary);
+  background-color: var(--surface-bg);
+}
+
+[data-theme='dark'] .form-field input:focus,
+[data-theme='dark'] .form-field textarea:focus,
+[data-theme='dark'] .form-field select:focus {
+  border-bottom-color: var(--brand-primary-light);
+  box-shadow: 0 1px 0 0 var(--brand-primary-light);
+}
+
+[data-theme='dark'] .form-field input::placeholder,
+[data-theme='dark'] .form-field textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Contact Form Section */
+[data-theme='dark'] .contact-form {
+  background-color: var(--section-bg-secondary);
+}
+
+[data-theme='dark'] .contact-form-element {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+/* Form Labels */
+[data-theme='dark'] .form-label {
+  color: var(--text-primary);
+}
+
+/* Form Inputs */
+[data-theme='dark'] .form-input,
+[data-theme='dark'] .form-textarea {
+  color: var(--text-primary);
+  background-color: var(--surface-bg);
+  border-bottom-color: var(--surface-border);
+}
+
+[data-theme='dark'] .form-input:focus,
+[data-theme='dark'] .form-textarea:focus {
+  border-bottom-color: var(--brand-primary-light);
+  box-shadow: 0 1px 0 0 var(--brand-primary-light);
+}
+
+[data-theme='dark'] .form-input::placeholder,
+[data-theme='dark'] .form-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+[data-theme='dark'] .form-input.error,
+[data-theme='dark'] .form-textarea.error {
+  border-color: var(--error-color);
+}
+
+[data-theme='dark'] .form-input.error:focus,
+[data-theme='dark'] .form-textarea.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Form Messages */
+[data-theme='dark'] .form-success {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #86efac;
+}
+
+[data-theme='dark'] .form-error-message {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
 }
 
 /* Privacy Policy Styles */

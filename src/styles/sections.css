@@ -491,3 +491,105 @@
   text-align: center;
   color: var(--gray-400);
 }
+
+/* Dark Mode Styles for Sections */
+
+/* About Section */
+[data-theme='dark'] .about {
+  background-color: var(--section-bg-secondary);
+}
+
+[data-theme='dark'] .about-description {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .about-feature-text {
+  color: var(--text-primary);
+}
+
+/* Features Section */
+[data-theme='dark'] .features {
+  background-color: var(--section-bg-primary);
+}
+
+[data-theme='dark'] .section-title {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .section-subtitle {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .feature-card {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+  color: var(--card-text);
+}
+
+[data-theme='dark'] .feature-card:hover {
+  border-color: var(--brand-primary-light);
+}
+
+[data-theme='dark'] .feature-title {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .feature-description {
+  color: var(--text-secondary);
+}
+
+/* Products Showcase Section */
+[data-theme='dark'] .products-showcase {
+  background-color: var(--section-bg-secondary);
+}
+
+[data-theme='dark'] .product-category {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+[data-theme='dark'] .product-category-title {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .product-category-description {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .rating-text {
+  color: var(--text-muted);
+}
+
+[data-theme='dark'] .products-showcase-text {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .products-showcase-cta {
+  border-top-color: var(--surface-border);
+}
+
+/* Footer */
+[data-theme='dark'] .footer {
+  background-color: var(--gray-800);
+}
+
+[data-theme='dark'] .footer-description {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .footer-address {
+  color: var(--text-muted);
+}
+
+[data-theme='dark'] .footer-links a {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] .footer-links a:hover {
+  color: var(--brand-primary-light);
+}
+
+[data-theme='dark'] .footer-bottom {
+  border-top-color: var(--surface-border);
+  color: var(--text-muted);
+}
