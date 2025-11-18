@@ -309,28 +309,40 @@ const isProduction =
     const imagesDir = './dist/images';
     if (fs.existsSync(imagesDir)) {
       const imageFiles = fs.readdirSync(imagesDir).filter(file => /\.(jpg|jpeg|png)$/i.test(file));
-      for (const file of imageFiles) {
-        try {
-          const inputPath = path.join(imagesDir, file);
-          const baseName = path.parse(file).name;
-          const webpBase = path.join(imagesDir, baseName);
 
-          // Create responsive WebP versions
-          const sizes = [400, 800, 1200];
-          for (const size of sizes) {
-            await sharp(inputPath)
-              .resize(size, null, { withoutEnlargement: true })
-              .webp({ quality: 80 })
-              .toFile(`${webpBase}-${size}w.webp`);
+      // Process images in parallel batches to avoid overwhelming the system
+      const batchSize = 3; // Process 3 images at a time
+      for (let i = 0; i < imageFiles.length; i += batchSize) {
+        const batch = imageFiles.slice(i, i + batchSize);
+        const batchPromises = batch.map(async file => {
+          try {
+            const inputPath = path.join(imagesDir, file);
+            const baseName = path.parse(file).name;
+            const webpBase = path.join(imagesDir, baseName);
+
+            // Create responsive WebP versions and full-size WebP in parallel
+            const sizes = [400, 800, 1200];
+            const sizePromises = sizes.map(size =>
+              sharp(inputPath)
+                .resize(size, null, { withoutEnlargement: true })
+                .webp({ quality: 80 })
+                .toFile(`${webpBase}-${size}w.webp`)
+            );
+
+            // Add full-size WebP conversion
+            sizePromises.push(sharp(inputPath).webp({ quality: 80 }).toFile(`${webpBase}.webp`));
+
+            // Wait for all conversions for this image to complete
+            await Promise.all(sizePromises);
+
+            console.log(`✅ Optimized ${file}`);
+          } catch (error) {
+            console.warn(`⚠️ Failed to optimize ${file}: ${error.message}`);
           }
+        });
 
-          // Also create a full-size WebP
-          await sharp(inputPath).webp({ quality: 80 }).toFile(`${webpBase}.webp`);
-
-          console.log(`✅ Optimized ${file}`);
-        } catch (error) {
-          console.warn(`⚠️ Failed to optimize ${file}: ${error.message}`);
-        }
+        // Wait for the current batch to complete before starting the next
+        await Promise.all(batchPromises);
       }
     }
   };

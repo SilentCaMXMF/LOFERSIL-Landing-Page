@@ -144,6 +144,15 @@ export const mockCloudflareFetch = (
     } as Response);
   }
 
+  // Mock transform endpoint
+  if (url === 'mock-transform-url' && method === 'GET') {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ success: true }),
+    } as Response);
+  }
+
   // Mock network error
   if (url.includes('network-error')) {
     return Promise.reject(new Error('Network error'));

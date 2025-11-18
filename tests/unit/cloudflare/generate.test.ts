@@ -12,8 +12,8 @@ import {
 } from './test-helpers.js';
 import { createMockImageGenerationService } from './mocks.js';
 
-// Mock the actual image generation module (assuming it exists)
-vi.mock('../../../src/scripts/modules/cloudflare/generate.js', () => ({
+// Mock the actual image generation module
+vi.mock('../../../src/scripts/modules/cloudflare/generate.ts', () => ({
   ImageGenerationService: createMockImageGenerationService(),
 }));
 
@@ -125,10 +125,6 @@ describe('Cloudflare Image Generation', () => {
     it('should handle API rate limiting', async () => {
       // Arrange
       const request = createMockImageRequest({ prompt: 'rate-limit test' });
-
-      // Act & Assert
-      await expect(imageGenService.generateImage(request.prompt)).rejects.toThrow('Rate limited');
-    });
 
       // Act & Assert
       await expect(imageGenService.generateImage(request.prompt)).rejects.toThrow('Rate limited');
@@ -253,7 +249,9 @@ describe('Cloudflare Image Generation', () => {
       const request = createMockImageRequest({ prompt: 'server-error test' });
 
       // Act & Assert
-      await expect(imageGenService.generateImage(request.prompt)).rejects.toThrow('Internal server error');
+      await expect(imageGenService.generateImage(request.prompt)).rejects.toThrow(
+        'Internal server error'
+      );
     });
 
     it('should handle malformed API responses', async () => {
@@ -261,7 +259,9 @@ describe('Cloudflare Image Generation', () => {
       const request = createMockImageRequest({ prompt: 'malformed test' });
 
       // Act & Assert
-      await expect(imageGenService.generateImage(request.prompt)).rejects.toThrow('Invalid response');
+      await expect(imageGenService.generateImage(request.prompt)).rejects.toThrow(
+        'Invalid response'
+      );
     });
 
     it('should handle network connectivity issues', async () => {
@@ -270,43 +270,6 @@ describe('Cloudflare Image Generation', () => {
 
       // Act & Assert
       await expect(imageGenService.generateImage(request.prompt)).rejects.toThrow('Network error');
-    });
-  });
-
-      // Act & Assert
-      await expect(imageGenService.generateImage('test')).rejects.toThrow('Unauthorized');
-    });
-
-    it('should handle API server errors', async () => {
-      // Arrange
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: false,
-        status: 500,
-        json: () => Promise.resolve({ error: 'Internal server error' }),
-      });
-
-      // Act & Assert
-      await expect(imageGenService.generateImage('test')).rejects.toThrow('Internal server error');
-    });
-
-    it('should handle malformed API responses', async () => {
-      // Arrange
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve({ invalid: 'response' }),
-      });
-
-      // Act & Assert
-      await expect(imageGenService.generateImage('test')).rejects.toThrow();
-    });
-
-    it('should handle network connectivity issues', async () => {
-      // Arrange
-      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
-
-      // Act & Assert
-      await expect(imageGenService.generateImage('test')).rejects.toThrow('Network error');
     });
   });
 });

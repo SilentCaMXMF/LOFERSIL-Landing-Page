@@ -445,7 +445,7 @@ export class SystemMonitor {
     };
 
     this.metricsCollector.incrementCounter('workflow_total', labels);
-    this.metricsCollector.recordTiming('workflow_duration', result.totalDuration, labels);
+    this.metricsCollector.recordTiming('workflow', result.totalDuration, labels);
 
     if (result.issueAnalysis) {
       this.metricsCollector.incrementCounter('issues_processed', {

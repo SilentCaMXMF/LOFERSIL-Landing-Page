@@ -15,6 +15,7 @@ vi.mock('./IssueAnalyzer');
 vi.mock('./WorktreeManager');
 vi.mock('./SWEResolver');
 vi.mock('./CodeReviewer');
+vi.mock('./EnvironmentLoader');
 
 // Mock GitHub API
 global.fetch = vi.fn();
@@ -24,8 +25,28 @@ describe('GitHub Issues Reviewer Integration', () => {
   let configManager: GitHubIssuesReviewerConfigManager;
   let monitor: SystemMonitor;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+
+    // Mock EnvironmentLoader before creating configManager
+    const { envLoader } = await import('./EnvironmentLoader');
+    vi.mocked(envLoader).getRequired.mockImplementation((key: any) => {
+      const mockValues: Record<string, string> = {
+        GITHUB_TOKEN: 'test-token',
+        GITHUB_REPOSITORY: 'test/repo',
+        OPENAI_API_KEY: 'test-key',
+      };
+      return mockValues[key] || '';
+    });
+    vi.mocked(envLoader).get.mockImplementation((key: any) => {
+      const mockValues: Record<string, string> = {
+        GITHUB_API_URL: 'https://api.github.com',
+        OPENAI_MODEL: 'gpt-4',
+        WORKTREE_ROOT_DIR: '.git/ai-worktrees',
+        MAIN_BRANCH: 'main',
+      };
+      return mockValues[key] || undefined;
+    });
 
     // Setup configuration
     configManager = new GitHubIssuesReviewerConfigManager({
@@ -38,11 +59,12 @@ describe('GitHub Issues Reviewer Integration', () => {
       },
     });
 
-    // Setup orchestrator
+    // Setup orchestrator with short timeout for tests
     orchestrator = new WorkflowOrchestrator({
       githubToken: 'test-token',
       repository: 'test/repo',
       openaiApiKey: 'test-key',
+      timeout: 1000, // 1 second timeout for tests
     });
 
     // Setup monitor
@@ -268,13 +290,22 @@ This is a test issue for integration testing.
     });
 
     it('should handle workflow failures and recovery', async () => {
-      const { IssueAnalyzer } = await import('./IssueAnalyzer');
-      const mockIssueAnalyzer = vi.mocked(IssueAnalyzer.prototype);
+      // Create orchestrator with no retries for fast failure
+      const failingOrchestrator = new WorkflowOrchestrator({
+        githubToken: 'test-token',
+        repository: 'test/repo',
+        openaiApiKey: 'test-key',
+        maxRetries: 0,
+        retryDelay: 0,
+        timeout: 1000,
+      });
 
-      // Mock API failure
-      mockIssueAnalyzer.analyzeIssue.mockRejectedValue(new Error('GitHub API rate limited'));
+      // Mock the instance method to fail
+      (failingOrchestrator as any).issueAnalyzer.analyzeIssue.mockRejectedValue(
+        new Error('GitHub API rate limited')
+      );
 
-      const result = await orchestrator.executeWorkflow(999);
+      const result = await failingOrchestrator.executeWorkflow(999);
 
       expect(result.success).toBe(false);
       expect(result.finalState).toBe(WorkflowState.FAILED);

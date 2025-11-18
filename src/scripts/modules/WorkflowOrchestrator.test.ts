@@ -24,6 +24,7 @@ describe('WorkflowOrchestrator', () => {
       githubToken: 'test-github-token',
       repository: 'owner/repo',
       openaiApiKey: 'test-openai-key',
+      retryDelay: 0,
     });
   });
 
@@ -146,12 +147,21 @@ describe('WorkflowOrchestrator', () => {
     });
 
     it('should handle workflow failures', async () => {
-      const { IssueAnalyzer } = await import('./IssueAnalyzer');
-      const mockIssueAnalyzer = vi.mocked(IssueAnalyzer.prototype);
+      // Create orchestrator with no retries for fast failure
+      const failingOrchestrator = new WorkflowOrchestrator({
+        githubToken: 'test-github-token',
+        repository: 'owner/repo',
+        openaiApiKey: 'test-openai-key',
+        maxRetries: 0,
+        retryDelay: 0,
+      });
 
-      mockIssueAnalyzer.analyzeIssue.mockRejectedValue(new Error('API rate limited'));
+      // Mock the instance method to fail
+      (failingOrchestrator as any).issueAnalyzer.analyzeIssue.mockRejectedValue(
+        new Error('API rate limited')
+      );
 
-      const result = await orchestrator.executeWorkflow(789);
+      const result = await failingOrchestrator.executeWorkflow(789);
 
       expect(result.success).toBe(false);
       expect(result.finalState).toBe(WorkflowState.FAILED);

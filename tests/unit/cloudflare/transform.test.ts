@@ -12,8 +12,8 @@ import {
 } from './test-helpers.js';
 import { createMockImageTransformationService } from './mocks.js';
 
-// Mock the actual image transformation module (assuming it exists)
-vi.mock('../../../src/scripts/modules/cloudflare/transform.js', () => ({
+// Mock the actual image transformation module
+vi.mock('../../../src/scripts/modules/cloudflare/transform.ts', () => ({
   ImageTransformationService: createMockImageTransformationService(),
 }));
 

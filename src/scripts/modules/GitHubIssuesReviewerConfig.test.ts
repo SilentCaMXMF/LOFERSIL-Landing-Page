@@ -23,7 +23,7 @@ vi.mock('./EnvironmentLoader', () => ({
         WORKTREE_ROOT_DIR: '.git/ai-worktrees',
         MAIN_BRANCH: 'main',
       };
-      return mockValues[key] || null;
+      return mockValues[key] || undefined;
     }),
   },
 }));

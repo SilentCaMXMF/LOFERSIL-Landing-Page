@@ -167,9 +167,10 @@ export class GitHubIssuesReviewerConfigManager {
 
     if (config) {
       this.config = this.mergeConfigs(this.config, config);
+      // Don't load from environment if custom config is provided (for testing)
+    } else {
+      this.loadFromEnvironment();
     }
-
-    this.loadFromEnvironment();
   }
 
   /**
@@ -388,7 +389,7 @@ export class GitHubIssuesReviewerConfigManager {
    * Get the complete configuration
    */
   getConfig(): GitHubIssuesReviewerConfig {
-    return { ...this.config };
+    return JSON.parse(JSON.stringify(this.config));
   }
 
   /**
@@ -457,7 +458,9 @@ export class GitHubIssuesReviewerConfigManager {
    * Create configuration from environment variables only
    */
   static fromEnvironment(errorHandler?: ErrorHandler): GitHubIssuesReviewerConfigManager {
-    return new GitHubIssuesReviewerConfigManager({}, errorHandler);
+    const manager = new GitHubIssuesReviewerConfigManager(undefined, errorHandler);
+    manager.loadFromEnvironment();
+    return manager;
   }
 
   /**

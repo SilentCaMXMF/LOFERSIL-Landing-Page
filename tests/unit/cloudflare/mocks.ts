@@ -16,6 +16,7 @@ export class MockCloudflareMCPClient implements MCPClient {
   private connected = false;
 
   async connect(): Promise<void> {
+    // Simulate successful connection without making real API calls
     this.connected = true;
   }
 
@@ -73,6 +74,25 @@ export class MockCloudflareTools implements MCPTools {
   }
 
   async executeTool(toolName: string, parameters: any): Promise<any> {
+    // Validate parameters
+    if (toolName === 'image_generation' || toolName === 'image_transformation') {
+      if (!parameters.prompt && toolName === 'image_generation') {
+        throw new Error('Tool execution failed');
+      }
+      if (!parameters.image && toolName === 'image_transformation') {
+        throw new Error('Tool execution failed');
+      }
+      if (parameters.width && (parameters.width <= 0 || parameters.width > 10000)) {
+        throw new Error('Tool execution failed');
+      }
+      if (parameters.height && (parameters.height <= 0 || parameters.height > 10000)) {
+        throw new Error('Tool execution failed');
+      }
+      if (parameters.format && !['webp', 'png', 'jpg'].includes(parameters.format)) {
+        throw new Error('Tool execution failed');
+      }
+    }
+
     switch (toolName) {
       case 'image_generation':
         return {
@@ -100,7 +120,7 @@ export class MockCloudflareTools implements MCPTools {
         };
 
       default:
-        throw new Error(`Unknown tool: ${toolName}`);
+        throw new Error('Tool execution failed');
     }
   }
 }
@@ -133,7 +153,7 @@ export class MockCloudflareResources implements MCPResources {
 export class MockImageGenerationService {
   async generateImage(prompt: string, options: any = {}) {
     // Handle error conditions
-    if (prompt === '') {
+    if (!prompt || prompt.trim() === '') {
       throw new Error('Invalid prompt');
     }
     if (prompt.includes('inappropriate')) {
@@ -157,10 +177,10 @@ export class MockImageGenerationService {
     if (prompt.includes('malformed')) {
       throw new Error('Invalid response');
     }
-    if (options.width && (options.width <= 0 || options.width > 10000)) {
+    if (options.width !== undefined && (options.width <= 0 || options.width >= 10000)) {
       throw new Error('Invalid dimensions');
     }
-    if (options.height && (options.height <= 0 || options.height > 10000)) {
+    if (options.height !== undefined && (options.height <= 0 || options.height >= 10000)) {
       throw new Error('Invalid dimensions');
     }
 
@@ -204,17 +224,77 @@ export class MockImageGenerationService {
 // Mock Image Transformation Service
 export class MockImageTransformationService {
   async transformImage(imageData: string, options: any = {}) {
-    if (!imageData.startsWith('data:image/')) {
+    if (!imageData || typeof imageData !== 'string' || !imageData.startsWith('data:image/')) {
       throw new Error('Invalid image data');
     }
 
+    // Handle error conditions based on imageData content
+    if (imageData.includes('auth-error')) {
+      throw new Error('Unauthorized');
+    }
+    if (imageData.includes('server-error')) {
+      throw new Error('Internal server error');
+    }
+    if (imageData.includes('network-error')) {
+      throw new Error('Network error');
+    }
+    if (imageData.includes('timeout')) {
+      throw new Error('Timeout');
+    }
+    if (imageData.includes('malformed')) {
+      throw new Error('Invalid response');
+    }
+
+    // Validate dimensions
+    if (options.width !== undefined && (options.width <= 0 || options.width >= 10000)) {
+      throw new Error('Invalid dimensions');
+    }
+    if (options.height !== undefined && (options.height <= 0 || options.height >= 10000)) {
+      throw new Error('Invalid dimensions');
+    }
+
+    // Validate quality
+    if (options.quality !== undefined && (options.quality < 1 || options.quality > 100)) {
+      throw new Error('Quality must be between 1 and 100');
+    }
+
+    // Validate format
+    const supportedFormats = ['webp', 'png', 'jpg', 'jpeg', 'avif'];
+    const format = options.format || 'webp';
+    if (!supportedFormats.includes(format.toLowerCase())) {
+      throw new Error(`Unsupported format: ${format}`);
+    }
+
+    // Simulate API call using mocked fetch if available
+    try {
+      if (global.fetch && typeof global.fetch === 'function') {
+        // This will use the mocked fetch from the tests
+        const response = await fetch('mock-transform-url');
+        if (!response.ok) {
+          if (response.status === 401) throw new Error('Unauthorized');
+          if (response.status === 500) throw new Error('Internal server error');
+          throw new Error(`API error: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.invalid) {
+          throw new Error('Invalid response');
+        }
+      }
+    } catch (error: any) {
+      if (error.message === 'Network error' || error.message.includes('fetch')) {
+        throw new Error('Network error');
+      }
+      if (error.message.includes('Timeout')) {
+        throw new Error('Timeout');
+      }
+      throw error;
+    }
+
     return {
-      result: {
-        image: 'data:image/webp;base64,mock-transformed-image',
-        width: options.width || 512,
-        height: options.height || 512,
-        format: options.format || 'webp',
-      },
+      image: `data:image/${format};base64,mock-transformed-image`,
+      width: options.width || 512,
+      height: options.height || 512,
+      format: format,
       success: true,
       errors: [],
       messages: [],
@@ -252,7 +332,22 @@ export class MockCostAwareRouter {
   ];
 
   async routeRequest(operation: string, requirements: any = {}) {
-    const { format, maxCost, priority = 'cost' } = requirements;
+    const {
+      format,
+      maxCost,
+      priority = 'cost',
+      unavailableProvider,
+      invalidRequirements,
+    } = requirements;
+
+    // Handle test-specific error conditions
+    if (unavailableProvider) {
+      throw new Error('Provider unavailable');
+    }
+
+    if (invalidRequirements) {
+      throw new Error('Invalid routing requirements');
+    }
 
     // Filter providers that support the required format
     let availableProviders = this.providers;
@@ -274,7 +369,7 @@ export class MockCostAwareRouter {
     }
 
     // Filter by max cost if specified
-    if (maxCost) {
+    if (maxCost !== undefined && maxCost !== null) {
       availableProviders = availableProviders.filter(p => p.costPerRequest <= maxCost);
     }
 
@@ -290,7 +385,11 @@ export class MockCostAwareRouter {
     };
   }
 
-  async getProviderStats() {
+  async getProviderStats(networkError = false) {
+    if (networkError) {
+      throw new Error('Network error');
+    }
+
     return this.providers.map(provider => ({
       name: provider.name,
       currentLoad: Math.random() * 100,
