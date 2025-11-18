@@ -186,6 +186,13 @@
   text-align: center;
 }
 
+/* Honeypot field for bot protection */
+.honeypot-field {
+  position: absolute;
+  left: -9999px;
+  visibility: hidden;
+}
+
 /* Form Messages */
 .form-error {
   font-size: var(--text-sm);

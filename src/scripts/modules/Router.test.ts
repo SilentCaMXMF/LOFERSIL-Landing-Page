@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Router } from './Router.js';
-import { ErrorHandler } from './ErrorHandler.js';
+import { ErrorHandler } from './ErrorManager';
 import { TranslationManager } from './TranslationManager.js';
 import { NavigationManager } from './NavigationManager.js';
 

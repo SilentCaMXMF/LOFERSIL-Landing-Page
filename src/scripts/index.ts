@@ -6,9 +6,10 @@ import { ContactRequest, ContactResponse } from './types.js';
 import { TranslationManager } from './modules/TranslationManager.js';
 import { NavigationManager } from './modules/NavigationManager.js';
 import { ContactFormManager } from './modules/ContactFormManager.js';
+import { envLoader } from './modules/EnvironmentLoader.js';
 
 import { PerformanceTracker } from './modules/PerformanceTracker.js';
-import { ErrorHandler } from './modules/ErrorHandler.js';
+import { ErrorManager } from './modules/ErrorManager.js';
 import { SEOManager } from './modules/SEOManager.js';
 import { ScrollManager } from './modules/ScrollManager.js';
 import { Logger } from './modules/Logger.js';
@@ -35,7 +36,7 @@ class LOFERSILLandingPage {
   private translationManager!: TranslationManager;
   private navigationManager!: NavigationManager;
   private performanceTracker!: PerformanceTracker;
-  private errorHandler!: ErrorHandler;
+  private errorHandler!: ErrorManager;
   private seoManager!: SEOManager;
   private scrollManager!: ScrollManager;
   private logger!: Logger;
@@ -58,7 +59,7 @@ class LOFERSILLandingPage {
     try {
       this.setupDOMElements();
       // Initialize error handler
-      this.errorHandler = new ErrorHandler();
+      this.errorHandler = new ErrorManager();
       // Initialize logger
       this.logger = Logger.getInstance();
       // Initialize event manager
@@ -112,8 +113,8 @@ class LOFERSILLandingPage {
     } catch (error) {
       this.errorHandler.handleError(error, 'Application initialization failed', {
         component: 'LOFERSILLandingPage',
-        action: 'initializeApp',
-        timestamp: new Date().toISOString(),
+        operation: 'initializeApp',
+        timestamp: new Date(),
       });
     }
   }
@@ -149,7 +150,7 @@ class LOFERSILLandingPage {
    */
   async submitContact(request: ContactRequest): Promise<ContactResponse> {
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(envLoader.get('CONTACT_API_ENDPOINT') || '/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -163,8 +164,8 @@ class LOFERSILLandingPage {
     } catch (error) {
       this.errorHandler.handleError(error, 'Contact form submission failed', {
         component: 'LOFERSILLandingPage',
-        action: 'submitContact',
-        timestamp: new Date().toISOString(),
+        operation: 'submitContact',
+        timestamp: new Date(),
       });
       return {
         success: false,
@@ -192,8 +193,8 @@ class LOFERSILLandingPage {
             } catch (error) {
               this.errorHandler.handleError(error, 'Failed to load contact form manager', {
                 component: 'LOFERSILLandingPage',
-                action: 'initializeContactFormLazily',
-                timestamp: new Date().toISOString(),
+                operation: 'initializeContactFormLazily',
+                timestamp: new Date(),
               });
             }
           }
@@ -209,8 +210,8 @@ class LOFERSILLandingPage {
       } catch (error) {
         this.errorHandler.handleError(error, 'Failed to load contact form manager', {
           component: 'LOFERSILLandingPage',
-          action: 'initializeContactFormLazily',
-          timestamp: new Date().toISOString(),
+          operation: 'initializeContactFormLazily',
+          timestamp: new Date(),
         });
       }
     }
@@ -228,8 +229,8 @@ class LOFERSILLandingPage {
       } catch (error) {
         this.errorHandler.handleError(error, 'Service worker registration failed', {
           component: 'LOFERSILLandingPage',
-          action: 'registerServiceWorker',
-          timestamp: new Date().toISOString(),
+          operation: 'registerServiceWorker',
+          timestamp: new Date(),
         });
       }
     }

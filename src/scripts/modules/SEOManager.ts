@@ -3,7 +3,7 @@
  * Manages SEO-related functionality including meta tags and structured data
  */
 
-import { ErrorHandler } from './ErrorHandler.js';
+import { ErrorManager } from './ErrorManager.js';
 
 /**
  * SEO configuration interface
@@ -33,9 +33,9 @@ interface MetaTagOptions {
  */
 export class SEOManager {
   private config: SEOConfig;
-  private errorHandler: ErrorHandler;
+  private errorHandler: ErrorManager;
 
-  constructor(config: SEOConfig, errorHandler: ErrorHandler) {
+  constructor(config: SEOConfig, errorHandler: ErrorManager) {
     this.config = config;
     this.errorHandler = errorHandler;
     this.setupSEO();

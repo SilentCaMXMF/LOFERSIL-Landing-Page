@@ -3,8 +3,9 @@
  * Manages UI state, scroll effects, and user interactions
  */
 
-import { ErrorHandler } from './ErrorHandler.js';
+import { ErrorManager } from './ErrorManager.js';
 import { validateContactForm, ContactFormValidator } from '../validation.js';
+import { envLoader } from './EnvironmentLoader.js';
 
 // API Types
 interface ContactRequest {
@@ -35,10 +36,10 @@ interface UIConfig {
 export class UIManager {
   private navbar: HTMLElement | null = null;
   private config: UIConfig;
-  private errorHandler: ErrorHandler;
+  private errorHandler: ErrorManager;
   private ticking: boolean = false;
 
-  constructor(config: UIConfig, errorHandler: ErrorHandler) {
+  constructor(config: UIConfig, errorHandler: ErrorManager) {
     this.config = config;
     this.errorHandler = errorHandler;
     this.setupDOMElements();
@@ -58,8 +59,8 @@ export class UIManager {
     } catch (error) {
       this.errorHandler.handleError(error, 'Failed to setup DOM elements', {
         component: 'UIManager',
-        action: 'setupDOMElements',
-        timestamp: new Date().toISOString(),
+        operation: 'setupDOMElements',
+        timestamp: new Date(),
       });
     }
   }
@@ -167,7 +168,7 @@ export class UIManager {
     }
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(envLoader.get('CONTACT_API_ENDPOINT') || '/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

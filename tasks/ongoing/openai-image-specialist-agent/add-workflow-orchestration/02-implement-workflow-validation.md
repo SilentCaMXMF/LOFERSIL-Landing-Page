@@ -43,5 +43,5 @@ validation:
 
 notes:
 
-- Use existing ErrorHandler module for consistent error handling.
+- Use existing ErrorManager module for consistent error handling, recovery, and monitoring.
 - Validation should be non-destructive and return detailed feedback.

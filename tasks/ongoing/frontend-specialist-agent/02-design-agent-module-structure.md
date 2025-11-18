@@ -81,7 +81,7 @@ FrontendSpecialistAgent (Main Coordinator)
 │   ├── UIManagerBridge (Integration with existing UIManager)
 │   ├── PerformanceTrackerBridge (Integration with PerformanceTracker)
 │   ├── ThemeManagerBridge (Integration with ThemeManager)
-│   └── ErrorHandlerBridge (Integration with ErrorHandler)
+│   └── ErrorManagerBridge (Integration with ErrorManager)
 └── Utilities
     ├── DOMAnalyzer (DOM analysis tools)
     ├── CSSAnalyzer (CSS analysis and optimization)
@@ -92,6 +92,7 @@ FrontendSpecialistAgent (Main Coordinator)
 ### Core Module Specifications
 
 #### AgentConfig
+
 ```typescript
 interface FrontendSpecialistConfig {
   enabled: boolean;
@@ -128,6 +129,7 @@ class AgentConfig {
 ```
 
 #### AgentState
+
 ```typescript
 interface AgentState {
   initialized: boolean;
@@ -150,6 +152,7 @@ class AgentState {
 ### Specialist Module Interfaces
 
 #### ComponentGenerator
+
 ```typescript
 interface ComponentSpec {
   type: 'button' | 'card' | 'form' | 'modal' | 'navigation';
@@ -168,6 +171,7 @@ interface ComponentGenerator {
 ```
 
 #### ResponsiveHelper
+
 ```typescript
 interface ResponsiveConfig {
   breakpoints: BreakpointConfig;
@@ -184,6 +188,7 @@ interface ResponsiveHelper {
 ```
 
 #### PerformanceOptimizer
+
 ```typescript
 interface PerformanceMetrics {
   lcp: number;
@@ -202,6 +207,7 @@ interface PerformanceOptimizer {
 ```
 
 #### AccessibilityAuditor
+
 ```typescript
 interface AccessibilityIssue {
   type: 'color-contrast' | 'missing-alt' | 'keyboard-navigation' | 'aria-invalid';
@@ -222,6 +228,7 @@ interface AccessibilityAuditor {
 ### Integration Layer Design
 
 #### Bridge Pattern Implementation
+
 Each bridge integrates with existing modules while providing agent-specific enhancements:
 
 ```typescript
@@ -245,6 +252,7 @@ class UIManagerBridge extends ModuleBridge<UIManager> {
 ### Configuration and Extensibility
 
 #### Plugin System
+
 ```typescript
 interface AgentPlugin {
   name: string;
@@ -265,6 +273,7 @@ class AgentRegistry {
 ### State Management and Persistence
 
 #### State Persistence Strategy
+
 - Local storage for user preferences and configuration
 - Session storage for temporary state
 - IndexedDB for large analysis results and caches
@@ -273,6 +282,7 @@ class AgentRegistry {
 ### Error Handling Integration
 
 #### Error Boundary Pattern
+
 ```typescript
 class AgentErrorBoundary {
   catch(error: Error, context: ErrorContext): void;
@@ -284,6 +294,7 @@ class AgentErrorBoundary {
 ### Testing Infrastructure
 
 #### Testing Interfaces
+
 ```typescript
 interface TestRunner {
   runTests(suite: TestSuite): Promise<TestResult[]>;
@@ -301,6 +312,7 @@ interface MockSystem {
 ### Build System Integration
 
 #### Build Plugin Interface
+
 ```typescript
 interface BuildPlugin {
   name: string;
@@ -338,7 +350,7 @@ src/scripts/modules/frontend-specialist/
 │   ├── UIManagerBridge.ts
 │   ├── PerformanceTrackerBridge.ts
 │   ├── ThemeManagerBridge.ts
-│   └── ErrorHandlerBridge.ts
+│   └── ErrorManagerBridge.ts
 ├── utils/
 │   ├── DOMAnalyzer.ts
 │   ├── CSSAnalyzer.ts

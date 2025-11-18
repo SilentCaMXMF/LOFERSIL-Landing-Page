@@ -1,6 +1,8 @@
 # AI-Powered GitHub Issues Reviewer
 
-An autonomous system that analyzes GitHub issues, generates solutions using AI agents, and creates pull requests for review. This system integrates multiple specialized agents to provide end-to-end automated issue resolution.
+**Note: This feature has been removed as it was not needed for the landing page functionality.**
+
+This was previously an autonomous system that analyzed GitHub issues, generated solutions using AI agents, and created pull requests for review.
 
 ## Overview
 
@@ -246,7 +248,7 @@ console.log(`Success rate: ${metrics.successRate}`);
 ### System Health
 
 ```typescript
-import { SystemMonitor } from './src/scripts/modules/MonitoringSystem';
+import { SystemMonitor } from './src/scripts/modules/ErrorManager';
 
 const monitor = new SystemMonitor();
 
@@ -276,7 +278,7 @@ console.log(`Success rate: ${metrics.successRate}`);
 The system includes automatic circuit breakers to prevent cascade failures:
 
 ```typescript
-import { ErrorRecoveryManager } from './src/scripts/modules/ErrorRecoverySystem';
+import { ErrorRecoveryManager } from './src/scripts/modules/ErrorManager';
 
 const recoveryManager = new ErrorRecoveryManager();
 

@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UIManager } from './UIManager.js';
-import { ErrorHandler } from './ErrorHandler.js';
+import { ErrorHandler } from './ErrorManager';
 
 describe('UIManager', () => {
   let uiManager: UIManager;
@@ -13,6 +13,17 @@ describe('UIManager', () => {
 
   beforeEach(() => {
     mockErrorHandler = { handleError: vi.fn() } as any;
+
+    (global as any).IntersectionObserver = class MockIntersectionObserver {
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+    };
+
+    (global as any).MutationObserver = class MockMutationObserver {
+      observe = vi.fn();
+      disconnect = vi.fn();
+    };
 
     global.document = {
       querySelector: vi.fn(),

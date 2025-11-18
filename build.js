@@ -406,7 +406,13 @@ const isProduction =
   // Generate sitemap
   console.log('🗺️ Generating sitemap...');
   const baseUrl =
-    process.env.WEBSITE_URL || (isProduction ? 'https://lofersil.vercel.app' : 'http://localhost');
+    process.env.WEBSITE_URL ||
+    (isProduction
+      ? (() => {
+          console.error('❌ WEBSITE_URL environment variable is required for production builds');
+          process.exit(1);
+        })()
+      : 'http://localhost');
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>

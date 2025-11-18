@@ -40,12 +40,6 @@ cp .env.example .env
 - `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
 - Used for automated deployments
 
-### 🤖 AI & API Keys
-
-- `GEMINI_API_KEY`, `OPENAI_API_KEY`, `CONTEXT7_API_KEY`, `CLOUDFLARE_API_TOKEN`
-- Required for AI-powered features
-- `CLOUDFLARE_ACCOUNT_ID` - Cloudflare account identifier
-
 ### 📧 Email Configuration
 
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
@@ -55,13 +49,6 @@ cp .env.example .env
 
 - `GOOGLE_ANALYTICS_ID`, `HOTJAR_ID`, `SENTRY_DSN`
 - For user analytics and error tracking
-
-### ☁️ Cloudflare Workers AI
-
-- `CLOUDFLARE_API_TOKEN` - API token for Cloudflare Workers AI
-- `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID
-- Used for AI text generation, image generation, and embeddings
-- Free tier available with usage limits
 
 ### 🤖 Bot Integration
 
@@ -110,7 +97,6 @@ cp .env.example .env
 
 ### Quarterly Rotation
 
-- [ ] Rotate API keys for external services (Gemini, OpenAI, Context7, Cloudflare)
 - [ ] Update SMTP passwords
 - [ ] Refresh Vercel tokens if needed
 - [ ] Audit team access to secrets

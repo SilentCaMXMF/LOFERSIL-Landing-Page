@@ -12,35 +12,27 @@ Configure these variables in your Vercel project dashboard under **Settings → 
 
 ### Production Environment Variables
 
-| Variable                        | Value Source          | Required | Description                   |
-| ------------------------------- | --------------------- | -------- | ----------------------------- |
-| `NODE_ENV`                      | `production`          | Yes      | Environment mode              |
-| `WEBSITE_URL`                   | Your production URL   | Yes      | Production website URL        |
-| `GEMINI_API_KEY`                | Your Gemini API key   | No       | Google Gemini API key         |
-| `OPENAI_API_KEY`                | Your OpenAI API key   | No       | OpenAI API key                |
-| `CONTEXT7_API_KEY`              | Your Context7 API key | No       | Context7 API key              |
-| `SMTP_HOST`                     | Your SMTP host        | No       | Email server hostname         |
-| `SMTP_PORT`                     | Your SMTP port        | No       | Email server port             |
-| `SMTP_SECURE`                   | `true`/`false`        | No       | SMTP secure connection        |
-| `SMTP_USER`                     | Your SMTP username    | No       | Email server username         |
-| `SMTP_PASS`                     | Your SMTP password    | No       | Email server password         |
-| `FROM_EMAIL`                    | Your sender email     | No       | Email sender address          |
-| `TO_EMAIL`                      | Your contact email    | No       | Email recipient address       |
-| `ALLOWED_ORIGINS`               | Your allowed origins  | No       | CORS allowed origins          |
-| `GOOGLE_ANALYTICS_ID`           | Your GA ID            | No       | Google Analytics tracking ID  |
-| `HOTJAR_ID`                     | Your Hotjar ID        | No       | Hotjar tracking ID            |
-| `SENTRY_DSN`                    | Your Sentry DSN       | No       | Sentry error tracking DSN     |
-| `TELEGRAM_BOT_TOKEN`            | Your bot token        | No       | Telegram bot token            |
-| `TELEGRAM_CHAT_ID`              | Your chat ID          | No       | Telegram chat ID              |
-| `ENABLE_ANALYTICS`              | `true`/`false`        | No       | Enable analytics              |
-| `ENABLE_ERROR_TRACKING`         | `true`/`false`        | No       | Enable error tracking         |
-| `ENABLE_PERFORMANCE_MONITORING` | `true`/`false`        | No       | Enable performance monitoring |
-| `ENABLE_MCP_INTEGRATION`        | `true`/`false`        | No       | Enable MCP integration        |
-| `MCP_API_KEY`                   | Your MCP API key      | No       | MCP server authentication     |
-| `MCP_SERVER_URL`                | Your MCP server URL   | No       | MCP server endpoint           |
-| `MCP_CLIENT_ID`                 | Your client ID        | No       | MCP client identifier         |
-| `CLOUDFLARE_API_TOKEN`          | Your Cloudflare token | No       | Cloudflare Workers AI token   |
-| `CLOUDFLARE_ACCOUNT_ID`         | Your account ID       | No       | Cloudflare account identifier |
+| Variable      | Value Source        | Required | Description            |
+| ------------- | ------------------- | -------- | ---------------------- |
+| `NODE_ENV`    | `production`        | Yes      | Environment mode       |
+| `WEBSITE_URL` | Your production URL | Yes      | Production website URL |
+
+| `SMTP_HOST` | Your SMTP host | No | Email server hostname |
+| `SMTP_PORT` | Your SMTP port | No | Email server port |
+| `SMTP_SECURE` | `true`/`false` | No | SMTP secure connection |
+| `SMTP_USER` | Your SMTP username | No | Email server username |
+| `SMTP_PASS` | Your SMTP password | No | Email server password |
+| `FROM_EMAIL` | Your sender email | No | Email sender address |
+| `TO_EMAIL` | Your contact email | No | Email recipient address |
+| `ALLOWED_ORIGINS` | Your allowed origins | No | CORS allowed origins |
+| `GOOGLE_ANALYTICS_ID` | Your GA ID | No | Google Analytics tracking ID |
+| `HOTJAR_ID` | Your Hotjar ID | No | Hotjar tracking ID |
+| `SENTRY_DSN` | Your Sentry DSN | No | Sentry error tracking DSN |
+| `TELEGRAM_BOT_TOKEN` | Your bot token | No | Telegram bot token |
+| `TELEGRAM_CHAT_ID` | Your chat ID | No | Telegram chat ID |
+| `ENABLE_ANALYTICS` | `true`/`false` | No | Enable analytics |
+| `ENABLE_ERROR_TRACKING` | `true`/`false` | No | Enable error tracking |
+| `ENABLE_PERFORMANCE_MONITORING` | `true`/`false` | No | Enable performance monitoring |
 
 ## How to Configure in Vercel
 

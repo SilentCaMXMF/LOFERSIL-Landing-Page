@@ -4,18 +4,18 @@
  */
 
 import { Translations } from '../types.js';
-import { ErrorHandler } from './ErrorHandler.js';
+import { ErrorManager } from './ErrorManager.js';
 
 export class TranslationManager {
   private translations: Record<string, Translations>;
   private currentLanguage: string;
   private readonly defaultLanguage = 'pt';
   private readonly supportedLanguages = ['pt', 'en'];
-  private errorHandler: ErrorHandler;
+  private errorHandler: ErrorManager;
   private isInitialized = false;
   private isSwitchingLanguage = false;
 
-  constructor(errorHandler: ErrorHandler) {
+  constructor(errorHandler: ErrorManager) {
     this.translations = {};
     this.currentLanguage = this.detectLanguage();
     this.errorHandler = errorHandler;
@@ -88,8 +88,8 @@ export class TranslationManager {
     } catch (error) {
       this.errorHandler.handleError(error, 'Failed to load translations', {
         component: 'TranslationManager',
-        action: 'loadTranslations',
-        timestamp: new Date().toISOString(),
+        operation: 'loadTranslations',
+        timestamp: new Date(),
       });
       // Fallback to empty translations if loading fails
       this.translations = {};

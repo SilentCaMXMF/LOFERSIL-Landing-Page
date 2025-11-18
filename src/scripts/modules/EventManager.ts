@@ -14,15 +14,15 @@ import {
   EventListeners,
 } from '../types.js';
 import { Logger } from './Logger.js';
-import { ErrorHandler } from './ErrorHandler.js';
+import { ErrorManager } from './ErrorManager.js';
 
 export class EventManager {
   private listeners: EventListeners = {};
   private logger: Logger;
-  private errorHandler: ErrorHandler;
+  private errorHandler: ErrorManager;
   private lastMessage: string = '';
 
-  constructor(logger: Logger, errorHandler: ErrorHandler) {
+  constructor(logger: Logger, errorHandler: ErrorManager) {
     this.logger = logger;
     this.errorHandler = errorHandler;
     this.setupGlobalEventListeners();
@@ -80,8 +80,8 @@ export class EventManager {
         } catch (error) {
           this.errorHandler.handleError(error, `Error in event handler for ${event.type}`, {
             component: 'EventManager',
-            action: 'emit',
-            timestamp: new Date().toISOString(),
+            operation: 'emit',
+            timestamp: new Date(),
           });
         }
       });
@@ -218,8 +218,8 @@ export class EventManager {
       } catch (error) {
         this.errorHandler.handleError(error, 'Failed to process OpenCode event', {
           component: 'EventManager',
-          action: 'processOpenCodeEvent',
-          timestamp: new Date().toISOString(),
+          operation: 'processOpenCodeEvent',
+          timestamp: new Date(),
         });
       }
     }) as EventListener);
@@ -241,8 +241,8 @@ export class EventManager {
       } catch (error) {
         this.errorHandler.handleError(error, 'Failed to process message event', {
           component: 'EventManager',
-          action: 'processMessageEvent',
-          timestamp: new Date().toISOString(),
+          operation: 'processMessageEvent',
+          timestamp: new Date(),
         });
       }
     });
