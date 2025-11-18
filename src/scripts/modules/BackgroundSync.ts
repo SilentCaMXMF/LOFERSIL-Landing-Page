@@ -1,6 +1,7 @@
 /**
  * Background Sync Manager for offline form submissions
  */
+import { envLoader } from './EnvironmentLoader.js';
 export class BackgroundSync {
   private static readonly CONTACT_FORM_TAG = 'contact-form-sync';
 
@@ -39,7 +40,7 @@ export class BackgroundSync {
    */
   private static async storeFormData(formData: ContactFormData): Promise<void> {
     const cache = await caches.open('contact-forms');
-    const request = new Request('/api/contact', {
+    const request = new Request(envLoader.get('CONTACT_API_ENDPOINT') || '/api/contact', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
