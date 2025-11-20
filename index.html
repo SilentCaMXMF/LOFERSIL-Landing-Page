@@ -89,6 +89,7 @@
     <!-- Skip Navigation Links -->
     <a href="#main-content" class="skip-link">Ir para o conteúdo principal</a>
     <a href="#main-nav" class="skip-link">Ir para a navegação</a>
+    <a href="#contact-form" class="skip-link">Ir para o formulário de contacto</a>
 
     <header id="main-header">
       <div class="header-container">
@@ -690,6 +691,21 @@
               </div>
             </div>
             <div class="form-group">
+              <label for="contact-phone" class="form-label" data-translate="contact.phoneLabel"
+                >Telefone</label
+              >
+              <input
+                type="tel"
+                id="contact-phone"
+                name="phone"
+                class="form-input"
+                placeholder="+351 21 123 4567"
+                autocomplete="tel"
+                aria-describedby="phone-error"
+              />
+              <div id="phone-error" class="form-error" role="alert" aria-live="polite"></div>
+            </div>
+            <div class="form-group">
               <label for="contact-message" class="form-label" data-translate="contact.messageLabel"
                 >Mensagem *</label
               >
@@ -720,13 +736,34 @@
             </div>
             <!-- CSRF token -->
             <input type="hidden" name="csrf_token" id="csrf-token" />
+            <!-- Accessibility live region for screen reader announcements -->
+            <div
+              id="contact-form-live-region"
+              class="sr-only"
+              aria-live="polite"
+              aria-atomic="true"
+            ></div>
             <div class="form-actions">
-              <button type="submit" class="btn btn-primary btn-large" id="contact-submit">
+              <div id="contact-submit-description" class="sr-only">
+                Clicking this button will submit your contact form
+              </div>
+              <button
+                type="submit"
+                class="btn btn-primary btn-large"
+                id="contact-submit"
+                aria-describedby="contact-submit-description"
+              >
                 <span class="btn-text" data-translate="contact.submitButton">Enviar Mensagem</span>
                 <span class="btn-loading hidden" data-translate="contact.submitButtonLoading"
                   >A enviar...</span
                 >
               </button>
+              <div
+                class="form-progress sr-only"
+                id="form-progress"
+                role="status"
+                aria-live="polite"
+              ></div>
             </div>
             <div
               id="form-success"

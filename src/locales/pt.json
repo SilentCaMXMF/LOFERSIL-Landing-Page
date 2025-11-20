@@ -110,11 +110,34 @@
     "subtitle": "Estamos aqui para ajudar. Entre em contato e nossa equipe responderá rapidamente com todo o cuidado que você merece.",
     "nameLabel": "Nome *",
     "emailLabel": "Email *",
+    "phoneLabel": "Telefone",
     "messageLabel": "Mensagem *",
     "submitButton": "Enviar Mensagem",
     "submitButtonLoading": "A enviar...",
     "successMessage": "Mensagem enviada com sucesso! Entraremos em contacto brevemente.",
-    "errorMessage": "Ocorreu um erro ao enviar a mensagem. Por favor, tente novamente."
+    "errorMessage": "Ocorreu um erro ao enviar a mensagem. Por favor, tente novamente.",
+    "validation": {
+      "name": {
+        "required": "Nome é obrigatório",
+        "tooShort": "Nome deve ter pelo menos 2 caracteres",
+        "tooLong": "Nome deve ter menos de 100 caracteres",
+        "invalidChars": "Nome contém caracteres inválidos"
+      },
+      "email": {
+        "required": "Email é obrigatório",
+        "invalid": "Por favor, introduza um endereço de email válido",
+        "tooLong": "Endereço de email é demasiado longo"
+      },
+      "phone": {
+        "invalid": "Por favor, introduza um número de telefone válido",
+        "tooLong": "Número de telefone é demasiado longo"
+      },
+      "message": {
+        "required": "Mensagem é obrigatória",
+        "tooShort": "Mensagem deve ter pelo menos 10 caracteres",
+        "tooLong": "Mensagem deve ter menos de 2000 caracteres"
+      }
+    }
   },
   "footer": {
     "title": "LOFERSIL",
