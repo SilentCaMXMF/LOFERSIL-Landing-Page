@@ -5,10 +5,12 @@
  */
 
 import { MCPClient } from './client.js';
+import { MCPLogger } from './logger.js';
 import type { MCPResource } from './types.js';
 
 export class MCPResources {
   private client: MCPClient;
+  private logger = MCPLogger.getInstance();
   private cachedResources: MCPResource[] = [];
   private cacheExpiry: number = 0;
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -28,7 +30,7 @@ export class MCPResources {
       this.cacheExpiry = Date.now() + this.CACHE_DURATION;
       return this.cachedResources;
     } catch (error) {
-      console.error('Failed to list MCP resources:', error);
+      this.logger.error('MCPResources', 'Failed to list MCP resources', error as Error);
       // Return cached resources if available, even if expired
       if (this.cachedResources.length > 0) {
         return this.cachedResources;
@@ -46,7 +48,7 @@ export class MCPResources {
       }
       return content;
     } catch (error) {
-      console.error(`Failed to read resource '${uri}':`, error);
+      this.logger.error('MCPResources', `Failed to read resource '${uri}'`, error as Error);
       throw error;
     }
   }
@@ -59,7 +61,7 @@ export class MCPResources {
         const content = await this.readResource(uri);
         results.set(uri, content);
       } catch (error) {
-        console.error(`Failed to read resource '${uri}':`, error);
+        this.logger.error('MCPResources', `Failed to read resource '${uri}'`, error as Error);
         results.set(uri, null);
       }
     }

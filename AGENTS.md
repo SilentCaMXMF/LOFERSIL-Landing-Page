@@ -4,8 +4,8 @@
 
 - **Build**: `npm run build` (custom build script: TypeScript compilation, CSS processing, asset optimization)
 - **Dev**: `npm run dev` (TypeScript watch mode for development)
-- **Lint**: `npm run lint` (ESLint on src/**/*.ts with TypeScript rules)
-- **Format**: `npm run format` (Prettier on src/**/*.{ts,css,html})
+- **Lint**: `npm run lint` (ESLint on src/\*_/_.ts with TypeScript rules)
+- **Format**: `npm run format` (Prettier on src/\*_/_.{ts,css,html})
 - **Test**: `npm run test` (Vitest with watch mode) or `npm run test:run` (Vitest run once)
 - **Single test**: `npm run test:run src/scripts/index.test.ts` or `vitest run src/scripts/validation.test.ts`
 - **Performance audit**: `npm run lighthouse` (Lighthouse performance testing on localhost:3000)
@@ -26,7 +26,7 @@
 - **Example**:
 
   ```typescript
-  import { ErrorHandler } from './modules/ErrorHandler';
+  import { ErrorManager } from './modules/ErrorManager';
   import { NavigationManager } from './modules/NavigationManager';
   ```
 
@@ -48,7 +48,7 @@
 ### Naming Conventions
 
 - **Variables/Functions**: camelCase (e.g., `navigationConfig`, `initializeApp`)
-- **Classes/Interfaces**: PascalCase (e.g., `LOFERSILLandingPage`, `ErrorHandler`)
+- **Classes/Interfaces**: PascalCase (e.g., `LOFERSILLandingPage`, `ErrorManager`)
 - **Constants**: UPPER_SNAKE_CASE for config objects (e.g., `IS_DEVELOPMENT`)
 - **Files**: PascalCase for class files, camelCase for utility files
 - **Directories**: lowercase with hyphens if needed

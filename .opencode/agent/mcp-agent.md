@@ -64,6 +64,7 @@ You are the MCP (Model Context Protocol) Agent (@mcp-agent), responsible for man
 
 - `/mcp-connect <server-url> [api-key]` - Connect to MCP server
 - `/mcp-connect-context7 [config-name]` - Connect to Context7 MCP server using configuration
+- `/mcp-connect-gemini [config-name]` - Connect to Gemini MCP server using configuration
 - `/mcp-disconnect` - Disconnect from current MCP server
 - `/mcp-status` - Show connection status, configuration sources, authentication methods, and available tools/resources
 
@@ -192,6 +193,18 @@ The MCP agent supports loading configuration from JSON files for centralized man
 
 ### Context7 Integration
 
+- `CONTEXT7_MCP_URL` - Context7 MCP server URL
+- `CONTEXT7_API_KEY` - Context7 API key
+- `CONTEXT7_API_TIMEOUT` - Context7 connection timeout (default: 60000ms)
+
+### Gemini Integration
+
+- `GEMINI_MCP_URL` - Gemini MCP server URL (default: https://generativelanguage.googleapis.com/v1beta)
+- `GEMINI_API_KEY` - Gemini API key
+- `GEMINI_API_TIMEOUT` - Gemini connection timeout (default: 60000ms)
+
+### Context7 Integration
+
 **Connection Methods:**
 
 - **Direct Connection:** `/mcp-connect-context7` - Uses default Context7 configuration
@@ -206,6 +219,29 @@ Context7 supports multiple authentication methods:
 - Bearer token authentication
 - OAuth2 flows
 - Custom header-based auth
+
+### Gemini Integration
+
+**Connection Methods:**
+
+- **Direct Connection:** `/mcp-connect-gemini` - Uses default Gemini configuration
+- **Named Configuration:** `/mcp-connect-gemini myconfig` - Uses specific config section
+- **Custom Parameters:** `/mcp-connect-gemini --server https://generativelanguage.googleapis.com/v1beta`
+
+**Authentication:**
+
+Gemini uses API key authentication via the `x-goog-api-key` header.
+
+**Available Tools:**
+
+- `generate_image` - Generate images from text prompts
+- `edit_image` - Edit existing images with prompts
+- `analyze_image` - Analyze images and answer questions about them
+
+**Resources:**
+
+- `gemini://models` - List available Gemini models
+- `gemini://capabilities` - Gemini AI capabilities and features
 
 ### Runtime Configuration
 

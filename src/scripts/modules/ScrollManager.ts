@@ -90,6 +90,48 @@ export class ScrollManager {
       this.observers.push(lazyObserver);
     }
 
+    // Observe elements for scroll-triggered animations
+    const animateElements = document.querySelectorAll('[data-animate]');
+    if (animateElements.length > 0) {
+      const animateObserver = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const element = entry.target as HTMLElement;
+              const animationType = element.getAttribute('data-animate');
+
+              if (animationType === 'scale-in' || animationType === 'slide-up') {
+                // For grids, animate children with stagger
+                const children = element.children;
+                Array.from(children).forEach((child, index) => {
+                  const delay = index * 150; // 150ms stagger
+                  setTimeout(() => {
+                    (child as HTMLElement).classList.add('animate-in');
+                  }, delay);
+                });
+              } else {
+                // Single element animation
+                element.classList.add('animate-in');
+              }
+
+              // Stop observing once animated
+              animateObserver.unobserve(element);
+            }
+          });
+        },
+        {
+          rootMargin: '0px 0px -100px 0px', // Trigger when element is 100px from bottom
+          threshold: 0.1,
+        }
+      );
+
+      animateElements.forEach(element => {
+        animateObserver.observe(element);
+      });
+
+      this.observers.push(animateObserver);
+    }
+
     // Setup lazy loading for images
     this.setupLazyLoading();
 

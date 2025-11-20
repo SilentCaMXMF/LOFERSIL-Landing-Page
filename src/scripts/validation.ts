@@ -3,7 +3,8 @@
  * Comprehensive input validation system for contact forms
  */
 
-const DOMPurify = (globalThis as any).DOMPurify;
+const DOMPurify = (globalThis as unknown as { DOMPurify: { sanitize: (input: string) => string } })
+  .DOMPurify!;
 
 // Extended contact request interface with phone field
 export interface ContactRequest {

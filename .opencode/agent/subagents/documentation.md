@@ -2,7 +2,7 @@
 
 description: "Documentation authoring agent"
 mode: subagent
-model: GitHub Models/Llama-3.3-70B-Instruct	
+model: opencode/big-pickle	
 temperature: 0.2
 tools:
   read: true

@@ -61,14 +61,100 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+          # Deployment
           WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
+          # AI API Keys
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CONTEXT7_API_KEY: ${{ secrets.CONTEXT7_API_KEY }}
+          # Email Configuration
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}
+          ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
+          # Analytics & Monitoring
+          GOOGLE_ANALYTICS_ID: ${{ secrets.GOOGLE_ANALYTICS_ID }}
+          HOTJAR_ID: ${{ secrets.HOTJAR_ID }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          # Telegram Bot
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_USERNAME: ${{ secrets.TELEGRAM_BOT_USERNAME }}
+          TELEGRAM_TEST_CHAT_ID: ${{ secrets.TELEGRAM_TEST_CHAT_ID }}
+          # Application Configuration
+          CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
+          PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
+          COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
+          COMPANY_DESCRIPTION: ${{ secrets.COMPANY_DESCRIPTION }}
+          SITE_NAME: ${{ secrets.SITE_NAME }}
+          SITE_TITLE: ${{ secrets.SITE_TITLE }}
+          SITE_DESCRIPTION: ${{ secrets.SITE_DESCRIPTION }}
+          OG_IMAGE_URL: ${{ secrets.OG_IMAGE_URL }}
+          # Feature Flags
+          ENABLE_ANALYTICS: ${{ secrets.ENABLE_ANALYTICS }}
+          ENABLE_ERROR_TRACKING: ${{ secrets.ENABLE_ERROR_TRACKING }}
+          ENABLE_PERFORMANCE_MONITORING: ${{ secrets.ENABLE_PERFORMANCE_MONITORING }}
+          ENABLE_MCP_INTEGRATION: ${{ secrets.ENABLE_MCP_INTEGRATION }}
+          # MCP Configuration
+          MCP_API_KEY: ${{ secrets.MCP_API_KEY }}
+          MCP_SERVER_URL: ${{ secrets.MCP_SERVER_URL }}
+          MCP_CLIENT_ID: ${{ secrets.MCP_CLIENT_ID }}
+          MCP_RECONNECT_INTERVAL: ${{ secrets.MCP_RECONNECT_INTERVAL }}
+          MCP_MAX_RECONNECT_ATTEMPTS: ${{ secrets.MCP_MAX_RECONNECT_ATTEMPTS }}
 
       - name: Build project (bun)
         if: matrix.runtime == 'bun'
         run: bun run build:bun
         env:
           NODE_ENV: production
+          # Deployment
           WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
+          # AI API Keys
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CONTEXT7_API_KEY: ${{ secrets.CONTEXT7_API_KEY }}
+          # Email Configuration
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}
+          ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
+          # Analytics & Monitoring
+          GOOGLE_ANALYTICS_ID: ${{ secrets.GOOGLE_ANALYTICS_ID }}
+          HOTJAR_ID: ${{ secrets.HOTJAR_ID }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          # Telegram Bot
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_USERNAME: ${{ secrets.TELEGRAM_BOT_USERNAME }}
+          TELEGRAM_TEST_CHAT_ID: ${{ secrets.TELEGRAM_TEST_CHAT_ID }}
+          # Application Configuration
+          CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
+          PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
+          COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
+          COMPANY_DESCRIPTION: ${{ secrets.COMPANY_DESCRIPTION }}
+          SITE_NAME: ${{ secrets.SITE_NAME }}
+          SITE_TITLE: ${{ secrets.SITE_TITLE }}
+          SITE_DESCRIPTION: ${{ secrets.SITE_DESCRIPTION }}
+          OG_IMAGE_URL: ${{ secrets.OG_IMAGE_URL }}
+          # Feature Flags
+          ENABLE_ANALYTICS: ${{ secrets.ENABLE_ANALYTICS }}
+          ENABLE_ERROR_TRACKING: ${{ secrets.ENABLE_ERROR_TRACKING }}
+          ENABLE_PERFORMANCE_MONITORING: ${{ secrets.ENABLE_PERFORMANCE_MONITORING }}
+          ENABLE_MCP_INTEGRATION: ${{ secrets.ENABLE_MCP_INTEGRATION }}
+          # MCP Configuration
+          MCP_API_KEY: ${{ secrets.MCP_API_KEY }}
+          MCP_SERVER_URL: ${{ secrets.MCP_SERVER_URL }}
+          MCP_CLIENT_ID: ${{ secrets.MCP_CLIENT_ID }}
+          MCP_RECONNECT_INTERVAL: ${{ secrets.MCP_RECONNECT_INTERVAL }}
+          MCP_MAX_RECONNECT_ATTEMPTS: ${{ secrets.MCP_MAX_RECONNECT_ATTEMPTS }}
 
       - name: Deploy to Vercel
         id: deploy

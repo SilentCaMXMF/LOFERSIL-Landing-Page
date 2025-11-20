@@ -1,51 +1,95 @@
 /**
  * Translation Manager for LOFERSIL Landing Page
- * Handles loading and applying Portuguese translations
+ * Handles loading and applying translations for multiple languages
  */
 
 import { Translations } from '../types.js';
-import { ErrorHandler } from './ErrorHandler.js';
+import { ErrorManager } from './ErrorManager.js';
 
 export class TranslationManager {
-  private translations: Translations;
+  private translations: Record<string, Translations>;
+  private currentLanguage: string;
   private readonly defaultLanguage = 'pt';
-  private errorHandler: ErrorHandler;
+  private readonly supportedLanguages = ['pt', 'en'];
+  private errorHandler: ErrorManager;
+  private isInitialized = false;
+  private isSwitchingLanguage = false;
 
-  constructor(errorHandler: ErrorHandler) {
+  constructor(errorHandler: ErrorManager) {
     this.translations = {};
+    this.currentLanguage = this.detectLanguage();
     this.errorHandler = errorHandler;
+  }
+
+  /**
+   * Detect the user's preferred language
+   */
+  private detectLanguage(): string {
+    // Check localStorage first
+    const stored = localStorage.getItem('language');
+    if (stored && this.supportedLanguages.includes(stored)) {
+      return stored;
+    }
+
+    // Check browser language
+    const browserLang = navigator.language.toLowerCase();
+    if (browserLang.startsWith('pt')) {
+      return 'pt';
+    } else if (browserLang.startsWith('en')) {
+      return 'en';
+    }
+
+    // Default to Portuguese
+    return this.defaultLanguage;
   }
 
   /**
    * Initialize the translation system
    */
   async initialize(): Promise<void> {
+    if (this.isInitialized) {
+      return; // Prevent multiple initializations
+    }
+
     await this.loadTranslations();
     this.applyTranslations();
     this.updateMetaTagsForLanguage();
     this.setupHreflangTags();
+    this.updateHtmlLangAttribute();
+    this.isInitialized = true;
   }
 
   /**
-   * Load Portuguese translations
+   * Load translations for all supported languages
    */
   async loadTranslations(): Promise<void> {
-    console.log(`Loading Portuguese translations`);
+    console.log(`Loading translations for languages: ${this.supportedLanguages.join(', ')}`);
     try {
-      const response = await fetch(`/locales/${this.defaultLanguage}.json`);
-      console.log(`Fetch response for Portuguese:`, response.status);
-      if (!response.ok) {
-        throw new Error(
-          `Failed to load Portuguese translations: ${response.status} ${response.statusText}`
-        );
-      }
-      this.translations = await response.json();
-      console.log(`Portuguese translations loaded:`, this.translations);
+      const promises = this.supportedLanguages.map(async lang => {
+        const response = await fetch(`/locales/${lang}.json`);
+        if (!response.ok) {
+          throw new Error(
+            `Failed to load ${lang} translations: ${response.status} ${response.statusText}`
+          );
+        }
+        return { lang, data: await response.json() };
+      });
+
+      const results = await Promise.all(promises);
+      this.translations = results.reduce(
+        (acc, { lang, data }) => {
+          acc[lang] = data;
+          return acc;
+        },
+        {} as Record<string, Translations>
+      );
+
+      console.log(`Translations loaded for:`, Object.keys(this.translations));
     } catch (error) {
       this.errorHandler.handleError(error, 'Failed to load translations', {
         component: 'TranslationManager',
-        action: 'loadTranslations',
-        timestamp: new Date().toISOString(),
+        operation: 'loadTranslations',
+        timestamp: new Date(),
       });
       // Fallback to empty translations if loading fails
       this.translations = {};
@@ -60,12 +104,17 @@ export class TranslationManager {
    * Apply translations to DOM elements
    */
   applyTranslations(): void {
-    const elements = document.querySelectorAll('[data-i18n]');
-    console.log(`Applying Portuguese translations: Found ${elements.length} elements`);
+    const elements = document.querySelectorAll('[data-translate]');
+    console.log(`Applying ${this.currentLanguage} translations: Found ${elements.length} elements`);
+    const currentTranslations = this.translations[this.currentLanguage];
+    if (!currentTranslations) {
+      console.warn(`No translations available for language: ${this.currentLanguage}`);
+      return;
+    }
     elements.forEach(element => {
-      const key = element.getAttribute('data-i18n');
-      if (key && this.translations) {
-        const translation = this.getNestedTranslation(this.translations, key);
+      const key = element.getAttribute('data-translate');
+      if (key) {
+        const translation = this.getNestedTranslation(currentTranslations, key);
         if (translation && element instanceof HTMLElement) {
           // Handle different element types
           if (element.tagName === 'META') {
@@ -78,7 +127,7 @@ export class TranslationManager {
         }
       }
     });
-    console.log('Portuguese translations applied');
+    console.log(`${this.currentLanguage} translations applied`);
   }
 
   /**
@@ -91,9 +140,12 @@ export class TranslationManager {
   }
 
   /**
-   * Update meta tags for Portuguese language
+   * Update meta tags for current language
    */
   updateMetaTagsForLanguage(): void {
+    const currentTranslations = this.translations[this.currentLanguage];
+    if (!currentTranslations) return;
+
     const metaKeys = [
       'title',
       'description',
@@ -103,7 +155,7 @@ export class TranslationManager {
       'twitterDescription',
     ];
     metaKeys.forEach(key => {
-      const translation = this.getNestedTranslation(this.translations, `meta.${key}`);
+      const translation = this.getNestedTranslation(currentTranslations, `meta.${key}`);
       if (translation) {
         switch (key) {
           case 'title':
@@ -142,16 +194,17 @@ export class TranslationManager {
   }
 
   /**
-   * Setup hreflang tags for Portuguese
+   * Setup hreflang tags for all supported languages
    */
   setupHreflangTags(): void {
     // Remove existing hreflang tags
     const existingTags = document.querySelectorAll('link[rel="alternate"][hreflang]');
     existingTags.forEach(tag => tag.remove());
 
-    // Add Portuguese hreflang tag
+    // Add hreflang tags for each supported language
     const baseUrl = window.location.origin;
     this.addHreflangTag('pt-PT', `${baseUrl}/`);
+    this.addHreflangTag('en-US', `${baseUrl}/`);
     // Default language
     this.addHreflangTag('x-default', `${baseUrl}/`);
   }
@@ -165,6 +218,13 @@ export class TranslationManager {
     link.hreflang = hreflang;
     link.href = url;
     document.head.appendChild(link);
+  }
+
+  /**
+   * Update the HTML lang attribute
+   */
+  updateHtmlLangAttribute(): void {
+    document.documentElement.lang = this.currentLanguage === 'pt' ? 'pt-PT' : 'en-US';
   }
 
   /**
@@ -183,9 +243,44 @@ export class TranslationManager {
   }
 
   /**
+   * Switch to a different language
+   */
+  switchLanguage(lang: 'pt' | 'en'): void {
+    if (!this.supportedLanguages.includes(lang)) {
+      console.warn(`Unsupported language: ${lang}`);
+      return;
+    }
+
+    if (this.isSwitchingLanguage) {
+      return; // Prevent rapid switching
+    }
+
+    this.isSwitchingLanguage = true;
+
+    this.currentLanguage = lang;
+    localStorage.setItem('language', lang);
+    this.applyTranslations();
+    this.updateMetaTagsForLanguage();
+    this.updateHtmlLangAttribute();
+    console.log(`Switched to language: ${lang}`);
+
+    // Reset the flag after a short delay to allow subsequent switches
+    setTimeout(() => {
+      this.isSwitchingLanguage = false;
+    }, 100);
+  }
+
+  /**
+   * Get current language
+   */
+  getCurrentLanguage(): string {
+    return this.currentLanguage;
+  }
+
+  /**
    * Get current translations (for debugging/testing)
    */
   getTranslations(): Translations {
-    return this.translations;
+    return this.translations[this.currentLanguage] || {};
   }
 }

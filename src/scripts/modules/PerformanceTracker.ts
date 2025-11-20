@@ -3,7 +3,7 @@
  * Tracks performance metrics, Core Web Vitals, and sends data to analytics
  */
 
-import { ErrorHandler } from './ErrorHandler.js';
+import { ErrorManager } from './ErrorManager.js';
 
 /**
  * Performance metrics interface
@@ -43,9 +43,9 @@ interface PerformanceTrackerConfig {
 export class PerformanceTracker {
   private metrics: PerformanceMetrics;
   private config: PerformanceTrackerConfig;
-  private errorHandler: ErrorHandler;
+  private errorHandler: ErrorManager;
 
-  constructor(config: PerformanceTrackerConfig, errorHandler: ErrorHandler) {
+  constructor(config: PerformanceTrackerConfig, errorHandler: ErrorManager) {
     this.config = config;
     this.errorHandler = errorHandler;
     this.metrics = {

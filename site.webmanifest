@@ -1,16 +1,76 @@
 {
-  "name": "LOFERSIL - Premium Products & Services",
+  "name": "LOFERSIL - Material Escolar e Escritório",
   "short_name": "LOFERSIL",
-  "description": "Discover LOFERSIL's premium collection of products and services.",
+  "description": "Loja online de material escolar, escritório e artigos criativos em Portugal. Canetas, cadernos, dossiers e muito mais.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#007bff",
   "background_color": "#ffffff",
-  "theme_color": "#2563eb",
+  "lang": "pt-PT",
+  "dir": "ltr",
+  "categories": ["shopping", "business", "education"],
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "src": "/images/favicon-16x16-lettuce.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/favicon-32x32-lettuce.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/favicon-48x48-lettuce.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/logo.jpg",
+      "sizes": "117x117",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Produtos",
+      "short_name": "Produtos",
+      "description": "Ver catálogo de produtos",
+      "url": "/#products-showcase",
+      "icons": [
+        {
+          "src": "/images/favicon-48x48-lettuce.png",
+          "sizes": "48x48"
+        }
+      ]
+    },
+    {
+      "name": "Contato",
+      "short_name": "Contato",
+      "description": "Entrar em contato",
+      "url": "/#contact-form",
+      "icons": [
+        {
+          "src": "/images/favicon-48x48-lettuce.png",
+          "sizes": "48x48"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/images/Frente_loja_100.webp",
+      "sizes": "800x600",
+      "type": "image/webp",
+      "label": "Frente da loja LOFERSIL"
     }
   ]
 }

@@ -5,8 +5,16 @@
  * Handles contact form submission, validation, and email service integration
  */
 
-import DOMPurify from 'dompurify';
-import { ContactFormValidator, ContactRequest } from '../validation.js';
+import {
+  ContactFormValidator,
+  ContactRequest,
+  validateName,
+  validateEmail,
+  validateMessage,
+  validateContactForm,
+} from '../validation.js';
+import { BackgroundSync } from './BackgroundSync.js';
+import { envLoader } from './EnvironmentLoader.js';
 
 // Contact form configuration
 interface ContactFormConfig {
@@ -149,94 +157,31 @@ export class ContactFormManager {
     const field = this.formElement?.querySelector(`[name="${fieldName}"]`) as HTMLInputElement;
     if (!field) return;
 
-    let isValid = true;
-    let errorMessage = '';
+    let result: { isValid: boolean; error?: string };
 
     switch (fieldName) {
       case 'name':
-        const nameResult = this.validateName(field.value);
-        isValid = nameResult.isValid;
-        errorMessage = nameResult.error || '';
+        result = validateName(field.value);
         break;
       case 'email':
-        const emailResult = this.validateEmail(field.value);
-        isValid = emailResult.isValid;
-        errorMessage = emailResult.error || '';
+        result = validateEmail(field.value);
         break;
       case 'message':
-        const messageResult = this.validateMessage(field.value);
-        isValid = messageResult.isValid;
-        errorMessage = messageResult.error || '';
+        result = validateMessage(field.value);
         break;
+      default:
+        return;
     }
 
-    if (!isValid) {
+    if (!result.isValid) {
       field.classList.add('error');
-      errorElement.textContent = errorMessage;
+      errorElement.textContent = result.error || '';
       errorElement.classList.add('show');
     } else {
       field.classList.remove('error');
       errorElement.classList.remove('show');
       errorElement.textContent = '';
     }
-  }
-
-  /**
-   * Simple name validation
-   */
-  private validateName(name: string): { isValid: boolean; error?: string } {
-    if (!name || name.trim().length === 0) {
-      return { isValid: false, error: 'Por favor, insira o seu nome' };
-    }
-
-    const trimmedName = name.trim();
-    if (trimmedName.length < 2) {
-      return { isValid: false, error: 'O nome deve ter pelo menos 2 caracteres' };
-    }
-
-    if (trimmedName.length > 100) {
-      return { isValid: false, error: 'O nome deve ter menos de 100 caracteres' };
-    }
-
-    return { isValid: true };
-  }
-
-  /**
-   * Simple email validation
-   */
-  private validateEmail(email: string): { isValid: boolean; error?: string } {
-    if (!email || email.trim().length === 0) {
-      return { isValid: false, error: 'Por favor, insira o seu email' };
-    }
-
-    const trimmedEmail = email.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(trimmedEmail)) {
-      return { isValid: false, error: 'Por favor, insira um email válido' };
-    }
-
-    return { isValid: true };
-  }
-
-  /**
-   * Simple message validation
-   */
-  private validateMessage(message: string): { isValid: boolean; error?: string } {
-    if (!message || message.trim().length === 0) {
-      return { isValid: false, error: 'Por favor, insira a sua mensagem' };
-    }
-
-    const trimmedMessage = message.trim();
-    if (trimmedMessage.length < 10) {
-      return { isValid: false, error: 'A mensagem deve ter pelo menos 10 caracteres' };
-    }
-
-    if (trimmedMessage.length > 2000) {
-      return { isValid: false, error: 'A mensagem deve ter menos de 2000 caracteres' };
-    }
-
-    return { isValid: true };
   }
 
   /**
@@ -321,10 +266,10 @@ export class ContactFormManager {
    */
   private sanitizeFormData(data: ContactRequest): ContactRequest {
     return {
-      name: DOMPurify.sanitize(data.name),
-      email: DOMPurify.sanitize(data.email),
-      phone: data.phone ? DOMPurify.sanitize(data.phone) : undefined,
-      message: DOMPurify.sanitize(data.message), // Allow basic formatting
+      name: window.DOMPurify.sanitize(data.name),
+      email: window.DOMPurify.sanitize(data.email),
+      phone: data.phone ? window.DOMPurify.sanitize(data.phone) : undefined,
+      message: window.DOMPurify.sanitize(data.message), // Allow basic formatting
     };
   }
 
@@ -358,15 +303,25 @@ export class ContactFormManager {
       return;
     }
 
-    // Validate form
-    const validationResult = this.validator.validateForm();
-
-    if (!validationResult.isValid) {
-      this.eventHandlers.onValidationFailed?.(validationResult.errors);
+    // Get form data first
+    const formData = this.validator.getFormData();
+    if (!formData) {
+      this.showErrorMessage('Não foi possível obter os dados do formulário');
       return;
     }
 
-    const formData = this.validator.getFormData();
+    // Validate form
+    const validationResult = validateContactForm(formData);
+
+    if (!validationResult.isValid) {
+      // Display validation errors
+      const errorMessages = Object.values(validationResult.errors);
+      if (errorMessages.length > 0) {
+        this.showErrorMessage(errorMessages.join('. '));
+      }
+      this.eventHandlers.onValidationFailed?.(validationResult.errors);
+      return;
+    }
     if (!formData) {
       this.eventHandlers.onError?.(new Error('Não foi possível obter os dados do formulário'));
       return;
@@ -390,6 +345,22 @@ export class ContactFormManager {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+
+      // Check if we're offline
+      if (!navigator.onLine) {
+        // Try to register for background sync
+        try {
+          await BackgroundSync.registerContactForm(sanitizedData);
+          this.showSuccessMessage('Mensagem registada para envio quando a ligação for restaurada.');
+          this.resetForm();
+          this.eventHandlers.onSuccess?.(sanitizedData);
+          return;
+        } catch (syncError) {
+          console.warn('Background sync not available:', syncError);
+          // Fall through to normal error handling
+        }
+      }
+
       this.showErrorMessage(errorMessage);
       this.eventHandlers.onError?.(error instanceof Error ? error : new Error(errorMessage));
     } finally {
@@ -404,17 +375,17 @@ export class ContactFormManager {
     this.isSubmitting = isSubmitting;
 
     if (this.submitButton) {
-      const buttonText = this.submitButton.querySelector('.btn-text');
-      const loadingText = this.submitButton.querySelector('.btn-loading');
+      const buttonText = this.submitButton.querySelector('.btn-text') as HTMLElement;
+      const loadingText = this.submitButton.querySelector('.btn-loading') as HTMLElement;
 
       if (isSubmitting) {
         this.submitButton.disabled = true;
-        if (buttonText) (buttonText as HTMLElement).style.display = 'none';
-        if (loadingText) (loadingText as HTMLElement).style.display = 'inline-flex';
+        if (buttonText) buttonText.classList.add('hidden');
+        if (loadingText) loadingText.classList.remove('hidden');
       } else {
         this.submitButton.disabled = false;
-        if (buttonText) (buttonText as HTMLElement).style.display = 'inline';
-        if (loadingText) (loadingText as HTMLElement).style.display = 'none';
+        if (buttonText) buttonText.classList.remove('hidden');
+        if (loadingText) loadingText.classList.add('hidden');
       }
     }
   }
@@ -422,13 +393,16 @@ export class ContactFormManager {
   /**
    * Show success message
    */
-  private showSuccessMessage(): void {
+  private showSuccessMessage(message?: string): void {
     const successElement = document.querySelector(
       this.config.successMessageSelector
     ) as HTMLElement;
     const errorElement = document.querySelector(this.config.errorMessageSelector) as HTMLElement;
 
     if (successElement) {
+      if (message) {
+        successElement.textContent = message;
+      }
       successElement.classList.remove('hidden');
       (successElement as HTMLElement).style.display = 'block';
       successElement.setAttribute('aria-hidden', 'false');
@@ -446,6 +420,9 @@ export class ContactFormManager {
         successElement.classList.add('hidden');
         (successElement as HTMLElement).style.display = 'none';
         successElement.setAttribute('aria-hidden', 'true');
+        // Reset to default message
+        successElement.textContent =
+          'Mensagem enviada com sucesso! Entraremos em contacto brevemente.';
       }
     }, 5000);
   }
@@ -531,7 +508,7 @@ class EmailService {
   private endpoint: string;
 
   constructor() {
-    this.endpoint = '/api/contact';
+    this.endpoint = envLoader.get('CONTACT_API_ENDPOINT') || '/api/contact';
   }
 
   /**

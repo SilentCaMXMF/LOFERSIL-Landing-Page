@@ -1,0 +1,137 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "issue-analyzer": {
+      "description": "Analyzes GitHub issues to determine if they're suitable for autonomous resolution",
+      "mode": "primary",
+      "model": "claude-sonnet-4-20250514",
+      "temperature": 0.1,
+      "tools": {
+        "read": true,
+        "grep": true,
+        "webfetch": true,
+        "github-api": true
+      },
+      "permission": {
+        "read": "allow",
+        "grep": "allow",
+        "webfetch": "allow",
+        "github-api": "allow",
+        "edit": "deny",
+        "bash": "deny"
+      }
+    },
+    "code-reviewer": {
+      "description": "Reviews AI-generated code changes for correctness, security, and best practices",
+      "mode": "primary",
+      "model": "claude-sonnet-4-20250514",
+      "temperature": 0.2,
+      "tools": {
+        "read": true,
+        "grep": true,
+        "edit": false,
+        "bash": true,
+        "run-tests": true
+      },
+      "permission": {
+        "read": "allow",
+        "grep": "allow",
+        "edit": "deny",
+        "bash": {
+          "git diff": "allow",
+          "git log": "allow",
+          "npm test": "allow",
+          "yarn test": "allow",
+          "*": "ask"
+        },
+        "run-tests": "allow"
+      }
+    },
+    "swe-resolver": {
+      "description": "Autonomous agent for resolving GitHub issues using SWE-agent patterns",
+      "mode": "primary",
+      "model": "claude-sonnet-4-20250514",
+      "temperature": 0.3,
+      "tools": {
+        "read": true,
+        "grep": true,
+        "edit": true,
+        "bash": true,
+        "run-tests": true,
+        "find-files": true
+      },
+      "permission": {
+        "read": "allow",
+        "grep": "allow",
+        "edit": {
+          "*.md": "allow",
+          "*.txt": "allow",
+          "*.json": "allow",
+          "*.js": "allow",
+          "*.ts": "allow",
+          "*.py": "allow",
+          "*.java": "allow",
+          "*.cpp": "allow",
+          "*.c": "allow",
+          "*.h": "allow",
+          "*.rs": "allow",
+          "*.go": "allow",
+          "*": "ask"
+        },
+        "bash": {
+          "git status": "allow",
+          "git diff": "allow",
+          "git add": "allow",
+          "git commit": "allow",
+          "npm install": "allow",
+          "yarn install": "allow",
+          "pip install": "allow",
+          "cargo build": "allow",
+          "go build": "allow",
+          "make": "allow",
+          "*": "ask"
+        },
+        "run-tests": "allow",
+        "find-files": "allow"
+      }
+    },
+    "pr-generator": {
+      "description": "Generates comprehensive pull request descriptions and manages PR lifecycle",
+      "mode": "subagent",
+      "model": "claude-sonnet-4-20250514",
+      "temperature": 0.4,
+      "tools": {
+        "read": true,
+        "github-api": true,
+        "webfetch": false
+      },
+      "permission": {
+        "read": "allow",
+        "github-api": "allow",
+        "webfetch": "deny",
+        "edit": "deny",
+        "bash": "deny"
+      }
+    }
+  },
+  "tools": {
+    "read": true,
+    "grep": true,
+    "edit": true,
+    "bash": true,
+    "run-tests": true,
+    "find-files": true,
+    "github-api": true,
+    "webfetch": true
+  },
+  "permission": {
+    "read": "allow",
+    "grep": "allow",
+    "edit": "ask",
+    "bash": "ask",
+    "run-tests": "allow",
+    "find-files": "allow",
+    "github-api": "allow",
+    "webfetch": "allow"
+  }
+}

@@ -2,7 +2,7 @@
 
 description: "Specialized agent for image editing and analysis using openAI tools"
 mode: primary
-model: gpt-4-vision-preview
+model: opencode/gpt-5-nano
 temperature: 0.3
 permission:
   edit: deny

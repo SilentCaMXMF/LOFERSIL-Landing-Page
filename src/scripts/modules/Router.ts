@@ -6,21 +6,21 @@ import DOMPurify from 'dompurify';
 import { routes } from './Routes.js';
 import { TranslationManager } from './TranslationManager.js';
 import { NavigationManager } from './NavigationManager.js';
-import { ErrorHandler } from './ErrorHandler.js';
+import { ErrorManager } from './ErrorManager.js';
 
 export class Router {
   private mainContent: HTMLElement | null;
   private translationManager: TranslationManager;
   private navigationManager: NavigationManager;
   private updateMetaTagsCallback: (title: string, description: string) => void;
-  private errorHandler: ErrorHandler;
+  private errorHandler: ErrorManager;
 
   constructor(
     mainContent: HTMLElement | null,
     translationManager: TranslationManager,
     navigationManager: NavigationManager,
     updateMetaTagsCallback: (title: string, description: string) => void,
-    errorHandler: ErrorHandler
+    errorHandler: ErrorManager
   ) {
     this.mainContent = mainContent;
     this.translationManager = translationManager;
@@ -173,8 +173,8 @@ export class Router {
         } catch (error) {
           this.errorHandler.handleError(error, 'Failed to apply translations', {
             component: 'Router',
-            action: 'applyTranslations',
-            timestamp: new Date().toISOString(),
+            operation: 'applyTranslations',
+            timestamp: new Date(),
           });
         }
       }, 0);
@@ -190,8 +190,8 @@ export class Router {
     } catch (error) {
       this.errorHandler.handleError(error, 'Failed to render page', {
         component: 'Router',
-        action: 'renderPage',
-        timestamp: new Date().toISOString(),
+        operation: 'renderPage',
+        timestamp: new Date(),
       });
     }
   }

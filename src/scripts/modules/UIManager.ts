@@ -3,8 +3,9 @@
  * Manages UI state, scroll effects, and user interactions
  */
 
-import { ErrorHandler } from './ErrorHandler.js';
+import { ErrorManager } from './ErrorManager.js';
 import { validateContactForm, ContactFormValidator } from '../validation.js';
+import { envLoader } from './EnvironmentLoader.js';
 
 // API Types
 interface ContactRequest {
@@ -35,10 +36,10 @@ interface UIConfig {
 export class UIManager {
   private navbar: HTMLElement | null = null;
   private config: UIConfig;
-  private errorHandler: ErrorHandler;
+  private errorHandler: ErrorManager;
   private ticking: boolean = false;
 
-  constructor(config: UIConfig, errorHandler: ErrorHandler) {
+  constructor(config: UIConfig, errorHandler: ErrorManager) {
     this.config = config;
     this.errorHandler = errorHandler;
     this.setupDOMElements();
@@ -58,8 +59,8 @@ export class UIManager {
     } catch (error) {
       this.errorHandler.handleError(error, 'Failed to setup DOM elements', {
         component: 'UIManager',
-        action: 'setupDOMElements',
-        timestamp: new Date().toISOString(),
+        operation: 'setupDOMElements',
+        timestamp: new Date(),
       });
     }
   }
@@ -167,7 +168,7 @@ export class UIManager {
     }
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(envLoader.get('CONTACT_API_ENDPOINT') || '/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -239,7 +240,7 @@ export class UIManager {
     loadingOverlay.innerHTML = `
       <div style="text-align: center;">
         <div style="border: 2px solid #f3f3f3; border-top: 2px solid #3498db; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
-        ${message}
+        ${window.DOMPurify ? window.DOMPurify.sanitize(message) : message}
       </div>
       <style>
         @keyframes spin {

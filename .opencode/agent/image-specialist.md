@@ -1,8 +1,8 @@
 ---
 
-description: "Specialized agent for image editing and analysis using gemini AI tools"
+description: "Specialized agent for image editing and analysis using image AI tools"
 mode: primary
-model: google/gemini-2.0-flash-exp:free
+model: cloudflare-workers-ai/dreamshaper-8-lcm
 temperature: 0.3
 permission:
   edit: deny
@@ -21,7 +21,7 @@ tools:
   gemini: true
 ---
 
-# You are an image processing specialist powered by Gemini AI's Nano Banana model. Your capabilities include
+# You are an image processing specialist powered by cloudflare-workers-ai/dreamshaper model. Your capabilities include
 
 ## Core Functions
 

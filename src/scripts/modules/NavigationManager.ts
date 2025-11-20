@@ -1,6 +1,6 @@
 /**
  * Navigation Manager for LOFERSIL Landing Page
- * Handles mobile menu, navigation state, and UI interactions
+ * Handles dropdown menu, navigation state, and UI interactions
  */
 
 export class NavigationManager {
@@ -8,14 +8,23 @@ export class NavigationManager {
   private navMenu: HTMLElement | null;
   private navbar: HTMLElement | null;
   private isMenuOpen: boolean;
+  private isDesktop: boolean;
 
   constructor() {
     this.navToggle = null;
     this.navMenu = null;
     this.navbar = null;
     this.isMenuOpen = false;
+    this.isDesktop = this.checkIsDesktop();
     this.setupDOMElements();
     this.setupEventListeners();
+  }
+
+  /**
+   * Check if current viewport is desktop size
+   */
+  private checkIsDesktop(): boolean {
+    return window.innerWidth >= 769;
   }
 
   /**
@@ -24,7 +33,7 @@ export class NavigationManager {
   private setupDOMElements(): void {
     this.navToggle = document.getElementById('nav-toggle');
     this.navMenu = document.getElementById('nav-menu');
-    this.navbar = document.getElementById('main-nav');
+    this.navbar = document.getElementById('main-header');
   }
 
   /**
@@ -35,22 +44,28 @@ export class NavigationManager {
     this.navToggle?.addEventListener('click', () => this.toggleMobileMenu());
     // Close menu when clicking outside
     document.addEventListener('click', e => this.handleOutsideClick(e));
-    // Close menu on escape key
-    document.addEventListener('keydown', e => this.handleKeydown(e));
+    // Close menu on escape key and handle focus trap
+    document.addEventListener('keydown', e => {
+      this.handleKeydown(e);
+      this.handleFocusTrap(e);
+    });
     // Handle window resize
     window.addEventListener('resize', () => this.handleResize());
   }
 
   /**
-   * Toggle mobile navigation menu
+   * Toggle dropdown navigation menu (mobile only)
    */
   toggleMobileMenu(): void {
+    // Only allow toggling on mobile devices
+    if (this.isDesktop) return;
+
     this.isMenuOpen = !this.isMenuOpen;
-    if (this.navMenu) {
-      this.navMenu.classList.toggle('active', this.isMenuOpen);
-    }
     if (this.navToggle) {
       this.navToggle.classList.toggle('active', this.isMenuOpen);
+    }
+    if (this.navMenu) {
+      this.navMenu.classList.toggle('active', this.isMenuOpen);
     }
     // Prevent body scroll when menu is open
     document.body.classList.toggle('menu-open', this.isMenuOpen);
@@ -68,16 +83,64 @@ export class NavigationManager {
   }
 
   /**
-   * Handle window resize
+   * Handle focus trap for mobile menu
    */
-  private handleResize(): void {
-    if (window.innerWidth > 768 && this.isMenuOpen) {
-      this.toggleMobileMenu();
+  private handleFocusTrap(e: KeyboardEvent): void {
+    if (!this.isMenuOpen || e.key !== 'Tab') return;
+
+    const focusableElements = this.navMenu?.querySelectorAll(
+      'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusableElements) return;
+
+    const firstElement = focusableElements[0] as HTMLElement;
+    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+    if (e.shiftKey) {
+      // Shift + Tab
+      if (document.activeElement === firstElement) {
+        lastElement.focus();
+        e.preventDefault();
+      }
+    } else {
+      // Tab
+      if (document.activeElement === lastElement) {
+        firstElement.focus();
+        e.preventDefault();
+      }
     }
   }
 
   /**
-   * Handle clicks outside the mobile menu
+   * Handle window resize
+   */
+  private handleResize(): void {
+    const wasDesktop = this.isDesktop;
+    this.isDesktop = this.checkIsDesktop();
+
+    // If switching from mobile to desktop, close the menu
+    if (!wasDesktop && this.isDesktop && this.isMenuOpen) {
+      this.closeMobileMenu();
+    }
+  }
+
+  /**
+   * Close mobile menu and reset state
+   */
+  private closeMobileMenu(): void {
+    this.isMenuOpen = false;
+    if (this.navToggle) {
+      this.navToggle.classList.remove('active');
+    }
+    if (this.navMenu) {
+      this.navMenu.classList.remove('active');
+    }
+    document.body.classList.remove('menu-open');
+    this.navToggle?.setAttribute('aria-expanded', 'false');
+  }
+
+  /**
+   * Handle clicks outside the dropdown menu
    */
   private handleOutsideClick(e: Event): void {
     const target = e.target as Element;
@@ -105,14 +168,18 @@ export class NavigationManager {
   }
 
   /**
-   * Handle mobile menu state on load
+   * Handle menu state on load
    */
-  handleMobileMenuState(): void {
-    if (window.innerWidth <= 768) {
+  handleMenuState(): void {
+    // On desktop, menu is always visible, so no "open" state
+    if (this.isDesktop) {
       this.isMenuOpen = false;
       if (this.navMenu) {
         this.navMenu.classList.remove('active');
       }
+    } else {
+      // On mobile, ensure menu starts closed
+      this.closeMobileMenu();
     }
   }
 
@@ -122,8 +189,8 @@ export class NavigationManager {
   setupNavigation(): void {
     // Set active navigation based on current path
     this.setActiveNavigation();
-    // Handle mobile menu state
-    this.handleMobileMenuState();
+    // Handle menu state
+    this.handleMenuState();
   }
 
   /**

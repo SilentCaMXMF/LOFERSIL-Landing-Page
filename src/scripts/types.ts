@@ -1,5 +1,14 @@
 // TypeScript interfaces for the LOFERSIL Landing Page application
 
+// Global declarations for external libraries
+declare global {
+  interface Window {
+    DOMPurify: {
+      sanitize: (dirty: string | Node, config?: Record<string, unknown>) => string;
+    };
+  }
+}
+
 export interface Config {
   mobileBreakpoint: number;
   scrollThreshold: number;
@@ -24,7 +33,7 @@ export interface Metrics {
 }
 
 export interface Translations {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface WebVitalsMetric {
@@ -45,4 +54,69 @@ export interface ContactResponse {
   data: { id: string };
   error?: string;
   timestamp: string;
+}
+
+/**
+ * Base event interface for OpenCode events
+ */
+export interface OpenCodeEvent {
+  type: string;
+  timestamp: string;
+  sessionId?: string;
+  userId?: string;
+  metadata?: Record<string, unknown>;
+  [key: string]: unknown; // Allow additional fields for flexibility
+}
+
+/**
+ * Session idle event
+ */
+export interface SessionIdleEvent extends OpenCodeEvent {
+  type: 'session.idle';
+  idleDuration: number; // Duration in milliseconds since last activity
+  lastActivity: string; // ISO timestamp of last activity
+  sessionStart: string; // ISO timestamp when session started
+  lastMessage?: string; // Last captured message content
+  userAgent?: string;
+  referrer?: string;
+  pageUrl?: string;
+}
+
+/**
+ * Message updated event
+ */
+export interface MessageUpdatedEvent extends OpenCodeEvent {
+  type: 'message.updated';
+  messageId: string;
+  content: string;
+  timestamp: string;
+  source?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Message part updated event
+ */
+export interface MessagePartUpdatedEvent extends OpenCodeEvent {
+  type: 'message.part.updated';
+  messageId: string;
+  partId: string;
+  content: string;
+  partIndex: number;
+  totalParts: number;
+  timestamp: string;
+  source?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Generic event handler type
+ */
+export type EventHandler<T extends OpenCodeEvent = OpenCodeEvent> = (event: T) => void;
+
+/**
+ * Event listener registry
+ */
+export interface EventListeners {
+  [eventType: string]: EventHandler[];
 }

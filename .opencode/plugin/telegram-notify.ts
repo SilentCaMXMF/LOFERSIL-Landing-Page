@@ -1,98 +1,216 @@
-import type { Plugin } from "@opencode-ai/plugin"
-import { SimpleTelegramBot } from './lib/telegram-bot';
+import type { Plugin } from '@opencode-ai/plugin';
+import SimpleTelegramBot from './lib/SimpleTelegramBot';
+import { 
+  NotificationError, 
+  ErrorHandler,
+  BasePluginError 
+} from './lib/errors.js';
+import { SecurityAuditLogger } from './lib/security-utils.js';
+import { messageConfig } from './lib/config.js';
+import { 
+  TelegramSender,
+  MessageTemplates,
+  CommandProcessor,
+  MessageFormatter
+} from './lib/message-utils.js';
 
-export const TelegramNotify: Plugin = async ({ $ }) => {
+
+
+// Define event interfaces for better type safety
+interface BaseEvent {
+  type: string;
+  timestamp?: number;
+  sessionId?: string;
+}
+
+interface SessionIdleEvent extends BaseEvent {
+  type: 'session.idle';
+  // OpenCode may include additional session context
+  sessionId?: string;
+  duration?: number;
+  lastActivity?: number;
+}
+
+interface MessageUpdatedEvent extends BaseEvent {
+  type: 'message.updated';
+  message?: { content: string };
+  content?: string;
+  // Additional fields that might be present
+  id?: string;
+  timestamp?: number;
+}
+
+interface FileEditedEvent extends BaseEvent {
+  type: 'file.edited';
+  // Additional fields that might be present
+  filePath?: string;
+  operation?: string;
+}
+
+interface MessagePartUpdatedEvent extends BaseEvent {
+  type: 'message.part.updated';
+  part?: { content: string };
+  // Additional fields that might be present
+  messageId?: string;
+  partIndex?: number;
+}
+
+type OpenCodeEvent =
+  | SessionIdleEvent
+  | MessageUpdatedEvent
+  | FileEditedEvent
+  | MessagePartUpdatedEvent;
+
+export const TelegramNotify: Plugin = async ({ project, client, directory, worktree }) => {
   // Initialize Telegram bot
-  const bot = new SimpleTelegramBot()
-  let lastMessage = ""
+  const bot = await SimpleTelegramBot.create();
+  if (!bot) {
+    return {}; // Return empty plugin if bot initialization fails
+  }
+
+  // Initialize message utilities
+  const sender = new TelegramSender(bot);
+  const commandProcessor = new CommandProcessor();
+  
+  let lastMessage = '';
+  const MAX_MESSAGE_LENGTH = messageConfig.MAX_MESSAGE_LENGTH; // Use centralized config
+
+  // Helper function to extract message content from event
+  const extractMessageContent = (event: OpenCodeEvent): string => {
+    if ('message' in event && event.message) return event.message.content;
+    if ('content' in event) return event.content || '';
+    if ('part' in event && event.part) return event.part.content;
+    return '';
+  };
+
+  // Helper function to update last message with truncation
+  const updateLastMessage = (content: string) => {
+    if (content && content !== 'Message updated' && content !== 'Message part updated') {
+      lastMessage = content.length > MAX_MESSAGE_LENGTH
+        ? content.substring(0, MAX_MESSAGE_LENGTH) + '...[truncated]'
+        : content;
+    }
+  };
+
+  // Register command handlers
+  commandProcessor.registerHandler('/send-last', async (content, lastMessage) => {
+    if (lastMessage) {
+      const response = MessageTemplates.commandResponse('/send-last', lastMessage, true);
+      return await sender.sendMessage(response);
+    } else {
+      const response = MessageTemplates.commandResponse('/send-last', 'No previous message found.', false);
+      return await sender.sendMessage(response);
+    }
+  });
+
+  commandProcessor.registerHandler('/last', async (content, lastMessage) => {
+    return await commandProcessor.processCommand('/send-last ' + content, lastMessage);
+  });
+
+  commandProcessor.registerHandler('/send-to-phone', async (content, lastMessage) => {
+    if (lastMessage) {
+      const response = MessageTemplates.commandResponse('/send-to-phone', lastMessage, true);
+      return await sender.sendMessage(response);
+    } else {
+      const response = MessageTemplates.commandResponse('/send-to-phone', 'No message to send to phone.', false);
+      return await sender.sendMessage(response);
+    }
+  });
+
+  commandProcessor.registerHandler('/phone', async (content, lastMessage) => {
+    return await commandProcessor.processCommand('/send-to-phone ' + content, lastMessage);
+  });
 
   return {
-    async event(input) {
-      if (input.event.type === "session.idle") {
-        // Send the last message content along with idle notification
-        const message = lastMessage
-          ? `🟡 Session idle! Here's your last message:\n\n${lastMessage}`
-          : "🟡 Hey! Your OpenCode session is idle - time to check your work!"
-        bot.sendMessage(message)
-      }
+    event: async ({ event }) => {
+      const e = event as OpenCodeEvent;
 
-      if (input.event.type === "message.updated") {
-        // Reset idle timer when user sends messages
-        bot.resetActivity()
-
-        const messageContent = (input.event as any).message?.content ||
-                              (input.event as any).content || ""
-
-        // Check if it's a command to send last message
-        if (messageContent.includes("/send-last") || messageContent.includes("/last")) {
-          if (lastMessage) {
-            bot.sendMessage(`📱 Here's your last message:\n\n${lastMessage}`)
-          } else {
-            bot.sendMessage("📱 No previous message found.")
-          }
-          return
-        }
-
-        // Check if it's a command to send to phone
-        if (messageContent.includes("/send-to-phone") || messageContent.includes("/phone")) {
-          if (lastMessage) {
-            bot.sendMessage(`📱 Sending to your phone:\n\n${lastMessage}`)
-          } else {
-            bot.sendMessage("📱 No message to send to phone.")
-          }
-          return
-        }
-
-        // Try to capture message content from the event
+      if (e.type === 'session.idle') {
+        
+        // Use message template for idle notification
+        const idleMessage = MessageTemplates.sessionIdle(lastMessage);
+        
         try {
-          // Access message content if available
-          const messageContent = (input.event as any).message?.content ||
-                                (input.event as any).content ||
-                                "Message updated"
+          // Send using the centralized sender with proper error handling
+          const success = await sender.sendMessage(idleMessage, {
+            operation: 'idle_notification'
+          });
+          
+          // Notification sent successfully or failed - handled by error logging
+        } catch (error: unknown) {
+          const notificationError = error instanceof BasePluginError
+            ? error
+            : new NotificationError(
+                `Failed to send idle notification: ${error instanceof Error ? error.message : String(error)}`,
+                'idle_notification',
+                ErrorHandler.isRetryableError(error),
+                ErrorHandler.createErrorContext('idle_notification', {
+                  messageLength: idleMessage.length,
+                  hasLastMessage: !!lastMessage
+                })
+              );
 
-          if (messageContent && messageContent !== "Message updated") {
-            lastMessage = messageContent
+          const errorContext = ErrorHandler.sanitizeErrorForLogging(notificationError);
+          SecurityAuditLogger.error('telegram_idle_notification_failed', errorContext);
 
-            // Send a preview of the message to Telegram
-            const preview = lastMessage.length > 200
-              ? lastMessage.substring(0, 200) + "..."
-              : lastMessage
-
-            bot.sendMessage(`📱 Last message preview:\n\n${preview}`)
-          }
-        } catch (error) {
-          // If we can't access the message content, just log it
-          console.log("Message updated but couldn't capture content")
+          // Don't re-throw to avoid breaking plugin chain
         }
       }
 
-      if (input.event.type === "file.edited") {
+      if (e.type === 'message.updated') {
+        // Reset idle timer when user sends messages
+        bot.resetActivity();
+
+        const messageContent = extractMessageContent(e);
+
+        // Process commands using the command processor
+        const commandHandled = await commandProcessor.processCommand(messageContent, lastMessage);
+        if (commandHandled) {
+          return; // Command was handled, exit early
+        }
+
+        // Update last message using helper
+        try {
+          updateLastMessage(messageContent);
+        } catch (error: unknown) {
+          const captureError = error instanceof BasePluginError
+            ? error
+            : new NotificationError(
+                `Failed to capture message content: ${error instanceof Error ? error.message : String(error)}`,
+                'message_capture',
+                false
+              );
+
+          const errorContext = ErrorHandler.sanitizeErrorForLogging(captureError);
+          SecurityAuditLogger.warn('telegram_message_capture_failed', errorContext);
+        }
+      }
+
+      if (e.type === 'file.edited') {
         // Reset idle timer when user edits files
-        bot.resetActivity()
+        bot.resetActivity();
       }
 
       // Also listen for message parts being updated
-      if (input.event.type === "message.part.updated") {
-        bot.resetActivity()
+      if (e.type === 'message.part.updated') {
+        bot.resetActivity();
 
         try {
-          const partContent = (input.event as any).part?.content ||
-                             (input.event as any).content ||
-                             "Message part updated"
+          const partContent = e.part?.content || extractMessageContent(e) || 'Message part updated';
+          updateLastMessage(partContent);
+        } catch (error: unknown) {
+          const captureError = error instanceof BasePluginError
+            ? error
+            : new NotificationError(
+                `Failed to capture message part content: ${error instanceof Error ? error.message : String(error)}`,
+                'message_part_capture',
+                false
+              );
 
-          if (partContent && partContent !== "Message part updated") {
-            lastMessage = partContent
-
-            const preview = lastMessage.length > 200
-              ? lastMessage.substring(0, 200) + "..."
-              : lastMessage
-
-            bot.sendMessage(`📱 Message part preview:\n\n${preview}`)
-          }
-        } catch (error) {
-          console.log("Message part updated but couldn't capture content")
+          const errorContext = ErrorHandler.sanitizeErrorForLogging(captureError);
+          SecurityAuditLogger.warn('telegram_message_part_capture_failed', errorContext);
         }
       }
-    }
-  }
-}
+    },
+  };
+};

@@ -3,20 +3,27 @@
  * Handles navigation, interactions, and dynamic content loading
  */
 import { ContactRequest, ContactResponse } from './types.js';
-import { config, metrics } from './modules/Config.js';
-import { debounce, throttle, isInViewport } from './modules/Utils.js';
 import { TranslationManager } from './modules/TranslationManager.js';
 import { NavigationManager } from './modules/NavigationManager.js';
-import { Router } from './modules/Router.js';
+import { ContactFormManager } from './modules/ContactFormManager.js';
+import { envLoader } from './modules/EnvironmentLoader.js';
+
 import { PerformanceTracker } from './modules/PerformanceTracker.js';
-import { ErrorHandler } from './modules/ErrorHandler.js';
+import { ErrorManager } from './modules/ErrorManager.js';
 import { SEOManager } from './modules/SEOManager.js';
 import { ScrollManager } from './modules/ScrollManager.js';
+import { Logger } from './modules/Logger.js';
+
+import { EventManager } from './modules/EventManager.js';
+import { PWAInstaller } from './modules/PWAInstaller.js';
+import { PushNotificationManager } from './modules/PushNotificationManager.js';
+import { PWAUpdater } from './modules/PWAUpdater.js';
+import { ThemeManager } from './modules/ThemeManager.js';
 
 // Extend Window interface for global properties
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
+    gtag?: (...args: unknown[]) => void;
     getWebVitals?: () => void;
   }
 }
@@ -28,11 +35,18 @@ class LOFERSILLandingPage {
   private mainContent: HTMLElement | null;
   private translationManager!: TranslationManager;
   private navigationManager!: NavigationManager;
-  private router!: Router;
   private performanceTracker!: PerformanceTracker;
-  private errorHandler!: ErrorHandler;
+  private errorHandler!: ErrorManager;
   private seoManager!: SEOManager;
   private scrollManager!: ScrollManager;
+  private logger!: Logger;
+
+  private contactFormManager: ContactFormManager | null = null;
+  private eventManager!: EventManager;
+  private pwaInstaller!: PWAInstaller;
+  private pushManager!: PushNotificationManager;
+  private pwaUpdater!: PWAUpdater;
+  private themeManager!: ThemeManager;
 
   constructor() {
     this.mainContent = null;
@@ -45,7 +59,12 @@ class LOFERSILLandingPage {
     try {
       this.setupDOMElements();
       // Initialize error handler
-      this.errorHandler = new ErrorHandler();
+      this.errorHandler = new ErrorManager();
+      // Initialize logger
+      this.logger = Logger.getInstance();
+      // Initialize event manager
+      this.eventManager = new EventManager(this.logger, this.errorHandler);
+
       // Initialize translation manager
       this.translationManager = new TranslationManager(this.errorHandler);
       // Initialize navigation manager
@@ -69,31 +88,34 @@ class LOFERSILLandingPage {
         },
         this.errorHandler
       );
-      // Initialize router after DOM elements are set up
-      this.router = new Router(
-        this.mainContent,
-        this.translationManager,
-        this.navigationManager,
-        this.seoManager.updateMetaTags.bind(this.seoManager),
-        this.errorHandler
-      );
       // Initialize scroll manager
       this.scrollManager = new ScrollManager(this.navigationManager);
       this.navigationManager.setupNavigation();
-      this.router.setupRouting();
       await this.translationManager.initialize();
-      console.info('LOFERSIL Landing Page initialized successfully');
+      this.setupLanguageToggle();
+
+      // Initialize theme manager
+      this.themeManager = new ThemeManager();
+
+      // Initialize PWA installer
+      this.pwaInstaller = new PWAInstaller();
+
+      // Initialize push notification manager
+      this.pushManager = new PushNotificationManager('YOUR_VAPID_PUBLIC_KEY'); // TODO: Configure VAPID key
+
+      // Initialize PWA updater
+      this.pwaUpdater = new PWAUpdater();
+
+      // Register service worker
+      this.registerServiceWorker();
+      // Initialize contact form manager lazily
+      this.initializeContactFormLazily();
     } catch (error) {
-      // Use error handler if available, otherwise fallback to console
-      if (this.errorHandler) {
-        this.errorHandler.handleError(error, 'Application initialization failed', {
-          component: 'LOFERSILLandingPage',
-          action: 'initializeApp',
-          timestamp: new Date().toISOString(),
-        });
-      } else {
-        console.error('Failed to initialize LOFERSIL Landing Page:', error);
-      }
+      this.errorHandler.handleError(error, 'Application initialization failed', {
+        component: 'LOFERSILLandingPage',
+        operation: 'initializeApp',
+        timestamp: new Date(),
+      });
     }
   }
   /**
@@ -104,11 +126,31 @@ class LOFERSILLandingPage {
   }
 
   /**
+   * Setup language toggle functionality
+   */
+  setupLanguageToggle() {
+    const langToggle = document.getElementById('lang-toggle') as HTMLButtonElement;
+    if (langToggle) {
+      // Set initial text
+      const currentLang = this.translationManager.getCurrentLanguage();
+      langToggle.textContent = currentLang.toUpperCase();
+      langToggle.setAttribute('data-translate', `nav.langToggle`);
+
+      langToggle.addEventListener('click', () => {
+        const currentLang = this.translationManager.getCurrentLanguage();
+        const newLang = currentLang === 'pt' ? 'en' : 'pt';
+        this.translationManager.switchLanguage(newLang);
+        // The applyTranslations in switchLanguage will update the button
+      });
+    }
+  }
+
+  /**
    * Submit contact form via API
    */
   async submitContact(request: ContactRequest): Promise<ContactResponse> {
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(envLoader.get('CONTACT_API_ENDPOINT') || '/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -122,8 +164,8 @@ class LOFERSILLandingPage {
     } catch (error) {
       this.errorHandler.handleError(error, 'Contact form submission failed', {
         component: 'LOFERSILLandingPage',
-        action: 'submitContact',
-        timestamp: new Date().toISOString(),
+        operation: 'submitContact',
+        timestamp: new Date(),
       });
       return {
         success: false,
@@ -133,6 +175,67 @@ class LOFERSILLandingPage {
       };
     }
   }
+  /**
+   * Initialize contact form manager lazily when needed
+   */
+  private async initializeContactFormLazily(): Promise<void> {
+    // Wait for user interaction or scroll to contact section
+    const contactSection = document.getElementById('contact-form');
+    if (contactSection) {
+      // Use Intersection Observer to load when contact section is visible
+      const observer = new IntersectionObserver(
+        async entries => {
+          if (entries[0].isIntersecting) {
+            observer.disconnect();
+            try {
+              const { createContactForm } = await import('./modules/ContactFormManager.js');
+              this.contactFormManager = createContactForm();
+            } catch (error) {
+              this.errorHandler.handleError(error, 'Failed to load contact form manager', {
+                component: 'LOFERSILLandingPage',
+                operation: 'initializeContactFormLazily',
+                timestamp: new Date(),
+              });
+            }
+          }
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(contactSection);
+    } else {
+      // Fallback: load immediately if section not found
+      try {
+        const { createContactForm } = await import('./modules/ContactFormManager.js');
+        this.contactFormManager = createContactForm();
+      } catch (error) {
+        this.errorHandler.handleError(error, 'Failed to load contact form manager', {
+          component: 'LOFERSILLandingPage',
+          operation: 'initializeContactFormLazily',
+          timestamp: new Date(),
+        });
+      }
+    }
+  }
+
+  /**
+   * Register service worker for PWA functionality
+   */
+  private async registerServiceWorker(): Promise<void> {
+    if ('serviceWorker' in navigator) {
+      try {
+        await navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
+        });
+      } catch (error) {
+        this.errorHandler.handleError(error, 'Service worker registration failed', {
+          component: 'LOFERSILLandingPage',
+          operation: 'registerServiceWorker',
+          timestamp: new Date(),
+        });
+      }
+    }
+  }
+
   /**
    * Get web vitals metrics (public API)
    */

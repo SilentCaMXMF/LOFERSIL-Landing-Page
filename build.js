@@ -32,7 +32,7 @@ const isProduction =
 
   fs.mkdirSync('./dist', { recursive: true });
 
-  // Compile TypeScript
+  // Compile TypeScript (excludes .opencode directory - MCP tools are development-only)
   console.log('📝 Compiling TypeScript...');
   try {
     const tscCommand = isProduction ? 'npx tsc' : 'npx tsc --noEmitOnError';
@@ -49,35 +49,97 @@ const isProduction =
       });
     }
 
-    // Move compiled JS to scripts directory
-    if (fs.existsSync('./dist/index.js')) {
+    // Move compiled JS from dist/src/scripts to dist/scripts
+    if (fs.existsSync('./dist/src/scripts')) {
       fs.mkdirSync('./dist/scripts', { recursive: true });
-      fs.renameSync('./dist/index.js', './dist/scripts/index.js');
+      // Move all files from dist/src/scripts to dist/scripts
+      const srcScriptsFiles = fs.readdirSync('./dist/src/scripts');
+      srcScriptsFiles.forEach(file => {
+        fs.renameSync(`./dist/src/scripts/${file}`, `./dist/scripts/${file}`);
+      });
+      // Remove empty src directory
+      fs.rmSync('./dist/src', { recursive: true, force: true });
     }
 
-    // Move modules directory to scripts/modules
-    if (fs.existsSync('./dist/modules')) {
-      fs.renameSync('./dist/modules', './dist/scripts/modules');
+    // Move API files if they exist
+    if (fs.existsSync('./dist/api')) {
+      // API files are already in the right place
     }
-
-    // Move other non-test JS files to scripts directory
-    const jsFiles = fs
-      .readdirSync('./dist')
-      .filter(file => file.endsWith('.js') && !file.includes('.test.'));
-    jsFiles.forEach(file => {
-      if (file !== 'index.js') {
-        // index.js already moved
-        fs.renameSync(`./dist/${file}`, `./dist/scripts/${file}`);
-      }
-    });
   } catch (error) {
     console.error('❌ TypeScript compilation failed');
     process.exit(1);
   }
 
-  // Copy HTML files to dist
-  console.log('📄 Copying HTML files...');
-  fs.copyFileSync('./index.html', './dist/index.html');
+  // Function to inject environment variables into HTML
+  function injectEnvironmentVariables(sourcePath, destPath) {
+    let htmlContent = fs.readFileSync(sourcePath, 'utf8');
+
+    // Load safe environment variables from process.env (for CI/CD) or .env file (for local development)
+    const envVars = {};
+
+    // Define which environment variables are safe to expose to the browser
+    const safeVars = [
+      'NODE_ENV',
+      'ENABLE_MCP_INTEGRATION',
+      'MCP_CLIENT_ID',
+      'ENABLE_ANALYTICS',
+      'ENABLE_ERROR_TRACKING',
+      'ENABLE_PERFORMANCE_MONITORING',
+    ];
+
+    // First, try to get variables from process.env (GitHub Actions/CI)
+    safeVars.forEach(key => {
+      if (process.env[key]) {
+        envVars[key] = process.env[key];
+      }
+    });
+
+    // For local development, also check .env file if no CI variables found
+    if (Object.keys(envVars).length === 0 && fs.existsSync('./.env') && !isProduction) {
+      console.log('📄 Loading environment variables from .env file for local development...');
+      const envContent = fs.readFileSync('./.env', 'utf8');
+      envContent.split('\n').forEach(line => {
+        const [key, value] = line.split('=');
+        if (key && value && !line.startsWith('#') && safeVars.includes(key.trim())) {
+          envVars[key.trim()] = value.trim();
+        }
+      });
+    }
+
+    // Inject environment variables as a script tag
+    const envScript = `<script type="application/json" data-env>${JSON.stringify(envVars)}</script>`;
+    htmlContent = htmlContent.replace('</head>', `${envScript}\n</head>`);
+
+    // Transform image paths from assets/images/ to images/ for production
+    htmlContent = htmlContent.replace(/assets\/images\//g, 'images/');
+
+    // Fix srcset URL encoding for filenames with spaces
+    htmlContent = htmlContent.replace(/srcset="([^"]*)"/g, (match, srcsetContent) => {
+      // Split srcset into descriptors and encode each URL
+      const descriptors = srcsetContent.split(',').map(desc => desc.trim());
+      const encodedDescriptors = descriptors.map(descriptor => {
+        // Find the URL part (ends with image extension) and the descriptors part
+        const urlMatch = descriptor.match(/(images\/[^.]+\.(?:webp|jpg|jpeg|png))\s*(.*)/);
+        if (urlMatch) {
+          const [, url, descriptors] = urlMatch;
+          // Encode spaces and special chars in the URL
+          const encodedUrl = url
+            .replace(/ /g, '%20')
+            .replace(/ã/g, '%C3%A3')
+            .replace(/é/g, '%C3%A9');
+          return `${encodedUrl}${descriptors ? ' ' + descriptors : ''}`;
+        }
+        return descriptor;
+      });
+      return `srcset="${encodedDescriptors.join(', ')}"`;
+    });
+
+    fs.writeFileSync(destPath, htmlContent);
+  }
+
+  // Copy HTML files to dist with environment variables
+  console.log('📄 Copying HTML files with environment injection...');
+  injectEnvironmentVariables('./index.html', './dist/index.html');
 
   // Copy additional HTML pages
   if (fs.existsSync('./privacy.html')) {
@@ -86,6 +148,31 @@ const isProduction =
   if (fs.existsSync('./terms.html')) {
     fs.copyFileSync('./terms.html', './dist/terms.html');
   }
+  if (fs.existsSync('./offline.html')) {
+    fs.copyFileSync('./offline.html', './dist/offline.html');
+  }
+
+  // Concatenate CSS files
+  console.log('🔗 Concatenating CSS files...');
+  const cssFiles = [
+    'src/styles/base.css',
+    'src/styles/navigation.css',
+    'src/styles/hero.css',
+    'src/styles/sections.css',
+    'src/styles/forms.css',
+    'src/styles/privacy.css',
+    'src/styles/responsive.css',
+  ];
+  let concatenatedCSS = '';
+  for (const file of cssFiles) {
+    if (fs.existsSync(file)) {
+      concatenatedCSS += fs.readFileSync(file, 'utf8') + '\n';
+    } else {
+      console.warn(`⚠️ CSS file not found: ${file}`);
+    }
+  }
+  fs.writeFileSync('src/styles/main.css', concatenatedCSS);
+  console.log('✅ CSS files concatenated');
 
   // Process CSS with PostCSS
   console.log('🎨 Processing CSS...');
@@ -222,24 +309,40 @@ const isProduction =
     const imagesDir = './dist/images';
     if (fs.existsSync(imagesDir)) {
       const imageFiles = fs.readdirSync(imagesDir).filter(file => /\.(jpg|jpeg|png)$/i.test(file));
-      for (const file of imageFiles) {
-        const inputPath = path.join(imagesDir, file);
-        const baseName = path.parse(file).name;
-        const webpBase = path.join(imagesDir, baseName);
 
-        // Create responsive WebP versions
-        const sizes = [400, 800, 1200];
-        for (const size of sizes) {
-          await sharp(inputPath)
-            .resize(size, null, { withoutEnlargement: true })
-            .webp({ quality: 80 })
-            .toFile(`${webpBase}-${size}w.webp`);
-        }
+      // Process images in parallel batches to avoid overwhelming the system
+      const batchSize = 3; // Process 3 images at a time
+      for (let i = 0; i < imageFiles.length; i += batchSize) {
+        const batch = imageFiles.slice(i, i + batchSize);
+        const batchPromises = batch.map(async file => {
+          try {
+            const inputPath = path.join(imagesDir, file);
+            const baseName = path.parse(file).name;
+            const webpBase = path.join(imagesDir, baseName);
 
-        // Also create a full-size WebP
-        await sharp(inputPath).webp({ quality: 80 }).toFile(`${webpBase}.webp`);
+            // Create responsive WebP versions and full-size WebP in parallel
+            const sizes = [400, 800, 1200];
+            const sizePromises = sizes.map(size =>
+              sharp(inputPath)
+                .resize(size, null, { withoutEnlargement: true })
+                .webp({ quality: 80 })
+                .toFile(`${webpBase}-${size}w.webp`)
+            );
 
-        console.log(`✅ Optimized ${file}`);
+            // Add full-size WebP conversion
+            sizePromises.push(sharp(inputPath).webp({ quality: 80 }).toFile(`${webpBase}.webp`));
+
+            // Wait for all conversions for this image to complete
+            await Promise.all(sizePromises);
+
+            console.log(`✅ Optimized ${file}`);
+          } catch (error) {
+            console.warn(`⚠️ Failed to optimize ${file}: ${error.message}`);
+          }
+        });
+
+        // Wait for the current batch to complete before starting the next
+        await Promise.all(batchPromises);
       }
     }
   };
@@ -250,10 +353,66 @@ const isProduction =
     console.warn('⚠️ Image optimization failed, continuing...');
   }
 
+  // Validate image references
+  console.log('🔍 Validating image references...');
+  const validateImageReferences = () => {
+    const htmlContent = fs.readFileSync('./dist/index.html', 'utf8');
+    const imageRegex = /srcset="([^"]*)"|"([^"]*\.(jpg|jpeg|png|webp|svg))"/g;
+    const missingImages = [];
+
+    let match;
+    while ((match = imageRegex.exec(htmlContent)) !== null) {
+      const srcset = match[1];
+      const src = match[2];
+
+      if (srcset) {
+        // Parse srcset attributes
+        const descriptors = srcset.split(',').map(s => s.trim());
+        descriptors.forEach(descriptor => {
+          const [url] = descriptor.split(/\s+/);
+          if (url && !url.startsWith('http') && !url.startsWith('data:')) {
+            // Decode URL-encoded characters for filesystem check
+            const decodedUrl = decodeURIComponent(url);
+            const imagePath = path.join('./dist', decodedUrl);
+            if (!fs.existsSync(imagePath)) {
+              missingImages.push(url);
+            }
+          }
+        });
+      } else if (src && !src.startsWith('http') && !src.startsWith('data:')) {
+        // Decode URL-encoded characters for filesystem check
+        const decodedSrc = decodeURIComponent(src);
+        const imagePath = path.join('./dist', decodedSrc);
+        if (!fs.existsSync(imagePath)) {
+          missingImages.push(src);
+        }
+      }
+    }
+
+    if (missingImages.length > 0) {
+      console.warn('⚠️ Missing images found:');
+      missingImages.forEach(img => console.warn(`  - ${img}`));
+    } else {
+      console.log('✅ All image references are valid');
+    }
+  };
+
+  try {
+    validateImageReferences();
+  } catch (error) {
+    console.warn('⚠️ Image validation failed, continuing...');
+  }
+
   // Generate sitemap
   console.log('🗺️ Generating sitemap...');
   const baseUrl =
-    process.env.WEBSITE_URL || (isProduction ? 'https://lofersil.vercel.app' : 'http://localhost');
+    process.env.WEBSITE_URL ||
+    (isProduction
+      ? (() => {
+          console.error('❌ WEBSITE_URL environment variable is required for production builds');
+          process.exit(1);
+        })()
+      : 'http://localhost:3000');
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
