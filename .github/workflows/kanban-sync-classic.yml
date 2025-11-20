@@ -126,13 +126,48 @@ jobs:
               // Create the issue
               const issueNodeId = await createIssueForTask(t);
 
-              // Resolve status option
-              const statusOptionId = mapGroupToStatusId(t.group);
+               // Resolve status option
+               const statusOptionId = mapGroupToStatusId(t.group);
 
-              // TODO: Add issue to project with status
-              // The GraphQL mutation syntax needs to be fixed for nested operations
-              // For now, issues are created successfully with proper metadata
-              core.info(`Created issue for task "${t.title}" with status option: ${statusOptionId}`);
+               // Add issue to project
+               const addItemMutation = `
+                 mutation($projectId:ID!, $contentId:ID!) {
+                   addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                     item {
+                       id
+                     }
+                   }
+                 }
+               `;
+               const addItemResp = await github.graphql(addItemMutation, {
+                 projectId,
+                 contentId: issueNodeId
+               });
+               const itemId = addItemResp.addProjectV2ItemById.item.id;
+
+               // Set status field
+               const updateStatusMutation = `
+                 mutation($projectId:ID!, $itemId:ID!, $fieldId:ID!, $optionId:String!) {
+                   updateProjectV2ItemFieldValue(input: {
+                     projectId: $projectId,
+                     itemId: $itemId,
+                     fieldId: $fieldId,
+                     value: { singleSelectOptionId: $optionId }
+                   }) {
+                     projectV2Item {
+                       id
+                     }
+                   }
+                 }
+               `;
+               await github.graphql(updateStatusMutation, {
+                 projectId,
+                 itemId,
+                 fieldId: statusField.id,
+                 optionId: statusOptionId
+               });
+
+               core.info(`Added issue "${t.title}" to project with status: ${statusOptionId}`);
             }
 
             core.info('Kanban sync completed.');
