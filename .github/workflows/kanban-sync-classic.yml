@@ -1,0 +1,114 @@
+name: Sync Kanban to GitHub Project (Classic)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - kanban_payload.json
+
+permissions:
+  contents: write
+
+jobs:
+  kanban-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync Kanban Payload to Classic Project
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.KANBAN_GH_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const payload = JSON.parse(fs.readFileSync('kanban_payload.json','utf8'));
+            const tasks = payload.tasks;
+
+            // Target: Classic Projects (owner: SilentCaMXMF, project number 2)
+            const PROJECT_OWNER = 'SilentCaMXMF';
+            const PROJECT_NUMBER = 2;
+            // Issues will be created in the LOFERSIL-Landing-Page repo (owned by PROJECT_OWNER)
+            const ISSUES_REPO_OWNER = 'SilentCaMXMF';
+            const ISSUES_REPO = 'LOFERSIL-Landing-Page';
+
+            // 1) Get the user projects and pick the one with number = PROJECT_NUMBER
+            const userProjects = await github.rest.projects.listForUser({
+              username: PROJECT_OWNER,
+              per_page: 100
+            });
+
+            const targetProject = userProjects.data.find(p => p.number === PROJECT_NUMBER);
+            if (!targetProject) {
+              core.setFailed(`Could not locate user project number ${PROJECT_NUMBER} for ${PROJECT_OWNER}`);
+              return;
+            }
+            const projectId = targetProject.id;
+
+            // 2) Get columns for the target project
+            const columnsResp = await github.rest.projects.listColumns({ project_id: projectId });
+            const columns = columnsResp.data;
+            const colByName = {};
+            for (const c of columns) {
+              colByName[c.name.toLowerCase()] = c.id;
+            }
+
+            // Updated mapping from group to your column names: Backlog, Ready, In progress, In review
+            function mapGroupToColumnId(group) {
+              const g = (group || '').toLowerCase().trim();
+              const mapping = {
+                'completed': 'in review',
+                'done': 'in review',
+                'ongoing': 'in progress',
+                'in progress': 'in progress',
+                'inprogress': 'in progress',
+                'todo': 'backlog',
+                'to do': 'backlog',
+                'plans': 'ready',
+                'subtasks': 'ready'
+              };
+              const targetName = mapping[g] || g;
+              return colByName[targetName] || Object.values(colByName)[0];
+            }
+
+            // 3) For each task: create an issue in the LOFERSIL-Landing-Page repo, then card
+            async function createIssueForTask(t) {
+              const body = [
+                `Group: ${t.group}`,
+                `Status: ${t.status}`,
+                `Source: ${t.source}`,
+                `Notes: ${t.notes}`,
+                `KanbanID: ${t.id}`
+              ].join('\\n');
+              const issue = await github.rest.issues.create({
+                owner: ISSUES_REPO_OWNER,
+                repo: ISSUES_REPO,
+                title: t.title,
+                body: body
+              });
+              return issue.data.id; // numeric id for REST, used as content_id
+            }
+
+            for (const t of tasks) {
+              // Create the issue in the target repo
+              const issueId = await createIssueForTask(t);
+
+              // Resolve target column for this task
+              const columnId = mapGroupToColumnId(t.group);
+              if (!columnId) {
+                core.info(`No column found for group ${t.group}, skipping card creation for "${t.title}"`);
+                continue;
+              }
+
+              // Add a card to the column with content_type = "Issue" and content_id = issueId
+              // Classic Projects API: POST /projects/columns/{column_id}/cards
+              await github.rest.projects.createCard({
+                column_id: columnId,
+                content_id: issueId,
+                content_type: 'Issue'
+              });
+
+              core.info(`Linked task "${t.title}" as Issue #${issueId} to column ${columnId}`);
+            }
+
+            core.info('Kanban sync completed.');

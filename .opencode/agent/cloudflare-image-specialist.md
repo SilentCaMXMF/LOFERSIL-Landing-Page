@@ -1,7 +1,7 @@
 ---
 description: 'Specialized agent for image editing and generation using Cloudflare Workers AI tools'
 mode: primary
-model: github-models/anthropic/claude-3.5-sonnet
+model: cloudflare-workers-ai/dreamshaper-8-lcm
 temperature: 0.3
 permission:
   edit: deny
