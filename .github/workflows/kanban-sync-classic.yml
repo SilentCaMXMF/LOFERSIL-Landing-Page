@@ -34,7 +34,7 @@ jobs:
 
             // 1) Get the user projects v2 and pick the one with number = PROJECT_NUMBER
             const getUserProjects = `
-              query($login:String!, $number:Int!) {
+              query($login:String!) {
                 user(login: $login) {
                   projectsV2(first: 10) {
                     nodes {
@@ -46,7 +46,7 @@ jobs:
                 }
               }
             `;
-            const projectsResp = await github.graphql(getUserProjects, { login: USER_LOGIN, number: PROJECT_NUMBER });
+            const projectsResp = await github.graphql(getUserProjects, { login: USER_LOGIN });
             const targetProject = projectsResp.user.projectsV2.nodes.find(p => p.number === PROJECT_NUMBER);
             if (!targetProject) {
               core.setFailed(`Could not locate user project number ${PROJECT_NUMBER} for ${USER_LOGIN}`);
