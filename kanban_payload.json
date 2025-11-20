@@ -5,7 +5,7 @@
     {
       "id": "COMP-MCP-INT-001",
       "title": "Integração MCP - Model Context Protocol (MCP)",
-      "group": "Completed",
+      "group": "In Review",
       "status": "Done (Advanced Improvements)",
       "priority": "P1",
       "source": "tasks/completed/mcp-integration.md",
@@ -14,7 +14,7 @@
     {
       "id": "COMP-CLOUDFLARE-MCP-INT-001",
       "title": "Cloudflare MCP Integration",
-      "group": "Completed",
+      "group": "In Review",
       "status": "Done",
       "priority": "P1",
       "source": "tasks/completed/cloudflare-mcp-integration.md",
@@ -23,7 +23,7 @@
     {
       "id": "COMP-FIX-BUILD-ASSETS-001",
       "title": "Fix Build Assets and SW Errors",
-      "group": "Completed",
+      "group": "In Review",
       "status": "Done",
       "priority": "P2",
       "source": "tasks/completed/fix-build-assets-and-sw-errors/README.md",
