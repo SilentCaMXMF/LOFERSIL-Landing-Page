@@ -1,6 +1,6 @@
 {
   "repository": "LOFERSIL-Landing-Page",
-  "last_updated": "2025-11-20T12:20:00Z",
+  "last_updated": "2025-11-20T14:00:00Z",
   "tasks": [
     {
       "id": "COMP-MCP-INT-001",
@@ -127,6 +127,24 @@
       "priority": "P3",
       "source": "tasks/todo/test-gemini-tool-and-favicon/README.md",
       "notes": "No content yet."
+    },
+    {
+      "id": "SUB-UPDATE-KANBAN-001",
+      "title": "Update Kanban Payload",
+      "group": "Subtasks",
+      "status": "In Progress",
+      "priority": "P2",
+      "source": "tasks/subtasks/update-kanban-payload/README.md",
+      "notes": "Executing inventory and update of kanban_payload.json with all tasks from task directories"
+    },
+    {
+      "id": "PLAN-GITHUB-ISSUES-REVIEWER-001",
+      "title": "AI-Powered GitHub Issues Reviewer Architecture",
+      "group": "Plans",
+      "status": "Ready for Implementation",
+      "priority": "P1",
+      "source": "tasks/github-issues-reviewer-architecture.md",
+      "notes": "An autonomous system that analyzes GitHub issues, generates solutions using AI agents, and creates pull requests for review."
     }
   ]
 }
