@@ -1,6 +1,6 @@
 {
   "repository": "LOFERSIL-Landing-Page",
-  "last_updated": "2025-11-20T14:00:00Z",
+  "last_updated": "2025-11-20T15:00:00Z",
   "tasks": [
     {
       "id": "COMP-MCP-INT-001",
@@ -121,8 +121,8 @@
     },
     {
       "id": "PLAN-TESTGEMINI-001",
-      "title": "Test Gemini Tool and Favicon (Todo)",
-      "group": "Plans",
+      "title": "Test Gemini Tool and Favicon",
+      "group": "Todo",
       "status": "Todo",
       "priority": "P3",
       "source": "tasks/todo/test-gemini-tool-and-favicon/README.md",
@@ -136,6 +136,15 @@
       "priority": "P2",
       "source": "tasks/subtasks/update-kanban-payload/README.md",
       "notes": "Executing inventory and update of kanban_payload.json with all tasks from task directories"
+    },
+    {
+      "id": "SUB-TROUBLESHOOT-KANBAN-001",
+      "title": "Troubleshoot Kanban Population",
+      "group": "Subtasks",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/subtasks/troubleshoot-kanban-population/README.md",
+      "notes": "Diagnose and resolve why the Kanban board is not populating despite successful issue creation."
     },
     {
       "id": "PLAN-GITHUB-ISSUES-REVIEWER-001",
