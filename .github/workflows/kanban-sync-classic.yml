@@ -76,7 +76,7 @@ jobs:
               }
             `;
             const fieldsResp = await github.graphql(getProjectFields, { projectId });
-            const statusField = fieldsResp.node.fields.nodes.find(f => f.name.toLowerCase() === 'status');
+            const statusField = fieldsResp.node.fields.nodes.find(f => f.name && f.name.toLowerCase() === 'status');
             if (!statusField) {
               core.setFailed('Could not find Status field in the project');
               return;
