@@ -28,18 +28,11 @@ jobs:
       - name: Audit dependencies
         run: npm audit --audit-level=high
 
-      - name: Run tests
+      - name: Run lint
         run: npm run lint
 
-      - name: Check for critical vulnerabilities
-        run: |
-          if npm audit --audit-level=high | grep -q "high"; then
-            echo "❌ High severity vulnerabilities found. Please review and update dependencies."
-            npm audit --audit-level=high
-            exit 1
-          else
-            echo "✅ No high severity vulnerabilities found"
-          fi
+      - name: Run tests
+        run: npm run test
 
       - name: Check for critical vulnerabilities
         run: |
@@ -57,13 +50,13 @@ jobs:
           NODE_ENV: production
           # Deployment
           WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
-           # AI API Keys
-           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-           OPENAI_API_BASE_URL: ${{ secrets.OPENAI_API_BASE_URL }}
-           CONTEXT7_API_KEY: ${{ secrets.CONTEXT7_API_KEY }}
-           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-           CLOUDFLARE_API_BASE_URL: ${{ secrets.CLOUDFLARE_API_BASE_URL }}
+          # AI API Keys
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_BASE_URL: ${{ secrets.OPENAI_API_BASE_URL }}
+          CONTEXT7_API_KEY: ${{ secrets.CONTEXT7_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_BASE_URL: ${{ secrets.CLOUDFLARE_API_BASE_URL }}
           # Email Configuration
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -82,16 +75,16 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_BOT_USERNAME: ${{ secrets.TELEGRAM_BOT_USERNAME }}
           TELEGRAM_TEST_CHAT_ID: ${{ secrets.TELEGRAM_TEST_CHAT_ID }}
-           # Application Configuration
-           CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
-           PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
-           COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
-           COMPANY_DESCRIPTION: ${{ secrets.COMPANY_DESCRIPTION }}
-           SITE_NAME: ${{ secrets.SITE_NAME }}
-           SITE_TITLE: ${{ secrets.SITE_TITLE }}
-           SITE_DESCRIPTION: ${{ secrets.SITE_DESCRIPTION }}
-           OG_IMAGE_URL: ${{ secrets.OG_IMAGE_URL }}
-           CONTACT_API_ENDPOINT: ${{ secrets.CONTACT_API_ENDPOINT }}
+          # Application Configuration
+          CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
+          PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
+          COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
+          COMPANY_DESCRIPTION: ${{ secrets.COMPANY_DESCRIPTION }}
+          SITE_NAME: ${{ secrets.SITE_NAME }}
+          SITE_TITLE: ${{ secrets.SITE_TITLE }}
+          SITE_DESCRIPTION: ${{ secrets.SITE_DESCRIPTION }}
+          OG_IMAGE_URL: ${{ secrets.OG_IMAGE_URL }}
+          CONTACT_API_ENDPOINT: ${{ secrets.CONTACT_API_ENDPOINT }}
           # Feature Flags
           ENABLE_ANALYTICS: ${{ secrets.ENABLE_ANALYTICS }}
           ENABLE_ERROR_TRACKING: ${{ secrets.ENABLE_ERROR_TRACKING }}
