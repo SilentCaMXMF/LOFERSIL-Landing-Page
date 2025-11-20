@@ -86,23 +86,23 @@ jobs:
               statusOptions[opt.name.toLowerCase()] = opt.id;
             }
 
-            // Mapping from group to status option name (adjust to your project's status names)
-            function mapGroupToStatusId(group) {
-              const g = (group || '').toLowerCase().trim();
-              const mapping = {
-                'completed': 'done',  // adjust to your status names
-                'done': 'done',
-                'ongoing': 'in progress',
-                'in progress': 'in progress',
-                'inprogress': 'in progress',
-                'todo': 'backlog',
-                'to do': 'backlog',
-                'plans': 'ready',
-                'subtasks': 'ready'
-              };
-              const targetName = mapping[g] || g;
-              return statusOptions[targetName] || Object.values(statusOptions)[0];
-            }
+             // Mapping from group to status option name (matches your project's column names)
+             function mapGroupToStatusId(group) {
+               const g = (group || '').toLowerCase().trim();
+               const mapping = {
+                 'completed': 'In review',  // Completed tasks go to In review
+                 'done': 'In review',
+                 'ongoing': 'In progress',
+                 'in progress': 'In progress',
+                 'inprogress': 'In progress',
+                 'todo': 'Backlog',
+                 'to do': 'Backlog',
+                 'plans': 'Ready',
+                 'subtasks': 'Ready'
+               };
+               const targetName = mapping[g] || 'Backlog'; // Default to Backlog if no match
+               return statusOptions[targetName] || Object.values(statusOptions)[0];
+             }
 
             // 3) For each task: create an issue, then add to project with status
             async function createIssueForTask(t) {
