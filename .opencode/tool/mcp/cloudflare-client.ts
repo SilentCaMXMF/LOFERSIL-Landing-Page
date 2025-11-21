@@ -95,6 +95,75 @@ export class CloudflareWorkersAIMCPClient extends MCPClient {
   async getAvailableTools(): Promise<MCPTool[]> {
     return [
       {
+        name: 'text_generation',
+        description: 'Generate text using Llama models optimized for the free tier',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            prompt: {
+              type: 'string',
+              description: 'Text prompt for generation',
+              minLength: 1,
+              maxLength: 4096,
+            },
+            max_tokens: {
+              type: 'integer',
+              description: 'Maximum tokens to generate (1-1000)',
+              minimum: 1,
+              maximum: 1000,
+              default: 1000,
+            },
+          },
+          required: ['prompt'],
+        },
+      },
+      {
+        name: 'image_generation',
+        description: 'Generate images using Flux model optimized for the free tier',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            prompt: {
+              type: 'string',
+              description: 'Text description of the image to generate',
+              minLength: 1,
+              maxLength: 2048,
+            },
+            width: {
+              type: 'integer',
+              description: 'Width of the generated image in pixels (256-2048)',
+              minimum: 256,
+              maximum: 2048,
+              default: 1024,
+            },
+            height: {
+              type: 'integer',
+              description: 'Height of the generated image in pixels (256-2048)',
+              minimum: 256,
+              maximum: 2048,
+              default: 1024,
+            },
+          },
+          required: ['prompt'],
+        },
+      },
+      {
+        name: 'text_embedding',
+        description: 'Generate text embeddings using BAAI model',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            text: {
+              type: 'string',
+              description: 'Text to generate embeddings for',
+              minLength: 1,
+              maxLength: 512,
+            },
+          },
+          required: ['text'],
+        },
+      },
+      {
         name: 'generate_image_flux',
         description: 'Generate an image from text prompt using Flux-1-Schnell model',
         inputSchema: {
@@ -328,6 +397,12 @@ export class CloudflareWorkersAIMCPClient extends MCPClient {
    */
   async executeTool(name: string, parameters: any): Promise<any> {
     switch (name) {
+      case 'text_generation':
+        return await this.generateText(parameters);
+      case 'image_generation':
+        return await this.generateImage(parameters);
+      case 'text_embedding':
+        return await this.generateEmbedding(parameters);
       case 'generate_image_flux':
         return await this.generateImageFlux(parameters);
       case 'generate_image_stable_diffusion_xl':
@@ -340,6 +415,85 @@ export class CloudflareWorkersAIMCPClient extends MCPClient {
         return await this.analyzeImage(parameters);
       default:
         throw new Error(`Unknown tool: ${name}`);
+    }
+  }
+
+  /**
+   * Generate text using Cloudflare Workers AI
+   */
+  private async generateText(parameters: any): Promise<any> {
+    const { prompt, max_tokens = 1000 } = parameters;
+
+    if (!prompt) {
+      throw new Error('Missing required parameter: prompt');
+    }
+
+    const model = CLOUDFLARE_MODELS.text || '@cf/meta/llama-3.1-8b-instruct';
+
+    try {
+      const response = await this.makeRequest('/run/' + model, {
+        prompt,
+        max_tokens,
+      });
+
+      this.trackCost('text_generation', response);
+
+      return {
+        text: response.result?.response || response.result,
+        model,
+        usage: response.usage,
+      };
+    } catch (error) {
+      this.cloudflareLogger.error('CloudflareMCPClient', 'Text generation failed', error as Error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate image using Cloudflare Workers AI (documented interface)
+   */
+  private async generateImage(parameters: any): Promise<any> {
+    const { prompt, width = 1024, height = 1024 } = parameters;
+
+    if (!prompt) {
+      throw new Error('Missing required parameter: prompt');
+    }
+
+    // Use the flux model for the documented image_generation tool
+    return await this.generateImageFlux({
+      prompt,
+      width,
+      height,
+    });
+  }
+
+  /**
+   * Generate text embeddings using Cloudflare Workers AI
+   */
+  private async generateEmbedding(parameters: any): Promise<any> {
+    const { text } = parameters;
+
+    if (!text) {
+      throw new Error('Missing required parameter: text');
+    }
+
+    const model = CLOUDFLARE_MODELS.embedding || '@cf/baai/bge-large-en-v1.5';
+
+    try {
+      const response = await this.makeRequest('/run/' + model, {
+        text,
+      });
+
+      this.trackCost('text_embedding', response);
+
+      return {
+        embedding: response.result,
+        model,
+        dimensions: response.result?.length || 0,
+      };
+    } catch (error) {
+      this.cloudflareLogger.error('CloudflareMCPClient', 'Text embedding failed', error as Error);
+      throw error;
     }
   }
 
