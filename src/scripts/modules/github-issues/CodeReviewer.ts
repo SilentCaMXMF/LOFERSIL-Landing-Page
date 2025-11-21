@@ -703,4 +703,31 @@ export class CodeReviewer {
       },
     };
   }
+
+  /**
+   * Analyze performance impact of changes
+   */
+  private async analyzePerformanceImpact(changes: CodeChanges): Promise<{ issues: ReviewIssue[] }> {
+    // Stub implementation
+    return { issues: [] };
+  }
+
+  /**
+   * Review documentation
+   */
+  private async reviewDocumentation(
+    changes: CodeChanges,
+    issue: any
+  ): Promise<{ issues: ReviewIssue[] }> {
+    // Stub implementation
+    return { issues: [] };
+  }
+
+  /**
+   * Apply custom rules
+   */
+  private applyCustomRules(changes: CodeChanges, rules: any): ReviewIssue[] {
+    // Stub implementation
+    return [];
+  }
 }

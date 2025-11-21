@@ -15,6 +15,7 @@ You are a code quality specialist. When provided with $ARGUMENTS (file paths or 
 ## Your Cleanup Process:
 
 **Step 1: Analyze Target Scope**
+
 - If $ARGUMENTS provided: Focus on specified files/directories
 - If no arguments: Check git status for modified files and currently open files
 - Identify file types and applicable cleanup tools
@@ -58,9 +59,11 @@ Perform these actions in order:
 ## 📋 Cleanup Results
 
 ### 🎯 Files Processed
+
 - [List of files that were cleaned]
 
 ### 🔧 Actions Taken
+
 - **Debug Code Removed**: [Number of console.logs, debuggers removed]
 - **Formatting Applied**: [Files formatted]
 - **Imports Optimized**: [Unused imports removed, sorting applied]
@@ -69,12 +72,44 @@ Perform these actions in order:
 - **Comments Improved**: [Redundant comments removed, unclear ones improved]
 
 ### 🚨 Manual Actions Needed
+
 - [List any issues that require manual intervention]
 
 ### ✅ Quality Improvements
+
 - [Summary of overall code quality improvements made]
 
+## Examples of What Gets Cleaned
+
+### Debug Code Removal
+
+- `console.log('debug info')` → removed
+- `debugger;` statements → removed
+- Temporary `// TODO: remove` comments → removed
+- Development-only `if (process.env.NODE_ENV === 'development')` blocks → removed
+
+### Import Optimization
+
+- `import { unusedFunction } from './utils'` → removed
+- Duplicate imports → merged
+- `import * as everything from './module'` → converted to named imports
+- Outdated import paths → updated to absolute paths
+
+### Formatting Fixes
+
+- Inconsistent indentation (2 spaces vs 4) → standardized to 2 spaces
+- Missing semicolons → added
+- Trailing whitespace → removed
+- Long lines → wrapped appropriately
+
+### TypeScript Improvements
+
+- `any` types → replaced with specific types where possible
+- Missing type annotations → added
+- Unused type definitions → removed
+
 ## Quality Standards Applied:
+
 - **Production Ready**: Remove all debugging and development artifacts
 - **Consistent Style**: Apply project formatting standards
 - **Type Safety**: Ensure strong typing where applicable

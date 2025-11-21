@@ -10,7 +10,7 @@
  * Supports multiple test modes and eliminates code duplication.
  */
 
-import { MCPFactory, MCP } from './.opencode/tool/mcp/index.ts';
+import { MCPFactory, MCP } from './.opencode/tool/mcp/index';
 import type { MCPClientConfig } from './.opencode/tool/mcp/types.js';
 
 type TestMode = 'basic-connection' | 'demo' | 'docs-fetch';

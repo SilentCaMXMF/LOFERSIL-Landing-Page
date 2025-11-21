@@ -24,7 +24,7 @@ interface EnvironmentConfig {
 /**
  * Required environment variables
  */
-const REQUIRED_ENV_VARS = ['OPENAI_API_KEY'] as const;
+const REQUIRED_ENV_VARS = ['OPENAI_API_KEY', 'GEMINI_API_KEY'] as const;
 
 /**
  * Default environment values
@@ -44,6 +44,7 @@ export class EnvironmentLoader {
 
   constructor() {
     this.config = this.loadEnvironmentVariables();
+    this.validateRequiredAndThrow();
     this.loaded = true;
   }
 
@@ -122,6 +123,35 @@ export class EnvironmentLoader {
       valid: missing.length === 0,
       missing,
     };
+  }
+
+  /**
+   * Validate required environment variables and throw if any are missing
+   */
+  private validateRequiredAndThrow(): void {
+    const validation = this.validateRequired();
+    if (!validation.valid) {
+      const errorMessage = `Missing required environment variables: ${validation.missing.join(', ')}
+
+To fix this issue:
+
+1. Create a .env file in your project root with the following variables:
+${validation.missing.map(v => `${v}=your_${v.toLowerCase()}_here`).join('\n')}
+
+2. Or set them in your environment:
+${validation.missing.map(v => `export ${v}=your_value_here`).join('\n')}
+
+3. Or configure them in your deployment platform
+
+Current environment: ${this.config.NODE_ENV || 'unknown'}
+Available variables: ${
+        Object.keys(this.config)
+          .filter(k => REQUIRED_ENV_VARS.includes(k as any))
+          .join(', ') || 'none'
+      }`;
+
+      throw new Error(errorMessage);
+    }
   }
 
   /**

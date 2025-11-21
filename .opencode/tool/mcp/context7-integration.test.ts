@@ -40,7 +40,9 @@ describe('Context7 MCP Integration', () => {
       isConnected: vi.fn(),
     };
 
-    mockMCPClient.mockImplementation(() => mockClientInstance);
+    mockMCPClient.mockImplementation(function () {
+      return mockClientInstance;
+    });
   });
 
   afterEach(() => {

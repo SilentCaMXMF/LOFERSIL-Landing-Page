@@ -63,6 +63,12 @@ export default [
     },
   },
   {
+    files: ['**/*.test.{ts,js}', '**/*.spec.{ts,js}'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
     ignores: ['dist/', 'node_modules/', '*.js'],
   },
 ];

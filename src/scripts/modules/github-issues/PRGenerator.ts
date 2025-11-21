@@ -93,7 +93,9 @@ export class PRGenerator {
       return pr;
     } catch (error) {
       console.error('Failed to create pull request:', error);
-      throw new Error(`PR creation failed: ${error.message}`);
+      throw new Error(
+        `PR creation failed: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   }
 

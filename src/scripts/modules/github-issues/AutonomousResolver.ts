@@ -87,7 +87,9 @@ export class AutonomousResolver {
           try {
             await this.runSafetyChecks(solution, worktree.path);
           } catch (safetyError) {
-            errors.push(`Safety check failed: ${safetyError.message}`);
+            errors.push(
+              `Safety check failed: ${safetyError instanceof Error ? safetyError.message : String(safetyError)}`
+            );
             continue; // Try next iteration
           }
 
@@ -114,7 +116,9 @@ export class AutonomousResolver {
           // Generate improved solution based on validation feedback
           solution = await this.improveSolution(solution, validation, codebaseAnalysis, issue);
         } catch (error) {
-          errors.push(`Iteration ${iterations} failed: ${error.message}`);
+          errors.push(
+            `Iteration ${iterations} failed: ${error instanceof Error ? error.message : String(error)}`
+          );
           console.warn(`Iteration ${iterations} failed:`, error);
 
           // Generate fallback solution
@@ -296,8 +300,8 @@ Format your response as JSON:
     // Check file extensions
     for (const file of changes.files) {
       const ext = file.path.split('.').pop();
-      if (!this.config.allowedFileExtensions.includes(ext)) {
-        throw new Error(`Unsupported file extension: ${ext}`);
+      if (!ext || !this.config.allowedFileExtensions.includes(ext)) {
+        throw new Error(`Unsupported file extension: ${ext || 'none'}`);
       }
     }
 
@@ -327,7 +331,7 @@ Format your response as JSON:
       process.chdir(originalCwd);
       return true;
     } catch (error) {
-      console.warn('Tests failed:', error.message);
+      console.warn('Tests failed:', error instanceof Error ? error.message : String(error));
       return false;
     }
   }
@@ -401,7 +405,7 @@ Please provide an improved solution that addresses the validation issues.`;
     analysis: IssueAnalysis,
     codebase: CodebaseAnalysis,
     issue: { number: number; title: string; body: string },
-    error: any
+    error?: any
   ): Promise<CodeChanges> {
     // Generate minimal solution based on issue type
     const solution: CodeChanges = { files: [] };

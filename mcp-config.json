@@ -18,7 +18,7 @@
     "gemini": {
       "name": "gemini",
       "type": "remote",
-      "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent",
+      "url": "https://generativelanguage.googleapis.com/v1beta",
       "headers": {
         "GEMINI_API_KEY": "${GEMINI_API_KEY}",
         "Content-Type": "application/json"
