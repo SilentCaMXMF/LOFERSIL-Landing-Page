@@ -65,8 +65,10 @@ function getValidationMessage(
   error: string
 ): string {
   const translations = translationManager.getTranslations();
-  const contactTranslations = translations?.contact as Record<string, unknown>;
-  const validationMessages = (contactTranslations as any)?.validation?.[field]?.[error];
+  const contactTranslations = translations?.contact as {
+    validation?: { [field: string]: { [error: string]: string } };
+  };
+  const validationMessages = contactTranslations?.validation?.[field]?.[error];
   return validationMessages || `${field} validation error`; // Fallback if translation not found
 }
 

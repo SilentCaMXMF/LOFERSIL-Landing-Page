@@ -93,6 +93,14 @@ if command -v lighthouse &> /dev/null; then
     npm run lighthouse || print_warning "Lighthouse audit failed, but continuing deployment"
 fi
 
+# Run health checks
+print_status "Running post-deployment health checks..."
+if npm run health-check; then
+    print_success "Health checks passed"
+else
+    print_warning "Some health checks failed - please review the deployment"
+fi
+
 # Check Vercel project settings
 print_status "Checking Vercel project settings..."
 if command -v vercel &> /dev/null; then
