@@ -58,4 +58,4 @@ notes:
 - Consider Portuguese screen reader users
 - Ensure compatibility with existing form styling
 - Test with various browsers and assistive technologies</content>
-<parameter name="filePath">tasks/subtasks/improve-contact-form-accessibility-ux/03-enhance-accessibility-features.md
+<parameter name="filePath">tasks/todo/improve-contact-form-accessibility-ux/03-enhance-accessibility-features.md

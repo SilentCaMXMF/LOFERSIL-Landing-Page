@@ -63,4 +63,4 @@ notes:
 - Use existing WorktreeManager for isolated development environments
 - Include detailed logging for debugging and monitoring
 - Consider implementing a "dry-run" mode for testing</content>
-  <parameter name="filePath">tasks/subtasks/ai-powered-github-issues-reviewer-system/02-implement-autonomous-resolver.md
+  <parameter name="filePath">tasks/ongoing/ai-powered-github-issues-reviewer-system/02-implement-autonomous-resolver.md

@@ -2,6 +2,8 @@
 
 Objective: Create an intelligent agent that leverages the OpenAI Image Specialist for automated image processing, analysis, and enhancement workflows
 
+**Progress: 5/11 tasks completed (45%)**
+
 Status legend: [ ] todo, [~] in-progress, [x] done
 
 Tasks

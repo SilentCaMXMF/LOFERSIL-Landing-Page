@@ -64,4 +64,4 @@ notes:
 - Support multiple reviewer assignment strategies
 - Handle PR creation failures with appropriate error recovery
 - Consider draft PR creation for initial review before publishing</content>
-  <parameter name="filePath">tasks/subtasks/ai-powered-github-issues-reviewer-system/04-implement-pr-generator.md
+  <parameter name="filePath">tasks/ongoing/ai-powered-github-issues-reviewer-system/04-implement-pr-generator.md

@@ -11,6 +11,8 @@ import { WorkflowOrchestrator } from './github-issues/WorkflowOrchestrator';
 import { TaskManager, TaskInfo } from './TaskManager';
 import { AutomationTriggersManager, AutomationEvent } from './AutomationTriggers';
 import { MonitoringReportingManager } from './MonitoringReporting';
+import { GitHubProjectsIntegration } from './github-projects';
+import { logger } from './logger';
 
 export interface TaskManagementConfig {
   enableAutomation: boolean;
@@ -41,6 +43,7 @@ export class TaskManagementIntegration {
   private automationTriggers: AutomationTrigger[] = [];
   private automationManager: AutomationTriggersManager;
   private monitoringManager: MonitoringReportingManager;
+  private kanbanIntegration?: GitHubProjectsIntegration;
 
   constructor(config: TaskManagementConfig) {
     this.config = config;
@@ -50,6 +53,7 @@ export class TaskManagementIntegration {
     this.automationManager = new AutomationTriggersManager();
     this.monitoringManager = new MonitoringReportingManager(this.automationManager);
     this.initializeAutomationTriggers();
+    this.initializeKanbanIntegration();
   }
 
   /**
@@ -85,6 +89,27 @@ export class TaskManagementIntegration {
   }
 
   /**
+   * Initialize GitHub Projects (Kanban) integration
+   */
+  private initializeKanbanIntegration(): void {
+    const accessToken = process.env.GITHUB_ACCESS_TOKEN;
+    const projectId = process.env.GITHUB_PROJECT_ID;
+    const owner = process.env.GITHUB_REPOSITORY_OWNER;
+    const repo = process.env.GITHUB_REPOSITORY_NAME;
+
+    if (accessToken && projectId && owner && repo) {
+      try {
+        this.kanbanIntegration = new GitHubProjectsIntegration(accessToken, projectId, owner, repo);
+        logger.info('GitHub Projects integration initialized', { projectId, owner, repo });
+      } catch (error: any) {
+        logger.error('Failed to initialize GitHub Projects integration', { error: error.message });
+      }
+    } else {
+      logger.info('GitHub Projects integration not configured - skipping');
+    }
+  }
+
+  /**
    * Create a new task from GitHub issue
    */
   async createTaskFromIssue(issueNumber: number): Promise<TaskInfo> {
@@ -112,6 +137,25 @@ export class TaskManagementIntegration {
 
       // Save task
       await this.taskManager.saveTask(task);
+
+      // Create kanban card if integration is available
+      if (this.kanbanIntegration) {
+        try {
+          await this.kanbanIntegration.createCard({
+            title: task.title,
+            body: `## Task Description\n${task.description}\n\n## Metadata\n- **Priority:** ${task.priority}\n- **Labels:** ${task.labels.join(', ') || 'None'}\n- **Created:** ${task.createdAt.toISOString()}\n- **Task ID:** ${task.id}`,
+            status: 'Backlog',
+            assignees: task.assignee ? [task.assignee] : [],
+            labels: [...task.labels, 'ai-generated'],
+            issueNumber: issueNumber,
+            taskId: task.id,
+          });
+          logger.info('Created kanban card for new task', { taskId: task.id, issueNumber });
+        } catch (error: any) {
+          logger.error('Failed to create kanban card', { taskId: task.id, error: error.message });
+          // Don't fail the task creation if kanban fails
+        }
+      }
 
       // Trigger automation if enabled
       if (this.config.enableAutomation) {
@@ -159,13 +203,35 @@ export class TaskManagementIntegration {
       task.updatedAt = new Date();
       await this.taskManager.updateTask(task);
 
+      // Update kanban status
+      await this.syncTaskWithKanban(taskId);
+
+      // Update workflow progress (25% - started)
+      await this.updateWorkflowProgress(task.metadata.issueNumber, taskId, 'Analysis Started', 25);
+
       // Run workflow
       const result = await this.orchestrator.processIssue(task.metadata.issueNumber);
+
+      // Update workflow progress (75% - processing complete)
+      await this.updateWorkflowProgress(
+        task.metadata.issueNumber,
+        taskId,
+        'Processing Complete',
+        75
+      );
 
       // Update task based on result
       if (result.success) {
         task.status = 'completed';
         task.metadata.result = result;
+
+        // Update workflow progress (100% - completed)
+        await this.updateWorkflowProgress(
+          task.metadata.issueNumber,
+          taskId,
+          'Workflow Completed',
+          100
+        );
       } else {
         task.status = 'blocked';
         task.metadata.error = result.error;
@@ -173,6 +239,9 @@ export class TaskManagementIntegration {
 
       task.updatedAt = new Date();
       await this.taskManager.updateTask(task);
+
+      // Sync final status with kanban
+      await this.syncTaskWithKanban(taskId);
 
       // Trigger automation
       await this.triggerAutomation(result.success ? 'workflow.completed' : 'workflow.failed', task);
@@ -186,6 +255,59 @@ export class TaskManagementIntegration {
 
       await this.triggerAutomation('workflow.failed', task);
       throw error;
+    }
+  }
+
+  /**
+   * Sync task status with kanban board
+   */
+  async syncTaskWithKanban(taskId: string): Promise<void> {
+    if (!this.kanbanIntegration) {
+      return; // Kanban integration not configured
+    }
+
+    try {
+      const task = await this.taskManager.getTask(taskId);
+      if (!task) {
+        logger.warn('Task not found for kanban sync', { taskId });
+        return;
+      }
+
+      const issueNumber = task.metadata?.issueNumber;
+      if (!issueNumber) {
+        logger.warn('Task has no associated issue number', { taskId });
+        return;
+      }
+
+      await this.kanbanIntegration.syncTaskStatus(taskId, task.status, issueNumber);
+    } catch (error: any) {
+      logger.error('Failed to sync task with kanban', { taskId, error: error.message });
+    }
+  }
+
+  /**
+   * Update workflow progress on kanban board
+   */
+  async updateWorkflowProgress(
+    issueNumber: number,
+    taskId: string,
+    stage: string,
+    progress: number
+  ): Promise<void> {
+    if (!this.kanbanIntegration) {
+      return; // Kanban integration not configured
+    }
+
+    try {
+      await this.kanbanIntegration.updateWorkflowProgress(issueNumber, taskId, stage, progress);
+    } catch (error: any) {
+      logger.error('Failed to update workflow progress on kanban', {
+        issueNumber,
+        taskId,
+        stage,
+        progress,
+        error: error.message,
+      });
     }
   }
 

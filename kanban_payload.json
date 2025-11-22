@@ -1,6 +1,6 @@
 {
   "repository": "LOFERSIL-Landing-Page",
-  "last_updated": "2025-11-20T15:00:00Z",
+  "last_updated": "2025-11-22T12:00:00Z",
   "tasks": [
     {
       "id": "COMP-MCP-INT-001",
@@ -45,7 +45,7 @@
       "status": "In Progress",
       "priority": "P1",
       "source": "tasks/ongoing/openai-image-specialist-agent/README.md",
-      "notes": "Phase 1–2 complete; 3–6 pending."
+      "notes": "5/11 tasks completed (45%)"
     },
     {
       "id": "ONGO-TST-EMAIL-001",
@@ -54,15 +54,15 @@
       "status": "In Progress",
       "priority": "P1",
       "source": "tasks/ongoing/test-email-sending-implementation/README.md",
-      "notes": "Phase 1 prerequisites completed; phases 2–4 planned."
+      "notes": "1/11 tasks completed; prerequisites documented but verification pending."
     },
     {
-      "id": "SUBPROD-READINESS-IMPR-001",
-      "title": "Production Readiness Improvements (Subtasks)",
-      "group": "Subtasks",
+      "id": "ONGO-PROD-READINESS-001",
+      "title": "Production Readiness Improvements",
+      "group": "Ongoing",
       "status": "Todo",
       "priority": "P2",
-      "source": "tasks/subtasks/production-readiness-improvements/README.md",
+      "source": "tasks/ongoing/production-readiness-improvements/README.md",
       "notes": "All 9 tasks listed; none started."
     },
     {
@@ -96,10 +96,10 @@
       "id": "TODO-SEC-FIX-001",
       "title": "Security Fix Plan",
       "group": "Todo",
-      "status": "Plan/Ready",
+      "status": "In Progress",
       "priority": "P1",
       "source": "tasks/todo/security-fix-plan/01-xss-vulnerability-fix.md",
-      "notes": "Plan ready for implementation."
+      "notes": "1/10 tasks completed; implementation started."
     },
     {
       "id": "PLAN-IMG-SPEC-001",
@@ -129,21 +129,21 @@
       "notes": "No content yet."
     },
     {
-      "id": "SUB-UPDATE-KANBAN-001",
+      "id": "ONGO-UPDATE-KANBAN-001",
       "title": "Update Kanban Payload",
-      "group": "Subtasks",
+      "group": "Ongoing",
       "status": "In Progress",
       "priority": "P2",
-      "source": "tasks/subtasks/update-kanban-payload/README.md",
+      "source": "tasks/ongoing/update-kanban-payload/README.md",
       "notes": "Executing inventory and update of kanban_payload.json with all tasks from task directories"
     },
     {
-      "id": "SUB-TROUBLESHOOT-KANBAN-001",
+      "id": "ONGO-TROUBLESHOOT-KANBAN-001",
       "title": "Troubleshoot Kanban Population",
-      "group": "Subtasks",
+      "group": "Ongoing",
       "status": "Todo",
       "priority": "P2",
-      "source": "tasks/subtasks/troubleshoot-kanban-population/README.md",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/README.md",
       "notes": "Diagnose and resolve why the Kanban board is not populating despite successful issue creation."
     },
     {
@@ -152,7 +152,7 @@
       "group": "Ongoing",
       "status": "In Progress",
       "priority": "P1",
-      "source": "tasks/subtasks/ai-powered-github-issues-reviewer-system/README.md",
+      "source": "tasks/ongoing/ai-powered-github-issues-reviewer-system/README.md",
       "notes": "6/11 core components implemented - Added complete Task Management Integration with API endpoints, automation triggers, and monitoring system."
     }
   ]

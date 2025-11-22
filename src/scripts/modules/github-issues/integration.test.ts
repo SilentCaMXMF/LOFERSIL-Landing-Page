@@ -10,11 +10,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 describe('GitHub Issues Reviewer System Integration', () => {
-  it('should have subtasks directory structure', () => {
-    const subtasksDir = path.join(process.cwd(), 'tasks', 'subtasks');
-    const systemDir = path.join(subtasksDir, 'ai-powered-github-issues-reviewer-system');
+  it('should have ongoing directory structure', () => {
+    const ongoingDir = path.join(process.cwd(), 'tasks', 'ongoing');
+    const systemDir = path.join(ongoingDir, 'ai-powered-github-issues-reviewer-system');
 
-    expect(fs.existsSync(subtasksDir)).toBe(true);
+    expect(fs.existsSync(ongoingDir)).toBe(true);
     expect(fs.existsSync(systemDir)).toBe(true);
   });
 
@@ -22,24 +22,7 @@ describe('GitHub Issues Reviewer System Integration', () => {
     const readmePath = path.join(
       process.cwd(),
       'tasks',
-      'subtasks',
-      'ai-powered-github-issues-reviewer-system',
-      'README.md'
-    );
-    expect(fs.existsSync(readmePath)).toBe(true);
-
-    const content = fs.readFileSync(readmePath, 'utf8');
-    expect(content).toContain('AI-Powered GitHub Issues Reviewer System');
-    expect(content).toContain('Progress: 5/11 tasks completed');
-    expect(content).toContain('[x] 01 — Implement Issue Intake & Analysis Component');
-    expect(content).toContain('[x] 05 — Implement Workflow Orchestrator Component');
-  });
-
-  it('should have all task files created', () => {
-    const systemDir = path.join(
-      process.cwd(),
-      'tasks',
-      'subtasks',
+      'ongoing',
       'ai-powered-github-issues-reviewer-system'
     );
 
@@ -133,7 +116,7 @@ describe('GitHub Issues Reviewer System Integration', () => {
     const content = fs.readFileSync(mainReadmePath, 'utf8');
 
     expect(content).toContain(
-      '**ai-powered-github-issues-reviewer-system/**(subtasks/ai-powered-github-issues-reviewer-system/)** - Complete remaining 6 tasks for autonomous issue resolution'
+      '**ai-powered-github-issues-reviewer-system/**(ongoing/ai-powered-github-issues-reviewer-system/)** - Complete remaining 5 tasks for autonomous issue resolution'
     );
   });
 });

@@ -64,4 +64,4 @@ notes:
 - Support both synchronous and asynchronous component execution
 - Consider implementing workflow persistence for long-running tasks
 - Add health checks for all integrated components</content>
-  <parameter name="filePath">tasks/subtasks/ai-powered-github-issues-reviewer-system/05-implement-workflow-orchestrator.md
+  <parameter name="filePath">tasks/ongoing/ai-powered-github-issues-reviewer-system/05-implement-workflow-orchestrator.md

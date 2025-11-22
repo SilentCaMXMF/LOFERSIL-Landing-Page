@@ -59,4 +59,4 @@ notes:
 - Follow TypeScript strict mode and error handling conventions
 - Include comprehensive JSDoc documentation
 - Consider rate limiting for GitHub API calls</content>
-  <parameter name="filePath">tasks/subtasks/ai-powered-github-issues-reviewer-system/01-implement-issue-intake-analysis.md
+  <parameter name="filePath">tasks/ongoing/ai-powered-github-issues-reviewer-system/01-implement-issue-intake-analysis.md

@@ -64,4 +64,4 @@ notes:
 - Measure and track performance metrics over time
 - Consider implementing visual workflow testing
 - Include cleanup procedures to prevent test pollution</content>
-  <parameter name="filePath">tasks/subtasks/ai-powered-github-issues-reviewer-system/08-end-to-end-testing-workflow.md
+  <parameter name="filePath">tasks/ongoing/ai-powered-github-issues-reviewer-system/08-end-to-end-testing-workflow.md

@@ -64,4 +64,4 @@ notes:
 - Consider multi-region deployment for high availability
 - Document deployment procedures and rollback processes
 - Include cost optimization considerations</content>
-  <parameter name="filePath">tasks/subtasks/ai-powered-github-issues-reviewer-system/10-production-deployment-setup.md
+  <parameter name="filePath">tasks/ongoing/ai-powered-github-issues-reviewer-system/10-production-deployment-setup.md

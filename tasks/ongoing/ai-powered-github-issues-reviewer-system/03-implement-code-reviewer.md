@@ -65,4 +65,4 @@ notes:
 - Support multiple programming languages/frameworks
 - Provide both automated and human-readable review reports
 - Consider integration with existing CI/CD quality gates</content>
-  <parameter name="filePath">tasks/subtasks/ai-powered-github-issues-reviewer-system/03-implement-code-reviewer.md
+  <parameter name="filePath">tasks/ongoing/ai-powered-github-issues-reviewer-system/03-implement-code-reviewer.md

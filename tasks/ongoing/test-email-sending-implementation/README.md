@@ -1,8 +1,39 @@
 # Test Email Sending Implementation
 
-## Overview
+Objective: Comprehensive testing plan for Gmail SMTP integration with contact form to ensure emails are properly sent from pedroocalado@gmail.com to a35255@campus.fcsh.unl.pt.
 
-Comprehensive testing plan for Gmail SMTP integration with contact form to ensure emails are properly sent from `pedroocalado@gmail.com` to `a35255@campus.fcsh.unl.pt`.
+Status legend: [ ] todo, [~] in-progress, [x] done
+
+Tasks
+
+- [x] 01 — verify-github-secrets → `01-verify-github-secrets.md`
+- [ ] 02 — verify-vercel-variables → `02-verify-vercel-variables.md`
+- [ ] 03 — test-environment-access → `03-test-environment-access.md`
+- [ ] 04 — deploy-and-trigger → `04-deploy-and-trigger.md`
+- [ ] 05 — test-contact-form-submission → `05-test-contact-form-submission.md`
+- [ ] 06 — verify-email-receipt → `06-verify-email-receipt.md`
+- [ ] 07 — check-function-logs → `07-check-function-logs.md`
+- [ ] 08 — test-email-formatting → `08-test-email-formatting.md`
+- [ ] 09 — test-error-handling → `09-test-error-handling.md`
+- [ ] 10 — test-reply-to-functionality → `10-test-reply-to-functionality.md`
+- [ ] 11 — document-results → `11-document-results.md`
+
+Dependencies
+
+- 02 depends on 01
+- 03 depends on 02
+- 04 depends on 03
+- 05 depends on 04
+- 06 depends on 05
+- 07 depends on 06
+- 08 depends on 07
+- 09 depends on 08
+- 10 depends on 09
+- 11 depends on 10
+
+Exit criteria
+
+- All email functionality tested successfully with proper SMTP integration, environment variables verified, and comprehensive documentation completed.
 
 ## Prerequisites
 

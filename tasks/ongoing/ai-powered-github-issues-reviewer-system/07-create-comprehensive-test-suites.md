@@ -64,4 +64,4 @@ notes:
 - Consider property-based testing for complex logic
 - Include integration tests that don't require real APIs
 - Document test scenarios and edge cases covered</content>
-  <parameter name="filePath">tasks/subtasks/ai-powered-github-issues-reviewer-system/07-create-comprehensive-test-suites.md
+  <parameter name="filePath">tasks/ongoing/ai-powered-github-issues-reviewer-system/07-create-comprehensive-test-suites.md

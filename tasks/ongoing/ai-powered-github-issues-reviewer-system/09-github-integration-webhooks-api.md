@@ -64,4 +64,4 @@ notes:
 - Include comprehensive logging for debugging
 - Support both GitHub.com and GitHub Enterprise
 - Document API permissions and scopes required</content>
-  <parameter name="filePath">tasks/subtasks/ai-powered-github-issues-reviewer-system/09-github-integration-webhooks-api.md
+  <parameter name="filePath">tasks/ongoing/ai-powered-github-issues-reviewer-system/09-github-integration-webhooks-api.md

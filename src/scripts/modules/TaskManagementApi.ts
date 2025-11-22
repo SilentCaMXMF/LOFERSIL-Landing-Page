@@ -6,6 +6,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+import crypto from 'crypto';
 import { TaskManagementIntegration, TaskInfo } from './TaskManagementIntegration';
 
 export interface ApiResponse<T = any> {
@@ -33,6 +34,47 @@ export interface UpdateTaskRequest {
 }
 
 /**
+ * Verify GitHub webhook signature for security
+ */
+function verifyGitHubWebhookSignature(payload: string, signature: string, secret: string): boolean {
+  const hmac = crypto.createHmac('sha256', secret);
+  hmac.update(payload);
+  const expectedSignature = `sha256=${hmac.digest('hex')}`;
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
+}
+
+/**
+ * Rate limiting for GitHub API calls
+ */
+class GitHubRateLimiter {
+  private calls: number[] = [];
+  private readonly maxCallsPerHour = 5000; // GitHub's limit
+
+  canMakeCall(): boolean {
+    const now = Date.now();
+    const oneHourAgo = now - 60 * 60 * 1000;
+
+    // Remove calls older than 1 hour
+    this.calls = this.calls.filter(call => call > oneHourAgo);
+
+    return this.calls.length < this.maxCallsPerHour;
+  }
+
+  recordCall(): void {
+    this.calls.push(Date.now());
+  }
+
+  getRemainingCalls(): number {
+    const now = Date.now();
+    const oneHourAgo = now - 60 * 60 * 1000;
+    this.calls = this.calls.filter(call => call > oneHourAgo);
+    return Math.max(0, this.maxCallsPerHour - this.calls.length);
+  }
+}
+
+const rateLimiter = new GitHubRateLimiter();
+
+/**
  * Create API router for task management
  */
 export function createTaskManagementRouter(integration: TaskManagementIntegration): Router {
@@ -48,11 +90,12 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
 
       // Get all tasks (you'd implement filtering in the TaskManager)
       const stats = await integration.getTaskStatistics();
+      const tasks = await integration.getAllTasks();
 
       res.json({
         success: true,
-        data: [], // Would return actual filtered tasks
-        message: 'Tasks retrieved successfully',
+        data: tasks,
+        message: `Found ${tasks.length} tasks`,
       });
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -65,17 +108,23 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
 
   /**
    * GET /api/tasks/:id
-   * Get specific task by ID
+   * Get a specific task by ID
    */
   router.get('/tasks/:id', async (req: Request, res: Response<ApiResponse<TaskInfo>>) => {
     try {
       const { id } = req.params;
+      const task = await integration.getTask(id);
 
-      // Implementation would get task from TaskManager
+      if (!task) {
+        return res.status(404).json({
+          success: false,
+          error: 'Task not found',
+        });
+      }
+
       res.json({
         success: true,
-        data: {} as TaskInfo, // Would return actual task
-        message: 'Task retrieved successfully',
+        data: task,
       });
     } catch (error) {
       console.error('Error fetching task:', error);
@@ -88,11 +137,11 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
 
   /**
    * POST /api/tasks/from-issue
-   * Create task from GitHub issue
+   * Create a task from a GitHub issue
    */
   router.post('/tasks/from-issue', async (req: Request, res: Response<ApiResponse<TaskInfo>>) => {
     try {
-      const { issueNumber }: CreateTaskRequest = req.body;
+      const { issueNumber, priority, assignee }: CreateTaskRequest = req.body;
 
       if (!issueNumber) {
         return res.status(400).json({
@@ -102,6 +151,14 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
       }
 
       const task = await integration.createTaskFromIssue(issueNumber);
+
+      // Update priority/assignee if provided
+      if (priority || assignee) {
+        const updates: any = {};
+        if (priority) updates.priority = priority;
+        if (assignee) updates.assignee = assignee;
+        await integration.updateTask(task.id, updates);
+      }
 
       res.status(201).json({
         success: true,
@@ -119,7 +176,7 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
 
   /**
    * POST /api/tasks/:id/assign
-   * Assign task to team member
+   * Assign a task to a user
    */
   router.post('/tasks/:id/assign', async (req: Request, res: Response<ApiResponse<TaskInfo>>) => {
     try {
@@ -138,7 +195,7 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
       res.json({
         success: true,
         data: task,
-        message: `Task ${id} assigned to ${assignee}`,
+        message: `Task assigned to ${assignee}`,
       });
     } catch (error) {
       console.error('Error assigning task:', error);
@@ -151,18 +208,17 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
 
   /**
    * POST /api/tasks/:id/process
-   * Process task with AI workflow
+   * Process a task (trigger AI workflow)
    */
   router.post('/tasks/:id/process', async (req: Request, res: Response<ApiResponse>) => {
     try {
       const { id } = req.params;
 
-      const result = await integration.processTask(id);
+      await integration.processTask(id);
 
       res.json({
         success: true,
-        data: result,
-        message: `Task ${id} processed successfully`,
+        message: 'Task processing started',
       });
     } catch (error) {
       console.error('Error processing task:', error);
@@ -175,18 +231,19 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
 
   /**
    * PUT /api/tasks/:id
-   * Update task details
+   * Update a task
    */
   router.put('/tasks/:id', async (req: Request, res: Response<ApiResponse<TaskInfo>>) => {
     try {
       const { id } = req.params;
       const updates: UpdateTaskRequest = req.body;
 
-      // Implementation would update task in TaskManager
+      const task = await integration.updateTask(id, updates);
+
       res.json({
         success: true,
-        data: {} as TaskInfo, // Would return updated task
-        message: `Task ${id} updated successfully`,
+        data: task,
+        message: 'Task updated successfully',
       });
     } catch (error) {
       console.error('Error updating task:', error);
@@ -199,16 +256,17 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
 
   /**
    * DELETE /api/tasks/:id
-   * Delete task
+   * Delete a task
    */
   router.delete('/tasks/:id', async (req: Request, res: Response<ApiResponse>) => {
     try {
       const { id } = req.params;
 
-      // Implementation would delete task from TaskManager
+      await integration.deleteTask(id);
+
       res.json({
         success: true,
-        message: `Task ${id} deleted successfully`,
+        message: 'Task deleted successfully',
       });
     } catch (error) {
       console.error('Error deleting task:', error);
@@ -230,7 +288,6 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
       res.json({
         success: true,
         data: stats,
-        message: 'Statistics retrieved successfully',
       });
     } catch (error) {
       console.error('Error fetching statistics:', error);
@@ -252,10 +309,9 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
       res.json({
         success: true,
         data: health,
-        message: 'System health retrieved successfully',
       });
     } catch (error) {
-      console.error('Error fetching system health:', error);
+      console.error('Error fetching health status:', error);
       res.status(500).json({
         success: false,
         error: 'Failed to fetch system health',
@@ -265,26 +321,94 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
 
   /**
    * POST /api/webhooks/github
-   * Handle GitHub webhooks for automated task creation
+   * Handle GitHub webhooks for automated issue processing
    */
   router.post('/webhooks/github', async (req: Request, res: Response<ApiResponse>) => {
     try {
-      const { action, issue, repository } = req.body;
+      const signature = req.headers['x-hub-signature-256'] as string;
+      const event = req.headers['x-github-event'] as string;
+      const deliveryId = req.headers['x-github-delivery'] as string;
+
+      // Verify webhook signature for security
+      const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
+      if (webhookSecret) {
+        const payload = JSON.stringify(req.body);
+        if (!signature || !verifyGitHubWebhookSignature(payload, signature, webhookSecret)) {
+          console.warn(`❌ Invalid webhook signature for delivery ${deliveryId}`);
+          return res.status(401).json({
+            success: false,
+            error: 'Invalid webhook signature',
+          });
+        }
+      }
+
+      console.log(`🔗 Processing GitHub webhook: ${event} (delivery: ${deliveryId})`);
+
+      const { action, issue, repository, pull_request, comment } = req.body;
 
       // Handle different GitHub webhook events
-      if (action === 'opened' && issue) {
-        // Automatically create task from new issue
-        const task = await integration.createTaskFromIssue(issue.number);
+      switch (event) {
+        case 'issues':
+          if (action === 'opened' && issue) {
+            // Check rate limit before processing
+            if (!rateLimiter.canMakeCall()) {
+              console.warn('⚠️ Rate limit exceeded, skipping issue processing');
+              return res.json({
+                success: true,
+                message: 'Rate limit exceeded, issue queued for later processing',
+              });
+            }
 
-        console.log(`Auto-created task ${task.id} from issue #${issue.number}`);
+            try {
+              // Create task from issue
+              const task = await integration.createTaskFromIssue(issue.number);
+              rateLimiter.recordCall();
+
+              console.log(`✅ Auto-created task ${task.id} from issue #${issue.number}`);
+              console.log(`🤖 AI processing pipeline ready for issue #${issue.number}`);
+            } catch (error: any) {
+              console.error(`❌ Failed to process issue #${issue.number}:`, error);
+              console.log(`❌ Task creation failed: ${error?.message || 'Unknown error'}`);
+            }
+          } else if (action === 'closed' && issue) {
+            console.log(`✅ Issue #${issue.number} closed - task management updated`);
+          } else if (action === 'reopened' && issue) {
+            console.log(`🔄 Issue #${issue.number} reopened - task management updated`);
+          }
+          break;
+
+        case 'pull_request':
+          console.log(`🔄 PR event: ${action} for PR #${pull_request?.number}`);
+          // Basic PR event logging - full integration in next phase
+          break;
+
+        case 'issue_comment':
+          if (action === 'created' && comment && issue) {
+            // Check for special commands in comments
+            const commentBody = comment.body.toLowerCase();
+            if (commentBody.includes('/process') || commentBody.includes('!process')) {
+              console.log(`🚀 Manual processing triggered for issue #${issue.number}`);
+              try {
+                const task = await integration.createTaskFromIssue(issue.number);
+                console.log(`✅ Manual task created: ${task.id} for issue #${issue.number}`);
+              } catch (error: any) {
+                console.error(`❌ Manual processing failed: ${error?.message || 'Unknown error'}`);
+              }
+            }
+          }
+          break;
+
+        default:
+          console.log(`ℹ️ Unhandled webhook event: ${event}`);
       }
 
       res.json({
         success: true,
-        message: 'Webhook processed successfully',
+        message: `Webhook ${event} processed successfully`,
+        deliveryId,
       });
     } catch (error) {
-      console.error('Error processing webhook:', error);
+      console.error('❌ Error processing webhook:', error);
       res.status(500).json({
         success: false,
         error: 'Failed to process webhook',
@@ -298,11 +422,11 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
    */
   router.get('/automation/triggers', async (req: Request, res: Response<ApiResponse>) => {
     try {
-      // Implementation would return automation triggers
+      const triggers = integration.getAutomationManager().getRules();
+
       res.json({
         success: true,
-        data: [],
-        message: 'Automation triggers retrieved successfully',
+        data: triggers,
       });
     } catch (error) {
       console.error('Error fetching automation triggers:', error);
@@ -315,13 +439,14 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
 
   /**
    * POST /api/automation/triggers
-   * Create new automation trigger
+   * Create a new automation trigger
    */
   router.post('/automation/triggers', async (req: Request, res: Response<ApiResponse>) => {
     try {
       const trigger = req.body;
 
-      // Implementation would create automation trigger
+      integration.getAutomationManager().addRule(trigger);
+
       res.status(201).json({
         success: true,
         data: trigger,
@@ -344,17 +469,18 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
     try {
       const { startDate, endDate } = req.query;
 
-      // Implementation would generate completion reports
+      // Generate completion report
+      const report = await integration.getMonitoringManager().generateDailyReport();
+
       res.json({
         success: true,
-        data: [],
-        message: 'Completion reports retrieved successfully',
+        data: report,
       });
     } catch (error) {
-      console.error('Error fetching completion reports:', error);
+      console.error('Error generating completion report:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch completion reports',
+        error: 'Failed to generate completion report',
       });
     }
   });

@@ -51,4 +51,4 @@ notes:
 - Form messages should match existing LOFERSIL tone (professional, helpful)
 - Consider adding success/error message translations
 - Ensure compatibility with existing translation loading</content>
-<parameter name="filePath">tasks/subtasks/improve-contact-form-accessibility-ux/02-integrate-validation-localization.md
+<parameter name="filePath">tasks/todo/improve-contact-form-accessibility-ux/02-integrate-validation-localization.md

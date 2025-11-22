@@ -41,4 +41,4 @@ Exit criteria
 - GitHub webhooks and API integration is live and tested
 - Production deployment is configured and ready for launch
 - System is added to main task management and tracked as ongoing project</content>
-  <parameter name="filePath">tasks/subtasks/ai-powered-github-issues-reviewer-system/README.md
+  <parameter name="filePath">tasks/ongoing/ai-powered-github-issues-reviewer-system/README.md

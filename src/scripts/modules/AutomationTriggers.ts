@@ -318,7 +318,7 @@ export class AutomationTriggersManager {
 
       // Update the GitHub Issues Reviewer section
       const githubIssuesSection =
-        /- \*\*\[ai-powered-github-issues-reviewer-system\/\]\(subtasks\/ai-powered-github-issues-reviewer-system\/\)\*\* - (.+)/;
+        /- \*\*\[ai-powered-github-issues-reviewer-system\/\]\(ongoing\/ai-powered-github-issues-reviewer-system\/\)\*\* - (.+)/;
 
       if (data.status === 'completed') {
         readmeContent = readmeContent.replace(
