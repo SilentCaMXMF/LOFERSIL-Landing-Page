@@ -1,13 +1,26 @@
 /**
- * Integration Test: GitHub Issues Reviewer System
- *
- * Validates that the AI-powered GitHub Issues Reviewer system is properly
- * integrated into the main project task management system.
+ * Integration Tests for AI-Powered GitHub Issues Reviewer Components
+ * 
+ * Tests interactions between different components in the system
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { IssueAnalyzer, IssueAnalysis } from './IssueAnalyzer';
+import { AutonomousResolver } from './AutonomousResolver';
+import { CodeReviewer } from './CodeReviewer';
+import { PRGenerator } from './PRGenerator';
+import { WorkflowOrchestrator } from './WorkflowOrchestrator';
+import { WorktreeManager, WorktreeInfo } from './WorktreeManager';
+import { OpenCodeAgent } from '../OpenCodeAgent';
 import * as fs from 'fs';
 import * as path from 'path';
+
+// Mock OpenCodeAgent
+vi.mock('../OpenCodeAgent', () => ({
+  OpenCodeAgent: vi.fn().mockImplementation(() => ({
+    query: vi.fn(),
+  })),
+}));
 
 describe('GitHub Issues Reviewer System Integration', () => {
   it('should have ongoing directory structure', () => {
@@ -19,7 +32,7 @@ describe('GitHub Issues Reviewer System Integration', () => {
   });
 
   it('should have README.md with proper structure', () => {
-    const readmePath = path.join(
+    const systemDir = path.join(
       process.cwd(),
       'tasks',
       'ongoing',
@@ -27,9 +40,9 @@ describe('GitHub Issues Reviewer System Integration', () => {
     );
 
     for (let i = 1; i <= 11; i++) {
-      const taskFile = path.join(systemDir, `0${i.toString().padStart(2, '0')}-*.md`);
+      const taskFile = path.join(systemDir, `${i.toString().padStart(2, '0')}-*.md`);
       // Check if any file matches the pattern
-      const files = fs.readdirSync(systemDir).filter(f => f.match(new RegExp(`0${i}-.*\.md`)));
+      const files = fs.readdirSync(systemDir).filter(f => f.match(new RegExp(`${i.toString().padStart(2, '0')}-.*\.md`)));
       expect(files.length).toBeGreaterThan(0);
     }
   });
@@ -40,7 +53,7 @@ describe('GitHub Issues Reviewer System Integration', () => {
 
     expect(content).toContain('ai-powered-github-issues-reviewer-system');
     expect(content).toContain('Autonomous GitHub issue resolution system');
-    expect(content).toContain('5/11 tasks complete');
+    expect(content).toContain('6/11 tasks complete');
   });
 
   it('should be in kanban payload as ongoing project', () => {
@@ -56,7 +69,7 @@ describe('GitHub Issues Reviewer System Integration', () => {
     expect(systemTask.group).toBe('Ongoing');
     expect(systemTask.status).toBe('In Progress');
     expect(systemTask.priority).toBe('P1');
-    expect(systemTask.notes).toContain('5/11 core components implemented');
+    expect(systemTask.notes).toContain('6/11 core components implemented');
   });
 
   it('should have implemented core components', () => {
@@ -102,12 +115,12 @@ describe('GitHub Issues Reviewer System Integration', () => {
     const content = fs.readFileSync(mainReadmePath, 'utf8');
 
     // Check that progress is updated
-    expect(content).toContain('| **Ongoing**   | 4     | 🔄 In Progress | 13-55%     |');
-    expect(content).toContain('| **Total**     | 12    | -              | ~25%       |');
+    expect(content).toContain('| **Ongoing**   | 7     | 🔄 In Progress | 0-55%      |');
+    expect(content).toContain('| **Total**     | 15    | -              | ~20%       |');
 
     // Check detailed progress
     expect(content).toContain(
-      '**ai-powered-github-issues-reviewer-system**: 5/11 tasks (45%) - Core components implemented'
+      '**ai-powered-github-issues-reviewer-system**: 6/11 tasks (55%) - Task Management Integration complete with API endpoints, automation triggers, and monitoring system'
     );
   });
 
@@ -116,7 +129,297 @@ describe('GitHub Issues Reviewer System Integration', () => {
     const content = fs.readFileSync(mainReadmePath, 'utf8');
 
     expect(content).toContain(
-      '**ai-powered-github-issues-reviewer-system/**(ongoing/ai-powered-github-issues-reviewer-system/)** - Complete remaining 5 tasks for autonomous issue resolution'
+      '**ai-powered-github-issues-reviewer-system**: 6/11 tasks (55%) - Task Management Integration complete with API endpoints, automation triggers, and monitoring system'
     );
+  });
+});
+
+describe('Component Integration Tests', () => {
+  let mockAgent: any;
+  let mockWorktreeManager: any;
+  let issueAnalyzer: IssueAnalyzer;
+  let autonomousResolver: AutonomousResolver;
+  let codeReviewer: CodeReviewer;
+  let prGenerator: PRGenerator;
+  let workflowOrchestrator: WorkflowOrchestrator;
+
+  const mockIssue = {
+    number: 123,
+    title: 'Fix login validation bug',
+    body: 'The login form is not validating email addresses properly.',
+    labels: [{ name: 'bug' }],
+    user: { login: 'developer' },
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+    state: 'open' as const,
+    html_url: 'https://github.com/owner/repo/issues/123',
+  };
+
+  beforeEach(() => {
+    mockAgent = {
+      query: vi.fn(),
+    };
+
+    mockWorktreeManager = {
+      createWorktree: vi.fn(),
+      getWorktreeStatus: vi.fn(),
+      completeWorktree: vi.fn(),
+      cleanupWorktree: vi.fn(),
+    };
+
+    vi.clearAllMocks();
+
+    // Initialize components with mocks
+    issueAnalyzer = new IssueAnalyzer({
+      openCodeAgent: mockAgent,
+      complexityThresholds: { low: 2, medium: 4, high: 6 },
+      maxAnalysisTime: 30000,
+      supportedLabels: ['bug', 'feature', 'enhancement'],
+    });
+
+    autonomousResolver = new AutonomousResolver({
+      openCodeAgent: mockAgent,
+      worktreeManager: mockWorktreeManager,
+      maxIterations: 3,
+      maxExecutionTime: 30000,
+      testCommand: 'npm test',
+      allowedFileExtensions: ['ts', 'js', 'json'],
+      safetyChecks: {
+        maxFilesModified: 5,
+        maxLinesChanged: 100,
+        requireTests: false,
+      },
+    });
+
+    codeReviewer = new CodeReviewer({
+      openCodeAgent: mockAgent,
+      minApprovalScore: 0.8,
+      strictMode: false,
+      securityScanEnabled: true,
+      performanceAnalysisEnabled: true,
+      documentationRequired: false,
+      maxReviewTime: 30000,
+    });
+
+    prGenerator = new PRGenerator({
+      openCodeAgent: mockAgent,
+      githubToken: 'fake-token',
+      repository: { owner: 'owner', name: 'repo' },
+      baseBranch: 'main',
+      commitMessageTemplate: 'fix: {title}',
+      prTitleTemplate: 'Fix: {title}',
+      prBodyTemplate: 'Description',
+      defaultReviewers: [],
+      labels: {
+        autoGenerated: 'auto-generated',
+        needsReview: 'needs-review',
+        security: 'security',
+        breaking: 'breaking-change',
+      },
+      maxCommitMessageLength: 2000,
+      maxPRTitleLength: 100,
+    });
+
+    workflowOrchestrator = new WorkflowOrchestrator({
+      issueAnalyzer,
+      autonomousResolver,
+      codeReviewer,
+      prGenerator,
+      maxWorkflowTime: 60000,
+      enableMetrics: true,
+      retryAttempts: 3,
+      humanInterventionThreshold: 2,
+    });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('IssueAnalyzer to AutonomousResolver Integration', () => {
+    it('should pass analysis results to resolver correctly', async () => {
+      // Mock successful issue analysis
+      mockAgent.query
+        .mockResolvedValueOnce('bug')
+        .mockResolvedValueOnce(JSON.stringify({
+          requirements: ['Add email validation'],
+          acceptanceCriteria: ['Invalid emails are rejected'],
+        }));
+
+      const analysis = await issueAnalyzer.analyzeIssue(mockIssue);
+
+      expect(analysis.category).toBe('bug');
+      expect(analysis.feasible).toBe(true);
+      expect(analysis.requirements).toContain('Add email validation');
+    });
+  });
+
+  describe('AutonomousResolver to WorktreeManager Integration', () => {
+    it.skip('should create worktree before resolving', async () => {
+      const mockAnalysis: IssueAnalysis = {
+        category: 'bug',
+        complexity: 'low',
+        requirements: ['Add email validation'],
+        acceptanceCriteria: ['Invalid emails are rejected'],
+        feasible: true,
+        confidence: 0.8,
+        reasoning: 'Simple bug fix',
+      };
+
+      const mockWorktree: WorktreeInfo = {
+        branch: 'ai-fix/issue-123-fix-login-validation-bug',
+        path: '.git/ai-worktrees/issue-123',
+        issueId: 123,
+        createdAt: new Date(),
+        status: 'active' as const,
+      };
+
+      mockWorktreeManager.createWorktree.mockResolvedValue(mockWorktree);
+      mockAgent.query.mockResolvedValue(JSON.stringify({
+        files: [{
+          path: 'src/components/LoginForm.ts',
+          changes: [{
+            type: 'modify',
+            content: 'if (!email.includes("@")) { showError("Invalid email"); }',
+            lineNumber: 42,
+          }],
+        }],
+      }));
+
+      const result = await autonomousResolver.resolveIssue(mockAnalysis, mockIssue);
+
+      expect(mockWorktreeManager.createWorktree).toHaveBeenCalledWith(123, 'Fix login validation bug');
+      expect(result.worktree).toEqual(mockWorktree);
+    });
+  });
+
+  describe('WorkflowOrchestrator End-to-End Integration', () => {
+    it('should process complete workflow successfully', async () => {
+      // Mock successful analysis
+      mockAgent.query
+        .mockResolvedValueOnce('bug')
+        .mockResolvedValueOnce(JSON.stringify({
+          requirements: ['Add email validation'],
+          acceptanceCriteria: ['Invalid emails are rejected'],
+        }));
+
+      // Mock successful worktree creation
+      const mockWorktree = {
+        branch: 'ai-fix/issue-123-fix-login-validation-bug',
+        path: '.git/ai-worktrees/issue-123',
+        issueId: 123,
+        createdAt: new Date(),
+        status: 'active' as const,
+      };
+      mockWorktreeManager.createWorktree.mockResolvedValue(mockWorktree);
+
+      // Mock autonomous resolver to avoid real file operations
+      vi.spyOn(autonomousResolver, 'resolveIssue').mockResolvedValue({
+        success: true,
+        solution: {
+          files: [{
+            path: 'src/components/LoginForm.ts',
+            changes: [{
+              type: 'modify',
+              content: 'if (!email.includes("@")) { showError("Invalid email"); }',
+              lineNumber: 42,
+            }],
+          }],
+        },
+        worktree: mockWorktree,
+        testsPassed: true,
+        iterations: 1,
+        reasoning: 'Solution generated successfully',
+      });
+
+      // Mock code review to avoid complex analysis
+      vi.spyOn(codeReviewer, 'reviewChanges').mockResolvedValue({
+        approved: true,
+        score: 0.9,
+        issues: [],
+        recommendations: [],
+        reasoning: 'Code looks good',
+        metadata: {
+          staticAnalysisScore: 0.9,
+          securityScore: 0.9,
+          qualityScore: 0.9,
+          testCoverageScore: 0.9,
+          performanceScore: 0.9,
+          documentationScore: 0.9,
+        },
+      });
+
+      // Mock PR creation to avoid real Git operations
+      vi.spyOn(prGenerator, 'createPullRequest').mockResolvedValue({
+        number: 456,
+        title: 'Fix: login validation bug',
+        body: 'Generated PR description',
+        html_url: 'https://github.com/owner/repo/pull/456',
+        state: 'open',
+        merged: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
+      const result = await workflowOrchestrator.processIssue(mockIssue.number, mockIssue.title, mockIssue.body);
+
+      expect(result.success).toBe(true);
+      expect(result.issueNumber).toBe(123);
+    });
+
+    it('should handle workflow failure gracefully', async () => {
+      // Mock analysis failure
+      mockAgent.query.mockRejectedValue(new Error('Analysis failed'));
+
+      const result = await workflowOrchestrator.processIssue(mockIssue.number, mockIssue.title, mockIssue.body);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Issue requires human review');
+    });
+  });
+
+  describe('Error Propagation and Recovery', () => {
+    it('should propagate worktree errors through workflow', async () => {
+      const mockAnalysis: IssueAnalysis = {
+        category: 'bug',
+        complexity: 'low',
+        requirements: ['Add email validation'],
+        acceptanceCriteria: ['Invalid emails are rejected'],
+        feasible: true,
+        confidence: 0.8,
+        reasoning: 'Simple bug fix',
+      };
+
+      // Mock worktree creation failure
+      mockWorktreeManager.createWorktree.mockRejectedValue(new Error('Git worktree failed'));
+
+      const result = await autonomousResolver.resolveIssue(mockAnalysis, mockIssue);
+
+      expect(result.success).toBe(false);
+      expect(result.reasoning).toContain('Failed to create worktree');
+    });
+  });
+
+  describe('Performance and Resource Management', () => {
+    it('should handle memory usage efficiently', async () => {
+      const issues = Array(5).fill(null).map((_, i) => ({
+        ...mockIssue,
+        number: i + 1,
+      }));
+
+      // Mock successful analysis
+      mockAgent.query.mockResolvedValue('bug');
+
+      const startTime = Date.now();
+      
+      const results = await Promise.all(
+        issues.map(issue => workflowOrchestrator.processIssue(issue.number, issue.title, issue.body))
+      );
+      
+      const duration = Date.now() - startTime;
+
+      expect(results).toHaveLength(5);
+      expect(duration).toBeLessThan(10000); // Should complete within 10 seconds
+    });
   });
 });

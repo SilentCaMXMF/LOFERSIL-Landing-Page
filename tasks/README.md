@@ -18,7 +18,7 @@ Tasks that have been fully implemented and tested.
 
 Tasks that are partially completed and actively being worked on.
 
-- **[ai-powered-github-issues-reviewer-system/](ongoing/ai-powered-github-issues-reviewer-system/)** - Autonomous GitHub issue resolution system (6/11 tasks complete)
+- **[ai-powered-github-issues-reviewer-system/](subtasks/ai-powered-github-issues-reviewer-system/)** - Autonomous GitHub issue resolution system (6/11 tasks complete) ✅
 - **[production-readiness-improvements/](ongoing/production-readiness-improvements/)** - Dependency updates and security improvements (0/9 tasks complete)
 - **[troubleshoot-kanban-population/](ongoing/troubleshoot-kanban-population/)** - Kanban board population diagnostics (0/9 tasks complete)
 - **[update-kanban-payload/](ongoing/update-kanban-payload/)** - Kanban payload updates (0/6 tasks complete)

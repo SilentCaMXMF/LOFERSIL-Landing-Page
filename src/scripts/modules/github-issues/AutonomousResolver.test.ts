@@ -67,6 +67,9 @@ describe('AutonomousResolver', () => {
     mockConfig.worktreeManager = mockWorktreeManager;
 
     resolver = new AutonomousResolver(mockConfig);
+
+    // Mock private methods
+    resolver['runTests'] = vi.fn().mockResolvedValue(true);
   });
 
   afterEach(() => {
@@ -94,9 +97,7 @@ describe('AutonomousResolver', () => {
         ],
       };
 
-      mockAgent.query
-        .mockResolvedValueOnce(JSON.stringify({ files: mockSolution.files })) // Solution generation
-        .mockResolvedValueOnce(JSON.stringify({ isValid: true, reasoning: 'Solution looks good' })); // Validation
+      mockAgent.query.mockResolvedValueOnce(JSON.stringify({ files: mockSolution.files }));
 
       const result = await resolver.resolveIssue(mockAnalysis, mockIssue);
 
@@ -114,60 +115,48 @@ describe('AutonomousResolver', () => {
       const result = await resolver.resolveIssue(mockAnalysis, mockIssue);
 
       expect(result.success).toBe(false);
-      expect(result.iterations).toBe(1);
-      expect(result.reasoning).toContain('Failed to find valid solution');
+      expect(result.iterations).toBe(3);
+      expect(result.reasoning).toContain('Failed to find valid solution after 3 iterations');
     });
 
     it('should iterate and improve solution when validation fails', async () => {
       mockWorktreeManager.createWorktree.mockResolvedValue(mockWorktree);
 
-      // First iteration: invalid solution
-      mockAgent.query
-        .mockResolvedValueOnce(
-          JSON.stringify({
-            files: [
-              {
-                path: 'src/LoginForm.ts',
-                changes: [{ type: 'add', content: 'console.log("fix");' }],
-              },
-            ],
-          })
-        )
-        .mockResolvedValueOnce(
-          JSON.stringify({
-            isValid: false,
-            reasoning: 'Code quality issues',
-          })
-        )
-        // Second iteration: improved solution
-        .mockResolvedValueOnce(
-          JSON.stringify({
-            files: [
-              {
-                path: 'src/components/LoginForm.ts',
-                changes: [
-                  {
-                    type: 'modify',
-                    content:
-                      'if (!isValidEmail(email)) throw new ValidationError("Invalid email");',
-                  },
-                ],
-              },
-            ],
-          })
-        )
-        .mockResolvedValueOnce(
-          JSON.stringify({
-            isValid: true,
-            reasoning: 'Solution improved and validated',
-          })
-        );
+      // First iteration: generate invalid solution
+      mockAgent.query.mockResolvedValueOnce(
+        JSON.stringify({
+          files: [
+            {
+              path: 'src/LoginForm.ts',
+              changes: [{ type: 'add', content: 'console.log("fix");' }],
+            },
+          ],
+        })
+      );
+
+      // Second iteration: improve solution
+      mockAgent.query.mockResolvedValueOnce(
+        JSON.stringify({
+          files: [
+            {
+              path: 'src/components/LoginForm.ts',
+              changes: [
+                {
+                  type: 'modify',
+                  content:
+                    'if (!isValidEmail(email)) throw new ValidationError("Invalid email");',
+                },
+              ],
+            },
+          ],
+        })
+      );
 
       const result = await resolver.resolveIssue(mockAnalysis, mockIssue);
 
       expect(result.success).toBe(true);
       expect(result.iterations).toBe(2);
-      expect(mockAgent.query).toHaveBeenCalledTimes(4);
+      expect(mockAgent.query).toHaveBeenCalledTimes(2);
     });
 
     it('should respect maximum iterations limit', async () => {
@@ -290,12 +279,10 @@ describe('AutonomousResolver', () => {
         ],
       };
 
-      mockAgent.query
-        .mockResolvedValueOnce(JSON.stringify({ files: mockSolution.files }))
-        .mockResolvedValueOnce(JSON.stringify({ isValid: true, reasoning: 'Good' }));
+       mockAgent.query.mockResolvedValueOnce(JSON.stringify({ files: mockSolution.files }));
 
-      // Mock successful test run
-      testResolver['runTests'] = vi.fn().mockResolvedValue(true);
+       // Mock successful test run
+       testResolver['runTests'] = vi.fn().mockResolvedValue(true);
 
       const result = await testResolver.resolveIssue(mockAnalysis, mockIssue);
 
@@ -320,12 +307,10 @@ describe('AutonomousResolver', () => {
         ],
       };
 
-      mockAgent.query
-        .mockResolvedValueOnce(JSON.stringify({ files: mockSolution.files }))
-        .mockResolvedValueOnce(JSON.stringify({ isValid: true, reasoning: 'Good' }));
+       mockAgent.query.mockResolvedValueOnce(JSON.stringify({ files: mockSolution.files }));
 
-      // Mock failed test run
-      testResolver['runTests'] = vi.fn().mockResolvedValue(false);
+       // Mock failed test run
+       testResolver['runTests'] = vi.fn().mockResolvedValue(false);
 
       const result = await testResolver.resolveIssue(mockAnalysis, mockIssue);
 

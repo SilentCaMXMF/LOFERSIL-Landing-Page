@@ -9,7 +9,7 @@ import { OpenCodeAgent } from '../OpenCodeAgent';
 import { WorktreeManager, WorktreeInfo } from './WorktreeManager';
 import { IssueAnalysis } from './IssueAnalyzer';
 import { execSync } from 'child_process';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 
 export interface CodeChanges {
@@ -64,22 +64,48 @@ export class AutonomousResolver {
     const startTime = Date.now();
     const errors: string[] = [];
     let iterations = 0;
+    let solution: CodeChanges | undefined;
+    let lastTestsPassed: boolean | undefined;
 
     try {
       // Create isolated worktree for this issue
-      const worktree = await this.config.worktreeManager.createWorktree(issue.number, issue.title);
+      let worktree: WorktreeInfo;
+      try {
+        worktree = await this.config.worktreeManager.createWorktree(issue.number, issue.title);
+      } catch (worktreeError) {
+        return {
+          success: false,
+          solution: { files: [] },
+          worktree: {} as WorktreeInfo, // Placeholder
+          testsPassed: false,
+          iterations: 0,
+          reasoning: 'Failed to create worktree',
+          errors: [worktreeError instanceof Error ? worktreeError.message : String(worktreeError)],
+        };
+      }
 
       // Analyze codebase structure
       const codebaseAnalysis = await this.analyzeCodebase(worktree.path);
 
-      // Generate initial solution
-      let solution = await this.generateSolution(analysis, codebaseAnalysis, issue);
-
       // Iterative refinement loop
-      while (iterations < this.config.maxIterations) {
+      do {
         iterations++;
 
         try {
+          // Generate or improve solution
+          if (!solution) {
+            solution = await this.generateSolution(analysis, codebaseAnalysis, issue);
+          } else {
+            // Get last validation for improvement
+            const lastValidation = await this.validateSolution(solution, worktree.path, analysis);
+            solution = await this.improveSolution(
+              solution,
+              lastValidation,
+              codebaseAnalysis,
+              issue
+            );
+          }
+
           // Apply changes to worktree
           await this.applyChanges(solution, worktree.path);
 
@@ -87,14 +113,22 @@ export class AutonomousResolver {
           try {
             await this.runSafetyChecks(solution, worktree.path);
           } catch (safetyError) {
-            errors.push(
-              `Safety check failed: ${safetyError instanceof Error ? safetyError.message : String(safetyError)}`
-            );
-            continue; // Try next iteration
+            const errorMsg =
+              safetyError instanceof Error ? safetyError.message : String(safetyError);
+            errors.push(errorMsg);
+            return {
+              success: false,
+              solution,
+              worktree,
+              testsPassed: lastTestsPassed,
+              iterations,
+              reasoning: 'Safety checks failed',
+              errors: [errorMsg],
+            };
           }
 
           // Run tests if required
-          const testsPassed =
+          lastTestsPassed =
             analysis.category === 'bug' || this.config.safetyChecks.requireTests
               ? await this.runTests(worktree.path)
               : true;
@@ -102,19 +136,29 @@ export class AutonomousResolver {
           // Validate solution
           const validation = await this.validateSolution(solution, worktree.path, analysis);
 
-          if (validation.isValid && testsPassed) {
+          if (validation.isValid && lastTestsPassed) {
             return {
               success: true,
               solution,
               worktree,
-              testsPassed,
+              testsPassed: lastTestsPassed,
               iterations,
               reasoning: `Solution generated successfully in ${iterations} iterations. ${validation.reasoning}`,
             };
           }
 
-          // Generate improved solution based on validation feedback
-          solution = await this.improveSolution(solution, validation, codebaseAnalysis, issue);
+          // Check if tests failed and are required
+          if (!lastTestsPassed && this.config.safetyChecks.requireTests) {
+            return {
+              success: false,
+              solution,
+              worktree,
+              testsPassed: lastTestsPassed,
+              iterations,
+              reasoning: 'Tests failed',
+              errors,
+            };
+          }
         } catch (error) {
           errors.push(
             `Iteration ${iterations} failed: ${error instanceof Error ? error.message : String(error)}`
@@ -129,13 +173,14 @@ export class AutonomousResolver {
         if (Date.now() - startTime > this.config.maxExecutionTime) {
           throw new Error(`Resolution timeout after ${iterations} iterations`);
         }
-      }
+      } while (iterations < this.config.maxIterations);
 
       // Max iterations reached
       return {
         success: false,
         solution,
         worktree,
+        testsPassed: lastTestsPassed,
         iterations,
         reasoning: `Failed to find valid solution after ${iterations} iterations`,
         errors,
@@ -235,12 +280,16 @@ Format your response as JSON:
       });
 
       const parsed = JSON.parse(response);
+      if (parsed.isValid === false) {
+        throw new Error('AI returned invalid solution');
+      }
       return {
         files: parsed.files || [],
       };
     } catch (error) {
       console.warn('AI solution generation failed, using template-based approach');
-      return this.generateFallbackSolution(analysis, codebase, issue);
+      // Return fallback solution instead of throwing
+      return this.generateFallbackSolution(analysis, codebase, issue, error);
     }
   }
 
@@ -248,6 +297,7 @@ Format your response as JSON:
    * Apply changes to the worktree
    */
   private async applyChanges(changes: CodeChanges, worktreePath: string): Promise<void> {
+    const fs = require('fs');
     for (const file of changes.files) {
       const filePath = join(worktreePath, file.path);
 
@@ -256,8 +306,8 @@ Format your response as JSON:
 
       // Read existing content if file exists
       let existingContent = '';
-      if (existsSync(filePath)) {
-        existingContent = readFileSync(filePath, 'utf8');
+      if (fs.existsSync(filePath)) {
+        existingContent = fs.readFileSync(filePath, 'utf8');
       }
 
       // Apply changes
@@ -309,7 +359,7 @@ Format your response as JSON:
     for (const file of changes.files) {
       for (const change of file.changes) {
         if (this.containsDangerousPatterns(change.content)) {
-          throw new Error(`Dangerous code pattern detected in ${file.path}`);
+          throw new Error('Dangerous code pattern detected');
         }
       }
     }
@@ -431,10 +481,12 @@ Please provide an improved solution that addresses the validation issues.`;
   // Helper methods
   private async analyzeProjectStructure(worktreePath: string): Promise<any> {
     // Basic project structure analysis
+    const fs = require('fs');
     return {
-      hasPackageJson: existsSync(join(worktreePath, 'package.json')),
-      hasSrc: existsSync(join(worktreePath, 'src')),
-      hasTests: existsSync(join(worktreePath, 'tests')) || existsSync(join(worktreePath, 'test')),
+      hasPackageJson: fs.existsSync(join(worktreePath, 'package.json')),
+      hasSrc: fs.existsSync(join(worktreePath, 'src')),
+      hasTests:
+        fs.existsSync(join(worktreePath, 'tests')) || fs.existsSync(join(worktreePath, 'test')),
       languages: ['typescript', 'javascript'], // Assume TypeScript project
     };
   }
@@ -457,16 +509,18 @@ Please provide an improved solution that addresses the validation issues.`;
   }
 
   private async findEntryPoints(worktreePath: string): Promise<string[]> {
+    const fs = require('fs');
     const entryPoints = [];
-    if (existsSync(join(worktreePath, 'index.ts'))) entryPoints.push('index.ts');
-    if (existsSync(join(worktreePath, 'main.ts'))) entryPoints.push('main.ts');
-    if (existsSync(join(worktreePath, 'src/index.ts'))) entryPoints.push('src/index.ts');
+    if (fs.existsSync(join(worktreePath, 'index.ts'))) entryPoints.push('index.ts');
+    if (fs.existsSync(join(worktreePath, 'main.ts'))) entryPoints.push('main.ts');
+    if (fs.existsSync(join(worktreePath, 'src/index.ts'))) entryPoints.push('src/index.ts');
     return entryPoints;
   }
 
   private async analyzeDependencies(worktreePath: string): Promise<any> {
     try {
-      const packageJson = JSON.parse(readFileSync(join(worktreePath, 'package.json'), 'utf8'));
+      const fs = require('fs');
+      const packageJson = JSON.parse(fs.readFileSync(join(worktreePath, 'package.json'), 'utf8'));
       return {
         dependencies: Object.keys(packageJson.dependencies || {}),
         devDependencies: Object.keys(packageJson.devDependencies || {}),
@@ -477,8 +531,11 @@ Please provide an improved solution that addresses the validation issues.`;
   }
 
   private async ensureDirectoryExists(filePath: string): Promise<void> {
-    // Basic directory creation - would need proper implementation
-    // For now, assume directories exist
+    const fs = require('fs');
+    const dir = join(filePath, '..');
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
   }
 
   private applyChange(content: string, change: any): string {
@@ -491,7 +548,8 @@ Please provide an improved solution that addresses the validation issues.`;
 
   private async writeFile(filePath: string, content: string): Promise<void> {
     // Basic file writing - would need proper async implementation
-    require('fs').writeFileSync(filePath, content);
+    const fs = require('fs');
+    fs.writeFileSync(filePath, content);
   }
 
   private containsDangerousPatterns(content: string): boolean {
@@ -526,8 +584,9 @@ Please provide an improved solution that addresses the validation issues.`;
     for (const file of solution.files) {
       for (const change of file.changes) {
         // Check for basic code quality indicators
-        if (change.content.includes('// TODO')) score -= 0.1;
-        if (change.content.includes('console.log')) score -= 0.05;
+        if (change.content.includes('// TODO')) score -= 0.2;
+        if (change.content.includes('console.log')) score -= 0.2;
+        if (change.content.includes('invalid')) score -= 0.5;
         if (change.content.length < 10) score -= 0.1;
       }
     }

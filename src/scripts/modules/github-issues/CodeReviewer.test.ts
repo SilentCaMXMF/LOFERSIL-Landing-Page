@@ -83,10 +83,30 @@ export function validateEmail(email: string): boolean {
               },
             ],
           },
+          {
+            path: 'src/utils/validation.test.ts',
+            changes: [
+              {
+                type: 'add',
+                content: `import { validateEmail } from './validation';
+
+describe('validateEmail', () => {
+  it('should validate correct emails', () => {
+    expect(validateEmail('test@example.com')).toBe(true);
+  });
+});`,
+              },
+            ],
+          },
         ],
       };
 
       const result = await reviewer.reviewChanges(cleanChanges, mockIssue);
+
+      // Debug: print all issues to understand what's being flagged
+      if (result.issues.length > 0) {
+        console.log('Issues found:', result.issues);
+      }
 
       expect(result.approved).toBe(true);
       expect(result.score).toBeGreaterThan(0.8);
@@ -182,7 +202,12 @@ export function validateEmail(email: string): boolean {
             changes: [
               {
                 type: 'add',
-                content: 'export function helper() { return true; }',
+                content: `export function helper1() { return true; }
+export function helper2() { return false; }
+export function helper3() { return 'test'; }
+export function helper4() { return 42; }
+export function helper5() { return null; }
+export function helper6() { return undefined; }`,
               },
             ],
           },
@@ -680,14 +705,14 @@ export function perfect(): boolean {
     it('should handle timeout correctly', async () => {
       const fastReviewer = new CodeReviewer({
         ...mockConfig,
-        maxReviewTime: 1, // Very short timeout
+        maxReviewTime: 50, // Short timeout
       });
 
       // Mock slow analysis
       fastReviewer['performStaticAnalysis'] = vi
         .fn()
         .mockImplementation(
-          () => new Promise(resolve => setTimeout(() => resolve({ issues: [] }), 100))
+          () => new Promise(resolve => setTimeout(() => resolve([]), 100))
         );
 
       const result = await fastReviewer.reviewChanges(mockChanges, mockIssue);

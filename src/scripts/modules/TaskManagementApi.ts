@@ -154,10 +154,9 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
 
       // Update priority/assignee if provided
       if (priority || assignee) {
-        const updates: any = {};
-        if (priority) updates.priority = priority;
-        if (assignee) updates.assignee = assignee;
-        await integration.updateTask(task.id, updates);
+        if (priority) task.priority = priority;
+        if (assignee) task.assignee = assignee;
+        await integration.updateTask(task.id, {});
       }
 
       res.status(201).json({
@@ -405,7 +404,6 @@ export function createTaskManagementRouter(integration: TaskManagementIntegratio
       res.json({
         success: true,
         message: `Webhook ${event} processed successfully`,
-        deliveryId,
       });
     } catch (error) {
       console.error('❌ Error processing webhook:', error);

@@ -5,6 +5,21 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
+// Mock all modules before any imports
+vi.mock('./modules/TranslationManager.js');
+vi.mock('./modules/NavigationManager.js');
+vi.mock('./modules/PerformanceTracker.js');
+vi.mock('./modules/ErrorManager.js');
+vi.mock('./modules/SEOManager.js');
+vi.mock('./modules/ScrollManager.js');
+vi.mock('./modules/logger.js');
+vi.mock('./modules/EventManager.js');
+vi.mock('./modules/PWAInstaller.js');
+vi.mock('./modules/PushNotificationManager.js');
+vi.mock('./modules/PWAUpdater.js');
+vi.mock('./modules/ThemeManager.js');
+vi.mock('./modules/EnvironmentLoader.js');
+
 // Mock DOM elements
 const mockDOM = {
   navToggle: {
@@ -393,6 +408,22 @@ describe('LOFERSILLandingPage', () => {
 
       // Should fallback to home route
       expect(route.title).toBe('Home');
+    });
+  });
+
+  describe('Application Initialization', () => {
+    it('should instantiate the main application class', async () => {
+      // Mock DOM elements that the constructor accesses
+      mockDOM.document.getElementById.mockReturnValue(mockDOM.mainContent as any);
+
+      // Dynamically import the class after mocking
+      const { LOFERSILLandingPage } = await import('./index.js');
+
+      // This test will cover the constructor and property initialization
+      expect(() => {
+        const app = new LOFERSILLandingPage();
+        expect(app).toBeInstanceOf(LOFERSILLandingPage);
+      }).not.toThrow();
     });
   });
 });

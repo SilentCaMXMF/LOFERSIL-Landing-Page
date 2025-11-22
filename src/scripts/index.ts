@@ -12,7 +12,7 @@ import { PerformanceTracker } from './modules/PerformanceTracker.js';
 import { ErrorManager } from './modules/ErrorManager.js';
 import { SEOManager } from './modules/SEOManager.js';
 import { ScrollManager } from './modules/ScrollManager.js';
-import { Logger } from './modules/Logger.js';
+import { logger } from './modules/logger.js';
 
 import { EventManager } from './modules/EventManager.js';
 import { PWAInstaller } from './modules/PWAInstaller.js';
@@ -39,7 +39,7 @@ class LOFERSILLandingPage {
   private errorHandler!: ErrorManager;
   private seoManager!: SEOManager;
   private scrollManager!: ScrollManager;
-  private logger!: Logger;
+  private logger = logger;
 
   private contactFormManager: ContactFormManager | null = null;
   private eventManager!: EventManager;
@@ -60,8 +60,7 @@ class LOFERSILLandingPage {
       this.setupDOMElements();
       // Initialize error handler
       this.errorHandler = new ErrorManager();
-      // Initialize logger
-      this.logger = Logger.getInstance();
+      // Logger is already initialized
       // Initialize event manager
       this.eventManager = new EventManager(this.logger, this.errorHandler);
 

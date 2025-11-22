@@ -9,6 +9,7 @@ import { EnvironmentLoader } from './EnvironmentLoader.js';
 // Mock window.ENV
 const mockEnv = {
   OPENAI_API_KEY: 'test-openai-key',
+  GEMINI_API_KEY: 'test-gemini-key',
   NODE_ENV: 'test',
   GOOGLE_ANALYTICS_ID: 'GA-TEST',
   MCP_API_KEY: 'test-mcp-key',
@@ -55,7 +56,7 @@ describe('EnvironmentLoader', () => {
     it('should load default values when not provided', () => {
       // Temporarily modify window.ENV
       const originalEnv = (global.window as any).ENV;
-      (global.window as any).ENV = { OPENAI_API_KEY: 'test-key' };
+      (global.window as any).ENV = { OPENAI_API_KEY: 'test-key', GEMINI_API_KEY: 'test-gemini-key' };
 
       const newLoader = new EnvironmentLoader();
       expect(newLoader.get('NODE_ENV')).toBe('development');
@@ -123,12 +124,12 @@ describe('EnvironmentLoader', () => {
     it('should fail validation when required variable is missing', () => {
       const originalEnv = (global.window as any).ENV;
       (global.window as any).ENV = { ...originalEnv };
-      delete (global.window as any).ENV.OPENAI_API_KEY;
+      delete (global.window as any).ENV.GEMINI_API_KEY;
 
       const invalidLoader = new EnvironmentLoader();
       const validation = invalidLoader.validateRequired();
       expect(validation.valid).toBe(false);
-      expect(validation.missing).toEqual(['OPENAI_API_KEY']);
+      expect(validation.missing).toEqual(['GEMINI_API_KEY']);
 
       // Restore
       (global.window as any).ENV = originalEnv;
@@ -162,6 +163,7 @@ describe('EnvironmentLoader', () => {
       (global as any).process = {
         env: {
           OPENAI_API_KEY: 'node-env-key',
+          GEMINI_API_KEY: 'node-gemini-key',
           NODE_ENV: 'production',
         },
       };

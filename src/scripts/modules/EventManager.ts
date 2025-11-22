@@ -13,16 +13,16 @@ import {
   EventHandler,
   EventListeners,
 } from '../types.js';
-import { Logger } from './Logger.js';
+import { logger } from './logger.js';
 import { ErrorManager } from './ErrorManager.js';
 
 export class EventManager {
   private listeners: EventListeners = {};
-  private logger: Logger;
+  private logger: any;
   private errorHandler: ErrorManager;
   private lastMessage: string = '';
 
-  constructor(logger: Logger, errorHandler: ErrorManager) {
+  constructor(logger: any, errorHandler: ErrorManager) {
     this.logger = logger;
     this.errorHandler = errorHandler;
     this.setupGlobalEventListeners();

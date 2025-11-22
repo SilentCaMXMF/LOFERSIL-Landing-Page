@@ -344,7 +344,10 @@ export class GitHubProjectsIntegration {
 
       return data.createIssue.issue.id;
     } catch (error) {
-      logger.error('Failed to create issue', { title, error: error.message });
+      logger.error('Failed to create issue', {
+        title,
+        error: error instanceof Error ? error.message : String(error),
+      });
       throw error;
     }
   }
@@ -376,7 +379,7 @@ export class GitHubProjectsIntegration {
 
       return data.addProjectV2ItemById.item.id;
     } catch (error) {
-      logger.error('Failed to add issue to project', { issueId, error: error.message });
+      logger.error('Failed to add issue to project', { issueId, error: (error as Error).message });
       throw error;
     }
   }
@@ -404,7 +407,7 @@ export class GitHubProjectsIntegration {
       logger.error('Failed to get repository ID', {
         owner: this.owner,
         repo: this.repo,
-        error: error.message,
+        error: (error as Error).message,
       });
       throw error;
     }
@@ -448,7 +451,7 @@ export class GitHubProjectsIntegration {
 
       return labelIds;
     } catch (error) {
-      logger.error('Failed to get label IDs', { labelNames, error: error.message });
+      logger.error('Failed to get label IDs', { labelNames, error: (error as Error).message });
       return [];
     }
   }
@@ -487,7 +490,7 @@ export class GitHubProjectsIntegration {
 
       return statusField.id;
     } catch (error) {
-      logger.error('Failed to get status field ID', { error: error.message });
+      logger.error('Failed to get status field ID', { error: (error as Error).message });
       throw error;
     }
   }
@@ -538,7 +541,10 @@ export class GitHubProjectsIntegration {
 
       return option.id;
     } catch (error) {
-      logger.error('Failed to get status option ID', { statusName, error: error.message });
+      logger.error('Failed to get status option ID', {
+        statusName,
+        error: (error as Error).message,
+      });
       throw error;
     }
   }
@@ -579,7 +585,7 @@ export class GitHubProjectsIntegration {
         taskId,
         status,
         issueNumber,
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   }
@@ -652,7 +658,7 @@ export class GitHubProjectsIntegration {
         taskId,
         workflowStage,
         progress,
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   }
@@ -710,7 +716,7 @@ export class GitHubProjectsIntegration {
         taskId,
         workflowStage,
         progress,
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   }

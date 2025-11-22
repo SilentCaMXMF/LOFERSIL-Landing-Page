@@ -114,13 +114,7 @@ export class IssueAnalyzer {
     content: string,
     issue: GitHubIssue
   ): Promise<IssueAnalysis['category']> {
-    // Check for explicit labels first
-    const labelCategories = this.categorizeByLabels(issue.labels);
-    if (labelCategories.length === 1) {
-      return labelCategories[0];
-    }
-
-    // Use AI for content-based categorization
+    // Use AI for content-based categorization first
     const prompt = `Categorize this GitHub issue into one of: bug, feature, documentation, enhancement, question, unknown.
 
 Issue Title: ${issue.title}
@@ -153,6 +147,7 @@ Respond with only the category name in lowercase.`;
     }
 
     // Fallback to label-based categorization
+    const labelCategories = this.categorizeByLabels(issue.labels);
     return labelCategories[0] || 'unknown';
   }
 
@@ -189,7 +184,7 @@ Respond with only the category name in lowercase.`;
 
     // Length-based scoring
     const contentLength = content.length;
-    if (contentLength > 2000) score += 3;
+    if (contentLength > 2000) score += 4;
     else if (contentLength > 500) score += 1;
 
     // Label-based scoring
@@ -208,7 +203,7 @@ Respond with only the category name in lowercase.`;
     score += Math.min(filePathCount, 1);
 
     // Determine complexity level
-    if (score >= 6) return 'critical';
+    if (score >= 7) return 'critical';
     if (score >= 4) return 'high';
     if (score >= 2) return 'medium';
     return 'low';
@@ -264,18 +259,35 @@ Acceptance criteria should be the conditions that must be met for the issue to b
     const requirements: string[] = [];
     const acceptanceCriteria: string[] = [];
 
-    // Look for bullet points or numbered lists
+    // Look for sections and bullet points
     const lines = content.split('\n');
+    let currentSection = '';
     for (const line of lines) {
       const trimmed = line.trim();
+
+      // Check for section headers
+      if (trimmed.startsWith('## ')) {
+        currentSection = trimmed.substring(3).toLowerCase();
+        continue;
+      }
+
+      // Look for bullet points or numbered lists
       if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || /^\d+\./.test(trimmed)) {
+        const itemContent = trimmed.replace(/^[-*]\s+|\d+\.\s+/, '').trim();
+
+        // Check if the item is an acceptance criterion
         if (
-          trimmed.toLowerCase().includes('acceptance') ||
-          trimmed.toLowerCase().includes('criteria')
+          itemContent.toLowerCase().startsWith('acceptance:') ||
+          itemContent.toLowerCase().includes('acceptance criteria')
         ) {
-          acceptanceCriteria.push(trimmed.substring(2));
+          acceptanceCriteria.push(itemContent.replace(/^acceptance:\s*/i, '').trim());
+        } else if (currentSection.includes('acceptance') && currentSection.includes('criteria')) {
+          acceptanceCriteria.push(itemContent);
+        } else if (currentSection.includes('requirement')) {
+          requirements.push(itemContent);
         } else {
-          requirements.push(trimmed.substring(2));
+          // Default to requirements if no clear section
+          requirements.push(itemContent);
         }
       }
     }
@@ -294,14 +306,14 @@ Acceptance criteria should be the conditions that must be met for the issue to b
     // Critical complexity issues require human review
     if (complexity === 'critical') return false;
 
+    // High complexity issues require human review
+    if (complexity === 'high') return false;
+
     // Certain categories are better handled by humans
     if (category === 'question' || category === 'unknown') return false;
 
     // Issues with too many requirements might be too complex
     if (requirements.length > 10) return false;
-
-    // High complexity features need human oversight
-    if (complexity === 'high' && category === 'feature') return false;
 
     return true;
   }
@@ -389,7 +401,10 @@ Acceptance criteria should be the conditions that must be met for the issue to b
    * Extract and sanitize content from issue
    */
   private extractContent(issue: GitHubIssue): string {
-    // Stub implementation
-    return `${issue.title}\n\n${issue.body || ''}`;
+    // Sanitize title and body to prevent XSS
+    const sanitizedTitle = this.domPurify.sanitize(issue.title, { ALLOWED_TAGS: [] });
+    const sanitizedBody = this.domPurify.sanitize(issue.body || '', { ALLOWED_TAGS: [] });
+
+    return `${sanitizedTitle}\n\n${sanitizedBody}`;
   }
 }
