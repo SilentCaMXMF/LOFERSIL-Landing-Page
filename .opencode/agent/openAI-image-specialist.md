@@ -2,7 +2,7 @@
 
 description: "Specialized agent for image editing and analysis using openAI tools"
 mode: primary
-model: opencode/gpt-5-nano
+model: opencode/grok-code
 temperature: 0.3
 permission:
   edit: deny

@@ -6,12 +6,12 @@ Status legend: [ ] todo, [~] in-progress, [x] done
 
 Tasks
 
-- [ ] 01 — XSS Vulnerability Fix → `01-xss-vulnerability-fix.md`
-- [ ] 02 — Input Validation Implementation → `02-input-validation-implementation.md`
-- [ ] 03 — Hardcoded URLs Removal → `03-hardcoded-urls-removal.md`
-- [ ] 04 — Unused Code Cleanup → `04-unused-code-cleanup.md`
-- [ ] 05 — Security Headers Implementation → `05-security-headers-implementation.md`
-- [ ] 06 — Dependency Vulnerability Scanning → `06-dependency-vulnerability-scanning.md`
+- [x] 01 — XSS Vulnerability Fix → `../completed/security-fix-plan/01-xss-vulnerability-fix.md` ✅ **MOVED**
+- [x] 02 — Input Validation Implementation → `../completed/security-fix-plan/02-input-validation-implementation.md` ✅ **MOVED**
+- [x] 03 — Hardcoded URLs Removal → `../completed/security-fix-plan/03-hardcoded-urls-removal.md` ✅ **MOVED**
+- [x] 04 — Unused Code Cleanup → `../completed/security-fix-plan/04-unused-code-cleanup.md` ✅ **MOVED**
+- [x] 05 — Security Headers Implementation → `../completed/security-fix-plan/05-security-headers-implementation.md` ✅ **MOVED**
+- [x] 06 — Dependency Vulnerability Scanning → `../completed/security-fix-plan/06-dependency-vulnerability-scanning.md` ✅ **MOVED**
 - [ ] 07 — Image Optimization → `07-image-optimization.md`
 - [ ] 08 — Structured Data Implementation → `08-structured-data-implementation.md`
 - [ ] 09 — CSS Modularization → `09-css-modularization.md`

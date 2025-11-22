@@ -7,7 +7,7 @@
  * Can be run manually or scheduled for automated live sync.
  */
 
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
 class LiveKanbanSync {
   constructor() {
@@ -40,7 +40,7 @@ class LiveKanbanSync {
     try {
       // Update kanban payload
       console.log('🔄 Updating kanban payload...');
-      execSync('npx tsx update-kanban-payload.ts', { stdio: 'inherit' });
+      execSync('node update-kanban-payload.js', { stdio: 'inherit' });
 
       // Check if there are changes
       if (!this.hasChanges()) {
@@ -69,9 +69,7 @@ Automated update of task inventory for live kanban synchronization.`;
 }
 
 // Run live sync
-if (require.main === module) {
-  const sync = new LiveKanbanSync();
-  sync.sync();
-}
+const sync = new LiveKanbanSync();
+sync.sync();
 
-module.exports = { LiveKanbanSync };
+export { LiveKanbanSync };

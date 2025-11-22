@@ -2,7 +2,7 @@
 
 description: "Breaks down complex features into small, verifiable subtasks"
 mode: primary
-model: opencode/gpt-5-nano
+model: opencode/grok-code
 temperature: 0.1
 tools:
   read: true
