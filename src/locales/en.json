@@ -110,11 +110,34 @@
     "subtitle": "We're here to help. Get in touch with our team and we'll respond quickly with the care you deserve.",
     "nameLabel": "Name *",
     "emailLabel": "Email *",
+    "phoneLabel": "Phone",
     "messageLabel": "Message *",
     "submitButton": "Send Message",
     "submitButtonLoading": "Sending...",
     "successMessage": "Message sent successfully! We'll get back to you shortly.",
-    "errorMessage": "An error occurred while sending the message. Please try again."
+    "errorMessage": "An error occurred while sending the message. Please try again.",
+    "validation": {
+      "name": {
+        "required": "Name is required",
+        "tooShort": "Name must be at least 2 characters long",
+        "tooLong": "Name must be less than 100 characters",
+        "invalidChars": "Name contains invalid characters"
+      },
+      "email": {
+        "required": "Email is required",
+        "invalid": "Please enter a valid email address",
+        "tooLong": "Email address is too long"
+      },
+      "phone": {
+        "invalid": "Please enter a valid phone number",
+        "tooLong": "Phone number is too long"
+      },
+      "message": {
+        "required": "Message is required",
+        "tooShort": "Message must be at least 10 characters long",
+        "tooLong": "Message must be less than 2000 characters"
+      }
+    }
   },
   "footer": {
     "title": "LOFERSIL",

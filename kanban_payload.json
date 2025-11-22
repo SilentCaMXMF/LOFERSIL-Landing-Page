@@ -5,7 +5,7 @@
     {
       "id": "COMP-MCP-INT-001",
       "title": "Integração MCP - Model Context Protocol (MCP)",
-      "group": "Completed",
+      "group": "In Review",
       "status": "Done (Advanced Improvements)",
       "priority": "P1",
       "source": "tasks/completed/mcp-integration.md",
@@ -14,7 +14,7 @@
     {
       "id": "COMP-CLOUDFLARE-MCP-INT-001",
       "title": "Cloudflare MCP Integration",
-      "group": "Completed",
+      "group": "In Review",
       "status": "Done",
       "priority": "P1",
       "source": "tasks/completed/cloudflare-mcp-integration.md",
@@ -23,7 +23,7 @@
     {
       "id": "COMP-FIX-BUILD-ASSETS-001",
       "title": "Fix Build Assets and SW Errors",
-      "group": "Completed",
+      "group": "In Review",
       "status": "Done",
       "priority": "P2",
       "source": "tasks/completed/fix-build-assets-and-sw-errors/README.md",
@@ -147,13 +147,13 @@
       "notes": "Diagnose and resolve why the Kanban board is not populating despite successful issue creation."
     },
     {
-      "id": "PLAN-GITHUB-ISSUES-REVIEWER-001",
-      "title": "AI-Powered GitHub Issues Reviewer Architecture",
-      "group": "Plans",
-      "status": "Ready for Implementation",
+      "id": "ONGO-GITHUB-ISSUES-REVIEWER-001",
+      "title": "AI-Powered GitHub Issues Reviewer System",
+      "group": "Ongoing",
+      "status": "In Progress",
       "priority": "P1",
-      "source": "tasks/github-issues-reviewer-architecture.md",
-      "notes": "An autonomous system that analyzes GitHub issues, generates solutions using AI agents, and creates pull requests for review."
+      "source": "tasks/subtasks/ai-powered-github-issues-reviewer-system/README.md",
+      "notes": "6/11 core components implemented - Added complete Task Management Integration with API endpoints, automation triggers, and monitoring system."
     }
   ]
 }

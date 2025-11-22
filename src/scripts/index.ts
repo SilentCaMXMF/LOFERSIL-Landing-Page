@@ -189,7 +189,7 @@ class LOFERSILLandingPage {
             observer.disconnect();
             try {
               const { createContactForm } = await import('./modules/ContactFormManager.js');
-              this.contactFormManager = createContactForm();
+              this.contactFormManager = createContactForm(this.translationManager);
             } catch (error) {
               this.errorHandler.handleError(error, 'Failed to load contact form manager', {
                 component: 'LOFERSILLandingPage',
@@ -206,7 +206,7 @@ class LOFERSILLandingPage {
       // Fallback: load immediately if section not found
       try {
         const { createContactForm } = await import('./modules/ContactFormManager.js');
-        this.contactFormManager = createContactForm();
+        this.contactFormManager = createContactForm(this.translationManager);
       } catch (error) {
         this.errorHandler.handleError(error, 'Failed to load contact form manager', {
           component: 'LOFERSILLandingPage',
