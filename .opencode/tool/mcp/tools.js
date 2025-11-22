@@ -96,8 +96,16 @@ export class MCPTools {
                 continue;
             }
             // Simple type validation
-            if (paramSchema.type && typeof value !== paramSchema.type) {
-                throw new Error(`Parameter '${param}' should be of type ${paramSchema.type}, got ${typeof value}`);
+            if (paramSchema.type) {
+                if (paramSchema.type === 'integer' && typeof value === 'number') {
+                    // JavaScript numbers are fine for integer types, just check if they're integers
+                    if (!Number.isInteger(value)) {
+                        throw new Error(`Parameter '${param}' should be an integer, got ${value}`);
+                    }
+                }
+                else if (typeof value !== paramSchema.type) {
+                    throw new Error(`Parameter '${param}' should be of type ${paramSchema.type}, got ${typeof value}`);
+                }
             }
         }
     }

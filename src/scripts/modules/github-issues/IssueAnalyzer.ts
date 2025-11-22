@@ -384,4 +384,12 @@ Acceptance criteria should be the conditions that must be met for the issue to b
 
     return hasSupportedLabel || true; // Allow all open issues if no specific labels required
   }
+
+  /**
+   * Extract and sanitize content from issue
+   */
+  private extractContent(issue: GitHubIssue): string {
+    // Stub implementation
+    return `${issue.title}\n\n${issue.body || ''}`;
+  }
 }

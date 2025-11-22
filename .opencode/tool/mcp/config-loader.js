@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import { MCPErrors, createMCPError } from './types.js';
 /**
  * Loads and parses the MCP configuration file.
  * @param filePath - The path to the configuration file.
@@ -6,13 +7,12 @@ import { readFileSync } from 'fs';
  * @throws Error if the file cannot be read or parsed.
  */
 function loadConfig(filePath) {
-    try {
-        const content = readFileSync(filePath, 'utf-8');
-        return JSON.parse(content);
-    }
-    catch (error) {
-        throw new Error(`Failed to load config from ${filePath}: ${error.message}`);
-    }
+  try {
+    const content = readFileSync(filePath, 'utf-8');
+    return JSON.parse(content);
+  } catch (error) {
+    throw new Error(`Failed to load config from ${filePath}: ${error.message}`);
+  }
 }
 /**
  * Substitutes environment variables in the configuration.
@@ -21,39 +21,43 @@ function loadConfig(filePath) {
  * @throws Error if an environment variable is not set.
  */
 function substituteEnvVars(config) {
-    // Validate environment variable names to prevent injection
-    const validateEnvVarName = (varName) => {
-        // Allow only valid environment variable names: start with letter/underscore, followed by letters/digits/underscores
-        return /^[A-Z_][A-Z0-9_]*$/.test(varName);
-    };
-    const substitute = (obj) => {
-        if (typeof obj === 'string') {
-            return obj.replace(/\$\{([^}]+)\}/g, (_, varName) => {
-                if (!validateEnvVarName(varName)) {
-                    throw new Error(`Invalid environment variable name: ${varName}`);
-                }
-                const value = process.env[varName];
-                if (value === undefined) {
-                    throw new Error(`Environment variable ${varName} is not set. ` +
-                        `Please set this variable in your environment or .env file. ` +
-                        `For example: export ${varName}="your-value-here"`);
-                }
-                return value;
-            });
+  // Validate environment variable names to prevent injection
+  const validateEnvVarName = varName => {
+    // Allow only valid environment variable names: start with letter/underscore, followed by letters/digits/underscores
+    return /^[A-Z_][A-Z0-9_]*$/.test(varName);
+  };
+  const substitute = obj => {
+    if (typeof obj === 'string') {
+      return obj.replace(/\$\{([^}]+)\}/g, (_, varName) => {
+        if (!validateEnvVarName(varName)) {
+          throw createMCPError(
+            MCPErrors.CONFIGURATION_ERROR,
+            `Invalid environment variable name: ${varName}`
+          );
         }
-        else if (Array.isArray(obj)) {
-            return obj.map(substitute);
+        const value = process.env[varName];
+        if (value === undefined) {
+          throw createMCPError(
+            MCPErrors.CONFIGURATION_ERROR,
+            `Environment variable ${varName} is not set. ` +
+              `Please set this variable in your environment or .env file. ` +
+              `For example: export ${varName}="your-value-here"`
+          );
         }
-        else if (obj !== null && typeof obj === 'object') {
-            const result = {};
-            for (const key in obj) {
-                result[key] = substitute(obj[key]);
-            }
-            return result;
-        }
-        return obj;
-    };
-    return substitute(config);
+        return value;
+      });
+    } else if (Array.isArray(obj)) {
+      return obj.map(substitute);
+    } else if (obj !== null && typeof obj === 'object') {
+      const result = {};
+      for (const key in obj) {
+        result[key] = substitute(obj[key]);
+      }
+      return result;
+    }
+    return obj;
+  };
+  return substitute(config);
 }
 /**
  * Validates the MCP configuration.
@@ -61,44 +65,45 @@ function substituteEnvVars(config) {
  * @returns The validation result.
  */
 function validateConfig(config) {
-    const errors = [];
-    const warnings = [];
-    if (!config.mcp || typeof config.mcp !== 'object') {
-        errors.push('Missing or invalid "mcp" section');
-        return { valid: false, errors, warnings };
+  const errors = [];
+  const warnings = [];
+  if (!config.mcp || typeof config.mcp !== 'object') {
+    errors.push('Missing or invalid "mcp" section');
+    return { valid: false, errors, warnings };
+  }
+  for (const [serverName, serverConfig] of Object.entries(config.mcp)) {
+    if (!serverConfig.name || typeof serverConfig.name !== 'string') {
+      errors.push(`Server "${serverName}": missing or invalid "name"`);
     }
-    for (const [serverName, serverConfig] of Object.entries(config.mcp)) {
-        if (!serverConfig.name || typeof serverConfig.name !== 'string') {
-            errors.push(`Server "${serverName}": missing or invalid "name"`);
-        }
-        if (!serverConfig.type || (serverConfig.type !== 'remote' && serverConfig.type !== 'local')) {
-            errors.push(`Server "${serverName}": missing or invalid "type" (must be 'remote' or 'local')`);
-        }
-        if (!serverConfig.url || typeof serverConfig.url !== 'string') {
-            errors.push(`Server "${serverName}": missing or invalid "url"`);
-        }
-        if (typeof serverConfig.enabled !== 'boolean') {
-            errors.push(`Server "${serverName}": missing or invalid "enabled"`);
-        }
-        if (!serverConfig.headers || typeof serverConfig.headers !== 'object') {
-            errors.push(`Server "${serverName}": missing or invalid "headers"`);
-        }
-        if (typeof serverConfig.timeout !== 'number') {
-            errors.push(`Server "${serverName}": invalid "timeout"`);
-        }
-        if (!serverConfig.retry || typeof serverConfig.retry !== 'object') {
-            errors.push(`Server "${serverName}": missing or invalid "retry"`);
-        }
-        else {
-            if (typeof serverConfig.retry.maxAttempts !== 'number') {
-                errors.push(`Server "${serverName}": invalid "retry.maxAttempts"`);
-            }
-            if (typeof serverConfig.retry.interval !== 'number') {
-                errors.push(`Server "${serverName}": invalid "retry.interval"`);
-            }
-        }
+    if (!serverConfig.type || (serverConfig.type !== 'remote' && serverConfig.type !== 'local')) {
+      errors.push(
+        `Server "${serverName}": missing or invalid "type" (must be 'remote' or 'local')`
+      );
     }
-    return { valid: errors.length === 0, errors, warnings };
+    if (!serverConfig.url || typeof serverConfig.url !== 'string') {
+      errors.push(`Server "${serverName}": missing or invalid "url"`);
+    }
+    if (typeof serverConfig.enabled !== 'boolean') {
+      errors.push(`Server "${serverName}": missing or invalid "enabled"`);
+    }
+    if (!serverConfig.headers || typeof serverConfig.headers !== 'object') {
+      errors.push(`Server "${serverName}": missing or invalid "headers"`);
+    }
+    if (typeof serverConfig.timeout !== 'number') {
+      errors.push(`Server "${serverName}": invalid "timeout"`);
+    }
+    if (!serverConfig.retry || typeof serverConfig.retry !== 'object') {
+      errors.push(`Server "${serverName}": missing or invalid "retry"`);
+    } else {
+      if (typeof serverConfig.retry.maxAttempts !== 'number') {
+        errors.push(`Server "${serverName}": invalid "retry.maxAttempts"`);
+      }
+      if (typeof serverConfig.retry.interval !== 'number') {
+        errors.push(`Server "${serverName}": invalid "retry.interval"`);
+      }
+    }
+  }
+  return { valid: errors.length === 0, errors, warnings };
 }
 /**
  * Resolves the configuration for a specific MCP server.
@@ -108,13 +113,13 @@ function validateConfig(config) {
  * @throws Error if the server is not found or disabled.
  */
 function resolveServerConfig(serverName, config) {
-    const serverConfig = config.mcp[serverName];
-    if (!serverConfig) {
-        throw new Error(`Server "${serverName}" not found in configuration`);
-    }
-    if (!serverConfig.enabled) {
-        throw new Error(`Server "${serverName}" is disabled`);
-    }
-    return serverConfig;
+  const serverConfig = config.mcp[serverName];
+  if (!serverConfig) {
+    throw new Error(`Server "${serverName}" not found in configuration`);
+  }
+  if (!serverConfig.enabled) {
+    throw new Error(`Server "${serverName}" is disabled`);
+  }
+  return serverConfig;
 }
 export { loadConfig, validateConfig, substituteEnvVars, resolveServerConfig };

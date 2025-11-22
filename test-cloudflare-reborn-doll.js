@@ -2,6 +2,7 @@
  * Test script to generate a reborn doll image using Cloudflare Workers AI via MCP client
  */
 
+import 'dotenv/config';
 import { MCPFactory } from './.opencode/tool/mcp/index.js';
 
 async function testCloudflareImageGeneration() {
@@ -25,9 +26,8 @@ async function testCloudflareImageGeneration() {
     // Create MCP client for Cloudflare
     mcp = await MCPFactory.createCloudflareWorkersAI();
 
-    // Connect to the server
-    await mcp.connect();
-    console.log('✅ Connected to Cloudflare MCP server');
+    // Cloudflare Workers AI uses direct API calls, no server connection needed
+    console.log('✅ Initialized Cloudflare Workers AI client');
 
     // Define the prompt for a professional reborn doll image suitable for LOFERSIL stationery website
     const prompt = `A high-quality, professional photograph of a beautiful reborn doll with realistic features, soft skin texture, and lifelike appearance. The doll should have curly blonde hair, blue eyes, and be dressed in elegant baby clothes suitable for a stationery and office supplies website. Clean white background, studio lighting, high resolution, photorealistic style.`;
@@ -35,10 +35,12 @@ async function testCloudflareImageGeneration() {
     console.log('🎨 Generating reborn doll image using Flux-1-Schnell model...');
 
     // Execute the image generation tool
-    const result = await mcp.getTools().executeTool('generate_image_flux', {
+    const result = await mcp.getClient().executeTool('generate_image_flux', {
       prompt: prompt,
       steps: 4, // Fast generation for Flux-1-Schnell
     });
+
+    // Note: The model identifier should be '@cf/blackforestlabs/flux-1-schnell'
 
     console.log('✅ Image generated successfully!');
     console.log('📊 Generation details:');
@@ -84,7 +86,9 @@ async function testCloudflareImageGeneration() {
     console.log(`📄 Metadata saved to: ${metadataPath}`);
 
     // Get cost tracking
-    const costResource = await mcp.readResource('cloudflare://costs');
+    const costResource = await mcp
+      .getClient()
+      .sendRequest('resources/read', { uri: 'cloudflare://costs' });
     console.log('💰 Cost tracking:');
     console.log(`- Total cost: $${costResource.totalCost.toFixed(2)}`);
     console.log('- Free tier: All operations at $0.00');
@@ -98,10 +102,7 @@ async function testCloudflareImageGeneration() {
     console.error('❌ Error:', error.message);
     process.exit(1);
   } finally {
-    if (mcp) {
-      await mcp.disconnect();
-      console.log('🔌 Disconnected from Cloudflare MCP server');
-    }
+    // No disconnect needed for direct API client
   }
 }
 

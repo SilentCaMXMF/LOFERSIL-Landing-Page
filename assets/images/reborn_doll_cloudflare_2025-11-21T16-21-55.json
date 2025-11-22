@@ -1,0 +1,12 @@
+{
+  "filename": "reborn_doll_cloudflare_2025-11-21T16-21-55.jpg",
+  "filepath": "assets/images/reborn_doll_cloudflare_2025-11-21T16-21-55.jpg",
+  "model": "@cf/blackforestlabs/flux-1-schnell",
+  "prompt": "A high-quality, professional photograph of a beautiful reborn doll with realistic features, soft skin texture, and lifelike appearance. The doll should have curly blonde hair, blue eyes, and be dressed in elegant baby clothes suitable for a stationery and office supplies website. Clean white background, studio lighting, high resolution, photorealistic style.",
+  "steps": 4,
+  "generatedAt": "2025-11-21T16:21:55.142Z",
+  "cost": 0,
+  "provider": "Cloudflare Workers AI",
+  "tool": "generate_image_flux",
+  "mock": true
+}

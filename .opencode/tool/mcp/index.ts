@@ -72,6 +72,24 @@ export class MCP {
     return this.tools;
   }
 
+  /**
+   * Execute a tool directly (convenience method)
+   * @param toolName Name of the tool to execute
+   * @param parameters Tool parameters
+   * @param options Additional options for timeout and progress tracking
+   * @returns Tool execution result
+   */
+  async executeTool(
+    toolName: string,
+    parameters: Record<string, any> = {},
+    options: {
+      timeout?: number;
+      onProgress?: (progress: { completed: number; total: number; message: string }) => void;
+    } = {}
+  ): Promise<any> {
+    return this.tools.executeTool(toolName, parameters, options);
+  }
+
   getResources(): MCPResources {
     return this.resources;
   }

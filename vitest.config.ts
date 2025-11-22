@@ -6,7 +6,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./tests/setup/test-setup.ts'],
-    include: ['tests/**/*.test.{ts,js}', 'src/**/*.test.{ts,js}'],
+    include: ['tests/**/*.test.{ts,js}', 'src/**/*.test.{ts,js}', '.opencode/**/*.test.{ts,js}'],
     exclude: ['node_modules', 'dist'],
   },
   esbuild: {
