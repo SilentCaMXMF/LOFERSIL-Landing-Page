@@ -11,6 +11,18 @@
     "api/**/*.js": {
       "runtime": "nodejs18.x",
       "maxDuration": 30
+    },
+    "api/github/webhooks/*.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 1800
+    },
+    "api/github/workflows/*.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 1800
+    },
+    "src/scripts/modules/github-issues/**/*.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 1800
     }
   },
   "regions": ["fra1"],
