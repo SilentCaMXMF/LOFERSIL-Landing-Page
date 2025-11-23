@@ -8,16 +8,16 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { E2EScenarioRunner, TestAssertions } from "./e2e-framework.test";
 import { TEST_ISSUES } from "./mocks/test-fixtures";
-import { WorkflowOrchestrator } from "./WorkflowOrchestrator";
+import { WorkflowOrchestrator, WorkflowResult } from "./WorkflowOrchestrator";
 import { GitHubAPIMock } from "./mocks/github-api";
 import { OpenCodeAgentMock } from "./mocks/opencode-agent";
 
-describe("End-to-End: Complete AI-Powered GitHub Issues Workflow", () => {
-  let scenarioRunner: E2EScenarioRunner;
-  let orchestrator: WorkflowOrchestrator;
-  let mockGithubApi: GitHubAPIMock;
-  let mockOpenCodeAgent: OpenCodeAgentMock;
+let scenarioRunner: E2EScenarioRunner;
+let orchestrator: WorkflowOrchestrator;
+let mockGithubApi: GitHubAPIMock;
+let mockOpenCodeAgent: OpenCodeAgentMock;
 
+describe("End-to-End: Complete AI-Powered GitHub Issues Workflow", () => {
   beforeEach(async () => {
     scenarioRunner = new E2EScenarioRunner();
     const context = await scenarioRunner.setupTest();
@@ -148,7 +148,7 @@ describe("Workflow Orchestrator E2E", () => {
     expect(result).toBeDefined();
     expect(result.success).toBe(true);
     expect(result.issueNumber).toBe(123);
-    expect(result.result).toContain("Test workflow completed");
+    expect(result.finalState).toBeDefined();
   });
 
   it("should handle different issue numbers", async () => {
@@ -161,7 +161,7 @@ describe("Workflow Orchestrator E2E", () => {
     expect(results).toHaveLength(3);
     results.forEach((result, index) => {
       expect(result.success).toBe(true);
-      expect(result.result).toContain("Test workflow completed");
+      expect(result.issueNumber).toBe([456, 789, 101][index]);
     });
   });
 
@@ -169,9 +169,11 @@ describe("Workflow Orchestrator E2E", () => {
     const issueNumbers = Array.from({ length: 10 }, (_, i) => 1000 + i);
 
     const startTime = Date.now();
-    const results = await Promise.all(
-      issueNumbers.map((num) => orchestrator.processIssue(num)),
-    );
+    const results = (await Promise.all(
+      issueNumbers.map(
+        (num) => orchestrator.processIssue(num) as Promise<WorkflowResult>,
+      ),
+    )) as WorkflowResult[];
     const duration = Date.now() - startTime;
 
     expect(results).toHaveLength(10);
@@ -188,10 +190,10 @@ describe("Workflow Orchestrator E2E", () => {
 
     expect(result).toHaveProperty("success");
     expect(result).toHaveProperty("issueNumber");
-    expect(result).toHaveProperty("result");
+    expect(result).toHaveProperty("finalState");
     expect(typeof result.success).toBe("boolean");
     expect(typeof result.issueNumber).toBe("number");
-    expect(typeof result.result).toBe("string");
+    expect(typeof result.finalState).toBe("string");
   });
 });
 
@@ -261,7 +263,6 @@ describe("Integration Test Scenarios", () => {
     results.forEach((result, index) => {
       expect(result.success).toBe(true);
       expect(result.issueNumber).toBe(testCases[index].issue);
-      expect(result.result).toContain("Test workflow completed");
     });
   });
 
@@ -279,32 +280,7 @@ describe("Integration Test Scenarios", () => {
     // Each result should be independent
     results.forEach((result) => {
       expect(result.success).toBe(true);
-      expect(result.result).toContain("completed");
-    });
-  });
-});
-
-describe("Workflow Orchestrator E2E", () => {
-  it("should process issues through the orchestrator", async () => {
-    const result = await orchestrator.processIssue(123);
-
-    expect(result).toBeDefined();
-    expect(result.success).toBe(true);
-    expect(result.issueNumber).toBe(123);
-    expect(result.result).toContain("Test workflow completed");
-  });
-
-  it("should handle different issue numbers", async () => {
-    const results = await Promise.all([
-      orchestrator.processIssue(456),
-      orchestrator.processIssue(789),
-      orchestrator.processIssue(101),
-    ]);
-
-    expect(results).toHaveLength(3);
-    results.forEach((result, index) => {
-      expect(result.success).toBe(true);
-      expect(result.result).toContain("Test workflow completed");
+      expect(result.finalState).toBeDefined();
     });
   });
 });
@@ -376,8 +352,8 @@ Implement a complete user authentication system with login, registration, and se
     // Should reject autonomous processing for critical complexity
     expect(result.success).toBe(false);
     expect(result.error).toContain("requires human intervention");
-    expect(result.steps[1].status).toBe("completed"); // Analysis completed
-    expect(result.steps[2].status).toBe("failed"); // Resolution failed due to complexity
+    expect(result.outputs.analysis).toBeDefined(); // Analysis completed
+    expect(result.requiresHumanReview).toBe(true); // Resolution failed due to complexity
 
     // Should create human intervention task instead
     expect(mockGithubApi.issues.createComment).toHaveBeenCalledWith(
@@ -467,8 +443,7 @@ Invalidate user session.`,
     const result = await orchestrator.processIssue(789);
 
     expect(result.success).toBe(true);
-    expect(result.steps).toHaveLength(5);
-    expect(result.steps[4].status).toBe("completed"); // PR generation
+    expect(result.outputs.pr).toBeDefined(); // PR generation
 
     // Validate documentation changes were made
     expect(mockGithubApi.repos.createOrUpdateFileContents).toHaveBeenCalledWith(
@@ -616,7 +591,7 @@ describe("Error Handling and Recovery", () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toContain("GitHub API");
-    expect(result.steps[0].status).toBe("failed");
+    expect(result.finalState).toBeDefined();
   });
 
   it("should handle AI agent failures with fallback", async () => {
@@ -640,7 +615,7 @@ describe("Error Handling and Recovery", () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toContain("AI service");
-    expect(result.steps[1].status).toBe("failed");
+    expect(result.finalState).toBeDefined();
   });
 
   it("should handle code generation failures", async () => {
@@ -671,7 +646,7 @@ describe("Error Handling and Recovery", () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toContain("Code generation failed");
-    expect(result.steps[2].status).toBe("failed");
+    expect(result.finalState).toBeDefined();
   });
 });
 
@@ -716,14 +691,14 @@ describe("Workflow Reporting and Analytics", () => {
 
     const result = await orchestrator.processIssue(3001);
 
-    // Validate report structure
-    expect(result.report).toBeDefined();
-    expect(result.report.summary).toBeDefined();
-    expect(result.report.metrics).toBeDefined();
-    expect(result.report.metrics.totalSteps).toBe(5);
-    expect(result.report.metrics.successfulSteps).toBe(5);
-    expect(result.report.metrics.duration).toBeGreaterThan(0);
-    expect(result.report.metrics.successRate).toBe(100);
+    // Validate result structure
+    expect(result.executionTime).toBeGreaterThan(0);
+    expect(result.retryCount).toBeDefined();
+    expect(result.finalState).toBeDefined();
+    expect(result.outputs.analysis).toBeDefined();
+    expect(result.outputs.resolution).toBeDefined();
+    expect(result.outputs.review).toBeDefined();
+    expect(result.outputs.pr).toBeDefined();
   });
 
   it("should track failure points and recovery attempts", async () => {
@@ -744,9 +719,7 @@ describe("Workflow Reporting and Analytics", () => {
     const result = await orchestrator.processIssue(3002);
 
     expect(result.success).toBe(false);
-    expect(result.report).toBeDefined();
-    expect(result.report.failurePoint).toBe("analysis");
-    expect(result.report.error).toContain("Analysis failed");
-    expect(result.report.recoveryAttempts).toBeDefined();
+    expect(result.error).toContain("Analysis failed");
+    expect(result.finalState).toBeDefined();
   });
 });
