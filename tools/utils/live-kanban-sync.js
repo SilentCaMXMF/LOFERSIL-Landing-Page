@@ -38,7 +38,7 @@ class LiveKanbanSync {
     }
   }
 
-  async sync() {
+  sync() {
     try {
       // Update kanban payload
       console.log("🔄 Updating kanban payload...");
@@ -74,34 +74,13 @@ Automated update of task inventory for live kanban synchronization.`;
       console.log("📊 Check GitHub Actions and Projects board for updates");
     } catch (error) {
       console.error("❌ Live kanban sync failed:", error);
-      throw error; // Re-throw to handle in caller
+      process.exit(1);
     }
   }
 }
 
-// Run live sync every 5 minutes
+// Run live sync
 const sync = new LiveKanbanSync();
-
-// Initial sync
-console.log("🔄 Starting initial sync...");
-sync.sync().catch((error) => {
-  console.error("❌ Initial sync failed:", error);
-});
-
-// Schedule recurring sync every 5 minutes (300,000 ms)
-setInterval(
-  async () => {
-    console.log("\n⏰ Running scheduled sync...");
-    try {
-      await sync.sync();
-    } catch (error) {
-      console.error("❌ Scheduled sync failed:", error);
-    }
-  },
-  5 * 60 * 1000,
-);
-
-console.log("✅ Live sync service started - will sync every 5 minutes");
-console.log("Press Ctrl+C to stop");
+sync.sync();
 
 export { LiveKanbanSync };
