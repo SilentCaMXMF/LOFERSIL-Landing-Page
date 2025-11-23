@@ -9,7 +9,6 @@ import { IssueAnalyzer, GitHubIssue, IssueAnalysis } from "./IssueAnalyzer";
 import { AutonomousResolver, ResolutionResult } from "./AutonomousResolver";
 import { CodeReviewer, ReviewResult } from "./CodeReviewer";
 import { PRGenerator, PullRequest } from "./PRGenerator";
-import { KanbanManager } from "../KanbanManager";
 
 export enum WorkflowState {
   INITIALIZING = "initializing",
@@ -28,7 +27,6 @@ export interface WorkflowConfig {
   autonomousResolver: AutonomousResolver;
   codeReviewer: CodeReviewer;
   prGenerator: PRGenerator;
-  kanbanManager?: KanbanManager;
   maxWorkflowTime: number;
   enableMetrics: boolean;
   retryAttempts: number;
@@ -116,14 +114,6 @@ export class WorkflowOrchestrator {
       currentState = WorkflowState.ANALYZING_ISSUE;
       this.activeWorkflows.set(issueNumber, currentState);
 
-      // Update kanban: Move to In Progress when AI processing starts
-      if (this.config.kanbanManager) {
-        await this.config.kanbanManager.onProcessingStart(
-          issueNumber,
-          workflowId,
-        );
-      }
-
       const mockIssue: GitHubIssue = {
         number: issueNumber,
         title: issueTitle,
@@ -170,14 +160,6 @@ export class WorkflowOrchestrator {
       );
 
       if (!resolution.success) {
-        // Update kanban: Move back to Backlog on failure
-        if (this.config.kanbanManager) {
-          await this.config.kanbanManager.onProcessingFailed(
-            issueNumber,
-            workflowId,
-          );
-        }
-
         return this.createResult(
           false,
           WorkflowState.FAILED,
@@ -205,14 +187,6 @@ export class WorkflowOrchestrator {
       );
 
       if (!review.approved) {
-        // Update kanban: Move back to Backlog on review failure
-        if (this.config.kanbanManager) {
-          await this.config.kanbanManager.onProcessingFailed(
-            issueNumber,
-            workflowId,
-          );
-        }
-
         return this.createResult(
           false,
           WorkflowState.REQUIRES_HUMAN_REVIEW,
@@ -240,22 +214,9 @@ export class WorkflowOrchestrator {
         },
       );
 
-      // Update kanban: Move to In Review when PR is generated
-      if (this.config.kanbanManager) {
-        await this.config.kanbanManager.onPRGenerated(issueNumber, workflowId);
-      }
-
       // Step 6: Complete
       currentState = WorkflowState.PR_COMPLETE;
       this.activeWorkflows.set(issueNumber, currentState);
-
-      // Update kanban: Move to Done when processing is complete
-      if (this.config.kanbanManager) {
-        await this.config.kanbanManager.onProcessingComplete(
-          issueNumber,
-          workflowId,
-        );
-      }
 
       return this.createResult(
         true,
@@ -270,14 +231,6 @@ export class WorkflowOrchestrator {
       );
     } catch (error) {
       console.error("Workflow failed:", error);
-
-      // Update kanban: Move back to Backlog on general failure
-      if (this.config.kanbanManager) {
-        await this.config.kanbanManager.onProcessingFailed(
-          issueNumber,
-          workflowId,
-        );
-      }
 
       return this.createResult(
         false,
