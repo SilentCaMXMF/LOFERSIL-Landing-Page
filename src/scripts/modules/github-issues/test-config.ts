@@ -5,10 +5,10 @@
  * performance thresholds, and mock configuration defaults.
  */
 
-import { IssueAnalyzer } from './IssueAnalyzer';
-import { AutonomousResolver } from './AutonomousResolver';
-import { CodeReviewer } from './CodeReviewer';
-import { PRGenerator } from './PRGenerator';
+import { IssueAnalyzer } from "./IssueAnalyzer";
+import { AutonomousResolver } from "./AutonomousResolver";
+import { CodeReviewer } from "./CodeReviewer";
+import { PRGenerator } from "./PRGenerator";
 
 export interface TestEnvironmentConfig {
   timeout: number;
@@ -77,9 +77,9 @@ export interface MockConfig {
 export interface TestScenario {
   name: string;
   description: string;
-  issueType: 'bug' | 'feature' | 'documentation' | 'question' | 'enhancement';
-  complexity: 'low' | 'medium' | 'high' | 'critical';
-  expectedOutcome: 'success' | 'human_review' | 'failure';
+  issueType: "bug" | "feature" | "documentation" | "question" | "enhancement";
+  complexity: "low" | "medium" | "high" | "critical";
+  expectedOutcome: "success" | "human_review" | "failure";
   performanceTarget: number;
   tags: string[];
 }
@@ -125,7 +125,7 @@ export const DEFAULT_TEST_CONFIG = {
 
   mocks: {
     github: {
-      baseUrl: 'https://api.github.com',
+      baseUrl: "https://api.github.com",
       rateLimitDelay: 100,
       failureRate: 0.02,
       responseLatency: 50,
@@ -152,76 +152,76 @@ export const DEFAULT_TEST_CONFIG = {
 
 export const TEST_SCENARIOS: TestScenario[] = [
   {
-    name: 'simple-bug-fix',
-    description: 'Simple bug fix with clear requirements',
-    issueType: 'bug',
-    complexity: 'low',
-    expectedOutcome: 'success',
+    name: "simple-bug-fix",
+    description: "Simple bug fix with clear requirements",
+    issueType: "bug",
+    complexity: "low",
+    expectedOutcome: "success",
     performanceTarget: 3000,
-    tags: ['bug', 'low-complexity', 'fast'],
+    tags: ["bug", "low-complexity", "fast"],
   },
   {
-    name: 'complex-feature-request',
-    description: 'Complex feature requiring multiple components',
-    issueType: 'feature',
-    complexity: 'high',
-    expectedOutcome: 'human_review',
+    name: "complex-feature-request",
+    description: "Complex feature requiring multiple components",
+    issueType: "feature",
+    complexity: "high",
+    expectedOutcome: "human_review",
     performanceTarget: 12000,
-    tags: ['feature', 'high-complexity', 'human-review'],
+    tags: ["feature", "high-complexity", "human-review"],
   },
   {
-    name: 'documentation-update',
-    description: 'Documentation update with clear scope',
-    issueType: 'documentation',
-    complexity: 'low',
-    expectedOutcome: 'success',
+    name: "documentation-update",
+    description: "Documentation update with clear scope",
+    issueType: "documentation",
+    complexity: "low",
+    expectedOutcome: "success",
     performanceTarget: 2500,
-    tags: ['documentation', 'low-complexity', 'fast'],
+    tags: ["documentation", "low-complexity", "fast"],
   },
   {
-    name: 'critical-security-fix',
-    description: 'Critical security issue requiring immediate attention',
-    issueType: 'bug',
-    complexity: 'critical',
-    expectedOutcome: 'human_review',
+    name: "critical-security-fix",
+    description: "Critical security issue requiring immediate attention",
+    issueType: "bug",
+    complexity: "critical",
+    expectedOutcome: "human_review",
     performanceTarget: 10000,
-    tags: ['security', 'critical', 'human-review'],
+    tags: ["security", "critical", "human-review"],
   },
   {
-    name: 'enhancement-request',
-    description: 'Enhancement request with moderate complexity',
-    issueType: 'enhancement',
-    complexity: 'medium',
-    expectedOutcome: 'success',
+    name: "enhancement-request",
+    description: "Enhancement request with moderate complexity",
+    issueType: "enhancement",
+    complexity: "medium",
+    expectedOutcome: "success",
     performanceTarget: 6000,
-    tags: ['enhancement', 'medium-complexity'],
+    tags: ["enhancement", "medium-complexity"],
   },
   {
-    name: 'question-clarification',
-    description: 'Question requiring human clarification',
-    issueType: 'question',
-    complexity: 'low',
-    expectedOutcome: 'human_review',
+    name: "question-clarification",
+    description: "Question requiring human clarification",
+    issueType: "question",
+    complexity: "low",
+    expectedOutcome: "human_review",
     performanceTarget: 1500,
-    tags: ['question', 'clarification', 'human-review'],
+    tags: ["question", "clarification", "human-review"],
   },
   {
-    name: 'performance-issue',
-    description: 'Performance optimization issue',
-    issueType: 'bug',
-    complexity: 'medium',
-    expectedOutcome: 'success',
+    name: "performance-issue",
+    description: "Performance optimization issue",
+    issueType: "bug",
+    complexity: "medium",
+    expectedOutcome: "success",
     performanceTarget: 8000,
-    tags: ['performance', 'medium-complexity'],
+    tags: ["performance", "medium-complexity"],
   },
   {
-    name: 'api-breaking-change',
-    description: 'Breaking change requiring careful review',
-    issueType: 'feature',
-    complexity: 'high',
-    expectedOutcome: 'human_review',
+    name: "api-breaking-change",
+    description: "Breaking change requiring careful review",
+    issueType: "feature",
+    complexity: "high",
+    expectedOutcome: "human_review",
     performanceTarget: 15000,
-    tags: ['breaking-change', 'high-complexity', 'human-review'],
+    tags: ["breaking-change", "high-complexity", "human-review"],
   },
 ];
 
@@ -235,32 +235,45 @@ export function createTestWorkflowConfig(
     enableMetrics: boolean;
     retryAttempts: number;
     humanInterventionThreshold: number;
-  }> = {}
+  }> = {},
 ) {
   return {
     issueAnalyzer: overrides.issueAnalyzer || ({} as IssueAnalyzer),
-    autonomousResolver: overrides.autonomousResolver || ({} as AutonomousResolver),
+    autonomousResolver:
+      overrides.autonomousResolver || ({} as AutonomousResolver),
     codeReviewer: overrides.codeReviewer || ({} as CodeReviewer),
     prGenerator: overrides.prGenerator || ({} as PRGenerator),
-    maxWorkflowTime: overrides.maxWorkflowTime || DEFAULT_TEST_CONFIG.benchmarks.workflowTimeout,
-    enableMetrics: overrides.enableMetrics ?? DEFAULT_TEST_CONFIG.environment.enableMetrics,
-    retryAttempts: overrides.retryAttempts || DEFAULT_TEST_CONFIG.environment.retries,
+    maxWorkflowTime:
+      overrides.maxWorkflowTime ||
+      DEFAULT_TEST_CONFIG.benchmarks.workflowTimeout,
+    enableMetrics:
+      overrides.enableMetrics ?? DEFAULT_TEST_CONFIG.environment.enableMetrics,
+    retryAttempts:
+      overrides.retryAttempts || DEFAULT_TEST_CONFIG.environment.retries,
     humanInterventionThreshold: overrides.humanInterventionThreshold || 3,
   };
 }
 
 export function getScenarioByName(name: string): TestScenario | undefined {
-  return TEST_SCENARIOS.find(scenario => scenario.name === name);
+  return TEST_SCENARIOS.find((scenario) => scenario.name === name);
 }
 
 export function getScenariosByTag(tag: string): TestScenario[] {
-  return TEST_SCENARIOS.filter(scenario => scenario.tags.includes(tag));
+  return TEST_SCENARIOS.filter((scenario) => scenario.tags.includes(tag));
 }
 
-export function getScenariosByComplexity(complexity: TestScenario['complexity']): TestScenario[] {
-  return TEST_SCENARIOS.filter(scenario => scenario.complexity === complexity);
+export function getScenariosByComplexity(
+  complexity: TestScenario["complexity"],
+): TestScenario[] {
+  return TEST_SCENARIOS.filter(
+    (scenario) => scenario.complexity === complexity,
+  );
 }
 
-export function getScenariosByOutcome(outcome: TestScenario['expectedOutcome']): TestScenario[] {
-  return TEST_SCENARIOS.filter(scenario => scenario.expectedOutcome === outcome);
+export function getScenariosByOutcome(
+  outcome: TestScenario["expectedOutcome"],
+): TestScenario[] {
+  return TEST_SCENARIOS.filter(
+    (scenario) => scenario.expectedOutcome === outcome,
+  );
 }

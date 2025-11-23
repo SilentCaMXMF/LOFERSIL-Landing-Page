@@ -10,10 +10,10 @@ import {
   GitHubWebhookHandler,
   GitHubWebhookPayload,
   WebhookProcessingResult,
-} from './GitHubWebhookHandler';
-import { GitHubApiClient, GitHubIssue, ApiResponse } from './GitHubApiClient';
-import { TaskManager, TaskInfo } from './TaskManager';
-import { logger } from './logger';
+} from "./GitHubWebhookHandler";
+import { GitHubApiClient, GitHubIssue, ApiResponse } from "./GitHubApiClient";
+import { TaskManager, TaskInfo } from "./TaskManager";
+import { logger } from "./logger";
 
 export interface GitHubIntegrationConfig {
   webhookSecret: string;
@@ -39,7 +39,7 @@ export interface ProcessingQueueItem {
   payload: GitHubWebhookPayload;
   timestamp: number;
   retryCount: number;
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  priority: "low" | "medium" | "high" | "critical";
 }
 
 export interface IntegrationStats {
@@ -116,7 +116,7 @@ export class GitHubIntegrationManager {
       userAgent: this.config.userAgent,
     });
 
-    logger.info('GitHub Integration Manager initialized', {
+    logger.info("GitHub Integration Manager initialized", {
       owner: this.config.owner,
       repo: this.config.repo,
       autoProcessing: this.config.enableAutoProcessing,
@@ -129,21 +129,29 @@ export class GitHubIntegrationManager {
   async handleWebhook(
     headers: Record<string, string>,
     rawBody: string,
-    eventType: string
+    eventType: string,
   ): Promise<WebhookProcessingResult> {
     this.stats.webhooksReceived++;
 
-    const result = await this.webhookHandler.handleWebhook(headers, rawBody, eventType);
+    const result = await this.webhookHandler.handleWebhook(
+      headers,
+      rawBody,
+      eventType,
+    );
 
     if (result.success) {
       this.stats.webhooksProcessed++;
 
       if (this.config.enableAutoProcessing) {
-        await this.queueForProcessing(result.issueNumber, result.action, result as any);
+        await this.queueForProcessing(
+          result.issueNumber,
+          result.action,
+          result as any,
+        );
       }
     } else {
       this.stats.webhooksFailed++;
-      logger.error('Webhook processing failed', {
+      logger.error("Webhook processing failed", {
         issueNumber: result.issueNumber,
         action: result.action,
         error: result.error,
@@ -159,12 +167,12 @@ export class GitHubIntegrationManager {
   private async queueForProcessing(
     issueNumber: number,
     action: string,
-    webhookResult: WebhookProcessingResult & { payload?: GitHubWebhookPayload }
+    webhookResult: WebhookProcessingResult & { payload?: GitHubWebhookPayload },
   ): Promise<void> {
     // Deduplicate events
     const eventId = `${issueNumber}-${action}-${Date.now()}`;
     if (this.isDuplicateEvent(eventId)) {
-      logger.debug('Duplicate event detected, skipping', { eventId });
+      logger.debug("Duplicate event detected, skipping", { eventId });
       return;
     }
 
@@ -182,7 +190,7 @@ export class GitHubIntegrationManager {
     this.addToQueue(queueItem);
     this.stats.queueSize = this.processingQueue.length;
 
-    logger.info('Queued webhook for processing', {
+    logger.info("Queued webhook for processing", {
       issueNumber,
       action,
       queueSize: this.processingQueue.length,
@@ -195,28 +203,30 @@ export class GitHubIntegrationManager {
    */
   private determinePriority(
     action: string,
-    payload: GitHubWebhookPayload
-  ): ProcessingQueueItem['priority'] {
+    payload: GitHubWebhookPayload,
+  ): ProcessingQueueItem["priority"] {
     // Critical: issues that need immediate attention
     if (
-      action === 'opened' &&
-      payload.issue.labels.some(l => l.name.includes('bug') || l.name.includes('critical'))
+      action === "opened" &&
+      payload.issue.labels.some(
+        (l) => l.name.includes("bug") || l.name.includes("critical"),
+      )
     ) {
-      return 'critical';
+      return "critical";
     }
 
     // High: new issues or significant changes
-    if (action === 'opened' || action === 'reopened') {
-      return 'high';
+    if (action === "opened" || action === "reopened") {
+      return "high";
     }
 
     // Medium: updates to existing issues
-    if (action === 'edited' || action === 'labeled') {
-      return 'medium';
+    if (action === "edited" || action === "labeled") {
+      return "medium";
     }
 
     // Low: closures or minor updates
-    return 'low';
+    return "low";
   }
 
   /**
@@ -225,9 +235,10 @@ export class GitHubIntegrationManager {
   private addToQueue(item: ProcessingQueueItem): void {
     const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
     const insertIndex = this.processingQueue.findIndex(
-      existing =>
+      (existing) =>
         priorityOrder[existing.priority] > priorityOrder[item.priority] ||
-        (existing.priority === item.priority && existing.timestamp > item.timestamp)
+        (existing.priority === item.priority &&
+          existing.timestamp > item.timestamp),
     );
 
     if (insertIndex === -1) {
@@ -239,7 +250,7 @@ export class GitHubIntegrationManager {
     // Trim queue if it exceeds maximum size
     if (this.processingQueue.length > this.config.processingQueueSize) {
       const removed = this.processingQueue.pop();
-      logger.warn('Processing queue full, dropped oldest item', {
+      logger.warn("Processing queue full, dropped oldest item", {
         removedId: removed?.id,
         queueSize: this.processingQueue.length,
       });
@@ -278,7 +289,7 @@ export class GitHubIntegrationManager {
         try {
           await this.processNextItem();
         } catch (error: any) {
-          logger.error('Error in processing loop', { error: error.message });
+          logger.error("Error in processing loop", { error: error.message });
         } finally {
           this.isProcessing = false;
         }
@@ -304,14 +315,14 @@ export class GitHubIntegrationManager {
       this.updateProcessingStats(processingTime);
 
       if (result.success) {
-        logger.info('Successfully processed webhook item', {
+        logger.info("Successfully processed webhook item", {
           issueNumber: item.issueNumber,
           action: item.action,
           processingTime,
           taskId: result.taskId,
         });
       } else {
-        logger.error('Failed to process webhook item', {
+        logger.error("Failed to process webhook item", {
           issueNumber: item.issueNumber,
           action: item.action,
           error: result.error,
@@ -323,7 +334,7 @@ export class GitHubIntegrationManager {
           item.retryCount++;
           item.timestamp = Date.now();
           this.addToQueue(item);
-          logger.info('Requeued item for retry', {
+          logger.info("Requeued item for retry", {
             issueNumber: item.issueNumber,
             retryCount: item.retryCount,
           });
@@ -333,7 +344,7 @@ export class GitHubIntegrationManager {
       const processingTime = Date.now() - startTime;
       this.updateProcessingStats(processingTime);
 
-      logger.error('Unexpected error processing webhook item', {
+      logger.error("Unexpected error processing webhook item", {
         issueNumber: item.issueNumber,
         action: item.action,
         error: error.message,
@@ -345,7 +356,9 @@ export class GitHubIntegrationManager {
   /**
    * Process individual webhook item
    */
-  private async processWebhookItem(item: ProcessingQueueItem): Promise<ProcessingResult> {
+  private async processWebhookItem(
+    item: ProcessingQueueItem,
+  ): Promise<ProcessingResult> {
     const { issueNumber, action, payload } = item;
 
     try {
@@ -353,7 +366,7 @@ export class GitHubIntegrationManager {
       const issueResponse = await this.apiClient.getIssue(
         this.config.owner,
         this.config.repo,
-        issueNumber
+        issueNumber,
       );
       this.stats.apiCallsMade++;
 
@@ -372,20 +385,20 @@ export class GitHubIntegrationManager {
 
       // Handle different actions
       switch (action) {
-        case 'opened':
+        case "opened":
           return await this.handleIssueOpened(issue);
 
-        case 'edited':
+        case "edited":
           return await this.handleIssueEdited(issue);
 
-        case 'closed':
+        case "closed":
           return await this.handleIssueClosed(issue);
 
-        case 'reopened':
+        case "reopened":
           return await this.handleIssueReopened(issue);
 
-        case 'labeled':
-        case 'unlabeled':
+        case "labeled":
+        case "unlabeled":
           return await this.handleIssueLabeled(issue, action);
 
         default:
@@ -410,15 +423,17 @@ export class GitHubIntegrationManager {
   /**
    * Handle issue opened event
    */
-  private async handleIssueOpened(issue: GitHubIssue): Promise<ProcessingResult> {
+  private async handleIssueOpened(
+    issue: GitHubIssue,
+  ): Promise<ProcessingResult> {
     // Create new task
     const task: TaskInfo = {
       id: `github-issue-${issue.number}`,
       title: issue.title,
-      description: issue.body || 'No description provided',
+      description: issue.body || "No description provided",
       priority: this.mapLabelsToPriority(issue.labels),
-      status: 'pending',
-      labels: issue.labels.map(l => l.name),
+      status: "pending",
+      labels: issue.labels.map((l) => l.name),
       assignee: issue.assignee?.login,
       createdAt: new Date(issue.created_at),
       updatedAt: new Date(issue.updated_at),
@@ -435,7 +450,7 @@ export class GitHubIntegrationManager {
     return {
       success: true,
       issueNumber: issue.number,
-      action: 'opened',
+      action: "opened",
       taskId: task.id,
       processingTime: 0,
     };
@@ -444,13 +459,17 @@ export class GitHubIntegrationManager {
   /**
    * Handle issue edited event
    */
-  private async handleIssueEdited(issue: GitHubIssue): Promise<ProcessingResult> {
-    const existingTask = await this.taskManager.getTask(`github-issue-${issue.number}`);
+  private async handleIssueEdited(
+    issue: GitHubIssue,
+  ): Promise<ProcessingResult> {
+    const existingTask = await this.taskManager.getTask(
+      `github-issue-${issue.number}`,
+    );
 
     if (existingTask) {
       existingTask.title = issue.title;
-      existingTask.description = issue.body || 'No description provided';
-      existingTask.labels = issue.labels.map(l => l.name);
+      existingTask.description = issue.body || "No description provided";
+      existingTask.labels = issue.labels.map((l) => l.name);
       existingTask.assignee = issue.assignee?.login;
       existingTask.updatedAt = new Date(issue.updated_at);
       existingTask.priority = this.mapLabelsToPriority(issue.labels);
@@ -461,7 +480,7 @@ export class GitHubIntegrationManager {
     return {
       success: true,
       issueNumber: issue.number,
-      action: 'edited',
+      action: "edited",
       taskId: existingTask?.id,
       processingTime: 0,
     };
@@ -470,11 +489,15 @@ export class GitHubIntegrationManager {
   /**
    * Handle issue closed event
    */
-  private async handleIssueClosed(issue: GitHubIssue): Promise<ProcessingResult> {
-    const existingTask = await this.taskManager.getTask(`github-issue-${issue.number}`);
+  private async handleIssueClosed(
+    issue: GitHubIssue,
+  ): Promise<ProcessingResult> {
+    const existingTask = await this.taskManager.getTask(
+      `github-issue-${issue.number}`,
+    );
 
-    if (existingTask && existingTask.status !== 'completed') {
-      existingTask.status = 'completed';
+    if (existingTask && existingTask.status !== "completed") {
+      existingTask.status = "completed";
       existingTask.updatedAt = new Date();
 
       await this.taskManager.updateTask(existingTask);
@@ -484,7 +507,7 @@ export class GitHubIntegrationManager {
     return {
       success: true,
       issueNumber: issue.number,
-      action: 'closed',
+      action: "closed",
       taskId: existingTask?.id,
       processingTime: 0,
     };
@@ -493,11 +516,15 @@ export class GitHubIntegrationManager {
   /**
    * Handle issue reopened event
    */
-  private async handleIssueReopened(issue: GitHubIssue): Promise<ProcessingResult> {
-    const existingTask = await this.taskManager.getTask(`github-issue-${issue.number}`);
+  private async handleIssueReopened(
+    issue: GitHubIssue,
+  ): Promise<ProcessingResult> {
+    const existingTask = await this.taskManager.getTask(
+      `github-issue-${issue.number}`,
+    );
 
     if (existingTask) {
-      existingTask.status = 'pending';
+      existingTask.status = "pending";
       existingTask.updatedAt = new Date();
 
       await this.taskManager.updateTask(existingTask);
@@ -506,7 +533,7 @@ export class GitHubIntegrationManager {
     return {
       success: true,
       issueNumber: issue.number,
-      action: 'reopened',
+      action: "reopened",
       taskId: existingTask?.id,
       processingTime: 0,
     };
@@ -515,11 +542,16 @@ export class GitHubIntegrationManager {
   /**
    * Handle issue labeled/unlabeled events
    */
-  private async handleIssueLabeled(issue: GitHubIssue, action: string): Promise<ProcessingResult> {
-    const existingTask = await this.taskManager.getTask(`github-issue-${issue.number}`);
+  private async handleIssueLabeled(
+    issue: GitHubIssue,
+    action: string,
+  ): Promise<ProcessingResult> {
+    const existingTask = await this.taskManager.getTask(
+      `github-issue-${issue.number}`,
+    );
 
     if (existingTask) {
-      existingTask.labels = issue.labels.map(l => l.name);
+      existingTask.labels = issue.labels.map((l) => l.name);
       existingTask.priority = this.mapLabelsToPriority(issue.labels);
       existingTask.updatedAt = new Date();
 
@@ -538,20 +570,26 @@ export class GitHubIntegrationManager {
   /**
    * Map GitHub labels to task priority
    */
-  private mapLabelsToPriority(labels: Array<{ name: string }>): TaskInfo['priority'] {
-    const labelNames = labels.map(l => l.name.toLowerCase());
+  private mapLabelsToPriority(
+    labels: Array<{ name: string }>,
+  ): TaskInfo["priority"] {
+    const labelNames = labels.map((l) => l.name.toLowerCase());
 
-    if (labelNames.includes('critical') || labelNames.includes('p0')) {
-      return 'critical';
+    if (labelNames.includes("critical") || labelNames.includes("p0")) {
+      return "critical";
     }
-    if (labelNames.includes('high') || labelNames.includes('p1') || labelNames.includes('bug')) {
-      return 'high';
+    if (
+      labelNames.includes("high") ||
+      labelNames.includes("p1") ||
+      labelNames.includes("bug")
+    ) {
+      return "high";
     }
-    if (labelNames.includes('medium') || labelNames.includes('p2')) {
-      return 'medium';
+    if (labelNames.includes("medium") || labelNames.includes("p2")) {
+      return "medium";
     }
 
-    return 'low';
+    return "low";
   }
 
   /**
@@ -559,7 +597,8 @@ export class GitHubIntegrationManager {
    */
   private updateProcessingStats(processingTime: number): void {
     // Simple moving average
-    this.stats.averageProcessingTime = (this.stats.averageProcessingTime + processingTime) / 2;
+    this.stats.averageProcessingTime =
+      (this.stats.averageProcessingTime + processingTime) / 2;
   }
 
   /**
@@ -613,14 +652,14 @@ export class GitHubIntegrationManager {
     const issueResponse = await this.apiClient.getIssue(
       this.config.owner,
       this.config.repo,
-      issueNumber
+      issueNumber,
     );
 
     if (!issueResponse.success) {
       return {
         success: false,
         issueNumber,
-        action: 'manual',
+        action: "manual",
         error: issueResponse.error,
         processingTime: 0,
       };
@@ -629,11 +668,11 @@ export class GitHubIntegrationManager {
     const mockItem: ProcessingQueueItem = {
       id: `manual-${issueNumber}-${Date.now()}`,
       issueNumber,
-      action: 'opened',
+      action: "opened",
       payload: {} as GitHubWebhookPayload, // Not used in manual processing
       timestamp: Date.now(),
       retryCount: 0,
-      priority: 'high',
+      priority: "high",
     };
 
     return await this.processWebhookItem(mockItem);

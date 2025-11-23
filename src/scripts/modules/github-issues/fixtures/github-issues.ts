@@ -5,7 +5,7 @@
  * covering various scenarios, complexities, and edge cases.
  */
 
-import { GitHubIssue } from '../mocks/github-api';
+import { GitHubIssue } from "../mocks/github-api";
 
 /**
  * Simple bug reports - straightforward issues with clear fixes
@@ -14,7 +14,7 @@ export const SIMPLE_BUGS: Record<string, GitHubIssue> = {
   buttonStyling: {
     id: 1001,
     number: 1,
-    title: 'Login button has incorrect padding on mobile',
+    title: "Login button has incorrect padding on mobile",
     body: `
 ## Description
 The login button on the mobile view has incorrect padding that makes it look misaligned.
@@ -35,18 +35,18 @@ Button appears with incorrect padding on mobile screens.
 - OS: iOS 15.2
 - App version: 1.2.3
     `,
-    labels: [{ name: 'bug' }, { name: 'frontend' }, { name: 'mobile' }],
-    state: 'open',
-    user: { login: 'frontend-dev' },
-    created_at: '2024-01-15T10:00:00Z',
-    updated_at: '2024-01-15T10:00:00Z',
-    html_url: 'https://github.com/company/app/issues/1',
+    labels: [{ name: "bug" }, { name: "frontend" }, { name: "mobile" }],
+    state: "open",
+    user: { login: "frontend-dev" },
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-15T10:00:00Z",
+    html_url: "https://github.com/company/app/issues/1",
   },
 
   typoInText: {
     id: 1002,
     number: 2,
-    title: 'Typo in welcome message',
+    title: "Typo in welcome message",
     body: `
 ## Description
 There's a typo in the welcome message on the homepage.
@@ -64,18 +64,22 @@ Line: 15
 ## Impact
 Minor text correction needed.
     `,
-    labels: [{ name: 'bug' }, { name: 'documentation' }, { name: 'good-first-issue' }],
-    state: 'open',
-    user: { login: 'content-writer' },
-    created_at: '2024-01-16T14:30:00Z',
-    updated_at: '2024-01-16T14:30:00Z',
-    html_url: 'https://github.com/company/app/issues/2',
+    labels: [
+      { name: "bug" },
+      { name: "documentation" },
+      { name: "good-first-issue" },
+    ],
+    state: "open",
+    user: { login: "content-writer" },
+    created_at: "2024-01-16T14:30:00Z",
+    updated_at: "2024-01-16T14:30:00Z",
+    html_url: "https://github.com/company/app/issues/2",
   },
 
   missingAltText: {
     id: 1003,
     number: 3,
-    title: 'Missing alt text for profile images',
+    title: "Missing alt text for profile images",
     body: `
 ## Accessibility Issue
 Profile images in the user dashboard are missing alt text attributes.
@@ -92,12 +96,16 @@ Screen reader users cannot understand what the images represent.
 ## Fix needed
 Add descriptive alt text to all profile images.
     `,
-    labels: [{ name: 'accessibility' }, { name: 'frontend' }, { name: 'good-first-issue' }],
-    state: 'open',
-    user: { login: 'accessibility-advocate' },
-    created_at: '2024-01-17T09:15:00Z',
-    updated_at: '2024-01-17T09:15:00Z',
-    html_url: 'https://github.com/company/app/issues/3',
+    labels: [
+      { name: "accessibility" },
+      { name: "frontend" },
+      { name: "good-first-issue" },
+    ],
+    state: "open",
+    user: { login: "accessibility-advocate" },
+    created_at: "2024-01-17T09:15:00Z",
+    updated_at: "2024-01-17T09:15:00Z",
+    html_url: "https://github.com/company/app/issues/3",
   },
 };
 
@@ -108,7 +116,7 @@ export const FEATURE_REQUESTS: Record<string, GitHubIssue> = {
   darkMode: {
     id: 2001,
     number: 10,
-    title: 'Add dark mode support',
+    title: "Add dark mode support",
     body: `
 ## Feature Request
 Implement dark mode theme for better user experience in low-light conditions.
@@ -133,22 +141,22 @@ Implement dark mode theme for better user experience in low-light conditions.
 High - User experience improvement
     `,
     labels: [
-      { name: 'enhancement' },
-      { name: 'frontend' },
-      { name: 'high-priority' },
-      { name: 'user-experience' },
+      { name: "enhancement" },
+      { name: "frontend" },
+      { name: "high-priority" },
+      { name: "user-experience" },
     ],
-    state: 'open',
-    user: { login: 'ux-designer' },
-    created_at: '2024-01-10T11:00:00Z',
-    updated_at: '2024-01-12T16:45:00Z',
-    html_url: 'https://github.com/company/app/issues/10',
+    state: "open",
+    user: { login: "ux-designer" },
+    created_at: "2024-01-10T11:00:00Z",
+    updated_at: "2024-01-12T16:45:00Z",
+    html_url: "https://github.com/company/app/issues/10",
   },
 
   exportData: {
     id: 2002,
     number: 11,
-    title: 'Add data export functionality',
+    title: "Add data export functionality",
     body: `
 ## Feature Request
 Allow users to export their data in various formats.
@@ -178,16 +186,16 @@ Allow users to export their data in various formats.
 - Email notifications when ready
     `,
     labels: [
-      { name: 'enhancement' },
-      { name: 'backend' },
-      { name: 'frontend' },
-      { name: 'data-export' },
+      { name: "enhancement" },
+      { name: "backend" },
+      { name: "frontend" },
+      { name: "data-export" },
     ],
-    state: 'open',
-    user: { login: 'product-manager' },
-    created_at: '2024-01-08T13:20:00Z',
-    updated_at: '2024-01-11T10:30:00Z',
-    html_url: 'https://github.com/company/app/issues/11',
+    state: "open",
+    user: { login: "product-manager" },
+    created_at: "2024-01-08T13:20:00Z",
+    updated_at: "2024-01-11T10:30:00Z",
+    html_url: "https://github.com/company/app/issues/11",
   },
 };
 
@@ -198,7 +206,7 @@ export const COMPLEX_ISSUES: Record<string, GitHubIssue> = {
   authenticationSystem: {
     id: 3001,
     number: 50,
-    title: 'Implement complete user authentication system',
+    title: "Implement complete user authentication system",
     body: `
 ## Epic: User Authentication System
 
@@ -286,26 +294,26 @@ This issue encompasses the complete implementation of user authentication across
 - [ ] Migration guide provided
     `,
     labels: [
-      { name: 'epic' },
-      { name: 'authentication' },
-      { name: 'security' },
-      { name: 'backend' },
-      { name: 'frontend' },
-      { name: 'database' },
-      { name: 'high-priority' },
-      { name: 'complex' },
+      { name: "epic" },
+      { name: "authentication" },
+      { name: "security" },
+      { name: "backend" },
+      { name: "frontend" },
+      { name: "database" },
+      { name: "high-priority" },
+      { name: "complex" },
     ],
-    state: 'open',
-    user: { login: 'tech-lead' },
-    created_at: '2024-01-05T09:00:00Z',
-    updated_at: '2024-01-14T17:30:00Z',
-    html_url: 'https://github.com/company/app/issues/50',
+    state: "open",
+    user: { login: "tech-lead" },
+    created_at: "2024-01-05T09:00:00Z",
+    updated_at: "2024-01-14T17:30:00Z",
+    html_url: "https://github.com/company/app/issues/50",
   },
 
   performanceOptimization: {
     id: 3002,
     number: 51,
-    title: 'Performance optimization and monitoring system',
+    title: "Performance optimization and monitoring system",
     body: `
 ## Performance Optimization Initiative
 
@@ -394,19 +402,19 @@ Implement comprehensive performance monitoring and optimization across the appli
 - #45: Large bundle size complaints
     `,
     labels: [
-      { name: 'performance' },
-      { name: 'optimization' },
-      { name: 'monitoring' },
-      { name: 'frontend' },
-      { name: 'backend' },
-      { name: 'infrastructure' },
-      { name: 'high-priority' },
+      { name: "performance" },
+      { name: "optimization" },
+      { name: "monitoring" },
+      { name: "frontend" },
+      { name: "backend" },
+      { name: "infrastructure" },
+      { name: "high-priority" },
     ],
-    state: 'open',
-    user: { login: 'engineering-manager' },
-    created_at: '2024-01-12T10:00:00Z',
-    updated_at: '2024-01-18T14:20:00Z',
-    html_url: 'https://github.com/company/app/issues/51',
+    state: "open",
+    user: { login: "engineering-manager" },
+    created_at: "2024-01-12T10:00:00Z",
+    updated_at: "2024-01-18T14:20:00Z",
+    html_url: "https://github.com/company/app/issues/51",
   },
 };
 
@@ -417,7 +425,7 @@ export const SECURITY_ISSUES: Record<string, GitHubIssue> = {
   sqlInjection: {
     id: 4001,
     number: 75,
-    title: 'CRITICAL: SQL Injection vulnerability in user search',
+    title: "CRITICAL: SQL Injection vulnerability in user search",
     body: `
 ## 🚨 CRITICAL SECURITY VULNERABILITY
 
@@ -475,24 +483,24 @@ Search term: \`' OR '1'='1'; --\`
 - CWE-89: Improper Neutralization of Special Elements used in an SQL Command
     `,
     labels: [
-      { name: 'security' },
-      { name: 'critical' },
-      { name: 'vulnerability' },
-      { name: 'sql-injection' },
-      { name: 'backend' },
-      { name: 'hotfix-required' },
+      { name: "security" },
+      { name: "critical" },
+      { name: "vulnerability" },
+      { name: "sql-injection" },
+      { name: "backend" },
+      { name: "hotfix-required" },
     ],
-    state: 'open',
-    user: { login: 'security-researcher' },
-    created_at: '2024-01-20T08:00:00Z',
-    updated_at: '2024-01-20T08:15:00Z',
-    html_url: 'https://github.com/company/app/issues/75',
+    state: "open",
+    user: { login: "security-researcher" },
+    created_at: "2024-01-20T08:00:00Z",
+    updated_at: "2024-01-20T08:15:00Z",
+    html_url: "https://github.com/company/app/issues/75",
   },
 
   xssVulnerability: {
     id: 4002,
     number: 76,
-    title: 'XSS vulnerability in comment system',
+    title: "XSS vulnerability in comment system",
     body: `
 ## Security Vulnerability Report
 
@@ -548,17 +556,17 @@ User-generated content in comments is not properly sanitized before rendering, a
 All users who can view comments (potentially all authenticated users)
     `,
     labels: [
-      { name: 'security' },
-      { name: 'xss' },
-      { name: 'frontend' },
-      { name: 'high-priority' },
-      { name: 'vulnerability' },
+      { name: "security" },
+      { name: "xss" },
+      { name: "frontend" },
+      { name: "high-priority" },
+      { name: "vulnerability" },
     ],
-    state: 'open',
-    user: { login: 'security-team' },
-    created_at: '2024-01-19T15:30:00Z',
-    updated_at: '2024-01-19T16:00:00Z',
-    html_url: 'https://github.com/company/app/issues/76',
+    state: "open",
+    user: { login: "security-team" },
+    created_at: "2024-01-19T15:30:00Z",
+    updated_at: "2024-01-19T16:00:00Z",
+    html_url: "https://github.com/company/app/issues/76",
   },
 };
 
@@ -569,7 +577,7 @@ export const DOCUMENTATION_ISSUES: Record<string, GitHubIssue> = {
   apiDocsUpdate: {
     id: 5001,
     number: 100,
-    title: 'Update API documentation for v2.0 endpoints',
+    title: "Update API documentation for v2.0 endpoints",
     body: `
 ## Documentation Update Required
 
@@ -619,16 +627,16 @@ GET  /api/v2/data/export
 - Final approval by product team
     `,
     labels: [
-      { name: 'documentation' },
-      { name: 'api' },
-      { name: 'v2.0' },
-      { name: 'breaking-changes' },
+      { name: "documentation" },
+      { name: "api" },
+      { name: "v2.0" },
+      { name: "breaking-changes" },
     ],
-    state: 'open',
-    user: { login: 'technical-writer' },
-    created_at: '2024-01-18T12:00:00Z',
-    updated_at: '2024-01-18T12:00:00Z',
-    html_url: 'https://github.com/company/app/issues/100',
+    state: "open",
+    user: { login: "technical-writer" },
+    created_at: "2024-01-18T12:00:00Z",
+    updated_at: "2024-01-18T12:00:00Z",
+    html_url: "https://github.com/company/app/issues/100",
   },
 };
 
@@ -639,7 +647,7 @@ export const QUESTION_ISSUES: Record<string, GitHubIssue> = {
   ciCdSetup: {
     id: 6001,
     number: 150,
-    title: 'How do I configure CI/CD pipeline for monorepo setup?',
+    title: "How do I configure CI/CD pipeline for monorepo setup?",
     body: `
 ## Question
 
@@ -683,22 +691,22 @@ Best,
 DevOps Engineer
     `,
     labels: [
-      { name: 'question' },
-      { name: 'ci-cd' },
-      { name: 'monorepo' },
-      { name: 'github-actions' },
+      { name: "question" },
+      { name: "ci-cd" },
+      { name: "monorepo" },
+      { name: "github-actions" },
     ],
-    state: 'open',
-    user: { login: 'devops-engineer' },
-    created_at: '2024-01-22T10:30:00Z',
-    updated_at: '2024-01-22T10:30:00Z',
-    html_url: 'https://github.com/company/app/issues/150',
+    state: "open",
+    user: { login: "devops-engineer" },
+    created_at: "2024-01-22T10:30:00Z",
+    updated_at: "2024-01-22T10:30:00Z",
+    html_url: "https://github.com/company/app/issues/150",
   },
 
   libraryMigration: {
     id: 6002,
     number: 151,
-    title: 'Guidance needed: Migrating from Library X to Library Y',
+    title: "Guidance needed: Migrating from Library X to Library Y",
     body: `
 ## Migration Question
 
@@ -742,16 +750,16 @@ We'd appreciate any insights, experiences, or recommendations from the community
 Thanks!
     `,
     labels: [
-      { name: 'question' },
-      { name: 'migration' },
-      { name: 'libraries' },
-      { name: 'help-wanted' },
+      { name: "question" },
+      { name: "migration" },
+      { name: "libraries" },
+      { name: "help-wanted" },
     ],
-    state: 'open',
-    user: { login: 'senior-developer' },
-    created_at: '2024-01-21T16:45:00Z',
-    updated_at: '2024-01-21T16:45:00Z',
-    html_url: 'https://github.com/company/app/issues/151',
+    state: "open",
+    user: { login: "senior-developer" },
+    created_at: "2024-01-21T16:45:00Z",
+    updated_at: "2024-01-21T16:45:00Z",
+    html_url: "https://github.com/company/app/issues/151",
   },
 };
 
@@ -762,38 +770,38 @@ export const EDGE_CASES: Record<string, GitHubIssue> = {
   emptyIssue: {
     id: 7001,
     number: 200,
-    title: '',
-    body: '',
+    title: "",
+    body: "",
     labels: [],
-    state: 'open',
-    user: { login: 'test-user' },
-    created_at: '2024-01-25T00:00:00Z',
-    updated_at: '2024-01-25T00:00:00Z',
-    html_url: 'https://github.com/company/app/issues/200',
+    state: "open",
+    user: { login: "test-user" },
+    created_at: "2024-01-25T00:00:00Z",
+    updated_at: "2024-01-25T00:00:00Z",
+    html_url: "https://github.com/company/app/issues/200",
   },
 
   veryLongIssue: {
     id: 7002,
     number: 201,
     title:
-      'This is an extremely long title that goes on and on and on with many many many words to test how the system handles very long titles that might cause layout issues or truncation problems in various parts of the application interface and user experience',
-    body: 'A'.repeat(10000), // 10KB of content
+      "This is an extremely long title that goes on and on and on with many many many words to test how the system handles very long titles that might cause layout issues or truncation problems in various parts of the application interface and user experience",
+    body: "A".repeat(10000), // 10KB of content
     labels: [
-      { name: 'very-long-label-name-that-might-cause-issues' },
-      { name: 'another-extremely-long-label-name' },
-      { name: 'performance-testing' },
+      { name: "very-long-label-name-that-might-cause-issues" },
+      { name: "another-extremely-long-label-name" },
+      { name: "performance-testing" },
     ],
-    state: 'open',
-    user: { login: 'performance-tester' },
-    created_at: '2024-01-24T00:00:00Z',
-    updated_at: '2024-01-24T00:00:00Z',
-    html_url: 'https://github.com/company/app/issues/201',
+    state: "open",
+    user: { login: "performance-tester" },
+    created_at: "2024-01-24T00:00:00Z",
+    updated_at: "2024-01-24T00:00:00Z",
+    html_url: "https://github.com/company/app/issues/201",
   },
 
   specialCharacters: {
     id: 7003,
     number: 202,
-    title: 'Issue with special characters: ñáéíóú 🚀 🔥 ❤️ 中文 🎉',
+    title: "Issue with special characters: ñáéíóú 🚀 🔥 ❤️ 中文 🎉",
     body: `
 ## Description with special characters
 This issue contains various special characters and emojis:
@@ -811,12 +819,16 @@ This issue contains various special characters and emojis:
 ## Expected behavior
 All special characters should display correctly across different browsers and platforms.
     `,
-    labels: [{ name: 'i18n' }, { name: 'unicode' }, { name: 'special-characters' }],
-    state: 'open',
-    user: { login: 'i18n-specialist' },
-    created_at: '2024-01-23T00:00:00Z',
-    updated_at: '2024-01-23T00:00:00Z',
-    html_url: 'https://github.com/company/app/issues/202',
+    labels: [
+      { name: "i18n" },
+      { name: "unicode" },
+      { name: "special-characters" },
+    ],
+    state: "open",
+    user: { login: "i18n-specialist" },
+    created_at: "2024-01-23T00:00:00Z",
+    updated_at: "2024-01-23T00:00:00Z",
+    html_url: "https://github.com/company/app/issues/202",
   },
 };
 
@@ -834,7 +846,7 @@ export function getIssueById(id: number): GitHubIssue | undefined {
     ...Object.values(EDGE_CASES),
   ];
 
-  return allIssues.find(issue => issue.id === id);
+  return allIssues.find((issue) => issue.id === id);
 }
 
 export function getIssuesByLabel(label: string): GitHubIssue[] {
@@ -848,14 +860,19 @@ export function getIssuesByLabel(label: string): GitHubIssue[] {
     ...Object.values(EDGE_CASES),
   ];
 
-  return allIssues.filter(issue => issue.labels.some(l => l.name === label));
+  return allIssues.filter((issue) =>
+    issue.labels.some((l) => l.name === label),
+  );
 }
 
 export function getIssuesByComplexity(
-  complexity: 'simple' | 'medium' | 'high' | 'critical'
+  complexity: "simple" | "medium" | "high" | "critical",
 ): GitHubIssue[] {
   const complexityMap = {
-    simple: [...Object.values(SIMPLE_BUGS), ...Object.values(DOCUMENTATION_ISSUES)],
+    simple: [
+      ...Object.values(SIMPLE_BUGS),
+      ...Object.values(DOCUMENTATION_ISSUES),
+    ],
     medium: [...Object.values(FEATURE_REQUESTS)],
     high: [...Object.values(COMPLEX_ISSUES)],
     critical: [...Object.values(SECURITY_ISSUES)],

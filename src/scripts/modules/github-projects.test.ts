@@ -1,88 +1,93 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { GitHubProjectsIntegration } from './github-projects';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { GitHubProjectsIntegration } from "./github-projects";
 
 // Mock fetch globally
 global.fetch = vi.fn();
 
-describe('GitHubProjectsIntegration', () => {
+describe("GitHubProjectsIntegration", () => {
   let kanban: GitHubProjectsIntegration;
 
   beforeEach(() => {
-    kanban = new GitHubProjectsIntegration('fake-token', 'PVT_kwDOA123', 'test-owner', 'test-repo');
+    kanban = new GitHubProjectsIntegration(
+      "fake-token",
+      "PVT_kwDOA123",
+      "test-owner",
+      "test-repo",
+    );
 
     vi.clearAllMocks();
   });
 
-  describe('initialization', () => {
-    it('should initialize with provided parameters', () => {
+  describe("initialization", () => {
+    it("should initialize with provided parameters", () => {
       expect(kanban).toBeDefined();
     });
   });
 
-  describe('GraphQL requests', () => {
-    it('should make GraphQL requests with proper headers', async () => {
-      const mockResponse = { data: { test: 'data' } };
+  describe("GraphQL requests", () => {
+    it("should make GraphQL requests with proper headers", async () => {
+      const mockResponse = { data: { test: "data" } };
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       });
 
-      const result = await kanban['makeGraphQLRequest']('query { test }');
+      const result = await kanban["makeGraphQLRequest"]("query { test }");
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://api.github.com/graphql',
+        "https://api.github.com/graphql",
         expect.objectContaining({
-          method: 'POST',
+          method: "POST",
           headers: expect.objectContaining({
-            Authorization: 'Bearer fake-token',
-            'Content-Type': 'application/json',
+            Authorization: "Bearer fake-token",
+            "Content-Type": "application/json",
           }),
-          body: JSON.stringify({ query: 'query { test }' }),
-        })
+          body: JSON.stringify({ query: "query { test }" }),
+        }),
       );
 
       expect(result).toEqual(mockResponse);
     });
 
-    it('should handle GraphQL errors', async () => {
+    it("should handle GraphQL errors", async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: () =>
           Promise.resolve({
-            errors: [{ message: 'Test error' }],
+            errors: [{ message: "Test error" }],
           }),
       });
 
-      await expect(kanban['makeGraphQLRequest']('query { test }')).rejects.toThrow(
-        'GraphQL errors: Test error'
-      );
+      await expect(
+        kanban["makeGraphQLRequest"]("query { test }"),
+      ).rejects.toThrow("GraphQL errors: Test error");
     });
 
-    it('should handle HTTP errors', async () => {
+    it("should handle HTTP errors", async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 401,
-        statusText: 'Unauthorized',
+        statusText: "Unauthorized",
       });
 
-      await expect(kanban['makeGraphQLRequest']('query { test }')).rejects.toThrow(
-        'GitHub API error: 401 Unauthorized'
-      );
+      await expect(
+        kanban["makeGraphQLRequest"]("query { test }"),
+      ).rejects.toThrow("GitHub API error: 401 Unauthorized");
     });
   });
 
-  describe('column management', () => {
-    it('should get project columns', async () => {
+  describe("column management", () => {
+    it("should get project columns", async () => {
       const mockResponse = {
         data: {
           node: {
             fields: {
               nodes: [
                 {
-                  name: 'Status',
+                  name: "Status",
                   options: [
-                    { id: 'status1', name: 'Backlog' },
-                    { id: 'status2', name: 'In Progress' },
+                    { id: "status1", name: "Backlog" },
+                    { id: "status2", name: "In Progress" },
                   ],
                 },
               ],
@@ -100,21 +105,21 @@ describe('GitHubProjectsIntegration', () => {
 
       expect(columns).toHaveLength(2);
       expect(columns[0]).toEqual({
-        id: 'status1',
-        name: 'Backlog',
+        id: "status1",
+        name: "Backlog",
         position: 0,
       });
     });
   });
 
-  describe('card operations', () => {
-    it('should create a card', async () => {
+  describe("card operations", () => {
+    it("should create a card", async () => {
       // Mock repository ID query
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: () =>
           Promise.resolve({
-            data: { repository: { id: 'repo123' } },
+            data: { repository: { id: "repo123" } },
           }),
       });
 
@@ -132,7 +137,7 @@ describe('GitHubProjectsIntegration', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: { createIssue: { issue: { id: 'issue123' } } },
+            data: { createIssue: { issue: { id: "issue123" } } },
           }),
       });
 
@@ -141,7 +146,7 @@ describe('GitHubProjectsIntegration', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: { addProjectV2ItemById: { item: { id: 'item123' } } },
+            data: { addProjectV2ItemById: { item: { id: "item123" } } },
           }),
       });
 
@@ -150,22 +155,26 @@ describe('GitHubProjectsIntegration', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: { updateProjectV2ItemFieldValue: { projectV2Item: { id: 'item123' } } },
+            data: {
+              updateProjectV2ItemFieldValue: {
+                projectV2Item: { id: "item123" },
+              },
+            },
           }),
       });
 
       const card = await kanban.createCard({
-        title: 'Test Card',
-        body: 'Test body',
-        status: 'Backlog',
+        title: "Test Card",
+        body: "Test body",
+        status: "Backlog",
         assignees: [],
-        labels: ['test'],
+        labels: ["test"],
       });
 
-      expect(card).toBe('item123');
+      expect(card).toBe("item123");
     });
 
-    it('should update card status', async () => {
+    it("should update card status", async () => {
       // Mock status field query
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -176,8 +185,8 @@ describe('GitHubProjectsIntegration', () => {
                 fields: {
                   nodes: [
                     {
-                      name: 'Status',
-                      options: [{ id: 'status1', name: 'Backlog' }],
+                      name: "Status",
+                      options: [{ id: "status1", name: "Backlog" }],
                     },
                   ],
                 },
@@ -196,8 +205,8 @@ describe('GitHubProjectsIntegration', () => {
                 fields: {
                   nodes: [
                     {
-                      name: 'Status',
-                      options: [{ id: 'status1', name: 'Backlog' }],
+                      name: "Status",
+                      options: [{ id: "status1", name: "Backlog" }],
                     },
                   ],
                 },
@@ -211,18 +220,22 @@ describe('GitHubProjectsIntegration', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: { updateProjectV2ItemFieldValue: { projectV2Item: { id: 'item123' } } },
+            data: {
+              updateProjectV2ItemFieldValue: {
+                projectV2Item: { id: "item123" },
+              },
+            },
           }),
       });
 
-      await kanban.updateCardStatus('item123', 'Backlog');
+      await kanban.updateCardStatus("item123", "Backlog");
 
       expect(global.fetch).toHaveBeenCalledTimes(3);
     });
   });
 
-  describe('task synchronization', () => {
-    it('should sync task status with kanban', async () => {
+  describe("task synchronization", () => {
+    it("should sync task status with kanban", async () => {
       // Mock get all cards
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -233,11 +246,11 @@ describe('GitHubProjectsIntegration', () => {
                 items: {
                   nodes: [
                     {
-                      id: 'item123',
+                      id: "item123",
                       content: {
                         number: 456,
-                        title: 'Test Issue',
-                        body: 'Test body',
+                        title: "Test Issue",
+                        body: "Test body",
                         assignees: { nodes: [] },
                         labels: { nodes: [] },
                         createdAt: new Date().toISOString(),
@@ -256,7 +269,11 @@ describe('GitHubProjectsIntegration', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: { updateProjectV2ItemFieldValue: { projectV2Item: { id: 'item123' } } },
+            data: {
+              updateProjectV2ItemFieldValue: {
+                projectV2Item: { id: "item123" },
+              },
+            },
           }),
       });
 
@@ -270,8 +287,8 @@ describe('GitHubProjectsIntegration', () => {
                 fields: {
                   nodes: [
                     {
-                      name: 'Status',
-                      options: [{ id: 'status1', name: 'In Progress' }],
+                      name: "Status",
+                      options: [{ id: "status1", name: "In Progress" }],
                     },
                   ],
                 },
@@ -289,8 +306,8 @@ describe('GitHubProjectsIntegration', () => {
                 fields: {
                   nodes: [
                     {
-                      name: 'Status',
-                      options: [{ id: 'status1', name: 'In Progress' }],
+                      name: "Status",
+                      options: [{ id: "status1", name: "In Progress" }],
                     },
                   ],
                 },
@@ -299,14 +316,14 @@ describe('GitHubProjectsIntegration', () => {
           }),
       });
 
-      await kanban.syncTaskStatus('task123', 'in_progress', 456);
+      await kanban.syncTaskStatus("task123", "in_progress", 456);
 
       expect(global.fetch).toHaveBeenCalled();
     });
   });
 
-  describe('workflow progress', () => {
-    it('should update workflow progress', async () => {
+  describe("workflow progress", () => {
+    it("should update workflow progress", async () => {
       // Mock get all cards (no existing progress card)
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -327,7 +344,7 @@ describe('GitHubProjectsIntegration', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: { repository: { id: 'repo123' } },
+            data: { repository: { id: "repo123" } },
           }),
       });
 
@@ -345,7 +362,7 @@ describe('GitHubProjectsIntegration', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: { createIssue: { issue: { id: 'issue123' } } },
+            data: { createIssue: { issue: { id: "issue123" } } },
           }),
       });
 
@@ -354,7 +371,7 @@ describe('GitHubProjectsIntegration', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: { addProjectV2ItemById: { item: { id: 'item123' } } },
+            data: { addProjectV2ItemById: { item: { id: "item123" } } },
           }),
       });
 
@@ -363,11 +380,20 @@ describe('GitHubProjectsIntegration', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: { updateProjectV2ItemFieldValue: { projectV2Item: { id: 'item123' } } },
+            data: {
+              updateProjectV2ItemFieldValue: {
+                projectV2Item: { id: "item123" },
+              },
+            },
           }),
       });
 
-      await kanban.updateWorkflowProgress(123, 'task456', 'Analysis Complete', 50);
+      await kanban.updateWorkflowProgress(
+        123,
+        "task456",
+        "Analysis Complete",
+        50,
+      );
 
       expect(global.fetch).toHaveBeenCalled();
     });

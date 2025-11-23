@@ -5,14 +5,14 @@
  * Each GitHub issue gets its own worktree for safe, parallel development.
  */
 
-import { execSync, spawn } from 'child_process';
-import { existsSync, mkdirSync, rmSync } from 'fs';
-import { join, resolve } from 'path';
+import { execSync, spawn } from "child_process";
+import { existsSync, mkdirSync, rmSync } from "fs";
+import { join, resolve } from "path";
 
 export interface WorktreeConfig {
   rootDir: string;
   autoCleanup: boolean;
-  defaultSyncStrategy: 'merge' | 'rebase';
+  defaultSyncStrategy: "merge" | "rebase";
   mainBranch: string;
   copyFiles: string[];
 }
@@ -22,7 +22,7 @@ export interface WorktreeInfo {
   path: string;
   issueId: number;
   createdAt: Date;
-  status: 'active' | 'completed' | 'failed';
+  status: "active" | "completed" | "failed";
 }
 
 export class WorktreeManager {
@@ -31,11 +31,16 @@ export class WorktreeManager {
 
   constructor(config: Partial<WorktreeConfig> = {}) {
     this.config = {
-      rootDir: '.git/ai-worktrees',
+      rootDir: ".git/ai-worktrees",
       autoCleanup: true,
-      defaultSyncStrategy: 'merge',
-      mainBranch: 'main',
-      copyFiles: ['.env.example', '.env.local', 'package-lock.json', 'yarn.lock'],
+      defaultSyncStrategy: "merge",
+      mainBranch: "main",
+      copyFiles: [
+        ".env.example",
+        ".env.local",
+        "package-lock.json",
+        "yarn.lock",
+      ],
       ...config,
     };
 
@@ -48,7 +53,10 @@ export class WorktreeManager {
   /**
    * Create a new worktree for a GitHub issue
    */
-  async createWorktree(issueId: number, issueTitle: string): Promise<WorktreeInfo> {
+  async createWorktree(
+    issueId: number,
+    issueTitle: string,
+  ): Promise<WorktreeInfo> {
     const branchName = this.generateBranchName(issueId, issueTitle);
     const worktreePath = join(this.config.rootDir, `issue-${issueId}`);
 
@@ -56,7 +64,7 @@ export class WorktreeManager {
       console.log(`Creating worktree for issue #${issueId}: ${branchName}`);
 
       // Create the worktree
-      this.runGitCommand(['worktree', 'add', '-b', branchName, worktreePath]);
+      this.runGitCommand(["worktree", "add", "-b", branchName, worktreePath]);
 
       // Copy necessary files
       await this.copyFilesToWorktree(worktreePath);
@@ -66,7 +74,7 @@ export class WorktreeManager {
         path: worktreePath,
         issueId,
         createdAt: new Date(),
-        status: 'active',
+        status: "active",
       };
 
       this.activeWorktrees.set(issueId, worktreeInfo);
@@ -74,7 +82,10 @@ export class WorktreeManager {
 
       return worktreeInfo;
     } catch (error) {
-      console.error(`❌ Failed to create worktree for issue #${issueId}:`, error);
+      console.error(
+        `❌ Failed to create worktree for issue #${issueId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -95,14 +106,16 @@ export class WorktreeManager {
   /**
    * Sync worktree with main branch
    */
-  syncWorktree(issueId: number, strategy?: 'merge' | 'rebase'): void {
+  syncWorktree(issueId: number, strategy?: "merge" | "rebase"): void {
     const worktree = this.activeWorktrees.get(issueId);
     if (!worktree) {
       throw new Error(`No active worktree found for issue #${issueId}`);
     }
 
     const syncStrategy = strategy || this.config.defaultSyncStrategy;
-    console.log(`Syncing worktree ${worktree.branch} with ${syncStrategy} strategy`);
+    console.log(
+      `Syncing worktree ${worktree.branch} with ${syncStrategy} strategy`,
+    );
 
     // Switch to worktree directory and sync
     const originalCwd = process.cwd();
@@ -110,13 +123,13 @@ export class WorktreeManager {
       process.chdir(worktree.path);
 
       // Fetch latest changes
-      this.runGitCommand(['fetch', 'origin']);
+      this.runGitCommand(["fetch", "origin"]);
 
       // Sync with main branch
-      if (syncStrategy === 'rebase') {
-        this.runGitCommand(['rebase', `origin/${this.config.mainBranch}`]);
+      if (syncStrategy === "rebase") {
+        this.runGitCommand(["rebase", `origin/${this.config.mainBranch}`]);
       } else {
-        this.runGitCommand(['merge', `origin/${this.config.mainBranch}`]);
+        this.runGitCommand(["merge", `origin/${this.config.mainBranch}`]);
       }
 
       console.log(`✅ Worktree ${worktree.branch} synced successfully`);
@@ -137,7 +150,7 @@ export class WorktreeManager {
     console.log(`Completing worktree for issue #${issueId}`);
 
     // Mark as completed
-    worktree.status = 'completed';
+    worktree.status = "completed";
     this.activeWorktrees.set(issueId, worktree);
 
     return worktree;
@@ -157,18 +170,21 @@ export class WorktreeManager {
       console.log(`Cleaning up worktree: ${worktree.path}`);
 
       // Remove the worktree
-      this.runGitCommand(['worktree', 'remove', worktree.path]);
+      this.runGitCommand(["worktree", "remove", worktree.path]);
 
       // Remove the branch
-      this.runGitCommand(['branch', '-D', worktree.branch]);
+      this.runGitCommand(["branch", "-D", worktree.branch]);
 
       // Remove from active worktrees
       this.activeWorktrees.delete(issueId);
 
       console.log(`✅ Worktree cleaned up: ${worktree.path}`);
     } catch (error) {
-      console.error(`❌ Failed to cleanup worktree for issue #${issueId}:`, error);
-      worktree.status = 'failed';
+      console.error(
+        `❌ Failed to cleanup worktree for issue #${issueId}:`,
+        error,
+      );
+      worktree.status = "failed";
     }
   }
 
@@ -194,10 +210,10 @@ export class WorktreeManager {
       return;
     }
 
-    console.log('Cleaning up completed worktrees...');
+    console.log("Cleaning up completed worktrees...");
 
     for (const [issueId, worktree] of this.activeWorktrees) {
-      if (worktree.status === 'completed' || worktree.status === 'failed') {
+      if (worktree.status === "completed" || worktree.status === "failed") {
         // Check if worktree is old enough to cleanup (e.g., 1 hour old)
         const age = Date.now() - worktree.createdAt.getTime();
         const oneHour = 60 * 60 * 1000;
@@ -216,11 +232,11 @@ export class WorktreeManager {
     // Sanitize title for branch name
     const sanitizedTitle = issueTitle
       .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '') // Remove special chars except spaces and hyphens
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/[^a-z0-9\s-]/g, "") // Remove special chars except spaces and hyphens
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .replace(/-+/g, "-") // Replace multiple hyphens with single
       .substring(0, 50) // Limit length
-      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+      .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
 
     return `ai-fix/issue-${issueId}-${sanitizedTitle}`;
   }
@@ -239,7 +255,7 @@ export class WorktreeManager {
         if (existsSync(sourcePath)) {
           // Use git to copy files (this preserves git tracking if needed)
           try {
-            this.runGitCommand(['checkout', file]);
+            this.runGitCommand(["checkout", file]);
             console.log(`Copied ${file} to worktree`);
           } catch (error) {
             // File might not exist in this branch, skip
@@ -257,14 +273,14 @@ export class WorktreeManager {
    */
   private runGitCommand(args: string[]): string {
     try {
-      const result = execSync(`git ${args.join(' ')}`, {
-        encoding: 'utf8',
-        stdio: 'pipe',
+      const result = execSync(`git ${args.join(" ")}`, {
+        encoding: "utf8",
+        stdio: "pipe",
       });
       return result.trim();
     } catch (error: any) {
       const message = error.stderr || error.stdout || error.message;
-      throw new Error(`Git command failed: git ${args.join(' ')}\n${message}`);
+      throw new Error(`Git command failed: git ${args.join(" ")}\n${message}`);
     }
   }
 
@@ -273,7 +289,7 @@ export class WorktreeManager {
    */
   static isSupported(): boolean {
     try {
-      execSync('git worktree --help', { stdio: 'pipe' });
+      execSync("git worktree --help", { stdio: "pipe" });
       return true;
     } catch {
       return false;

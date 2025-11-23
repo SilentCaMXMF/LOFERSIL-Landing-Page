@@ -13,15 +13,15 @@ export class PushNotificationManager {
    * Check if push notifications are supported
    */
   public static isSupported(): boolean {
-    return 'serviceWorker' in navigator && 'PushManager' in window;
+    return "serviceWorker" in navigator && "PushManager" in window;
   }
 
   /**
    * Request permission for push notifications
    */
   public async requestPermission(): Promise<NotificationPermission> {
-    if (!('Notification' in window)) {
-      throw new Error('Notifications not supported');
+    if (!("Notification" in window)) {
+      throw new Error("Notifications not supported");
     }
 
     const permission = await Notification.requestPermission();
@@ -33,25 +33,27 @@ export class PushNotificationManager {
    */
   public async subscribe(): Promise<PushSubscription | null> {
     if (!PushNotificationManager.isSupported()) {
-      throw new Error('Push notifications not supported');
+      throw new Error("Push notifications not supported");
     }
 
     try {
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey) as BufferSource,
+        applicationServerKey: this.urlBase64ToUint8Array(
+          this.vapidPublicKey,
+        ) as BufferSource,
       });
 
       this.subscription = subscription;
-      console.log('[PushManager] Subscribed to push notifications');
+      console.log("[PushManager] Subscribed to push notifications");
 
       // Send subscription to server
       await this.sendSubscriptionToServer(subscription);
 
       return subscription;
     } catch (error) {
-      console.error('[PushManager] Failed to subscribe:', error);
+      console.error("[PushManager] Failed to subscribe:", error);
       throw error;
     }
   }
@@ -67,7 +69,7 @@ export class PushNotificationManager {
       // Remove subscription from server
       await this.removeSubscriptionFromServer();
 
-      console.log('[PushManager] Unsubscribed from push notifications');
+      console.log("[PushManager] Unsubscribed from push notifications");
     }
   }
 
@@ -83,7 +85,7 @@ export class PushNotificationManager {
       this.subscription = subscription;
       return subscription;
     } catch (error) {
-      console.error('[PushManager] Failed to get subscription:', error);
+      console.error("[PushManager] Failed to get subscription:", error);
       return null;
     }
   }
@@ -91,27 +93,29 @@ export class PushNotificationManager {
   /**
    * Send subscription to server
    */
-  private async sendSubscriptionToServer(subscription: PushSubscription): Promise<void> {
+  private async sendSubscriptionToServer(
+    subscription: PushSubscription,
+  ): Promise<void> {
     try {
-      const response = await fetch('/api/push-subscription', {
-        method: 'POST',
+      const response = await fetch("/api/push-subscription", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           endpoint: subscription.endpoint,
           keys: {
-            p256dh: this.arrayBufferToBase64(subscription.getKey('p256dh')!),
-            auth: this.arrayBufferToBase64(subscription.getKey('auth')!),
+            p256dh: this.arrayBufferToBase64(subscription.getKey("p256dh")!),
+            auth: this.arrayBufferToBase64(subscription.getKey("auth")!),
           },
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send subscription to server');
+        throw new Error("Failed to send subscription to server");
       }
     } catch (error) {
-      console.error('[PushManager] Failed to send subscription:', error);
+      console.error("[PushManager] Failed to send subscription:", error);
     }
   }
 
@@ -120,10 +124,10 @@ export class PushNotificationManager {
    */
   private async removeSubscriptionFromServer(): Promise<void> {
     try {
-      const response = await fetch('/api/push-subscription', {
-        method: 'DELETE',
+      const response = await fetch("/api/push-subscription", {
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           endpoint: this.subscription?.endpoint,
@@ -131,10 +135,10 @@ export class PushNotificationManager {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to remove subscription from server');
+        throw new Error("Failed to remove subscription from server");
       }
     } catch (error) {
-      console.error('[PushManager] Failed to remove subscription:', error);
+      console.error("[PushManager] Failed to remove subscription:", error);
     }
   }
 
@@ -142,8 +146,10 @@ export class PushNotificationManager {
    * Convert VAPID key to Uint8Array
    */
   private urlBase64ToUint8Array(base64String: string): Uint8Array {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
 
     const rawData = window.atob(base64);
     const outputArray = new Uint8Array(rawData.length);
@@ -159,7 +165,7 @@ export class PushNotificationManager {
    */
   private arrayBufferToBase64(buffer: ArrayBuffer): string {
     const bytes = new Uint8Array(buffer);
-    let binary = '';
+    let binary = "";
     for (let i = 0; i < bytes.byteLength; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
@@ -170,11 +176,11 @@ export class PushNotificationManager {
    * Show notification (for testing)
    */
   public async showTestNotification(): Promise<void> {
-    if (Notification.permission === 'granted') {
-      const notification = new Notification('Teste de Notificação', {
-        body: 'Esta é uma notificação de teste do LOFERSIL',
-        icon: '/assets/images/icon-192.png',
-        badge: '/assets/images/badge-72.png',
+    if (Notification.permission === "granted") {
+      const notification = new Notification("Teste de Notificação", {
+        body: "Esta é uma notificação de teste do LOFERSIL",
+        icon: "/assets/images/icon-192.png",
+        badge: "/assets/images/badge-72.png",
       });
 
       notification.onclick = () => {

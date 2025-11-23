@@ -3,8 +3,8 @@
  * Uses Intersection Observer for efficient scroll handling
  */
 
-import { config } from './Config.js';
-import { NavigationManager } from './NavigationManager.js';
+import { config } from "./Config.js";
+import { NavigationManager } from "./NavigationManager.js";
 
 export class ScrollManager {
   private hero: HTMLElement | null = null;
@@ -24,9 +24,9 @@ export class ScrollManager {
    * Cache DOM elements to avoid repeated queries
    */
   private setupDOMElements(): void {
-    this.hero = document.getElementById('hero');
+    this.hero = document.getElementById("hero");
     if (this.hero) {
-      this.heroImage = this.hero.querySelector('.hero-img') as HTMLElement;
+      this.heroImage = this.hero.querySelector(".hero-img") as HTMLElement;
     }
   }
 
@@ -56,7 +56,7 @@ export class ScrollManager {
       }
     };
 
-    window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+    window.addEventListener("scroll", requestScrollUpdate, { passive: true });
   }
 
   /**
@@ -64,26 +64,26 @@ export class ScrollManager {
    */
   private setupIntersectionObservers(): void {
     // Observe elements for lazy loading or animations
-    const lazyElements = document.querySelectorAll('[data-lazy]');
+    const lazyElements = document.querySelectorAll("[data-lazy]");
     if (lazyElements.length > 0) {
       const lazyObserver = new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
+        (entries) => {
+          entries.forEach((entry) => {
             if (entry.isIntersecting) {
               const element = entry.target as HTMLElement;
               // Add visible class for animations
-              element.classList.add('visible');
+              element.classList.add("visible");
               // Stop observing once visible
               lazyObserver.unobserve(element);
             }
           });
         },
         {
-          rootMargin: '50px',
-        }
+          rootMargin: "50px",
+        },
       );
 
-      lazyElements.forEach(element => {
+      lazyElements.forEach((element) => {
         lazyObserver.observe(element);
       });
 
@@ -91,27 +91,30 @@ export class ScrollManager {
     }
 
     // Observe elements for scroll-triggered animations
-    const animateElements = document.querySelectorAll('[data-animate]');
+    const animateElements = document.querySelectorAll("[data-animate]");
     if (animateElements.length > 0) {
       const animateObserver = new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
+        (entries) => {
+          entries.forEach((entry) => {
             if (entry.isIntersecting) {
               const element = entry.target as HTMLElement;
-              const animationType = element.getAttribute('data-animate');
+              const animationType = element.getAttribute("data-animate");
 
-              if (animationType === 'scale-in' || animationType === 'slide-up') {
+              if (
+                animationType === "scale-in" ||
+                animationType === "slide-up"
+              ) {
                 // For grids, animate children with stagger
                 const children = element.children;
                 Array.from(children).forEach((child, index) => {
                   const delay = index * 150; // 150ms stagger
                   setTimeout(() => {
-                    (child as HTMLElement).classList.add('animate-in');
+                    (child as HTMLElement).classList.add("animate-in");
                   }, delay);
                 });
               } else {
                 // Single element animation
-                element.classList.add('animate-in');
+                element.classList.add("animate-in");
               }
 
               // Stop observing once animated
@@ -120,12 +123,12 @@ export class ScrollManager {
           });
         },
         {
-          rootMargin: '0px 0px -100px 0px', // Trigger when element is 100px from bottom
+          rootMargin: "0px 0px -100px 0px", // Trigger when element is 100px from bottom
           threshold: 0.1,
-        }
+        },
       );
 
-      animateElements.forEach(element => {
+      animateElements.forEach((element) => {
         animateObserver.observe(element);
       });
 
@@ -138,8 +141,8 @@ export class ScrollManager {
     // Observe hero section for performance optimizations
     if (this.hero) {
       const heroObserver = new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
+        (entries) => {
+          entries.forEach((entry) => {
             if (entry.isIntersecting) {
               // Hero is visible, could enable parallax
               this.enableParallax();
@@ -151,7 +154,7 @@ export class ScrollManager {
         },
         {
           threshold: 0.1,
-        }
+        },
       );
 
       heroObserver.observe(this.hero);
@@ -163,23 +166,23 @@ export class ScrollManager {
    * Setup lazy loading for images
    */
   private setupLazyLoading(): void {
-    const lazyImages = document.querySelectorAll('img[data-src]');
+    const lazyImages = document.querySelectorAll("img[data-src]");
     if (lazyImages.length > 0) {
-      const imageObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
+      const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const img = entry.target as HTMLImageElement;
-            const src = img.getAttribute('data-src');
+            const src = img.getAttribute("data-src");
             if (src) {
               img.src = src;
-              img.classList.remove('lazy');
+              img.classList.remove("lazy");
               imageObserver.unobserve(img);
             }
           }
         });
       });
 
-      lazyImages.forEach(img => {
+      lazyImages.forEach((img) => {
         imageObserver.observe(img);
       });
 
@@ -192,7 +195,7 @@ export class ScrollManager {
    */
   private enableParallax(): void {
     if (this.heroImage) {
-      this.heroImage.style.willChange = 'transform';
+      this.heroImage.style.willChange = "transform";
     }
   }
 
@@ -201,7 +204,7 @@ export class ScrollManager {
    */
   private disableParallax(): void {
     if (this.heroImage) {
-      this.heroImage.style.willChange = 'auto';
+      this.heroImage.style.willChange = "auto";
     }
   }
 
@@ -212,8 +215,8 @@ export class ScrollManager {
     const element = document.querySelector(selector);
     if (element) {
       element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
+        behavior: "smooth",
+        block: "start",
       });
     }
   }
@@ -233,7 +236,8 @@ export class ScrollManager {
     return (
       rect.top >= 0 &&
       rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
   }
@@ -242,14 +246,14 @@ export class ScrollManager {
    * Cleanup observers and event listeners
    */
   destroy(): void {
-    this.observers.forEach(observer => {
+    this.observers.forEach((observer) => {
       observer.disconnect();
     });
     this.observers = [];
 
     // Reset will-change properties
     if (this.heroImage) {
-      this.heroImage.style.willChange = 'auto';
+      this.heroImage.style.willChange = "auto";
     }
   }
 }

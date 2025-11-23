@@ -5,22 +5,22 @@
  * Manages state transitions, component interactions, and error handling.
  */
 
-import { IssueAnalyzer, GitHubIssue, IssueAnalysis } from './IssueAnalyzer';
-import { AutonomousResolver, ResolutionResult } from './AutonomousResolver';
-import { CodeReviewer, ReviewResult } from './CodeReviewer';
-import { PRGenerator, PullRequest } from './PRGenerator';
-import { KanbanManager } from '../KanbanManager';
+import { IssueAnalyzer, GitHubIssue, IssueAnalysis } from "./IssueAnalyzer";
+import { AutonomousResolver, ResolutionResult } from "./AutonomousResolver";
+import { CodeReviewer, ReviewResult } from "./CodeReviewer";
+import { PRGenerator, PullRequest } from "./PRGenerator";
+import { KanbanManager } from "../KanbanManager";
 
 export enum WorkflowState {
-  INITIALIZING = 'initializing',
-  ANALYZING_ISSUE = 'analyzing_issue',
-  CHECKING_FEASIBILITY = 'checking_feasibility',
-  GENERATING_SOLUTION = 'generating_solution',
-  REVIEWING_CODE = 'reviewing_code',
-  CREATING_PR = 'creating_pr',
-  PR_COMPLETE = 'pr_complete',
-  REQUIRES_HUMAN_REVIEW = 'requires_human_review',
-  FAILED = 'failed',
+  INITIALIZING = "initializing",
+  ANALYZING_ISSUE = "analyzing_issue",
+  CHECKING_FEASIBILITY = "checking_feasibility",
+  GENERATING_SOLUTION = "generating_solution",
+  REVIEWING_CODE = "reviewing_code",
+  CREATING_PR = "creating_pr",
+  PR_COMPLETE = "pr_complete",
+  REQUIRES_HUMAN_REVIEW = "requires_human_review",
+  FAILED = "failed",
 }
 
 export interface WorkflowConfig {
@@ -94,7 +94,11 @@ export class WorkflowOrchestrator {
   /**
    * Process a GitHub issue through the complete workflow
    */
-  async processIssue(issueNumber: number, title?: string, body?: string): Promise<WorkflowResult> {
+  async processIssue(
+    issueNumber: number,
+    title?: string,
+    body?: string,
+  ): Promise<WorkflowResult> {
     const startTime = Date.now();
     let currentState = WorkflowState.INITIALIZING;
     let retryCount = 0;
@@ -114,7 +118,10 @@ export class WorkflowOrchestrator {
 
       // Update kanban: Move to In Progress when AI processing starts
       if (this.config.kanbanManager) {
-        await this.config.kanbanManager.onProcessingStart(issueNumber, workflowId);
+        await this.config.kanbanManager.onProcessingStart(
+          issueNumber,
+          workflowId,
+        );
       }
 
       const mockIssue: GitHubIssue = {
@@ -122,10 +129,10 @@ export class WorkflowOrchestrator {
         title: issueTitle,
         body: issueBody,
         labels: [],
-        user: { login: 'test-user' },
+        user: { login: "test-user" },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        state: 'open',
+        state: "open",
         html_url: `https://github.com/test/repo/issues/${issueNumber}`,
       };
 
@@ -135,7 +142,7 @@ export class WorkflowOrchestrator {
       currentState = WorkflowState.CHECKING_FEASIBILITY;
       this.activeWorkflows.set(issueNumber, currentState);
 
-      if (!analysis.feasible || analysis.complexity === 'critical') {
+      if (!analysis.feasible || analysis.complexity === "critical") {
         return this.createResult(
           false,
           WorkflowState.REQUIRES_HUMAN_REVIEW,
@@ -143,9 +150,9 @@ export class WorkflowOrchestrator {
           true,
           startTime,
           retryCount,
-          'Issue requires human review',
+          "Issue requires human review",
           issueNumber,
-          workflowId
+          workflowId,
         );
       }
 
@@ -153,16 +160,22 @@ export class WorkflowOrchestrator {
       currentState = WorkflowState.GENERATING_SOLUTION;
       this.activeWorkflows.set(issueNumber, currentState);
 
-      const resolution = await this.config.autonomousResolver.resolveIssue(analysis, {
-        number: issueNumber,
-        title: issueTitle,
-        body: issueBody,
-      });
+      const resolution = await this.config.autonomousResolver.resolveIssue(
+        analysis,
+        {
+          number: issueNumber,
+          title: issueTitle,
+          body: issueBody,
+        },
+      );
 
       if (!resolution.success) {
         // Update kanban: Move back to Backlog on failure
         if (this.config.kanbanManager) {
-          await this.config.kanbanManager.onProcessingFailed(issueNumber, workflowId);
+          await this.config.kanbanManager.onProcessingFailed(
+            issueNumber,
+            workflowId,
+          );
         }
 
         return this.createResult(
@@ -172,9 +185,9 @@ export class WorkflowOrchestrator {
           false,
           startTime,
           retryCount,
-          'Solution generation failed',
+          "Solution generation failed",
           issueNumber,
-          workflowId
+          workflowId,
         );
       }
 
@@ -182,16 +195,22 @@ export class WorkflowOrchestrator {
       currentState = WorkflowState.REVIEWING_CODE;
       this.activeWorkflows.set(issueNumber, currentState);
 
-      const review = await this.config.codeReviewer.reviewChanges(resolution.solution, {
-        number: issueNumber,
-        title: issueTitle,
-        body: issueBody,
-      });
+      const review = await this.config.codeReviewer.reviewChanges(
+        resolution.solution,
+        {
+          number: issueNumber,
+          title: issueTitle,
+          body: issueBody,
+        },
+      );
 
       if (!review.approved) {
         // Update kanban: Move back to Backlog on review failure
         if (this.config.kanbanManager) {
-          await this.config.kanbanManager.onProcessingFailed(issueNumber, workflowId);
+          await this.config.kanbanManager.onProcessingFailed(
+            issueNumber,
+            workflowId,
+          );
         }
 
         return this.createResult(
@@ -201,9 +220,9 @@ export class WorkflowOrchestrator {
           true,
           startTime,
           retryCount,
-          'Code review failed',
+          "Code review failed",
           issueNumber,
-          workflowId
+          workflowId,
         );
       }
 
@@ -211,11 +230,15 @@ export class WorkflowOrchestrator {
       currentState = WorkflowState.CREATING_PR;
       this.activeWorkflows.set(issueNumber, currentState);
 
-      const pr = await this.config.prGenerator.createPullRequest(resolution, review, {
-        number: issueNumber,
-        title: issueTitle,
-        body: issueBody,
-      });
+      const pr = await this.config.prGenerator.createPullRequest(
+        resolution,
+        review,
+        {
+          number: issueNumber,
+          title: issueTitle,
+          body: issueBody,
+        },
+      );
 
       // Update kanban: Move to In Review when PR is generated
       if (this.config.kanbanManager) {
@@ -228,7 +251,10 @@ export class WorkflowOrchestrator {
 
       // Update kanban: Move to Done when processing is complete
       if (this.config.kanbanManager) {
-        await this.config.kanbanManager.onProcessingComplete(issueNumber, workflowId);
+        await this.config.kanbanManager.onProcessingComplete(
+          issueNumber,
+          workflowId,
+        );
       }
 
       return this.createResult(
@@ -240,14 +266,17 @@ export class WorkflowOrchestrator {
         retryCount,
         undefined,
         issueNumber,
-        workflowId
+        workflowId,
       );
     } catch (error) {
-      console.error('Workflow failed:', error);
+      console.error("Workflow failed:", error);
 
       // Update kanban: Move back to Backlog on general failure
       if (this.config.kanbanManager) {
-        await this.config.kanbanManager.onProcessingFailed(issueNumber, workflowId);
+        await this.config.kanbanManager.onProcessingFailed(
+          issueNumber,
+          workflowId,
+        );
       }
 
       return this.createResult(
@@ -259,9 +288,9 @@ export class WorkflowOrchestrator {
         retryCount,
         error instanceof Error
           ? `Workflow execution failed: ${error.message}`
-          : 'Workflow execution failed: Unknown error',
+          : "Workflow execution failed: Unknown error",
         issueNumber,
-        workflowId
+        workflowId,
       );
     } finally {
       this.activeWorkflows.delete(issueNumber);
@@ -279,10 +308,12 @@ export class WorkflowOrchestrator {
    * Get all active workflows
    */
   getActiveWorkflows(): Array<{ issueNumber: number; state: WorkflowState }> {
-    return Array.from(this.activeWorkflows.entries()).map(([issueNumber, state]) => ({
-      issueNumber,
-      state,
-    }));
+    return Array.from(this.activeWorkflows.entries()).map(
+      ([issueNumber, state]) => ({
+        issueNumber,
+        state,
+      }),
+    );
   }
 
   /**
@@ -311,7 +342,7 @@ export class WorkflowOrchestrator {
     retryCount: number,
     error?: string,
     issueNumber?: number,
-    workflowId?: string
+    workflowId?: string,
   ): WorkflowResult {
     const executionTime = Date.now() - startTime;
 
@@ -332,16 +363,24 @@ export class WorkflowOrchestrator {
 
     // Update metrics
     if (success) {
-      const successfulWorkflows = this.completedWorkflows.filter(r => r.success).length;
-      this.metrics.successRate = successfulWorkflows / this.completedWorkflows.length;
+      const successfulWorkflows = this.completedWorkflows.filter(
+        (r) => r.success,
+      ).length;
+      this.metrics.successRate =
+        successfulWorkflows / this.completedWorkflows.length;
     }
 
-    const totalTime = this.completedWorkflows.reduce((sum, r) => sum + r.executionTime, 0);
-    this.metrics.averageExecutionTime = totalTime / this.completedWorkflows.length;
+    const totalTime = this.completedWorkflows.reduce(
+      (sum, r) => sum + r.executionTime,
+      0,
+    );
+    this.metrics.averageExecutionTime =
+      totalTime / this.completedWorkflows.length;
     this.metrics.totalProcessingTime = totalTime;
 
     if (error) {
-      this.metrics.failureReasons[error] = (this.metrics.failureReasons[error] || 0) + 1;
+      this.metrics.failureReasons[error] =
+        (this.metrics.failureReasons[error] || 0) + 1;
       this.metrics.errorCount++;
     }
 
@@ -351,14 +390,14 @@ export class WorkflowOrchestrator {
 
     // Update average complexity (simplified)
     const complexities = this.completedWorkflows
-      .filter(r => r.outputs.analysis?.complexity)
-      .map(r => {
+      .filter((r) => r.outputs.analysis?.complexity)
+      .map((r) => {
         const complexity = r.outputs.analysis!.complexity;
-        return complexity === 'low'
+        return complexity === "low"
           ? 1
-          : complexity === 'medium'
+          : complexity === "medium"
             ? 2
-            : complexity === 'high'
+            : complexity === "high"
               ? 3
               : 4;
       });

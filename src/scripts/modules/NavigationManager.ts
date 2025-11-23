@@ -31,9 +31,9 @@ export class NavigationManager {
    * Setup DOM element references
    */
   private setupDOMElements(): void {
-    this.navToggle = document.getElementById('nav-toggle');
-    this.navMenu = document.getElementById('nav-menu');
-    this.navbar = document.getElementById('main-header');
+    this.navToggle = document.getElementById("nav-toggle");
+    this.navMenu = document.getElementById("nav-menu");
+    this.navbar = document.getElementById("main-header");
   }
 
   /**
@@ -41,16 +41,16 @@ export class NavigationManager {
    */
   private setupEventListeners(): void {
     // Navigation toggle
-    this.navToggle?.addEventListener('click', () => this.toggleMobileMenu());
+    this.navToggle?.addEventListener("click", () => this.toggleMobileMenu());
     // Close menu when clicking outside
-    document.addEventListener('click', e => this.handleOutsideClick(e));
+    document.addEventListener("click", (e) => this.handleOutsideClick(e));
     // Close menu on escape key and handle focus trap
-    document.addEventListener('keydown', e => {
+    document.addEventListener("keydown", (e) => {
       this.handleKeydown(e);
       this.handleFocusTrap(e);
     });
     // Handle window resize
-    window.addEventListener('resize', () => this.handleResize());
+    window.addEventListener("resize", () => this.handleResize());
   }
 
   /**
@@ -62,22 +62,22 @@ export class NavigationManager {
 
     this.isMenuOpen = !this.isMenuOpen;
     if (this.navToggle) {
-      this.navToggle.classList.toggle('active', this.isMenuOpen);
+      this.navToggle.classList.toggle("active", this.isMenuOpen);
     }
     if (this.navMenu) {
-      this.navMenu.classList.toggle('active', this.isMenuOpen);
+      this.navMenu.classList.toggle("active", this.isMenuOpen);
     }
     // Prevent body scroll when menu is open
-    document.body.classList.toggle('menu-open', this.isMenuOpen);
+    document.body.classList.toggle("menu-open", this.isMenuOpen);
     // Update ARIA attributes
-    this.navToggle?.setAttribute('aria-expanded', this.isMenuOpen.toString());
+    this.navToggle?.setAttribute("aria-expanded", this.isMenuOpen.toString());
   }
 
   /**
    * Handle keyboard navigation
    */
   private handleKeydown(e: KeyboardEvent): void {
-    if (e.key === 'Escape' && this.isMenuOpen) {
+    if (e.key === "Escape" && this.isMenuOpen) {
       this.toggleMobileMenu();
     }
   }
@@ -86,15 +86,17 @@ export class NavigationManager {
    * Handle focus trap for mobile menu
    */
   private handleFocusTrap(e: KeyboardEvent): void {
-    if (!this.isMenuOpen || e.key !== 'Tab') return;
+    if (!this.isMenuOpen || e.key !== "Tab") return;
 
     const focusableElements = this.navMenu?.querySelectorAll(
-      'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     if (!focusableElements) return;
 
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
 
     if (e.shiftKey) {
       // Shift + Tab
@@ -130,13 +132,13 @@ export class NavigationManager {
   private closeMobileMenu(): void {
     this.isMenuOpen = false;
     if (this.navToggle) {
-      this.navToggle.classList.remove('active');
+      this.navToggle.classList.remove("active");
     }
     if (this.navMenu) {
-      this.navMenu.classList.remove('active');
+      this.navMenu.classList.remove("active");
     }
-    document.body.classList.remove('menu-open');
-    this.navToggle?.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove("menu-open");
+    this.navToggle?.setAttribute("aria-expanded", "false");
   }
 
   /**
@@ -144,7 +146,11 @@ export class NavigationManager {
    */
   private handleOutsideClick(e: Event): void {
     const target = e.target as Element;
-    if (this.navMenu && !this.navMenu.contains(target) && !this.navToggle?.contains(target)) {
+    if (
+      this.navMenu &&
+      !this.navMenu.contains(target) &&
+      !this.navToggle?.contains(target)
+    ) {
       if (this.isMenuOpen) {
         this.toggleMobileMenu();
       }
@@ -156,13 +162,13 @@ export class NavigationManager {
    */
   setActiveNavigation(currentPath?: string): void {
     const currentLocation = currentPath || window.location.pathname;
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-      const href = link.getAttribute('href');
+    const navLinks = document.querySelectorAll(".nav-link");
+    navLinks.forEach((link) => {
+      const href = link.getAttribute("href");
       if (href === currentLocation) {
-        link.classList.add('active');
+        link.classList.add("active");
       } else {
-        link.classList.remove('active');
+        link.classList.remove("active");
       }
     });
   }
@@ -175,7 +181,7 @@ export class NavigationManager {
     if (this.isDesktop) {
       this.isMenuOpen = false;
       if (this.navMenu) {
-        this.navMenu.classList.remove('active');
+        this.navMenu.classList.remove("active");
       }
     } else {
       // On mobile, ensure menu starts closed
@@ -200,9 +206,9 @@ export class NavigationManager {
     const scrollY = window.scrollY;
     if (this.navbar) {
       if (scrollY > scrollThreshold) {
-        this.navbar.classList.add('scrolled');
+        this.navbar.classList.add("scrolled");
       } else {
-        this.navbar.classList.remove('scrolled');
+        this.navbar.classList.remove("scrolled");
       }
     }
   }

@@ -3,22 +3,22 @@
  * Unit tests for LOFERSIL Landing Page main application logic
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 // Mock all modules before any imports
-vi.mock('./modules/TranslationManager.js');
-vi.mock('./modules/NavigationManager.js');
-vi.mock('./modules/PerformanceTracker.js');
-vi.mock('./modules/ErrorManager.js');
-vi.mock('./modules/SEOManager.js');
-vi.mock('./modules/ScrollManager.js');
-vi.mock('./modules/logger.js');
-vi.mock('./modules/EventManager.js');
-vi.mock('./modules/PWAInstaller.js');
-vi.mock('./modules/PushNotificationManager.js');
-vi.mock('./modules/PWAUpdater.js');
-vi.mock('./modules/ThemeManager.js');
-vi.mock('./modules/EnvironmentLoader.js');
+vi.mock("./modules/TranslationManager.js");
+vi.mock("./modules/NavigationManager.js");
+vi.mock("./modules/PerformanceTracker.js");
+vi.mock("./modules/ErrorManager.js");
+vi.mock("./modules/SEOManager.js");
+vi.mock("./modules/ScrollManager.js");
+vi.mock("./modules/logger.js");
+vi.mock("./modules/EventManager.js");
+vi.mock("./modules/PWAInstaller.js");
+vi.mock("./modules/PushNotificationManager.js");
+vi.mock("./modules/PWAUpdater.js");
+vi.mock("./modules/ThemeManager.js");
+vi.mock("./modules/EnvironmentLoader.js");
 
 // Mock DOM elements
 const mockDOM = {
@@ -28,23 +28,30 @@ const mockDOM = {
     setAttribute: vi.fn(),
     contains: vi.fn(),
   },
-  navMenu: { classList: { toggle: vi.fn(), remove: vi.fn() }, contains: vi.fn() },
+  navMenu: {
+    classList: { toggle: vi.fn(), remove: vi.fn() },
+    contains: vi.fn(),
+  },
   navbar: { classList: { add: vi.fn(), remove: vi.fn() } },
   mainContent: { replaceChildren: vi.fn() },
-  langToggle: { addEventListener: vi.fn(), textContent: '', setAttribute: vi.fn() },
+  langToggle: {
+    addEventListener: vi.fn(),
+    textContent: "",
+    setAttribute: vi.fn(),
+  },
   document: {
     getElementById: vi.fn(),
     addEventListener: vi.fn(),
     body: { classList: { toggle: vi.fn() } },
-    documentElement: { lang: '', classList: { add: vi.fn(), remove: vi.fn() } },
+    documentElement: { lang: "", classList: { add: vi.fn(), remove: vi.fn() } },
     createElement: vi.fn(),
     head: { appendChild: vi.fn() },
-    title: '',
+    title: "",
     querySelector: vi.fn(),
     querySelectorAll: vi.fn(),
   },
   window: {
-    location: { pathname: '/', origin: 'http://localhost', search: '' },
+    location: { pathname: "/", origin: "http://localhost", search: "" },
     scrollY: 0,
     addEventListener: vi.fn(),
     performance: { timing: {}, getEntriesByType: vi.fn(() => []) },
@@ -69,15 +76,15 @@ beforeEach(() => {
   // Mock getElementById to return appropriate elements
   mockDOM.document.getElementById.mockImplementation((id: string) => {
     switch (id) {
-      case 'nav-toggle':
+      case "nav-toggle":
         return mockDOM.navToggle as any;
-      case 'nav-menu':
+      case "nav-menu":
         return mockDOM.navMenu as any;
-      case 'main-nav':
+      case "main-nav":
         return mockDOM.navbar as any;
-      case 'main-content':
+      case "main-content":
         return mockDOM.mainContent as any;
-      case 'lang-toggle':
+      case "lang-toggle":
         return mockDOM.langToggle as any;
       default:
         return null;
@@ -96,143 +103,150 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('LOFERSILLandingPage', () => {
-  describe('Routing System', () => {
-    it('should render the home page correctly', () => {
+describe("LOFERSILLandingPage", () => {
+  describe("Routing System", () => {
+    it("should render the home page correctly", () => {
       // Mock the routes object
       const routes = {
-        '/': {
-          title: 'Home - LOFERSIL',
-          description: 'Welcome to LOFERSIL',
-          content: '<h1>Home Page</h1>',
+        "/": {
+          title: "Home - LOFERSIL",
+          description: "Welcome to LOFERSIL",
+          content: "<h1>Home Page</h1>",
         },
       };
 
       // Test route rendering logic
-      const currentPath = '/';
-      const route = routes[currentPath] || routes['/'];
+      const currentPath = "/";
+      const route = routes[currentPath] || routes["/"];
 
-      expect(route.title).toBe('Home - LOFERSIL');
-      expect(route.description).toBe('Welcome to LOFERSIL');
-      expect(route.content).toContain('<h1>Home Page</h1>');
+      expect(route.title).toBe("Home - LOFERSIL");
+      expect(route.description).toBe("Welcome to LOFERSIL");
+      expect(route.content).toContain("<h1>Home Page</h1>");
     });
 
-    it('should handle navigation clicks correctly', () => {
+    it("should handle navigation clicks correctly", () => {
       const mockEvent = {
         preventDefault: vi.fn(),
         target: { closest: vi.fn() },
       };
 
       const mockLink = {
-        getAttribute: vi.fn().mockReturnValue('/products'),
+        getAttribute: vi.fn().mockReturnValue("/products"),
       };
 
       mockEvent.target.closest.mockReturnValue(mockLink);
 
       // Simulate the navigation logic that would call preventDefault
-      const link = mockEvent.target.closest('a[href]');
-      if (link && link.getAttribute('href')?.startsWith('/')) {
+      const link = mockEvent.target.closest("a[href]");
+      if (link && link.getAttribute("href")?.startsWith("/")) {
         mockEvent.preventDefault();
       }
 
       // Verify URL update and page render would be called
       expect(mockEvent.preventDefault).toHaveBeenCalled();
-      expect(mockLink.getAttribute).toHaveBeenCalledWith('href');
+      expect(mockLink.getAttribute).toHaveBeenCalledWith("href");
     });
 
-    it('should handle browser back/forward navigation', () => {
+    it("should handle browser back/forward navigation", () => {
       const popstateCallback = vi.fn();
 
       // Simulate popstate event listener setup
-      window.addEventListener('popstate', popstateCallback);
+      window.addEventListener("popstate", popstateCallback);
 
-      expect(window.addEventListener).toHaveBeenCalledWith('popstate', expect.any(Function));
+      expect(window.addEventListener).toHaveBeenCalledWith(
+        "popstate",
+        expect.any(Function),
+      );
     });
   });
 
-  describe('Language System', () => {
-    it('should initialize with default language', () => {
-      const defaultLanguage = 'pt';
-      expect(defaultLanguage).toBe('pt');
+  describe("Language System", () => {
+    it("should initialize with default language", () => {
+      const defaultLanguage = "pt";
+      expect(defaultLanguage).toBe("pt");
     });
 
-    it('should load translations for a specific language', async () => {
+    it("should load translations for a specific language", async () => {
       const mockFetch = vi.fn();
       global.fetch = mockFetch;
 
       const mockResponse = {
         ok: true,
-        json: vi.fn().mockResolvedValue({ key: 'value' }),
+        json: vi.fn().mockResolvedValue({ key: "value" }),
       };
 
       mockFetch.mockResolvedValue(mockResponse);
 
       // Simulate translation loading
-      const language = 'en';
+      const language = "en";
       const response = await fetch(`/locales/${language}.json`);
 
-      expect(mockFetch).toHaveBeenCalledWith('/locales/en.json');
+      expect(mockFetch).toHaveBeenCalledWith("/locales/en.json");
       expect(response.ok).toBe(true);
     });
 
-    it('should toggle between languages correctly', () => {
+    it("should toggle between languages correctly", () => {
       const languages = [
-        { code: 'pt', name: 'Português', flag: '🇵🇹' },
-        { code: 'en', name: 'English', flag: '🇺🇸' },
+        { code: "pt", name: "Português", flag: "🇵🇹" },
+        { code: "en", name: "English", flag: "🇺🇸" },
       ];
 
-      let currentLanguage = 'pt';
-      const currentIndex = languages.findIndex(lang => lang.code === currentLanguage);
+      let currentLanguage = "pt";
+      const currentIndex = languages.findIndex(
+        (lang) => lang.code === currentLanguage,
+      );
       const nextIndex = (currentIndex + 1) % languages.length;
       const nextLanguage = languages[nextIndex].code;
 
-      expect(nextLanguage).toBe('en');
+      expect(nextLanguage).toBe("en");
 
       // Update current language
       currentLanguage = nextLanguage;
-      expect(currentLanguage).toBe('en');
+      expect(currentLanguage).toBe("en");
     });
 
-    it('should apply translations to DOM elements', () => {
+    it("should apply translations to DOM elements", () => {
       const translations = {
-        'hero.title': 'Welcome to LOFERSIL',
-        'nav.home': 'Home',
+        "hero.title": "Welcome to LOFERSIL",
+        "nav.home": "Home",
       };
 
       const mockElement = {
-        getAttribute: vi.fn().mockReturnValue('hero.title'),
-        textContent: '',
+        getAttribute: vi.fn().mockReturnValue("hero.title"),
+        textContent: "",
       };
 
       mockDOM.document.querySelectorAll.mockReturnValue([mockElement]);
 
       // Simulate translation application
-      const key = mockElement.getAttribute('data-translate');
+      const key = mockElement.getAttribute("data-translate");
       const translation = translations[key as keyof typeof translations];
 
       if (translation) {
         mockElement.textContent = translation;
       }
 
-      expect(mockElement.textContent).toBe('Welcome to LOFERSIL');
+      expect(mockElement.textContent).toBe("Welcome to LOFERSIL");
     });
 
-    it('should update language toggle button', () => {
+    it("should update language toggle button", () => {
       const languages = [
-        { code: 'pt', name: 'Português', flag: '🇵🇹' },
-        { code: 'en', name: 'English', flag: '🇺🇸' },
+        { code: "pt", name: "Português", flag: "🇵🇹" },
+        { code: "en", name: "English", flag: "🇺🇸" },
       ];
 
-      const currentLanguage = 'en';
-      const currentLangConfig = languages.find(lang => lang.code === currentLanguage);
+      const currentLanguage = "en";
+      const currentLangConfig = languages.find(
+        (lang) => lang.code === currentLanguage,
+      );
 
-      expect(currentLangConfig?.code).toBe('en');
-      expect(currentLangConfig?.name).toBe('English');
+      expect(currentLangConfig?.code).toBe("en");
+      expect(currentLangConfig?.name).toBe("English");
     });
   });
 
-  describe('Navigation System', () => {
-    it('should toggle mobile menu correctly', () => {
+  describe("Navigation System", () => {
+    it("should toggle mobile menu correctly", () => {
       let isMenuOpen = false;
 
       // Simulate menu toggle
@@ -244,33 +258,33 @@ describe('LOFERSILLandingPage', () => {
       expect(mockDOM.navToggle?.setAttribute).toBeDefined();
     });
 
-    it('should set active navigation based on current path', () => {
-      const currentPath = '/products';
+    it("should set active navigation based on current path", () => {
+      const currentPath = "/products";
       const navLinks = [
         {
-          getAttribute: vi.fn().mockReturnValue('/'),
+          getAttribute: vi.fn().mockReturnValue("/"),
           classList: { add: vi.fn(), remove: vi.fn() },
         },
         {
-          getAttribute: vi.fn().mockReturnValue('/products'),
+          getAttribute: vi.fn().mockReturnValue("/products"),
           classList: { add: vi.fn(), remove: vi.fn() },
         },
       ];
 
-      navLinks.forEach(link => {
-        const href = link.getAttribute('href');
+      navLinks.forEach((link) => {
+        const href = link.getAttribute("href");
         if (href === currentPath) {
-          link.classList.add('active');
+          link.classList.add("active");
         } else {
-          link.classList.remove('active');
+          link.classList.remove("active");
         }
       });
 
-      expect(navLinks[1].classList.add).toHaveBeenCalledWith('active');
-      expect(navLinks[0].classList.remove).toHaveBeenCalledWith('active');
+      expect(navLinks[1].classList.add).toHaveBeenCalledWith("active");
+      expect(navLinks[0].classList.remove).toHaveBeenCalledWith("active");
     });
 
-    it('should handle outside clicks to close menu', () => {
+    it("should handle outside clicks to close menu", () => {
       let isMenuOpen = true;
       const mockEvent = {
         target: { contains: vi.fn().mockReturnValue(false) },
@@ -294,8 +308,8 @@ describe('LOFERSILLandingPage', () => {
     });
   });
 
-  describe('Performance Tracking', () => {
-    it('should track Core Web Vitals', () => {
+  describe("Performance Tracking", () => {
+    it("should track Core Web Vitals", () => {
       const metrics = {
         CLS: 0.05,
         FCP: 1200,
@@ -312,112 +326,118 @@ describe('LOFERSILLandingPage', () => {
       expect(metrics.TTFB).toBeLessThan(800); // Good TTFB
     });
 
-    it('should send analytics data', () => {
+    it("should send analytics data", () => {
       const mockGtag = vi.fn();
       global.window.gtag = mockGtag;
 
       // Simulate sending analytics
-      const metricName = 'FCP';
+      const metricName = "FCP";
       const value = 1200;
 
-      if (typeof window.gtag !== 'undefined') {
-        window.gtag('event', 'web_vitals', {
-          event_category: 'Web Vitals',
+      if (typeof window.gtag !== "undefined") {
+        window.gtag("event", "web_vitals", {
+          event_category: "Web Vitals",
           event_label: metricName,
           value: Math.round(value * 1000),
           non_interaction: true,
         });
       }
 
-      expect(mockGtag).toHaveBeenCalledWith('event', 'web_vitals', {
-        event_category: 'Web Vitals',
-        event_label: 'FCP',
+      expect(mockGtag).toHaveBeenCalledWith("event", "web_vitals", {
+        event_category: "Web Vitals",
+        event_label: "FCP",
         value: 1200000,
         non_interaction: true,
       });
     });
   });
 
-  describe('SEO and Meta Tags', () => {
-    it('should update meta tags correctly', () => {
-      const title = 'Products - LOFERSIL';
+  describe("SEO and Meta Tags", () => {
+    it("should update meta tags correctly", () => {
+      const title = "Products - LOFERSIL";
 
       // Simulate meta tag updates
       document.title = title;
 
-      expect(document.title).toBe('Products - LOFERSIL');
+      expect(document.title).toBe("Products - LOFERSIL");
     });
 
-    it('should generate hreflang tags for SEO', () => {
-      const baseUrl = 'https://lofersil.vercel.app';
-      const languages = ['en', 'pt-PT', 'x-default'];
+    it("should generate hreflang tags for SEO", () => {
+      const baseUrl = "https://lofersil.vercel.app";
+      const languages = ["en", "pt-PT", "x-default"];
 
-      languages.forEach(hreflang => {
-        const link = document.createElement('link');
-        link.rel = 'alternate';
+      languages.forEach((hreflang) => {
+        const link = document.createElement("link");
+        link.rel = "alternate";
         link.hreflang = hreflang;
-        link.href = baseUrl + '/';
+        link.href = baseUrl + "/";
 
-        expect(link.rel).toBe('alternate');
+        expect(link.rel).toBe("alternate");
         expect(link.hreflang).toBe(hreflang);
-        expect(link.href).toBe('https://lofersil.vercel.app/');
+        expect(link.href).toBe("https://lofersil.vercel.app/");
       });
     });
 
-    it('should add structured data for SEO', () => {
+    it("should add structured data for SEO", () => {
       const structuredData = {
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: 'LOFERSIL',
-        description: 'Premium products and services for discerning customers',
-        url: 'https://lofersil.vercel.app',
-        logo: 'https://lofersil.vercel.app/images/logo.png',
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "LOFERSIL",
+        description: "Premium products and services for discerning customers",
+        url: "https://lofersil.vercel.app",
+        logo: "https://lofersil.vercel.app/images/logo.png",
       };
 
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
       script.textContent = JSON.stringify(structuredData);
 
-      expect(script.type).toBe('application/ld+json');
+      expect(script.type).toBe("application/ld+json");
       expect(JSON.parse(script.textContent)).toEqual(structuredData);
     });
   });
 
-  describe('Error Handling', () => {
-    it('should handle fetch errors gracefully', async () => {
+  describe("Error Handling", () => {
+    it("should handle fetch errors gracefully", async () => {
       const mockFetch = vi.fn();
       global.fetch = mockFetch;
 
-      const mockError = new Error('Network error');
+      const mockError = new Error("Network error");
       mockFetch.mockRejectedValue(mockError);
 
       try {
-        await fetch('/locales/en.json');
+        await fetch("/locales/en.json");
       } catch (error) {
         expect(error).toBe(mockError);
       }
     });
 
-    it('should handle invalid routes gracefully', () => {
+    it("should handle invalid routes gracefully", () => {
       const routes = {
-        '/': { title: 'Home', description: 'Home page', content: '<h1>Home</h1>' },
+        "/": {
+          title: "Home",
+          description: "Home page",
+          content: "<h1>Home</h1>",
+        },
       };
 
-      const invalidPath = '/nonexistent';
-      const route = routes[invalidPath as keyof typeof routes] || routes['/'];
+      const invalidPath = "/nonexistent";
+      const route = routes[invalidPath as keyof typeof routes] || routes["/"];
 
       // Should fallback to home route
-      expect(route.title).toBe('Home');
+      expect(route.title).toBe("Home");
     });
   });
 
-  describe('Application Initialization', () => {
-    it('should instantiate the main application class', async () => {
+  describe("Application Initialization", () => {
+    it("should instantiate the main application class", async () => {
       // Mock DOM elements that the constructor accesses
-      mockDOM.document.getElementById.mockReturnValue(mockDOM.mainContent as any);
+      mockDOM.document.getElementById.mockReturnValue(
+        mockDOM.mainContent as any,
+      );
 
       // Dynamically import the class after mocking
-      const { LOFERSILLandingPage } = await import('./index.js');
+      const { LOFERSILLandingPage } = await import("./index.js");
 
       // This test will cover the constructor and property initialization
       expect(() => {

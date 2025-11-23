@@ -2,15 +2,15 @@
  * Tests for Code Reviewer Component
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { CodeReviewer, ReviewResult, ReviewIssue } from './CodeReviewer';
-import { OpenCodeAgent } from '../OpenCodeAgent';
-import { CodeChanges } from './AutonomousResolver';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { CodeReviewer, ReviewResult, ReviewIssue } from "./CodeReviewer";
+import { OpenCodeAgent } from "../OpenCodeAgent";
+import { CodeChanges } from "./AutonomousResolver";
 
 // Mock OpenCodeAgent
-vi.mock('../OpenCodeAgent');
+vi.mock("../OpenCodeAgent");
 
-describe('CodeReviewer', () => {
+describe("CodeReviewer", () => {
   let mockAgent: any;
   let reviewer: CodeReviewer;
 
@@ -26,17 +26,17 @@ describe('CodeReviewer', () => {
 
   const mockIssue = {
     number: 123,
-    title: 'Fix login validation bug',
-    body: 'The login form validation is not working properly. Requirements: Add email validation. Acceptance Criteria: Invalid emails are rejected.',
+    title: "Fix login validation bug",
+    body: "The login form validation is not working properly. Requirements: Add email validation. Acceptance Criteria: Invalid emails are rejected.",
   };
 
   const mockChanges: CodeChanges = {
     files: [
       {
-        path: 'src/components/LoginForm.ts',
+        path: "src/components/LoginForm.ts",
         changes: [
           {
-            type: 'modify',
+            type: "modify",
             content: `function validateEmail(email: string): boolean {
   if (!email.includes('@')) {
     console.log('Invalid email');
@@ -62,15 +62,15 @@ describe('CodeReviewer', () => {
     vi.clearAllMocks();
   });
 
-  describe('reviewChanges', () => {
-    it('should approve high-quality code changes', async () => {
+  describe("reviewChanges", () => {
+    it("should approve high-quality code changes", async () => {
       const cleanChanges: CodeChanges = {
         files: [
           {
-            path: 'src/utils/validation.ts',
+            path: "src/utils/validation.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: `/**
  * Validates email format
  * @param email - Email string to validate
@@ -84,10 +84,10 @@ export function validateEmail(email: string): boolean {
             ],
           },
           {
-            path: 'src/utils/validation.test.ts',
+            path: "src/utils/validation.test.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: `import { validateEmail } from './validation';
 
 describe('validateEmail', () => {
@@ -105,7 +105,7 @@ describe('validateEmail', () => {
 
       // Debug: print all issues to understand what's being flagged
       if (result.issues.length > 0) {
-        console.log('Issues found:', result.issues);
+        console.log("Issues found:", result.issues);
       }
 
       expect(result.approved).toBe(true);
@@ -114,14 +114,14 @@ describe('validateEmail', () => {
       expect(result.recommendations).toHaveLength(0);
     });
 
-    it('should reject code with critical issues', async () => {
+    it("should reject code with critical issues", async () => {
       const dangerousChanges: CodeChanges = {
         files: [
           {
-            path: 'src/components/LoginForm.ts',
+            path: "src/components/LoginForm.ts",
             changes: [
               {
-                type: 'modify',
+                type: "modify",
                 content: `function processUserInput(input: string) {
   // Dangerous: direct eval usage
   return eval(input);
@@ -136,18 +136,22 @@ describe('validateEmail', () => {
 
       expect(result.approved).toBe(false);
       expect(result.score).toBeLessThan(0.5);
-      expect(result.issues.some(issue => issue.severity === 'critical')).toBe(true);
-      expect(result.issues.some(issue => issue.message.includes('eval()'))).toBe(true);
+      expect(result.issues.some((issue) => issue.severity === "critical")).toBe(
+        true,
+      );
+      expect(
+        result.issues.some((issue) => issue.message.includes("eval()")),
+      ).toBe(true);
     });
 
-    it('should detect security vulnerabilities', async () => {
+    it("should detect security vulnerabilities", async () => {
       const vulnerableChanges: CodeChanges = {
         files: [
           {
-            path: 'src/api/user.ts',
+            path: "src/api/user.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: `function getUser(id: string) {
   return query('SELECT * FROM users WHERE id = ' + id);
 }`,
@@ -160,18 +164,22 @@ describe('validateEmail', () => {
       const result = await reviewer.reviewChanges(vulnerableChanges, mockIssue);
 
       expect(result.approved).toBe(false);
-      expect(result.issues.some(issue => issue.category === 'security')).toBe(true);
-      expect(result.issues.some(issue => issue.message.includes('SQL injection'))).toBe(true);
+      expect(result.issues.some((issue) => issue.category === "security")).toBe(
+        true,
+      );
+      expect(
+        result.issues.some((issue) => issue.message.includes("SQL injection")),
+      ).toBe(true);
     });
 
-    it('should flag code quality issues', async () => {
+    it("should flag code quality issues", async () => {
       const poorQualityChanges: CodeChanges = {
         files: [
           {
-            path: 'src/components/Component.ts',
+            path: "src/components/Component.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: `function complexFunction() {
   // TODO: implement this later
   console.log('debug');
@@ -187,21 +195,30 @@ describe('validateEmail', () => {
         ],
       };
 
-      const result = await reviewer.reviewChanges(poorQualityChanges, mockIssue);
+      const result = await reviewer.reviewChanges(
+        poorQualityChanges,
+        mockIssue,
+      );
 
-      expect(result.issues.some(issue => issue.message.includes('TODO'))).toBe(true);
-      expect(result.issues.some(issue => issue.message.includes('console.log'))).toBe(true);
-      expect(result.issues.some(issue => issue.message.includes('magic number'))).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.message.includes("TODO")),
+      ).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.message.includes("console.log")),
+      ).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.message.includes("magic number")),
+      ).toBe(true);
     });
 
-    it('should analyze test coverage', async () => {
+    it("should analyze test coverage", async () => {
       const noTestChanges: CodeChanges = {
         files: [
           {
-            path: 'src/utils/helpers.ts',
+            path: "src/utils/helpers.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: `export function helper1() { return true; }
 export function helper2() { return false; }
 export function helper3() { return 'test'; }
@@ -216,22 +233,31 @@ export function helper6() { return undefined; }`,
 
       const result = await reviewer.reviewChanges(noTestChanges, mockIssue);
 
-      expect(result.issues.some(issue => issue.category === 'testing')).toBe(true);
-      expect(result.issues.some(issue => issue.message.includes('No test files'))).toBe(true);
+      expect(result.issues.some((issue) => issue.category === "testing")).toBe(
+        true,
+      );
+      expect(
+        result.issues.some((issue) => issue.message.includes("No test files")),
+      ).toBe(true);
     });
 
-    it('should assess test quality when tests are present', async () => {
+    it("should assess test quality when tests are present", async () => {
       const testChanges: CodeChanges = {
         files: [
           {
-            path: 'src/utils/helpers.ts',
-            changes: [{ type: 'add', content: 'export function helper() { return true; }' }],
-          },
-          {
-            path: 'src/utils/helpers.test.ts',
+            path: "src/utils/helpers.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
+                content: "export function helper() { return true; }",
+              },
+            ],
+          },
+          {
+            path: "src/utils/helpers.test.ts",
+            changes: [
+              {
+                type: "add",
                 content: `describe('helper', () => {
   it('should return true', () => {
     expect(helper()).toBe(true);
@@ -245,17 +271,19 @@ export function helper6() { return undefined; }`,
 
       const result = await reviewer.reviewChanges(testChanges, mockIssue);
 
-      expect(result.issues.filter(issue => issue.category === 'testing')).toHaveLength(0);
+      expect(
+        result.issues.filter((issue) => issue.category === "testing"),
+      ).toHaveLength(0);
     });
 
-    it('should perform performance analysis', async () => {
+    it("should perform performance analysis", async () => {
       const performanceIssues: CodeChanges = {
         files: [
           {
-            path: 'src/utils/processing.ts',
+            path: "src/utils/processing.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: `function processArray(arr: any[]) {
   const result = [];
   arr.forEach(item => {
@@ -271,17 +299,19 @@ export function helper6() { return undefined; }`,
 
       const result = await reviewer.reviewChanges(performanceIssues, mockIssue);
 
-      expect(result.issues.some(issue => issue.category === 'performance')).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.category === "performance"),
+      ).toBe(true);
     });
 
-    it('should review documentation completeness', async () => {
+    it("should review documentation completeness", async () => {
       const undocumentedChanges: CodeChanges = {
         files: [
           {
-            path: 'src/utils/math.ts',
+            path: "src/utils/math.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: `export function add(a: number, b: number) {
   return a + b;
 }`,
@@ -291,23 +321,30 @@ export function helper6() { return undefined; }`,
         ],
       };
 
-      const result = await reviewer.reviewChanges(undocumentedChanges, mockIssue);
+      const result = await reviewer.reviewChanges(
+        undocumentedChanges,
+        mockIssue,
+      );
 
-      expect(result.issues.some(issue => issue.category === 'documentation')).toBe(true);
-      expect(result.issues.some(issue => issue.message.includes('JSDoc'))).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.category === "documentation"),
+      ).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.message.includes("JSDoc")),
+      ).toBe(true);
     });
 
-    it('should apply custom rules', async () => {
+    it("should apply custom rules", async () => {
       const customReviewer = new CodeReviewer({
         ...mockConfig,
         customRules: [
           {
-            name: 'no-underscore-prefix',
+            name: "no-underscore-prefix",
             pattern: /\b_[a-zA-Z]/g,
-            message: 'Avoid underscore prefixes for private members',
-            severity: 'medium',
-            category: 'quality',
-            suggestion: 'Use private keyword instead',
+            message: "Avoid underscore prefixes for private members",
+            severity: "medium",
+            category: "quality",
+            suggestion: "Use private keyword instead",
           },
         ],
       });
@@ -315,23 +352,30 @@ export function helper6() { return undefined; }`,
       const customRuleChanges: CodeChanges = {
         files: [
           {
-            path: 'src/class.ts',
+            path: "src/class.ts",
             changes: [
               {
-                type: 'add',
-                content: 'class MyClass { _privateField = 1; }',
+                type: "add",
+                content: "class MyClass { _privateField = 1; }",
               },
             ],
           },
         ],
       };
 
-      const result = await customReviewer.reviewChanges(customRuleChanges, mockIssue);
+      const result = await customReviewer.reviewChanges(
+        customRuleChanges,
+        mockIssue,
+      );
 
-      expect(result.issues.some(issue => issue.message.includes('underscore prefixes'))).toBe(true);
+      expect(
+        result.issues.some((issue) =>
+          issue.message.includes("underscore prefixes"),
+        ),
+      ).toBe(true);
     });
 
-    it('should handle strict mode correctly', async () => {
+    it("should handle strict mode correctly", async () => {
       const strictReviewer = new CodeReviewer({
         ...mockConfig,
         strictMode: true,
@@ -340,30 +384,33 @@ export function helper6() { return undefined; }`,
       const highSeverityChanges: CodeChanges = {
         files: [
           {
-            path: 'src/component.ts',
+            path: "src/component.ts",
             changes: [
               {
-                type: 'add',
-                content: 'element.innerHTML = userInput;',
+                type: "add",
+                content: "element.innerHTML = userInput;",
               },
             ],
           },
         ],
       };
 
-      const result = await strictReviewer.reviewChanges(highSeverityChanges, mockIssue);
+      const result = await strictReviewer.reviewChanges(
+        highSeverityChanges,
+        mockIssue,
+      );
 
       expect(result.approved).toBe(false); // High severity blocks approval in strict mode
     });
 
-    it('should calculate overall score correctly', async () => {
+    it("should calculate overall score correctly", async () => {
       const mixedQualityChanges: CodeChanges = {
         files: [
           {
-            path: 'src/mixed.ts',
+            path: "src/mixed.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: `/**
  * Good function with documentation
  */
@@ -377,21 +424,24 @@ export function goodFunction() {
         ],
       };
 
-      const result = await reviewer.reviewChanges(mixedQualityChanges, mockIssue);
+      const result = await reviewer.reviewChanges(
+        mixedQualityChanges,
+        mockIssue,
+      );
 
       expect(result.score).toBeGreaterThan(0.3);
       expect(result.score).toBeLessThan(0.9);
       expect(result.metadata.qualityScore).toBeLessThan(1);
     });
 
-    it('should generate appropriate recommendations', async () => {
+    it("should generate appropriate recommendations", async () => {
       const problematicChanges: CodeChanges = {
         files: [
           {
-            path: 'src/bad.ts',
+            path: "src/bad.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: 'eval(userInput); console.log("debug");',
               },
             ],
@@ -399,45 +449,55 @@ export function goodFunction() {
         ],
       };
 
-      const result = await reviewer.reviewChanges(problematicChanges, mockIssue);
+      const result = await reviewer.reviewChanges(
+        problematicChanges,
+        mockIssue,
+      );
 
       expect(result.recommendations).toContain(
-        'Security issues must be resolved before deployment'
+        "Security issues must be resolved before deployment",
       );
-      expect(result.recommendations).toContain('Address high-severity issues before approval');
+      expect(result.recommendations).toContain(
+        "Address high-severity issues before approval",
+      );
     });
   });
 
-  describe('static analysis', () => {
-    it('should detect syntax errors', async () => {
+  describe("static analysis", () => {
+    it("should detect syntax errors", async () => {
       const syntaxErrorChanges: CodeChanges = {
         files: [
           {
-            path: 'src/broken.ts',
+            path: "src/broken.ts",
             changes: [
               {
-                type: 'add',
-                content: 'function broken( { return 1; }', // Missing closing paren
+                type: "add",
+                content: "function broken( { return 1; }", // Missing closing paren
               },
             ],
           },
         ],
       };
 
-      const result = await reviewer.reviewChanges(syntaxErrorChanges, mockIssue);
+      const result = await reviewer.reviewChanges(
+        syntaxErrorChanges,
+        mockIssue,
+      );
 
-      expect(result.issues.some(issue => issue.category === 'syntax')).toBe(true);
+      expect(result.issues.some((issue) => issue.category === "syntax")).toBe(
+        true,
+      );
     });
 
-    it('should detect type issues', async () => {
+    it("should detect type issues", async () => {
       const typeIssues: CodeChanges = {
         files: [
           {
-            path: 'src/types.ts',
+            path: "src/types.ts",
             changes: [
               {
-                type: 'add',
-                content: 'function bad(param: any) { return param; }',
+                type: "add",
+                content: "function bad(param: any) { return param; }",
               },
             ],
           },
@@ -446,17 +506,19 @@ export function goodFunction() {
 
       const result = await reviewer.reviewChanges(typeIssues, mockIssue);
 
-      expect(result.issues.some(issue => issue.message.includes('any'))).toBe(true);
+      expect(result.issues.some((issue) => issue.message.includes("any"))).toBe(
+        true,
+      );
     });
 
-    it('should analyze code logic', async () => {
+    it("should analyze code logic", async () => {
       const logicIssues: CodeChanges = {
         files: [
           {
-            path: 'src/logic.ts',
+            path: "src/logic.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: 'if (true) { return "always true"; }',
               },
             ],
@@ -466,20 +528,24 @@ export function goodFunction() {
 
       const result = await reviewer.reviewChanges(logicIssues, mockIssue);
 
-      expect(result.issues.some(issue => issue.message.includes('constant condition'))).toBe(true);
+      expect(
+        result.issues.some((issue) =>
+          issue.message.includes("constant condition"),
+        ),
+      ).toBe(true);
     });
   });
 
-  describe('security scanning', () => {
-    it('should detect XSS vulnerabilities', async () => {
+  describe("security scanning", () => {
+    it("should detect XSS vulnerabilities", async () => {
       const xssChanges: CodeChanges = {
         files: [
           {
-            path: 'src/dom.ts',
+            path: "src/dom.ts",
             changes: [
               {
-                type: 'add',
-                content: 'element.innerHTML = userInput;',
+                type: "add",
+                content: "element.innerHTML = userInput;",
               },
             ],
           },
@@ -488,18 +554,22 @@ export function goodFunction() {
 
       const result = await reviewer.reviewChanges(xssChanges, mockIssue);
 
-      expect(result.issues.some(issue => issue.severity === 'high')).toBe(true);
-      expect(result.issues.some(issue => issue.message.includes('innerHTML'))).toBe(true);
+      expect(result.issues.some((issue) => issue.severity === "high")).toBe(
+        true,
+      );
+      expect(
+        result.issues.some((issue) => issue.message.includes("innerHTML")),
+      ).toBe(true);
     });
 
-    it('should detect insecure cookie handling', async () => {
+    it("should detect insecure cookie handling", async () => {
       const cookieChanges: CodeChanges = {
         files: [
           {
-            path: 'src/cookies.ts',
+            path: "src/cookies.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: 'document.cookie = "session=" + userId;',
               },
             ],
@@ -509,20 +579,22 @@ export function goodFunction() {
 
       const result = await reviewer.reviewChanges(cookieChanges, mockIssue);
 
-      expect(result.issues.some(issue => issue.message.includes('cookie'))).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.message.includes("cookie")),
+      ).toBe(true);
     });
   });
 
-  describe('code quality assessment', () => {
-    it('should check code style', async () => {
-      const longLine = 'A'.repeat(150); // Very long line
+  describe("code quality assessment", () => {
+    it("should check code style", async () => {
+      const longLine = "A".repeat(150); // Very long line
       const styleIssues: CodeChanges = {
         files: [
           {
-            path: 'src/style.ts',
+            path: "src/style.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: longLine,
               },
             ],
@@ -532,10 +604,12 @@ export function goodFunction() {
 
       const result = await reviewer.reviewChanges(styleIssues, mockIssue);
 
-      expect(result.issues.some(issue => issue.message.includes('characters'))).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.message.includes("characters")),
+      ).toBe(true);
     });
 
-    it('should analyze complexity', async () => {
+    it("should analyze complexity", async () => {
       const complexCode = `
         function complex() {
           if (condition1) {
@@ -552,10 +626,10 @@ export function goodFunction() {
       const complexityChanges: CodeChanges = {
         files: [
           {
-            path: 'src/complex.ts',
+            path: "src/complex.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: complexCode,
               },
             ],
@@ -565,18 +639,21 @@ export function goodFunction() {
 
       const result = await reviewer.reviewChanges(complexityChanges, mockIssue);
 
-      expect(result.issues.some(issue => issue.message.includes('complexity'))).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.message.includes("complexity")),
+      ).toBe(true);
     });
 
-    it('should check maintainability', async () => {
+    it("should check maintainability", async () => {
       const magicNumbers: CodeChanges = {
         files: [
           {
-            path: 'src/magic.ts',
+            path: "src/magic.ts",
             changes: [
               {
-                type: 'add',
-                content: 'if (age > 18 && score > 85 && level > 10) return true;',
+                type: "add",
+                content:
+                  "if (age > 18 && score > 85 && level > 10) return true;",
               },
             ],
           },
@@ -585,20 +662,23 @@ export function goodFunction() {
 
       const result = await reviewer.reviewChanges(magicNumbers, mockIssue);
 
-      expect(result.issues.some(issue => issue.message.includes('magic numbers'))).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.message.includes("magic numbers")),
+      ).toBe(true);
     });
   });
 
-  describe('metadata calculation', () => {
-    it('should calculate category scores correctly', async () => {
+  describe("metadata calculation", () => {
+    it("should calculate category scores correctly", async () => {
       const mixedIssues: CodeChanges = {
         files: [
           {
-            path: 'src/mixed.ts',
+            path: "src/mixed.ts",
             changes: [
               {
-                type: 'add',
-                content: 'console.log("debug"); eval("code"); function f() { return 42; }',
+                type: "add",
+                content:
+                  'console.log("debug"); eval("code"); function f() { return 42; }',
               },
             ],
           },
@@ -612,14 +692,14 @@ export function goodFunction() {
       expect(result.metadata.staticAnalysisScore).toBeLessThan(1);
     });
 
-    it('should provide perfect scores for clean code', async () => {
+    it("should provide perfect scores for clean code", async () => {
       const perfectCode: CodeChanges = {
         files: [
           {
-            path: 'src/perfect.ts',
+            path: "src/perfect.ts",
             changes: [
               {
-                type: 'add',
+                type: "add",
                 content: `/**
  * Perfect function
  * @returns Always true
@@ -640,8 +720,8 @@ export function perfect(): boolean {
     });
   });
 
-  describe('approval logic', () => {
-    it('should approve based on score threshold', async () => {
+  describe("approval logic", () => {
+    it("should approve based on score threshold", async () => {
       const lowScoreReviewer = new CodeReviewer({
         ...mockConfig,
         minApprovalScore: 0.9,
@@ -650,31 +730,35 @@ export function perfect(): boolean {
       const mediumQualityChanges: CodeChanges = {
         files: [
           {
-            path: 'src/medium.ts',
+            path: "src/medium.ts",
             changes: [
               {
-                type: 'add',
-                content: 'console.log("just a log"); function good() { return true; }',
+                type: "add",
+                content:
+                  'console.log("just a log"); function good() { return true; }',
               },
             ],
           },
         ],
       };
 
-      const result = await lowScoreReviewer.reviewChanges(mediumQualityChanges, mockIssue);
+      const result = await lowScoreReviewer.reviewChanges(
+        mediumQualityChanges,
+        mockIssue,
+      );
 
       expect(result.approved).toBe(false); // Score below 0.9
     });
 
-    it('should reject critical issues regardless of score', async () => {
+    it("should reject critical issues regardless of score", async () => {
       const criticalChanges: CodeChanges = {
         files: [
           {
-            path: 'src/critical.ts',
+            path: "src/critical.ts",
             changes: [
               {
-                type: 'add',
-                content: 'eval(maliciousCode);',
+                type: "add",
+                content: "eval(maliciousCode);",
               },
             ],
           },
@@ -687,37 +771,44 @@ export function perfect(): boolean {
     });
   });
 
-  describe('error handling', () => {
-    it('should handle review failures gracefully', async () => {
+  describe("error handling", () => {
+    it("should handle review failures gracefully", async () => {
       // Mock a failure in the review process
       const failingReviewer = new CodeReviewer(mockConfig);
-      failingReviewer['performStaticAnalysis'] = vi
+      failingReviewer["performStaticAnalysis"] = vi
         .fn()
-        .mockRejectedValue(new Error('Analysis failed'));
+        .mockRejectedValue(new Error("Analysis failed"));
 
-      const result = await failingReviewer.reviewChanges(mockChanges, mockIssue);
+      const result = await failingReviewer.reviewChanges(
+        mockChanges,
+        mockIssue,
+      );
 
       expect(result.approved).toBe(false);
       expect(result.score).toBe(0);
-      expect(result.issues.some(issue => issue.message.includes('Review failed'))).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.message.includes("Review failed")),
+      ).toBe(true);
     });
 
-    it('should handle timeout correctly', async () => {
+    it("should handle timeout correctly", async () => {
       const fastReviewer = new CodeReviewer({
         ...mockConfig,
         maxReviewTime: 50, // Short timeout
       });
 
       // Mock slow analysis
-      fastReviewer['performStaticAnalysis'] = vi
+      fastReviewer["performStaticAnalysis"] = vi
         .fn()
         .mockImplementation(
-          () => new Promise(resolve => setTimeout(() => resolve([]), 100))
+          () => new Promise((resolve) => setTimeout(() => resolve([]), 100)),
         );
 
       const result = await fastReviewer.reviewChanges(mockChanges, mockIssue);
 
-      expect(result.issues.some(issue => issue.message.includes('timed out'))).toBe(true);
+      expect(
+        result.issues.some((issue) => issue.message.includes("timed out")),
+      ).toBe(true);
     });
   });
 });

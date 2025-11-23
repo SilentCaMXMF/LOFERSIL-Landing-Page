@@ -5,7 +5,7 @@
  * retry logic, and error handling for the AI-powered GitHub Issues Reviewer System.
  */
 
-import { logger } from './logger';
+import { logger } from "./logger";
 
 export interface GitHubApiConfig {
   token: string;
@@ -32,7 +32,7 @@ export interface GitHubIssue {
   user: { login: string };
   created_at: string;
   updated_at: string;
-  state: 'open' | 'closed';
+  state: "open" | "closed";
   html_url: string;
   assignee?: { login: string } | null;
 }
@@ -43,7 +43,7 @@ export interface GitHubPR {
   body: string;
   head: { ref: string; sha: string };
   base: { ref: string };
-  state: 'open' | 'closed';
+  state: "open" | "closed";
   html_url: string;
   user: { login: string };
 }
@@ -85,13 +85,13 @@ export class GitHubApiClient {
    */
   private validateConfig(): void {
     if (!this.config.token) {
-      throw new Error('GitHub token is required');
+      throw new Error("GitHub token is required");
     }
     if (!this.config.baseUrl) {
-      throw new Error('Base URL is required');
+      throw new Error("Base URL is required");
     }
     if (this.config.maxRetries < 0) {
-      throw new Error('Max retries must be non-negative');
+      throw new Error("Max retries must be non-negative");
     }
   }
 
@@ -101,21 +101,21 @@ export class GitHubApiClient {
   private async makeRequest<T>(
     endpoint: string,
     options: RequestInit = {},
-    retryCount = 0
+    retryCount = 0,
   ): Promise<ApiResponse<T>> {
     try {
       // Check rate limit before making request
       if (this.isRateLimited()) {
         const waitTime = this.getRateLimitWaitTime();
-        logger.warn('Rate limit exceeded, waiting', { waitTime, endpoint });
+        logger.warn("Rate limit exceeded, waiting", { waitTime, endpoint });
         await this.sleep(waitTime);
       }
 
       const url = `${this.config.baseUrl}${endpoint}`;
       const headers = {
         Authorization: `token ${this.config.token}`,
-        'User-Agent': this.config.userAgent,
-        Accept: 'application/vnd.github.v3+json',
+        "User-Agent": this.config.userAgent,
+        Accept: "application/vnd.github.v3+json",
         ...options.headers,
       };
 
@@ -140,8 +140,14 @@ export class GitHubApiClient {
       if (response.status === 403 && this.isRateLimited()) {
         if (retryCount < this.config.maxRetries) {
           const waitTime = this.getRateLimitWaitTime();
-          logger.warn('Rate limited, retrying after delay', { retryCount, waitTime, endpoint });
-          await this.sleep(waitTime + this.config.retryDelay * Math.pow(2, retryCount));
+          logger.warn("Rate limited, retrying after delay", {
+            retryCount,
+            waitTime,
+            endpoint,
+          });
+          await this.sleep(
+            waitTime + this.config.retryDelay * Math.pow(2, retryCount),
+          );
           return this.makeRequest(endpoint, options, retryCount + 1);
         }
       }
@@ -149,14 +155,14 @@ export class GitHubApiClient {
       if (response.status === 404) {
         return {
           success: false,
-          error: 'Resource not found',
+          error: "Resource not found",
         };
       }
 
       if (response.status >= 500 && retryCount < this.config.maxRetries) {
         // Server error, retry with exponential backoff
         const delay = this.config.retryDelay * Math.pow(2, retryCount);
-        logger.warn('Server error, retrying', {
+        logger.warn("Server error, retrying", {
           status: response.status,
           retryCount,
           delay,
@@ -167,7 +173,11 @@ export class GitHubApiClient {
       }
 
       const errorText = await response.text();
-      logger.error('GitHub API error', { status: response.status, error: errorText, endpoint });
+      logger.error("GitHub API error", {
+        status: response.status,
+        error: errorText,
+        endpoint,
+      });
 
       return {
         success: false,
@@ -177,7 +187,7 @@ export class GitHubApiClient {
     } catch (error: any) {
       if (retryCount < this.config.maxRetries) {
         const delay = this.config.retryDelay * Math.pow(2, retryCount);
-        logger.warn('Request failed, retrying', {
+        logger.warn("Request failed, retrying", {
           error: error.message,
           retryCount,
           delay,
@@ -187,7 +197,10 @@ export class GitHubApiClient {
         return this.makeRequest(endpoint, options, retryCount + 1);
       }
 
-      logger.error('GitHub API request failed', { error: error.message, endpoint });
+      logger.error("GitHub API request failed", {
+        error: error.message,
+        endpoint,
+      });
       return {
         success: false,
         error: error.message,
@@ -198,7 +211,10 @@ export class GitHubApiClient {
   /**
    * Fetch with timeout
    */
-  private async fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+  private async fetchWithTimeout(
+    url: string,
+    options: RequestInit,
+  ): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
 
@@ -211,8 +227,8 @@ export class GitHubApiClient {
       return response;
     } catch (error: any) {
       clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
-        throw new Error('Request timeout');
+      if (error.name === "AbortError") {
+        throw new Error("Request timeout");
       }
       throw error;
     }
@@ -222,10 +238,10 @@ export class GitHubApiClient {
    * Update rate limit information from response headers
    */
   private updateRateLimitInfo(headers: Headers): void {
-    const limit = headers.get('x-ratelimit-limit');
-    const remaining = headers.get('x-ratelimit-remaining');
-    const reset = headers.get('x-ratelimit-reset');
-    const used = headers.get('x-ratelimit-used');
+    const limit = headers.get("x-ratelimit-limit");
+    const remaining = headers.get("x-ratelimit-remaining");
+    const reset = headers.get("x-ratelimit-reset");
+    const used = headers.get("x-ratelimit-used");
 
     if (limit && remaining && reset && used) {
       this.rateLimitInfo = {
@@ -258,7 +274,7 @@ export class GitHubApiClient {
    * Sleep utility
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -267,7 +283,7 @@ export class GitHubApiClient {
   async getIssue(
     owner: string,
     repo: string,
-    issueNumber: number
+    issueNumber: number,
   ): Promise<ApiResponse<GitHubIssue>> {
     const endpoint = `/repos/${owner}/${repo}/issues/${issueNumber}`;
     return this.makeRequest<GitHubIssue>(endpoint);
@@ -280,13 +296,13 @@ export class GitHubApiClient {
     owner: string,
     repo: string,
     params: {
-      state?: 'open' | 'closed' | 'all';
+      state?: "open" | "closed" | "all";
       labels?: string;
-      sort?: 'created' | 'updated' | 'comments';
-      direction?: 'asc' | 'desc';
+      sort?: "created" | "updated" | "comments";
+      direction?: "asc" | "desc";
       per_page?: number;
       page?: number;
-    } = {}
+    } = {},
   ): Promise<ApiResponse<GitHubIssue[]>> {
     const queryParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
@@ -305,11 +321,11 @@ export class GitHubApiClient {
   async createPullRequest(
     owner: string,
     repo: string,
-    params: CreatePRParams
+    params: CreatePRParams,
   ): Promise<ApiResponse<GitHubPR>> {
     const endpoint = `/repos/${owner}/${repo}/pulls`;
     return this.makeRequest<GitHubPR>(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(params),
     });
   }
@@ -320,7 +336,7 @@ export class GitHubApiClient {
   async getPullRequest(
     owner: string,
     repo: string,
-    prNumber: number
+    prNumber: number,
   ): Promise<ApiResponse<GitHubPR>> {
     const endpoint = `/repos/${owner}/${repo}/pulls/${prNumber}`;
     return this.makeRequest<GitHubPR>(endpoint);
@@ -333,11 +349,11 @@ export class GitHubApiClient {
     owner: string,
     repo: string,
     issueNumber: number,
-    labels: string[]
+    labels: string[],
   ): Promise<ApiResponse<any>> {
     const endpoint = `/repos/${owner}/${repo}/issues/${issueNumber}/labels`;
     return this.makeRequest(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ labels }),
     });
   }
@@ -349,11 +365,11 @@ export class GitHubApiClient {
     owner: string,
     repo: string,
     issueNumber: number,
-    label: string
+    label: string,
   ): Promise<ApiResponse<any>> {
     const endpoint = `/repos/${owner}/${repo}/issues/${issueNumber}/labels/${encodeURIComponent(label)}`;
     return this.makeRequest(endpoint, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
@@ -364,11 +380,11 @@ export class GitHubApiClient {
     owner: string,
     repo: string,
     issueNumber: number,
-    body: string
+    body: string,
   ): Promise<ApiResponse<GitHubComment>> {
     const endpoint = `/repos/${owner}/${repo}/issues/${issueNumber}/comments`;
     return this.makeRequest<GitHubComment>(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ body }),
     });
   }
@@ -379,7 +395,7 @@ export class GitHubApiClient {
   async getIssueComments(
     owner: string,
     repo: string,
-    issueNumber: number
+    issueNumber: number,
   ): Promise<ApiResponse<GitHubComment[]>> {
     const endpoint = `/repos/${owner}/${repo}/issues/${issueNumber}/comments`;
     return this.makeRequest<GitHubComment[]>(endpoint);
@@ -395,14 +411,14 @@ export class GitHubApiClient {
     updates: {
       title?: string;
       body?: string;
-      state?: 'open' | 'closed';
+      state?: "open" | "closed";
       labels?: string[];
       assignee?: string;
-    }
+    },
   ): Promise<ApiResponse<GitHubIssue>> {
     const endpoint = `/repos/${owner}/${repo}/issues/${issueNumber}`;
     return this.makeRequest<GitHubIssue>(endpoint, {
-      method: 'PATCH',
+      method: "PATCH",
       body: JSON.stringify(updates),
     });
   }

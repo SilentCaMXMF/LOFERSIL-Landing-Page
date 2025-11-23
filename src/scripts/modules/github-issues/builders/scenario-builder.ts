@@ -5,10 +5,14 @@
  * and simulate real-world workflows with various edge cases and error conditions.
  */
 
-import { vi } from 'vitest';
-import { GitHubIssue } from '../mocks/github-api';
-import { OpenCodeAnalysis, OpenCodeSolution, OpenCodeReviewResult } from '../mocks/opencode-agent';
-import { WorktreeInfo } from '../mocks/worktree-manager';
+import { vi } from "vitest";
+import { GitHubIssue } from "../mocks/github-api";
+import {
+  OpenCodeAnalysis,
+  OpenCodeSolution,
+  OpenCodeReviewResult,
+} from "../mocks/opencode-agent";
+import { WorktreeInfo } from "../mocks/worktree-manager";
 import {
   createMockIssueAnalyzer,
   createMockAutonomousResolver,
@@ -16,13 +20,13 @@ import {
   createMockPRGenerator,
   createMockWorkflowOrchestrator,
   createMockWorktreeManager,
-} from '../utils/mock-factories';
+} from "../utils/mock-factories";
 import {
   SIMPLE_BUGS,
   FEATURE_REQUESTS,
   COMPLEX_ISSUES,
   SECURITY_ISSUES,
-} from '../fixtures/github-issues';
+} from "../fixtures/github-issues";
 
 /**
  * Base scenario builder class
@@ -87,7 +91,7 @@ export class ScenarioBuilder {
    */
   build(): TestScenario {
     if (!this.issue) {
-      throw new Error('Issue is required for scenario');
+      throw new Error("Issue is required for scenario");
     }
 
     return {
@@ -105,9 +109,9 @@ export class ScenarioBuilder {
  * Error injection configuration
  */
 export interface ErrorInjection {
-  stage: 'analysis' | 'resolution' | 'review' | 'pr-creation' | 'worktree';
+  stage: "analysis" | "resolution" | "review" | "pr-creation" | "worktree";
   error: Error;
-  timing: 'immediate' | 'delayed';
+  timing: "immediate" | "delayed";
   delay?: number;
 }
 
@@ -138,14 +142,18 @@ export class ScenarioTemplates {
    * Create a complex feature scenario that should be rejected
    */
   static complexFeatureRejection(): TestScenario {
-    return new ScenarioBuilder().withIssue(COMPLEX_ISSUES.authenticationSystem).build();
+    return new ScenarioBuilder()
+      .withIssue(COMPLEX_ISSUES.authenticationSystem)
+      .build();
   }
 
   /**
    * Create a security issue scenario
    */
   static securityIssue(): TestScenario {
-    return new ScenarioBuilder().withIssue(SECURITY_ISSUES.sqlInjection).build();
+    return new ScenarioBuilder()
+      .withIssue(SECURITY_ISSUES.sqlInjection)
+      .build();
   }
 
   /**
@@ -155,9 +163,9 @@ export class ScenarioTemplates {
     return new ScenarioBuilder()
       .withIssue(SIMPLE_BUGS.buttonStyling)
       .withErrorInjection({
-        stage: 'analysis',
-        error: new Error('Analysis service unavailable'),
-        timing: 'immediate',
+        stage: "analysis",
+        error: new Error("Analysis service unavailable"),
+        timing: "immediate",
       })
       .build();
   }
@@ -169,9 +177,9 @@ export class ScenarioTemplates {
     return new ScenarioBuilder()
       .withIssue(SIMPLE_BUGS.buttonStyling)
       .withErrorInjection({
-        stage: 'resolution',
-        error: new Error('Code generation failed'),
-        timing: 'delayed',
+        stage: "resolution",
+        error: new Error("Code generation failed"),
+        timing: "delayed",
         delay: 1000,
       })
       .build();
@@ -184,9 +192,9 @@ export class ScenarioTemplates {
     return new ScenarioBuilder()
       .withIssue(SIMPLE_BUGS.buttonStyling)
       .withErrorInjection({
-        stage: 'review',
-        error: new Error('Security vulnerability detected'),
-        timing: 'immediate',
+        stage: "review",
+        error: new Error("Security vulnerability detected"),
+        timing: "immediate",
       })
       .build();
   }
@@ -197,8 +205,8 @@ export class ScenarioTemplates {
   static performanceTest(): TestScenario {
     const largeIssue: GitHubIssue = {
       ...SIMPLE_BUGS.buttonStyling,
-      body: 'A'.repeat(50000), // 50KB of content
-      title: 'Performance test issue with large content',
+      body: "A".repeat(50000), // 50KB of content
+      title: "Performance test issue with large content",
     };
 
     return new ScenarioBuilder().withIssue(largeIssue).build();
@@ -211,9 +219,9 @@ export class ScenarioTemplates {
     return new ScenarioBuilder()
       .withIssue(SIMPLE_BUGS.buttonStyling)
       .withErrorInjection({
-        stage: 'analysis',
-        error: new Error('Network timeout'),
-        timing: 'delayed',
+        stage: "analysis",
+        error: new Error("Network timeout"),
+        timing: "delayed",
         delay: 30000, // 30 second timeout
       })
       .build();
@@ -226,9 +234,9 @@ export class ScenarioTemplates {
     return new ScenarioBuilder()
       .withIssue(FEATURE_REQUESTS.darkMode)
       .withErrorInjection({
-        stage: 'worktree',
-        error: new Error('Worktree already exists'),
-        timing: 'immediate',
+        stage: "worktree",
+        error: new Error("Worktree already exists"),
+        timing: "immediate",
       })
       .build();
   }
@@ -264,12 +272,16 @@ export class ScenarioExecutor {
   configureForScenario(scenario: TestScenario): void {
     // Configure issue analyzer
     if (scenario.analysis) {
-      this.mocks.issueAnalyzer.analyzeIssue.mockResolvedValue(scenario.analysis);
+      this.mocks.issueAnalyzer.analyzeIssue.mockResolvedValue(
+        scenario.analysis,
+      );
     }
 
     // Configure autonomous resolver
     if (scenario.solution) {
-      this.mocks.autonomousResolver.resolveIssue.mockResolvedValue(scenario.solution);
+      this.mocks.autonomousResolver.resolveIssue.mockResolvedValue(
+        scenario.solution,
+      );
     }
 
     // Configure code reviewer
@@ -279,7 +291,9 @@ export class ScenarioExecutor {
 
     // Configure worktree manager
     if (scenario.worktree) {
-      this.mocks.worktreeManager.createWorktree.mockResolvedValue(scenario.worktree);
+      this.mocks.worktreeManager.createWorktree.mockResolvedValue(
+        scenario.worktree,
+      );
     }
 
     // Configure error injections
@@ -294,7 +308,7 @@ export class ScenarioExecutor {
   private configureErrorInjection(injection: ErrorInjection): void {
     const mock = this.getMockForStage(injection.stage);
 
-    if (injection.timing === 'immediate') {
+    if (injection.timing === "immediate") {
       mock.mockRejectedValue(injection.error);
     } else {
       mock.mockImplementation(() => {
@@ -308,12 +322,12 @@ export class ScenarioExecutor {
   /**
    * Get the appropriate mock for a workflow stage
    */
-  private getMockForStage(stage: ErrorInjection['stage']): any {
+  private getMockForStage(stage: ErrorInjection["stage"]): any {
     const stageMap = {
       analysis: this.mocks.issueAnalyzer.analyzeIssue,
       resolution: this.mocks.autonomousResolver.resolveIssue,
       review: this.mocks.codeReviewer.reviewChanges,
-      'pr-creation': this.mocks.prGenerator.createPullRequest,
+      "pr-creation": this.mocks.prGenerator.createPullRequest,
       worktree: this.mocks.worktreeManager.createWorktree,
     };
 
@@ -328,7 +342,9 @@ export class ScenarioExecutor {
 
     try {
       // Execute the workflow
-      const result = await this.mocks.workflowOrchestrator.processIssue(scenario.issue.number);
+      const result = await this.mocks.workflowOrchestrator.processIssue(
+        scenario.issue.number,
+      );
       return { success: true, result };
     } catch (error) {
       return { success: false, error };
@@ -346,10 +362,14 @@ export class ScenarioExecutor {
    * Reset all mocks
    */
   reset(): void {
-    Object.values(this.mocks).forEach(mock => {
-      if (typeof mock === 'object' && mock !== null) {
-        Object.values(mock).forEach(method => {
-          if (typeof method === 'object' && method !== null && 'mockClear' in method) {
+    Object.values(this.mocks).forEach((mock) => {
+      if (typeof mock === "object" && mock !== null) {
+        Object.values(mock).forEach((method) => {
+          if (
+            typeof method === "object" &&
+            method !== null &&
+            "mockClear" in method
+          ) {
             (method as any).mockClear();
           }
         });
@@ -429,7 +449,9 @@ export class LoadTester {
   /**
    * Run a performance test with the given configuration
    */
-  static async runPerformanceTest(config: PerformanceTestConfig): Promise<PerformanceResults> {
+  static async runPerformanceTest(
+    config: PerformanceTestConfig,
+  ): Promise<PerformanceResults> {
     const startTime = Date.now();
     const results: PerformanceResults = {
       totalRequests: 0,
@@ -442,7 +464,10 @@ export class LoadTester {
       errors: [],
     };
 
-    const executors = Array.from({ length: config.concurrentUsers }, () => new ScenarioExecutor());
+    const executors = Array.from(
+      { length: config.concurrentUsers },
+      () => new ScenarioExecutor(),
+    );
 
     // Run scenarios concurrently
     const promises = executors.map(async (executor, index) => {
@@ -456,10 +481,17 @@ export class LoadTester {
         results.totalRequests++;
         results.responseTimes.push(responseTime);
         results.averageResponseTime =
-          (results.averageResponseTime * (results.totalRequests - 1) + responseTime) /
+          (results.averageResponseTime * (results.totalRequests - 1) +
+            responseTime) /
           results.totalRequests;
-        results.minResponseTime = Math.min(results.minResponseTime, responseTime);
-        results.maxResponseTime = Math.max(results.maxResponseTime, responseTime);
+        results.minResponseTime = Math.min(
+          results.minResponseTime,
+          responseTime,
+        );
+        results.maxResponseTime = Math.max(
+          results.maxResponseTime,
+          responseTime,
+        );
 
         if (result.success) {
           results.successfulRequests++;
@@ -477,7 +509,8 @@ export class LoadTester {
     await Promise.all(promises);
 
     results.averageResponseTime =
-      results.responseTimes.reduce((a, b) => a + b, 0) / results.responseTimes.length;
+      results.responseTimes.reduce((a, b) => a + b, 0) /
+      results.responseTimes.length;
 
     return results;
   }

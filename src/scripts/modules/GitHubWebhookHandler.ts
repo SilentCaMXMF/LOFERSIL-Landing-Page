@@ -5,19 +5,19 @@
  * and processes webhook payloads for the AI-powered GitHub Issues Reviewer System.
  */
 
-import { createHmac } from 'crypto';
-import { logger } from './logger';
+import { createHmac } from "crypto";
+import { logger } from "./logger";
 
 export interface GitHubWebhookPayload {
   action:
-    | 'opened'
-    | 'edited'
-    | 'closed'
-    | 'reopened'
-    | 'assigned'
-    | 'unassigned'
-    | 'labeled'
-    | 'unlabeled';
+    | "opened"
+    | "edited"
+    | "closed"
+    | "reopened"
+    | "assigned"
+    | "unassigned"
+    | "labeled"
+    | "unlabeled";
   issue: {
     number: number;
     title: string;
@@ -26,7 +26,7 @@ export interface GitHubWebhookPayload {
     user: { login: string };
     created_at: string;
     updated_at: string;
-    state: 'open' | 'closed';
+    state: "open" | "closed";
     html_url: string;
     assignee?: { login: string } | null;
   };
@@ -74,13 +74,13 @@ export class GitHubWebhookHandler {
    */
   private validateConfig(): void {
     if (!this.config.webhookSecret) {
-      throw new Error('Webhook secret is required for security validation');
+      throw new Error("Webhook secret is required for security validation");
     }
     if (this.config.webhookSecret.length < 16) {
-      throw new Error('Webhook secret should be at least 16 characters long');
+      throw new Error("Webhook secret should be at least 16 characters long");
     }
-    if (!this.config.supportedEvents.includes('issues')) {
-      throw new Error('Issues event must be supported');
+    if (!this.config.supportedEvents.includes("issues")) {
+      throw new Error("Issues event must be supported");
     }
   }
 
@@ -90,24 +90,24 @@ export class GitHubWebhookHandler {
   async handleWebhook(
     headers: Record<string, string>,
     rawBody: string,
-    eventType: string
+    eventType: string,
   ): Promise<WebhookProcessingResult> {
     try {
       // Validate event type
       if (!this.isSupportedEvent(eventType)) {
-        logger.warn('Unsupported webhook event type', { eventType });
+        logger.warn("Unsupported webhook event type", { eventType });
         return {
           success: false,
           eventType,
           issueNumber: 0,
-          action: 'unsupported',
+          action: "unsupported",
           error: `Unsupported event type: ${eventType}`,
         };
       }
 
       // Validate payload size
       if (rawBody.length > this.config.maxPayloadSize) {
-        logger.warn('Webhook payload too large', {
+        logger.warn("Webhook payload too large", {
           size: rawBody.length,
           maxSize: this.config.maxPayloadSize,
         });
@@ -115,20 +115,22 @@ export class GitHubWebhookHandler {
           success: false,
           eventType,
           issueNumber: 0,
-          action: 'payload_too_large',
-          error: 'Payload size exceeds maximum allowed',
+          action: "payload_too_large",
+          error: "Payload size exceeds maximum allowed",
         };
       }
 
       // Validate signature
       const signatureValidation = this.validateSignature(headers, rawBody);
       if (!signatureValidation.isValid) {
-        logger.error('Invalid webhook signature', { error: signatureValidation.error });
+        logger.error("Invalid webhook signature", {
+          error: signatureValidation.error,
+        });
         return {
           success: false,
           eventType,
           issueNumber: 0,
-          action: 'invalid_signature',
+          action: "invalid_signature",
           error: signatureValidation.error,
         };
       }
@@ -136,32 +138,34 @@ export class GitHubWebhookHandler {
       // Parse payload
       const payload = this.parsePayload(rawBody);
       if (!payload) {
-        logger.error('Failed to parse webhook payload');
+        logger.error("Failed to parse webhook payload");
         return {
           success: false,
           eventType,
           issueNumber: 0,
-          action: 'parse_error',
-          error: 'Failed to parse webhook payload',
+          action: "parse_error",
+          error: "Failed to parse webhook payload",
         };
       }
 
       // Validate payload structure
       if (!this.isValidIssueEvent(payload)) {
-        logger.warn('Invalid issue event payload', { action: (payload as any).action });
+        logger.warn("Invalid issue event payload", {
+          action: (payload as any).action,
+        });
         return {
           success: false,
           eventType,
           issueNumber: (payload as any).issue?.number || 0,
-          action: (payload as any).action || 'invalid',
-          error: 'Invalid issue event payload structure',
+          action: (payload as any).action || "invalid",
+          error: "Invalid issue event payload structure",
         };
       }
 
       // At this point, payload is guaranteed to be GitHubWebhookPayload
       const validPayload = payload;
 
-      logger.info('Successfully processed webhook', {
+      logger.info("Successfully processed webhook", {
         eventType,
         action: payload.action,
         issueNumber: payload.issue.number,
@@ -175,12 +179,15 @@ export class GitHubWebhookHandler {
         action: payload.action,
       };
     } catch (error: any) {
-      logger.error('Error processing webhook', { error: error.message, eventType });
+      logger.error("Error processing webhook", {
+        error: error.message,
+        eventType,
+      });
       return {
         success: false,
         eventType,
         issueNumber: 0,
-        action: 'processing_error',
+        action: "processing_error",
         error: error.message,
       };
     }
@@ -191,32 +198,35 @@ export class GitHubWebhookHandler {
    */
   private validateSignature(
     headers: Record<string, string>,
-    rawBody: string
+    rawBody: string,
   ): WebhookValidationResult {
     try {
-      const signature = headers['x-hub-signature-256'];
+      const signature = headers["x-hub-signature-256"];
       if (!signature) {
-        return { isValid: false, error: 'Missing X-Hub-Signature-256 header' };
+        return { isValid: false, error: "Missing X-Hub-Signature-256 header" };
       }
 
-      if (!signature.startsWith('sha256=')) {
-        return { isValid: false, error: 'Invalid signature format' };
+      if (!signature.startsWith("sha256=")) {
+        return { isValid: false, error: "Invalid signature format" };
       }
 
-      const expectedSignature = createHmac('sha256', this.config.webhookSecret)
-        .update(rawBody, 'utf8')
-        .digest('hex');
+      const expectedSignature = createHmac("sha256", this.config.webhookSecret)
+        .update(rawBody, "utf8")
+        .digest("hex");
 
       const providedSignature = signature.slice(7); // Remove 'sha256=' prefix
 
       // Use constant-time comparison to prevent timing attacks
       if (!this.constantTimeEquals(expectedSignature, providedSignature)) {
-        return { isValid: false, error: 'Signature verification failed' };
+        return { isValid: false, error: "Signature verification failed" };
       }
 
       return { isValid: true };
     } catch (error: any) {
-      return { isValid: false, error: `Signature validation error: ${error.message}` };
+      return {
+        isValid: false,
+        error: `Signature validation error: ${error.message}`,
+      };
     }
   }
 
@@ -250,7 +260,7 @@ export class GitHubWebhookHandler {
 
       return payload;
     } catch (error) {
-      logger.error('JSON parse error in webhook payload', { error });
+      logger.error("JSON parse error in webhook payload", { error });
       return null;
     }
   }
@@ -268,22 +278,22 @@ export class GitHubWebhookHandler {
   private isValidIssueEvent(payload: any): payload is GitHubWebhookPayload {
     return (
       payload &&
-      typeof payload.action === 'string' &&
+      typeof payload.action === "string" &&
       [
-        'opened',
-        'edited',
-        'closed',
-        'reopened',
-        'assigned',
-        'unassigned',
-        'labeled',
-        'unlabeled',
+        "opened",
+        "edited",
+        "closed",
+        "reopened",
+        "assigned",
+        "unassigned",
+        "labeled",
+        "unlabeled",
       ].includes(payload.action) &&
       payload.issue &&
-      typeof payload.issue.number === 'number' &&
-      typeof payload.issue.title === 'string' &&
+      typeof payload.issue.number === "number" &&
+      typeof payload.issue.title === "string" &&
       payload.repository &&
-      typeof payload.repository.full_name === 'string'
+      typeof payload.repository.full_name === "string"
     );
   }
 
@@ -292,14 +302,14 @@ export class GitHubWebhookHandler {
    */
   getSupportedActions(): string[] {
     return [
-      'opened',
-      'edited',
-      'closed',
-      'reopened',
-      'assigned',
-      'unassigned',
-      'labeled',
-      'unlabeled',
+      "opened",
+      "edited",
+      "closed",
+      "reopened",
+      "assigned",
+      "unassigned",
+      "labeled",
+      "unlabeled",
     ];
   }
 

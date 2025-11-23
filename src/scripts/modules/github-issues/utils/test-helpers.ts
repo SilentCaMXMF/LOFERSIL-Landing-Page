@@ -1,1 +1,1 @@
-import { vi, Mock } from 'vitest';
+import { vi, Mock } from "vitest";

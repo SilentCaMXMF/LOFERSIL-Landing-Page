@@ -12,15 +12,15 @@ import {
   MessagePartUpdatedEvent,
   EventHandler,
   EventListeners,
-} from '../types.js';
-import { logger } from './logger.js';
-import { ErrorManager } from './ErrorManager.js';
+} from "../types.js";
+import { logger } from "./logger.js";
+import { ErrorManager } from "./ErrorManager.js";
 
 export class EventManager {
   private listeners: EventListeners = {};
   private logger: any;
   private errorHandler: ErrorManager;
-  private lastMessage: string = '';
+  private lastMessage: string = "";
 
   constructor(logger: any, errorHandler: ErrorManager) {
     this.logger = logger;
@@ -31,7 +31,10 @@ export class EventManager {
   /**
    * Register an event handler for a specific event type
    */
-  on<T extends OpenCodeEvent>(eventType: string, handler: EventHandler<T>): void {
+  on<T extends OpenCodeEvent>(
+    eventType: string,
+    handler: EventHandler<T>,
+  ): void {
     if (!this.listeners[eventType]) {
       this.listeners[eventType] = [];
     }
@@ -41,7 +44,10 @@ export class EventManager {
   /**
    * Remove an event handler for a specific event type
    */
-  off<T extends OpenCodeEvent>(eventType: string, handler: EventHandler<T>): void {
+  off<T extends OpenCodeEvent>(
+    eventType: string,
+    handler: EventHandler<T>,
+  ): void {
     if (!this.listeners[eventType]) return;
 
     const index = this.listeners[eventType].indexOf(handler as EventHandler);
@@ -55,11 +61,11 @@ export class EventManager {
    */
   emit(event: OpenCodeEvent): void {
     // Handle message capture events
-    if (event.type === 'message.updated') {
+    if (event.type === "message.updated") {
       this.handleMessageUpdated(event as MessageUpdatedEvent);
-    } else if (event.type === 'message.part.updated') {
+    } else if (event.type === "message.part.updated") {
       this.handleMessagePartUpdated(event as MessagePartUpdatedEvent);
-    } else if (event.type === 'session.idle') {
+    } else if (event.type === "session.idle") {
       this.logSessionIdleEvent(event as SessionIdleEvent);
     } else {
       this.logger.info(`Event emitted: ${event.type}`, {
@@ -74,15 +80,19 @@ export class EventManager {
 
     const handlers = this.listeners[event.type];
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler) => {
         try {
           handler(event);
         } catch (error) {
-          this.errorHandler.handleError(error, `Error in event handler for ${event.type}`, {
-            component: 'EventManager',
-            operation: 'emit',
-            timestamp: new Date(),
-          });
+          this.errorHandler.handleError(
+            error,
+            `Error in event handler for ${event.type}`,
+            {
+              component: "EventManager",
+              operation: "emit",
+              timestamp: new Date(),
+            },
+          );
         }
       });
     }
@@ -96,7 +106,7 @@ export class EventManager {
     const sessionDuration = Date.now() - new Date(event.sessionStart).getTime();
     const sessionMinutes = Math.round(sessionDuration / 60000);
 
-    this.logger.info('Session idle event detected', {
+    this.logger.info("Session idle event detected", {
       eventType: event.type,
       timestamp: event.timestamp,
       sessionId: event.sessionId,
@@ -116,7 +126,9 @@ export class EventManager {
       lastMessage: {
         content: this.lastMessage,
         length: this.lastMessage.length,
-        preview: this.lastMessage.substring(0, 200) + (this.lastMessage.length > 200 ? '...' : ''),
+        preview:
+          this.lastMessage.substring(0, 200) +
+          (this.lastMessage.length > 200 ? "..." : ""),
         hasContent: this.lastMessage.length > 0,
       },
       context: {
@@ -130,7 +142,7 @@ export class EventManager {
 
     // Additional debug logging for idle events
     if (idleMinutes > 30) {
-      this.logger.warn('Extended idle period detected', {
+      this.logger.warn("Extended idle period detected", {
         idleMinutes,
         sessionId: event.sessionId,
         lastActivity: event.lastActivity,
@@ -145,11 +157,13 @@ export class EventManager {
     // Update last message
     this.lastMessage = event.content;
 
-    this.logger.info('Message capture: message.updated event received', {
+    this.logger.info("Message capture: message.updated event received", {
       eventType: event.type,
       messageId: event.messageId,
       contentLength: event.content.length,
-      contentPreview: event.content.substring(0, 100) + (event.content.length > 100 ? '...' : ''),
+      contentPreview:
+        event.content.substring(0, 100) +
+        (event.content.length > 100 ? "..." : ""),
       timestamp: event.timestamp,
       sessionId: event.sessionId,
       userId: event.userId,
@@ -159,12 +173,12 @@ export class EventManager {
     });
 
     // Log message content details
-    this.logger.debug('Message content details', {
+    this.logger.debug("Message content details", {
       messageId: event.messageId,
       content: event.content,
       hasSpecialChars: /[^\w\s]/.test(event.content),
       wordCount: event.content.split(/\s+/).length,
-      lineCount: event.content.split('\n').length,
+      lineCount: event.content.split("\n").length,
     });
   }
 
@@ -175,14 +189,16 @@ export class EventManager {
     // Update last message with this part
     this.lastMessage = event.content;
 
-    this.logger.info('Message capture: message.part.updated event received', {
+    this.logger.info("Message capture: message.part.updated event received", {
       eventType: event.type,
       messageId: event.messageId,
       partId: event.partId,
       partIndex: event.partIndex,
       totalParts: event.totalParts,
       contentLength: event.content.length,
-      contentPreview: event.content.substring(0, 100) + (event.content.length > 100 ? '...' : ''),
+      contentPreview:
+        event.content.substring(0, 100) +
+        (event.content.length > 100 ? "..." : ""),
       timestamp: event.timestamp,
       sessionId: event.sessionId,
       userId: event.userId,
@@ -192,7 +208,7 @@ export class EventManager {
     });
 
     // Log part-specific details
-    this.logger.debug('Message part details', {
+    this.logger.debug("Message part details", {
       messageId: event.messageId,
       partId: event.partId,
       partIndex: event.partIndex,
@@ -210,22 +226,26 @@ export class EventManager {
    */
   private setupGlobalEventListeners(): void {
     // Listen for custom events dispatched to window
-    window.addEventListener('opencode-event', ((customEvent: Event) => {
+    window.addEventListener("opencode-event", ((customEvent: Event) => {
       try {
         const event = (customEvent as CustomEvent<OpenCodeEvent>).detail;
         this.validateEvent(event);
         this.emit(event);
       } catch (error) {
-        this.errorHandler.handleError(error, 'Failed to process OpenCode event', {
-          component: 'EventManager',
-          operation: 'processOpenCodeEvent',
-          timestamp: new Date(),
-        });
+        this.errorHandler.handleError(
+          error,
+          "Failed to process OpenCode event",
+          {
+            component: "EventManager",
+            operation: "processOpenCodeEvent",
+            timestamp: new Date(),
+          },
+        );
       }
     }) as EventListener);
 
     // Listen for messages from parent windows or iframes (potential OpenCode integration)
-    window.addEventListener('message', messageEvent => {
+    window.addEventListener("message", (messageEvent) => {
       if (messageEvent.origin !== window.location.origin) {
         // Only process messages from the same origin for security
         return;
@@ -233,44 +253,48 @@ export class EventManager {
 
       try {
         const data = messageEvent.data;
-        if (data && typeof data === 'object' && data.type && data.timestamp) {
+        if (data && typeof data === "object" && data.type && data.timestamp) {
           const event = data as OpenCodeEvent;
           this.validateEvent(event);
           this.emit(event);
         }
       } catch (error) {
-        this.errorHandler.handleError(error, 'Failed to process message event', {
-          component: 'EventManager',
-          operation: 'processMessageEvent',
-          timestamp: new Date(),
-        });
+        this.errorHandler.handleError(
+          error,
+          "Failed to process message event",
+          {
+            component: "EventManager",
+            operation: "processMessageEvent",
+            timestamp: new Date(),
+          },
+        );
       }
     });
 
-    this.logger.info('Global event listeners setup complete');
+    this.logger.info("Global event listeners setup complete");
   }
 
   /**
    * Validate event structure
    */
   private validateEvent(event: unknown): void {
-    if (!event || typeof event !== 'object') {
-      throw new Error('Event must be a valid object');
+    if (!event || typeof event !== "object") {
+      throw new Error("Event must be a valid object");
     }
 
     const e = event as Record<string, unknown>;
-    if (!e.type || typeof e.type !== 'string') {
-      throw new Error('Event must have a valid type string');
+    if (!e.type || typeof e.type !== "string") {
+      throw new Error("Event must have a valid type string");
     }
 
-    if (!e.timestamp || typeof e.timestamp !== 'string') {
-      throw new Error('Event must have a valid timestamp string');
+    if (!e.timestamp || typeof e.timestamp !== "string") {
+      throw new Error("Event must have a valid timestamp string");
     }
 
     // Validate ISO timestamp format
     const timestamp = new Date(e.timestamp as string);
     if (isNaN(timestamp.getTime())) {
-      throw new Error('Event timestamp must be a valid ISO string');
+      throw new Error("Event timestamp must be a valid ISO string");
     }
   }
 

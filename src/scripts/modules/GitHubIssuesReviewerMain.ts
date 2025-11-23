@@ -5,13 +5,13 @@
  * with the main LOFERSIL landing page application.
  */
 
-import { TaskManagementIntegration } from './TaskManagementIntegration';
+import { TaskManagementIntegration } from "./TaskManagementIntegration";
 import {
   createTaskManagementRouter,
   authenticateApiKey,
   logApiRequests,
   handleApiErrors,
-} from './TaskManagementApi';
+} from "./TaskManagementApi";
 
 /**
  * Initialize GitHub Issues Reviewer System Integration
@@ -19,11 +19,11 @@ import {
 export function initializeGitHubIssuesReviewerIntegration(app: any): void {
   // Configuration for the task management system
   const config = {
-    enableAutomation: process.env.GITHUB_ISSUES_AUTO_ASSIGNMENT === 'true',
-    autoAssignment: process.env.GITHUB_ISSUES_AUTO_ASSIGNMENT === 'true',
-    progressTracking: process.env.GITHUB_ISSUES_PROGRESS_TRACKING !== 'false',
-    reportingEnabled: process.env.GITHUB_ISSUES_REPORTING !== 'false',
-    webhookEndpoints: ['/api/webhooks/github', '/api/webhooks/task-updates'],
+    enableAutomation: process.env.GITHUB_ISSUES_AUTO_ASSIGNMENT === "true",
+    autoAssignment: process.env.GITHUB_ISSUES_AUTO_ASSIGNMENT === "true",
+    progressTracking: process.env.GITHUB_ISSUES_PROGRESS_TRACKING !== "false",
+    reportingEnabled: process.env.GITHUB_ISSUES_REPORTING !== "false",
+    webhookEndpoints: ["/api/webhooks/github", "/api/webhooks/task-updates"],
   };
 
   // Initialize the integration
@@ -33,18 +33,18 @@ export function initializeGitHubIssuesReviewerIntegration(app: any): void {
   const taskRouter = createTaskManagementRouter(integration);
 
   // Apply middleware
-  app.use('/api', logApiRequests);
-  app.use('/api', authenticateApiKey);
-  app.use('/api', taskRouter);
+  app.use("/api", logApiRequests);
+  app.use("/api", authenticateApiKey);
+  app.use("/api", taskRouter);
   app.use(handleApiErrors);
 
   // Store integration reference for global access
   (global as any).githubIssuesIntegration = integration;
 
-  console.log('✅ GitHub Issues Reviewer System integrated successfully');
-  console.log('📊 Task management API available at /api/tasks');
-  console.log('🔧 System health endpoint at /api/system/health');
-  console.log('📈 Statistics endpoint at /api/tasks/statistics');
+  console.log("✅ GitHub Issues Reviewer System integrated successfully");
+  console.log("📊 Task management API available at /api/tasks");
+  console.log("🔧 System health endpoint at /api/system/health");
+  console.log("📈 Statistics endpoint at /api/tasks/statistics");
 }
 
 /**
@@ -60,7 +60,7 @@ export function getGitHubIssuesIntegration(): TaskManagementIntegration | null {
 export function setupScheduledTasks(): void {
   const integration = getGitHubIssuesIntegration();
   if (!integration) {
-    console.warn('GitHub Issues Reviewer integration not found');
+    console.warn("GitHub Issues Reviewer integration not found");
     return;
   }
 
@@ -69,14 +69,17 @@ export function setupScheduledTasks(): void {
     async () => {
       try {
         const health = await integration.getSystemHealth();
-        if (health.overall !== 'healthy') {
-          console.warn('⚠️ GitHub Issues Reviewer System health warning:', health.issues);
+        if (health.overall !== "healthy") {
+          console.warn(
+            "⚠️ GitHub Issues Reviewer System health warning:",
+            health.issues,
+          );
         }
       } catch (error) {
-        console.error('❌ Error checking system health:', error);
+        console.error("❌ Error checking system health:", error);
       }
     },
-    5 * 60 * 1000
+    5 * 60 * 1000,
   ); // 5 minutes
 
   // Schedule statistics update every hour
@@ -84,20 +87,22 @@ export function setupScheduledTasks(): void {
     async () => {
       try {
         const stats = await integration.getTaskStatistics();
-        console.log('📊 GitHub Issues Reviewer Statistics:', {
+        console.log("📊 GitHub Issues Reviewer Statistics:", {
           total: stats.total,
           successRate: `${stats.successRate.toFixed(1)}%`,
           activeTasks: stats.byStatus.in_progress + stats.byStatus.pending,
           averageTime: `${stats.averageCompletionTime.toFixed(1)}h`,
         });
       } catch (error) {
-        console.error('❌ Error updating statistics:', error);
+        console.error("❌ Error updating statistics:", error);
       }
     },
-    60 * 60 * 1000
+    60 * 60 * 1000,
   ); // 1 hour
 
-  console.log('⏰ Scheduled tasks configured for GitHub Issues Reviewer System');
+  console.log(
+    "⏰ Scheduled tasks configured for GitHub Issues Reviewer System",
+  );
 }
 
 /**
@@ -109,32 +114,32 @@ export function addNavigationIntegration(): void {
 
   const navigationItems = [
     {
-      title: 'Task Management',
-      path: '/admin/tasks',
-      icon: 'tasks',
-      description: 'Manage AI-powered GitHub issue resolution tasks',
+      title: "Task Management",
+      path: "/admin/tasks",
+      icon: "tasks",
+      description: "Manage AI-powered GitHub issue resolution tasks",
     },
     {
-      title: 'System Health',
-      path: '/admin/system-health',
-      icon: 'health',
-      description: 'Monitor GitHub Issues Reviewer system status',
+      title: "System Health",
+      path: "/admin/system-health",
+      icon: "health",
+      description: "Monitor GitHub Issues Reviewer system status",
     },
     {
-      title: 'Automation',
-      path: '/admin/automation',
-      icon: 'automation',
-      description: 'Configure automation triggers and workflows',
+      title: "Automation",
+      path: "/admin/automation",
+      icon: "automation",
+      description: "Configure automation triggers and workflows",
     },
     {
-      title: 'Reports',
-      path: '/admin/reports',
-      icon: 'reports',
-      description: 'View completion reports and analytics',
+      title: "Reports",
+      path: "/admin/reports",
+      icon: "reports",
+      description: "View completion reports and analytics",
     },
   ];
 
-  console.log('🧭 Navigation integration points:', navigationItems);
+  console.log("🧭 Navigation integration points:", navigationItems);
 }
 
 /**
@@ -176,12 +181,14 @@ export interface MainAppIntegration {
  * Environment variable configuration
  */
 export const ENVIRONMENT_VARIABLES = {
-  GITHUB_ISSUES_REVIEWER_API_KEY: 'API key for securing task management endpoints',
-  GITHUB_ISSUES_AUTO_ASSIGNMENT: 'Enable automatic task assignment (true/false)',
-  GITHUB_ISSUES_PROGRESS_TRACKING: 'Enable progress tracking (true/false)',
-  GITHUB_ISSUES_REPORTING: 'Enable reporting features (true/false)',
-  GITHUB_TOKEN: 'GitHub token for accessing issues and repositories',
-  OPENAI_API_KEY: 'OpenAI API key for AI-powered analysis and resolution',
+  GITHUB_ISSUES_REVIEWER_API_KEY:
+    "API key for securing task management endpoints",
+  GITHUB_ISSUES_AUTO_ASSIGNMENT:
+    "Enable automatic task assignment (true/false)",
+  GITHUB_ISSUES_PROGRESS_TRACKING: "Enable progress tracking (true/false)",
+  GITHUB_ISSUES_REPORTING: "Enable reporting features (true/false)",
+  GITHUB_TOKEN: "GitHub token for accessing issues and repositories",
+  OPENAI_API_KEY: "OpenAI API key for AI-powered analysis and resolution",
 };
 
 /**
@@ -193,13 +200,13 @@ export const DEFAULT_CONFIG = {
     autoAssignment: false,
     progressTracking: true,
     reportingEnabled: true,
-    logLevel: 'debug',
+    logLevel: "debug",
   },
   production: {
     enableAutomation: true,
     autoAssignment: true,
     progressTracking: true,
     reportingEnabled: true,
-    logLevel: 'info',
+    logLevel: "info",
   },
 };

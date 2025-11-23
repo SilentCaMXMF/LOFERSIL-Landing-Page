@@ -13,10 +13,10 @@ import {
   validatePhone,
   validateMessage,
   validateContactForm,
-} from '../validation.js';
-import { BackgroundSync } from './BackgroundSync.js';
-import { envLoader } from './EnvironmentLoader.js';
-import { TranslationManager } from './TranslationManager.js';
+} from "../validation.js";
+import { BackgroundSync } from "./BackgroundSync.js";
+import { envLoader } from "./EnvironmentLoader.js";
+import { TranslationManager } from "./TranslationManager.js";
 
 // Contact form configuration
 interface ContactFormConfig {
@@ -27,7 +27,7 @@ interface ContactFormConfig {
   translationManager?: TranslationManager;
   emailService?: {
     endpoint: string;
-    method: 'POST' | 'GET';
+    method: "POST" | "GET";
     headers?: Record<string, string>;
   };
   accessibility?: AccessibilityConfig;
@@ -69,7 +69,10 @@ export class ContactFormManager {
 
   constructor(config: ContactFormConfig) {
     this.config = config;
-    this.validator = new ContactFormValidator(config.formSelector, config.translationManager);
+    this.validator = new ContactFormValidator(
+      config.formSelector,
+      config.translationManager,
+    );
     this.initializeForm();
   }
 
@@ -78,10 +81,12 @@ export class ContactFormManager {
    */
   private initializeForm(): void {
     this.formElement = document.querySelector(this.config.formSelector);
-    this.submitButton = document.querySelector(this.config.submitButtonSelector);
+    this.submitButton = document.querySelector(
+      this.config.submitButtonSelector,
+    );
 
     if (!this.formElement) {
-      console.warn('Contact form element not found');
+      console.warn("Contact form element not found");
       return;
     }
 
@@ -90,24 +95,26 @@ export class ContactFormManager {
 
     // Ensure success and error messages are hidden on initialization
     const successElement = document.querySelector(
-      this.config.successMessageSelector
+      this.config.successMessageSelector,
     ) as HTMLElement;
-    const errorElement = document.querySelector(this.config.errorMessageSelector) as HTMLElement;
+    const errorElement = document.querySelector(
+      this.config.errorMessageSelector,
+    ) as HTMLElement;
 
     if (successElement) {
-      successElement.classList.add('hidden');
-      successElement.style.display = 'none';
-      successElement.setAttribute('aria-hidden', 'true');
+      successElement.classList.add("hidden");
+      successElement.style.display = "none";
+      successElement.setAttribute("aria-hidden", "true");
     }
 
     if (errorElement) {
-      errorElement.classList.add('hidden');
-      errorElement.style.display = 'none';
-      errorElement.setAttribute('aria-hidden', 'true');
+      errorElement.classList.add("hidden");
+      errorElement.style.display = "none";
+      errorElement.setAttribute("aria-hidden", "true");
     }
 
     // Set up form submission handler
-    this.formElement.addEventListener('submit', this.handleSubmit.bind(this));
+    this.formElement.addEventListener("submit", this.handleSubmit.bind(this));
 
     // Initialize security features
     this.initializeSecurity();
@@ -116,9 +123,9 @@ export class ContactFormManager {
     this.setupRealtimeValidation();
 
     // Track form load
-    this.trackEvent('form_load', {
+    this.trackEvent("form_load", {
       userAgent: navigator.userAgent.substring(0, 50),
-      referrer: document.referrer || 'direct',
+      referrer: document.referrer || "direct",
     });
 
     // Set up keyboard navigation enhancements
@@ -152,59 +159,78 @@ export class ContactFormManager {
   private setupRealtimeValidation(): void {
     if (!this.formElement) return;
 
-    const fields = ['name', 'email', 'phone', 'message'];
+    const fields = ["name", "email", "phone", "message"];
 
-    fields.forEach(fieldName => {
-      const field = this.formElement?.querySelector(`[name="${fieldName}"]`) as HTMLInputElement;
+    fields.forEach((fieldName) => {
+      const field = this.formElement?.querySelector(
+        `[name="${fieldName}"]`,
+      ) as HTMLInputElement;
       const errorElement = document.getElementById(`${fieldName}-error`);
 
       if (field && errorElement) {
         // Track field focus
-        field.addEventListener('focus', () => {
-          this.trackFieldInteraction(fieldName, 'focus');
+        field.addEventListener("focus", () => {
+          this.trackFieldInteraction(fieldName, "focus");
         });
 
         // Validate on blur immediately (no debouncing for accessibility)
-        field.addEventListener('blur', () => {
-          this.trackFieldInteraction(fieldName, 'blur');
+        field.addEventListener("blur", () => {
+          this.trackFieldInteraction(fieldName, "blur");
 
-          const hadError = errorElement.classList.contains('show');
+          const hadError = errorElement.classList.contains("show");
           this.validateField(fieldName, errorElement!);
 
           // Track validation result
-          const hasError = errorElement.classList.contains('show');
-          this.trackValidation(fieldName, !hasError, hasError ? 'field_error' : undefined);
+          const hasError = errorElement.classList.contains("show");
+          this.trackValidation(
+            fieldName,
+            !hasError,
+            hasError ? "field_error" : undefined,
+          );
 
           // Announce validation result if error state changed
           if (!hadError && hasError) {
-            const errorMessage = errorElement.textContent || 'Validation error';
-            this.announceToScreenReader(`${fieldName} field: ${errorMessage}`, 'assertive');
+            const errorMessage = errorElement.textContent || "Validation error";
+            this.announceToScreenReader(
+              `${fieldName} field: ${errorMessage}`,
+              "assertive",
+            );
           } else if (hadError && !hasError) {
-            this.announceToScreenReader(`${fieldName} field is valid`, 'polite');
+            this.announceToScreenReader(
+              `${fieldName} field is valid`,
+              "polite",
+            );
           }
         });
 
         // Clear error on input with debounced validation (300ms delay)
         const debouncedClearError = this.debounce(() => {
-          if (field.classList.contains('error')) {
-            field.classList.remove('error');
-            errorElement.classList.remove('show');
-            errorElement.textContent = '';
-            this.announceToScreenReader(`${fieldName} field error cleared`, 'polite');
+          if (field.classList.contains("error")) {
+            field.classList.remove("error");
+            errorElement.classList.remove("show");
+            errorElement.textContent = "";
+            this.announceToScreenReader(
+              `${fieldName} field error cleared`,
+              "polite",
+            );
           }
         }, 300);
 
-        field.addEventListener('input', () => {
-          this.trackFieldInteraction(fieldName, 'input');
+        field.addEventListener("input", () => {
+          this.trackFieldInteraction(fieldName, "input");
           debouncedClearError();
         });
 
         // Enhanced focus management for validation
-        field.addEventListener('invalid', event => {
+        field.addEventListener("invalid", (event) => {
           event.preventDefault();
           this.validateField(fieldName, errorElement!);
-          const errorMessage = errorElement.textContent || 'This field is required';
-          this.announceToScreenReader(`${fieldName} field: ${errorMessage}`, 'assertive');
+          const errorMessage =
+            errorElement.textContent || "This field is required";
+          this.announceToScreenReader(
+            `${fieldName} field: ${errorMessage}`,
+            "assertive",
+          );
           this.manageFocus(field);
         });
       }
@@ -217,34 +243,39 @@ export class ContactFormManager {
   private initializeAccessibility(): void {
     // Create live region for announcements if not provided
     if (this.config.accessibility?.liveRegionSelector) {
-      this.liveRegion = document.querySelector(this.config.accessibility.liveRegionSelector);
+      this.liveRegion = document.querySelector(
+        this.config.accessibility.liveRegionSelector,
+      );
     }
 
     if (!this.liveRegion) {
-      this.liveRegion = document.createElement('div');
-      this.liveRegion.setAttribute('aria-live', 'polite');
-      this.liveRegion.setAttribute('aria-atomic', 'true');
-      this.liveRegion.className = 'sr-only accessibility-live-region';
-      this.liveRegion.id = 'contact-form-live-region';
+      this.liveRegion = document.createElement("div");
+      this.liveRegion.setAttribute("aria-live", "polite");
+      this.liveRegion.setAttribute("aria-atomic", "true");
+      this.liveRegion.className = "sr-only accessibility-live-region";
+      this.liveRegion.id = "contact-form-live-region";
       this.formElement?.appendChild(this.liveRegion);
     }
 
     // Set up progress indicator
     if (this.config.accessibility?.progressIndicatorSelector) {
       this.progressIndicator = document.querySelector(
-        this.config.accessibility.progressIndicatorSelector
+        this.config.accessibility.progressIndicatorSelector,
       );
     }
 
     // Ensure form has proper ARIA attributes
     if (this.formElement) {
-      this.formElement.setAttribute('role', 'form');
-      this.formElement.setAttribute('aria-labelledby', 'contact-title');
+      this.formElement.setAttribute("role", "form");
+      this.formElement.setAttribute("aria-labelledby", "contact-title");
     }
 
     // Ensure submit button has proper accessibility
     if (this.submitButton) {
-      this.submitButton.setAttribute('aria-describedby', 'contact-submit-description');
+      this.submitButton.setAttribute(
+        "aria-describedby",
+        "contact-submit-description",
+      );
     }
   }
 
@@ -255,23 +286,23 @@ export class ContactFormManager {
     if (!this.formElement) return;
 
     // Store last focused element before form interactions
-    this.formElement.addEventListener('focusin', event => {
+    this.formElement.addEventListener("focusin", (event) => {
       this.lastFocusedElement = event.target as HTMLElement;
     });
 
     // Enhanced tab order management
     const focusableElements = this.formElement.querySelectorAll(
-      'input:not([type="hidden"]):not(.honeypot-field input), textarea, button'
+      'input:not([type="hidden"]):not(.honeypot-field input), textarea, button',
     );
 
     // Ensure proper tab order and focus management
     focusableElements.forEach((element, index) => {
       const el = element as HTMLElement;
-      el.setAttribute('tabindex', '0');
+      el.setAttribute("tabindex", "0");
 
       // Add keyboard event listeners for better navigation
-      el.addEventListener('keydown', event => {
-        if (event.key === 'Enter' && el.tagName !== 'TEXTAREA') {
+      el.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && el.tagName !== "TEXTAREA") {
           event.preventDefault();
           if (el === this.submitButton) {
             this.formElement?.requestSubmit();
@@ -286,17 +317,17 @@ export class ContactFormManager {
    */
   private announceToScreenReader(
     message: string,
-    priority: 'polite' | 'assertive' = 'polite'
+    priority: "polite" | "assertive" = "polite",
   ): void {
     if (!this.liveRegion) return;
 
-    this.liveRegion.setAttribute('aria-live', priority);
+    this.liveRegion.setAttribute("aria-live", priority);
     this.liveRegion.textContent = message;
 
     // Clear the message after announcement
     setTimeout(() => {
       if (this.liveRegion) {
-        this.liveRegion.textContent = '';
+        this.liveRegion.textContent = "";
       }
     }, 1000);
   }
@@ -311,7 +342,7 @@ export class ContactFormManager {
     setTimeout(() => {
       element.focus();
       // Scroll into view if needed
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 100);
   }
 
@@ -323,7 +354,9 @@ export class ContactFormManager {
 
     // Generate and set CSRF token
     const token = this.generateCsrfToken();
-    const tokenField = this.formElement.querySelector('[name="csrf_token"]') as HTMLInputElement;
+    const tokenField = this.formElement.querySelector(
+      '[name="csrf_token"]',
+    ) as HTMLInputElement;
     if (tokenField) {
       tokenField.value = token;
     }
@@ -333,11 +366,12 @@ export class ContactFormManager {
    * Generate a simple CSRF token
    */
   private generateCsrfToken(): string {
-    const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const token =
+      Math.random().toString(36).substring(2) + Date.now().toString(36);
     try {
-      sessionStorage.setItem('csrf_token', token);
+      sessionStorage.setItem("csrf_token", token);
     } catch (error) {
-      console.warn('Failed to store CSRF token:', error);
+      console.warn("Failed to store CSRF token:", error);
     }
     return token;
   }
@@ -346,22 +380,24 @@ export class ContactFormManager {
    * Validate a single field and display error
    */
   private validateField(fieldName: string, errorElement: HTMLElement): void {
-    const field = this.formElement?.querySelector(`[name="${fieldName}"]`) as HTMLInputElement;
+    const field = this.formElement?.querySelector(
+      `[name="${fieldName}"]`,
+    ) as HTMLInputElement;
     if (!field) return;
 
     let result: { isValid: boolean; error?: string };
 
     switch (fieldName) {
-      case 'name':
+      case "name":
         result = validateName(field.value, this.config.translationManager);
         break;
-      case 'email':
+      case "email":
         result = validateEmail(field.value, this.config.translationManager);
         break;
-      case 'phone':
+      case "phone":
         result = validatePhone(field.value, this.config.translationManager);
         break;
-      case 'message':
+      case "message":
         result = validateMessage(field.value, this.config.translationManager);
         break;
       default:
@@ -369,13 +405,13 @@ export class ContactFormManager {
     }
 
     if (!result.isValid) {
-      field.classList.add('error');
-      errorElement.textContent = result.error || '';
-      errorElement.classList.add('show');
+      field.classList.add("error");
+      errorElement.textContent = result.error || "";
+      errorElement.classList.add("show");
     } else {
-      field.classList.remove('error');
-      errorElement.classList.remove('show');
-      errorElement.textContent = '';
+      field.classList.remove("error");
+      errorElement.classList.remove("show");
+      errorElement.textContent = "";
     }
   }
 
@@ -384,7 +420,7 @@ export class ContactFormManager {
    */
   private checkRateLimit(): boolean {
     const now = Date.now();
-    const key = 'contact_form_submissions';
+    const key = "contact_form_submissions";
     const maxSubmissions = 3; // Max 3 submissions per hour
     const windowMs = 60 * 60 * 1000; // 1 hour
 
@@ -393,7 +429,9 @@ export class ContactFormManager {
       const submissions: number[] = stored ? JSON.parse(stored) : [];
 
       // Filter out submissions outside the time window
-      const validSubmissions = submissions.filter(timestamp => now - timestamp < windowMs);
+      const validSubmissions = submissions.filter(
+        (timestamp) => now - timestamp < windowMs,
+      );
 
       if (validSubmissions.length >= maxSubmissions) {
         return false;
@@ -402,7 +440,7 @@ export class ContactFormManager {
       return true;
     } catch (error) {
       // If localStorage fails, allow submission but log error
-      console.warn('Rate limiting check failed:', error);
+      console.warn("Rate limiting check failed:", error);
       return true;
     }
   }
@@ -412,7 +450,7 @@ export class ContactFormManager {
    */
   private recordSubmission(): void {
     const now = Date.now();
-    const key = 'contact_form_submissions';
+    const key = "contact_form_submissions";
 
     try {
       const stored = localStorage.getItem(key);
@@ -421,11 +459,13 @@ export class ContactFormManager {
 
       // Keep only recent submissions (within 2 hours to be safe)
       const windowMs = 2 * 60 * 60 * 1000;
-      const validSubmissions = submissions.filter(timestamp => now - timestamp < windowMs);
+      const validSubmissions = submissions.filter(
+        (timestamp) => now - timestamp < windowMs,
+      );
 
       localStorage.setItem(key, JSON.stringify(validSubmissions));
     } catch (error) {
-      console.warn('Failed to record submission:', error);
+      console.warn("Failed to record submission:", error);
     }
   }
 
@@ -435,11 +475,13 @@ export class ContactFormManager {
   private checkHoneypot(): boolean {
     if (!this.formElement) return true;
 
-    const honeypotField = this.formElement.querySelector('[name="website"]') as HTMLInputElement;
+    const honeypotField = this.formElement.querySelector(
+      '[name="website"]',
+    ) as HTMLInputElement;
     if (!honeypotField) return true; // If field doesn't exist, allow submission
 
     // If honeypot field has any value, it's likely a bot
-    return !honeypotField.value || honeypotField.value.trim() === '';
+    return !honeypotField.value || honeypotField.value.trim() === "";
   }
 
   /**
@@ -448,8 +490,10 @@ export class ContactFormManager {
   private validateCsrfToken(): boolean {
     if (!this.formElement) return true;
 
-    const tokenField = this.formElement.querySelector('[name="csrf_token"]') as HTMLInputElement;
-    const storedToken = sessionStorage.getItem('csrf_token');
+    const tokenField = this.formElement.querySelector(
+      '[name="csrf_token"]',
+    ) as HTMLInputElement;
+    const storedToken = sessionStorage.getItem("csrf_token");
 
     if (!tokenField || !storedToken) return true; // If no token system, allow
 
@@ -480,15 +524,15 @@ export class ContactFormManager {
   private performBotDetection(): boolean {
     // Check timing
     if (!this.checkSubmissionTiming()) {
-      console.warn('Submission rejected: too fast (possible bot)');
+      console.warn("Submission rejected: too fast (possible bot)");
       return false;
     }
 
     // Check for automated patterns in user agent
     const userAgent = navigator.userAgent.toLowerCase();
-    const botPatterns = ['bot', 'crawler', 'spider', 'scraper'];
-    if (botPatterns.some(pattern => userAgent.includes(pattern))) {
-      console.warn('Submission rejected: suspicious user agent');
+    const botPatterns = ["bot", "crawler", "spider", "scraper"];
+    if (botPatterns.some((pattern) => userAgent.includes(pattern))) {
+      console.warn("Submission rejected: suspicious user agent");
       return false;
     }
 
@@ -501,10 +545,13 @@ export class ContactFormManager {
   private sanitizeFormData(data: ContactRequest): ContactRequest {
     // Additional length checks for security
     const sanitized = {
-      name: window.DOMPurify.sanitize(data.name)?.substring(0, 100) || '',
-      email: window.DOMPurify.sanitize(data.email)?.substring(0, 254) || '',
-      phone: data.phone ? window.DOMPurify.sanitize(data.phone)?.substring(0, 20) : undefined,
-      message: window.DOMPurify.sanitize(data.message)?.substring(0, 2000) || '',
+      name: window.DOMPurify.sanitize(data.name)?.substring(0, 100) || "",
+      email: window.DOMPurify.sanitize(data.email)?.substring(0, 254) || "",
+      phone: data.phone
+        ? window.DOMPurify.sanitize(data.phone)?.substring(0, 20)
+        : undefined,
+      message:
+        window.DOMPurify.sanitize(data.message)?.substring(0, 2000) || "",
     };
 
     return sanitized;
@@ -513,12 +560,15 @@ export class ContactFormManager {
   /**
    * Analytics tracking methods
    */
-  private trackEvent(eventName: string, properties: Record<string, any> = {}): void {
+  private trackEvent(
+    eventName: string,
+    properties: Record<string, any> = {},
+  ): void {
     if (!this.analyticsEnabled) return;
 
     const eventData = {
       event: eventName,
-      formId: 'contact-form',
+      formId: "contact-form",
       timestamp: new Date().toISOString(),
       sessionId: this.getSessionId(),
       ...properties,
@@ -528,17 +578,18 @@ export class ContactFormManager {
     this.sendAnalyticsEvent(eventData);
 
     // Also log to console for debugging
-    console.log('Form Analytics:', eventData);
+    console.log("Form Analytics:", eventData);
   }
 
   /**
    * Get or create session ID for tracking
    */
   private getSessionId(): string {
-    let sessionId = sessionStorage.getItem('contact_form_session');
+    let sessionId = sessionStorage.getItem("contact_form_session");
     if (!sessionId) {
-      sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      sessionStorage.setItem('contact_form_session', sessionId);
+      sessionId =
+        "session_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+      sessionStorage.setItem("contact_form_session", sessionId);
     }
     return sessionId;
   }
@@ -551,9 +602,11 @@ export class ContactFormManager {
     // For now, we'll store in localStorage for basic analytics
 
     try {
-      const analyticsKey = 'contact_form_analytics';
+      const analyticsKey = "contact_form_analytics";
       const existingData = localStorage.getItem(analyticsKey);
-      const analytics = existingData ? JSON.parse(existingData) : { events: [] };
+      const analytics = existingData
+        ? JSON.parse(existingData)
+        : { events: [] };
 
       analytics.events.push(eventData);
 
@@ -564,12 +617,12 @@ export class ContactFormManager {
 
       localStorage.setItem(analyticsKey, JSON.stringify(analytics));
     } catch (error) {
-      console.warn('Analytics storage failed:', error);
+      console.warn("Analytics storage failed:", error);
     }
 
     // If Google Analytics is available, send event there too
-    if (typeof (window as any).gtag !== 'undefined') {
-      (window as any).gtag('event', eventData.event, {
+    if (typeof (window as any).gtag !== "undefined") {
+      (window as any).gtag("event", eventData.event, {
         custom_parameter_1: eventData.formId,
         custom_parameter_2: eventData.sessionId,
       });
@@ -580,7 +633,7 @@ export class ContactFormManager {
    * Track form field interactions
    */
   private trackFieldInteraction(fieldName: string, action: string): void {
-    this.trackEvent('form_field_interaction', {
+    this.trackEvent("form_field_interaction", {
       field: fieldName,
       action: action, // 'focus', 'blur', 'input', 'error'
       timeSinceLoad: Date.now() - this.formLoadTime,
@@ -590,8 +643,12 @@ export class ContactFormManager {
   /**
    * Track form validation events
    */
-  private trackValidation(fieldName: string, isValid: boolean, errorType?: string): void {
-    this.trackEvent('form_validation', {
+  private trackValidation(
+    fieldName: string,
+    isValid: boolean,
+    errorType?: string,
+  ): void {
+    this.trackEvent("form_validation", {
       field: fieldName,
       valid: isValid,
       errorType: errorType,
@@ -603,7 +660,7 @@ export class ContactFormManager {
    * Track form submission attempts
    */
   private trackSubmissionAttempt(success: boolean, errorType?: string): void {
-    this.trackEvent('form_submission_attempt', {
+    this.trackEvent("form_submission_attempt", {
       success: success,
       errorType: errorType,
       timeSinceLoad: Date.now() - this.formLoadTime,
@@ -616,7 +673,7 @@ export class ContactFormManager {
    */
   public getAnalyticsSummary(): any {
     try {
-      const analyticsKey = 'contact_form_analytics';
+      const analyticsKey = "contact_form_analytics";
       const data = localStorage.getItem(analyticsKey);
       if (!data) return { events: [] };
 
@@ -626,12 +683,17 @@ export class ContactFormManager {
       // Calculate summary statistics
       const summary = {
         totalEvents: events.length,
-        formLoads: events.filter((e: any) => e.event === 'form_load').length,
-        fieldInteractions: events.filter((e: any) => e.event === 'form_field_interaction').length,
-        validations: events.filter((e: any) => e.event === 'form_validation').length,
-        submissionAttempts: events.filter((e: any) => e.event === 'form_submission_attempt').length,
+        formLoads: events.filter((e: any) => e.event === "form_load").length,
+        fieldInteractions: events.filter(
+          (e: any) => e.event === "form_field_interaction",
+        ).length,
+        validations: events.filter((e: any) => e.event === "form_validation")
+          .length,
+        submissionAttempts: events.filter(
+          (e: any) => e.event === "form_submission_attempt",
+        ).length,
         successfulSubmissions: events.filter(
-          (e: any) => e.event === 'form_submission_attempt' && e.success
+          (e: any) => e.event === "form_submission_attempt" && e.success,
         ).length,
         averageTimeToSubmit: this.calculateAverageTimeToSubmit(events),
         errorRate: this.calculateErrorRate(events),
@@ -639,8 +701,8 @@ export class ContactFormManager {
 
       return summary;
     } catch (error) {
-      console.warn('Failed to get analytics summary:', error);
-      return { events: [], error: 'Failed to load analytics' };
+      console.warn("Failed to get analytics summary:", error);
+      return { events: [], error: "Failed to load analytics" };
     }
   }
 
@@ -649,13 +711,13 @@ export class ContactFormManager {
    */
   private calculateAverageTimeToSubmit(events: any[]): number {
     const submissions = events.filter(
-      (e: any) => e.event === 'form_submission_attempt' && e.success
+      (e: any) => e.event === "form_submission_attempt" && e.success,
     );
     if (submissions.length === 0) return 0;
 
     const totalTime = submissions.reduce(
       (sum: number, sub: any) => sum + (sub.timeSinceLoad || 0),
-      0
+      0,
     );
     return Math.round(totalTime / submissions.length / 1000); // Convert to seconds
   }
@@ -664,7 +726,9 @@ export class ContactFormManager {
    * Calculate error rate from validation events
    */
   private calculateErrorRate(events: any[]): number {
-    const validations = events.filter((e: any) => e.event === 'form_validation');
+    const validations = events.filter(
+      (e: any) => e.event === "form_validation",
+    );
     if (validations.length === 0) return 0;
 
     const errors = validations.filter((e: any) => !e.valid).length;
@@ -678,77 +742,86 @@ export class ContactFormManager {
     event.preventDefault();
 
     if (this.isSubmitting) {
-      this.announceToScreenReader('Form is already being submitted', 'assertive');
+      this.announceToScreenReader(
+        "Form is already being submitted",
+        "assertive",
+      );
       return;
     }
 
     // Announce submission start
-    this.announceToScreenReader('Submitting form...', 'polite');
+    this.announceToScreenReader("Submitting form...", "polite");
 
     // Enhanced security checks
     if (!this.checkRateLimit()) {
       this.showErrorMessage(
-        'Demasiadas tentativas. Por favor, aguarde alguns minutos antes de tentar novamente.'
+        "Demasiadas tentativas. Por favor, aguarde alguns minutos antes de tentar novamente.",
       );
       return;
     }
 
     if (!this.checkHoneypot()) {
-      this.showErrorMessage('Erro de validação. Por favor, tente novamente.');
+      this.showErrorMessage("Erro de validação. Por favor, tente novamente.");
       return;
     }
 
     if (!this.validateCsrfToken()) {
       this.showErrorMessage(
-        'Token de segurança inválido. Por favor, recarregue a página e tente novamente.'
+        "Token de segurança inválido. Por favor, recarregue a página e tente novamente.",
       );
       return;
     }
 
     if (!this.performBotDetection()) {
-      this.showErrorMessage('Erro de validação. Por favor, tente novamente.');
+      this.showErrorMessage("Erro de validação. Por favor, tente novamente.");
       return;
     }
 
     if (!this.checkHoneypot()) {
-      const message = 'Erro de validação. Por favor, tente novamente.';
+      const message = "Erro de validação. Por favor, tente novamente.";
       this.showErrorMessage(message);
-      this.announceToScreenReader(message, 'assertive');
+      this.announceToScreenReader(message, "assertive");
       return;
     }
 
     if (!this.validateCsrfToken()) {
       const message =
-        'Token de segurança inválido. Por favor, recarregue a página e tente novamente.';
+        "Token de segurança inválido. Por favor, recarregue a página e tente novamente.";
       this.showErrorMessage(message);
-      this.announceToScreenReader(message, 'assertive');
+      this.announceToScreenReader(message, "assertive");
       return;
     }
 
     // Get form data first
     const formData = this.validator.getFormData();
     if (!formData) {
-      const message = 'Não foi possível obter os dados do formulário';
+      const message = "Não foi possível obter os dados do formulário";
       this.showErrorMessage(message);
-      this.announceToScreenReader(message, 'assertive');
+      this.announceToScreenReader(message, "assertive");
       return;
     }
 
     // Validate form
-    const validationResult = validateContactForm(formData, this.config.translationManager);
+    const validationResult = validateContactForm(
+      formData,
+      this.config.translationManager,
+    );
 
     if (!validationResult.isValid) {
       // Display validation errors
       const errorMessages = Object.values(validationResult.errors);
       if (errorMessages.length > 0) {
-        const message = errorMessages.join('. ');
+        const message = errorMessages.join(". ");
         this.showErrorMessage(message);
-        this.announceToScreenReader(`Form validation failed: ${message}`, 'assertive');
+        this.announceToScreenReader(
+          `Form validation failed: ${message}`,
+          "assertive",
+        );
 
         // Focus on first invalid field
         const firstInvalidField = Object.keys(validationResult.errors)[0];
         const fieldElement = this.formElement?.querySelector(
-          `[name="${firstInvalidField}"]`
+          `[name="${firstInvalidField}"]`,
         ) as HTMLElement;
         this.manageFocus(fieldElement);
       }
@@ -756,16 +829,16 @@ export class ContactFormManager {
       return;
     }
     if (!formData) {
-      const message = 'Não foi possível obter os dados do formulário';
+      const message = "Não foi possível obter os dados do formulário";
       this.eventHandlers.onError?.(new Error(message));
-      this.announceToScreenReader(message, 'assertive');
+      this.announceToScreenReader(message, "assertive");
       return;
     }
 
     // Validate request size
     if (!this.validateRequestSize(formData)) {
       this.showErrorMessage(
-        'Dados do formulário demasiado grandes. Por favor, reduza o tamanho da mensagem.'
+        "Dados do formulário demasiado grandes. Por favor, reduza o tamanho da mensagem.",
       );
       return;
     }
@@ -778,7 +851,8 @@ export class ContactFormManager {
 
     try {
       // Call submit handler if provided
-      const success = (await this.eventHandlers.onSubmit?.(sanitizedData)) ?? true;
+      const success =
+        (await this.eventHandlers.onSubmit?.(sanitizedData)) ?? true;
 
       if (success) {
         this.trackSubmissionAttempt(true);
@@ -787,22 +861,27 @@ export class ContactFormManager {
         this.resetForm();
         this.eventHandlers.onSuccess?.(sanitizedData);
       } else {
-        this.trackSubmissionAttempt(false, 'submission_failed');
+        this.trackSubmissionAttempt(false, "submission_failed");
       }
     } catch (error) {
       // Sanitize error messages to prevent information leakage
-      let errorMessage = 'Ocorreu um erro inesperado. Por favor, tente novamente.';
+      let errorMessage =
+        "Ocorreu um erro inesperado. Por favor, tente novamente.";
 
       if (error instanceof Error) {
         // Only show user-friendly messages, not internal errors
-        if (error.message.includes('Failed to fetch') || error.message.includes('Network')) {
+        if (
+          error.message.includes("Failed to fetch") ||
+          error.message.includes("Network")
+        ) {
           errorMessage =
-            'Erro de ligação. Por favor, verifique a sua ligação à internet e tente novamente.';
-        } else if (error.message.includes('HTTP error')) {
-          errorMessage = 'Erro do servidor. Por favor, tente novamente mais tarde.';
+            "Erro de ligação. Por favor, verifique a sua ligação à internet e tente novamente.";
+        } else if (error.message.includes("HTTP error")) {
+          errorMessage =
+            "Erro do servidor. Por favor, tente novamente mais tarde.";
         }
         // Log the actual error for debugging but don't expose it to user
-        console.error('Contact form submission error:', {
+        console.error("Contact form submission error:", {
           message: error.message,
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent.substring(0, 100), // Truncate for privacy
@@ -814,20 +893,23 @@ export class ContactFormManager {
         // Try to register for background sync
         try {
           await BackgroundSync.registerContactForm(sanitizedData);
-          this.showSuccessMessage('Mensagem registada para envio quando a ligação for restaurada.');
+          this.showSuccessMessage(
+            "Mensagem registada para envio quando a ligação for restaurada.",
+          );
           this.resetForm();
           this.eventHandlers.onSuccess?.(sanitizedData);
           return;
         } catch (syncError) {
-          console.warn('Background sync not available:', syncError);
-          errorMessage = 'Está offline. A mensagem será enviada quando a ligação for restaurada.';
+          console.warn("Background sync not available:", syncError);
+          errorMessage =
+            "Está offline. A mensagem será enviada quando a ligação for restaurada.";
         }
       }
 
-      this.trackSubmissionAttempt(false, 'error');
+      this.trackSubmissionAttempt(false, "error");
       this.showErrorMessage(errorMessage);
       this.eventHandlers.onError?.(
-        error instanceof Error ? error : new Error('Form submission failed')
+        error instanceof Error ? error : new Error("Form submission failed"),
       );
     } finally {
       this.setSubmittingState(false);
@@ -841,33 +923,37 @@ export class ContactFormManager {
     this.isSubmitting = isSubmitting;
 
     if (this.submitButton) {
-      const buttonText = this.submitButton.querySelector('.btn-text') as HTMLElement;
-      const loadingText = this.submitButton.querySelector('.btn-loading') as HTMLElement;
+      const buttonText = this.submitButton.querySelector(
+        ".btn-text",
+      ) as HTMLElement;
+      const loadingText = this.submitButton.querySelector(
+        ".btn-loading",
+      ) as HTMLElement;
 
       if (isSubmitting) {
         this.submitButton.disabled = true;
-        this.submitButton.setAttribute('aria-disabled', 'true');
-        if (buttonText) buttonText.classList.add('hidden');
-        if (loadingText) loadingText.classList.remove('hidden');
+        this.submitButton.setAttribute("aria-disabled", "true");
+        if (buttonText) buttonText.classList.add("hidden");
+        if (loadingText) loadingText.classList.remove("hidden");
 
         // Update progress indicator if available
         if (this.progressIndicator) {
-          this.progressIndicator.setAttribute('aria-hidden', 'false');
-          this.progressIndicator.textContent = 'Submitting form...';
+          this.progressIndicator.setAttribute("aria-hidden", "false");
+          this.progressIndicator.textContent = "Submitting form...";
         }
 
         // Announce submission state
-        this.announceToScreenReader('Form submission in progress', 'polite');
+        this.announceToScreenReader("Form submission in progress", "polite");
       } else {
         this.submitButton.disabled = false;
-        this.submitButton.setAttribute('aria-disabled', 'false');
-        if (buttonText) buttonText.classList.remove('hidden');
-        if (loadingText) loadingText.classList.add('hidden');
+        this.submitButton.setAttribute("aria-disabled", "false");
+        if (buttonText) buttonText.classList.remove("hidden");
+        if (loadingText) loadingText.classList.add("hidden");
 
         // Hide progress indicator
         if (this.progressIndicator) {
-          this.progressIndicator.setAttribute('aria-hidden', 'true');
-          this.progressIndicator.textContent = '';
+          this.progressIndicator.setAttribute("aria-hidden", "true");
+          this.progressIndicator.textContent = "";
         }
       }
     }
@@ -878,39 +964,41 @@ export class ContactFormManager {
    */
   private showSuccessMessage(message?: string): void {
     const successElement = document.querySelector(
-      this.config.successMessageSelector
+      this.config.successMessageSelector,
     ) as HTMLElement;
-    const errorElement = document.querySelector(this.config.errorMessageSelector) as HTMLElement;
+    const errorElement = document.querySelector(
+      this.config.errorMessageSelector,
+    ) as HTMLElement;
 
     if (successElement) {
       if (message) {
         successElement.textContent = message;
       }
-      successElement.classList.remove('hidden');
-      (successElement as HTMLElement).style.display = 'block';
-      successElement.setAttribute('aria-hidden', 'false');
-      successElement.setAttribute('tabindex', '-1'); // Make focusable for screen readers
+      successElement.classList.remove("hidden");
+      (successElement as HTMLElement).style.display = "block";
+      successElement.setAttribute("aria-hidden", "false");
+      successElement.setAttribute("tabindex", "-1"); // Make focusable for screen readers
 
       // Manage focus to success message
       this.manageFocus(successElement);
     }
 
     if (errorElement) {
-      errorElement.classList.add('hidden');
-      (errorElement as HTMLElement).style.display = 'none';
-      errorElement.setAttribute('aria-hidden', 'true');
+      errorElement.classList.add("hidden");
+      (errorElement as HTMLElement).style.display = "none";
+      errorElement.setAttribute("aria-hidden", "true");
     }
 
     // Hide success message after 5 seconds
     setTimeout(() => {
       if (successElement) {
-        successElement.classList.add('hidden');
-        (successElement as HTMLElement).style.display = 'none';
-        successElement.setAttribute('aria-hidden', 'true');
-        successElement.removeAttribute('tabindex');
+        successElement.classList.add("hidden");
+        (successElement as HTMLElement).style.display = "none";
+        successElement.setAttribute("aria-hidden", "true");
+        successElement.removeAttribute("tabindex");
         // Reset to default message
         successElement.textContent =
-          'Mensagem enviada com sucesso! Entraremos em contacto brevemente.';
+          "Mensagem enviada com sucesso! Entraremos em contacto brevemente.";
       }
     }, 5000);
   }
@@ -919,26 +1007,28 @@ export class ContactFormManager {
    * Show error message
    */
   private showErrorMessage(message: string): void {
-    const errorElement = document.querySelector(this.config.errorMessageSelector) as HTMLElement;
+    const errorElement = document.querySelector(
+      this.config.errorMessageSelector,
+    ) as HTMLElement;
     const successElement = document.querySelector(
-      this.config.successMessageSelector
+      this.config.successMessageSelector,
     ) as HTMLElement;
 
     if (errorElement) {
       errorElement.textContent = message;
-      errorElement.classList.remove('hidden');
-      (errorElement as HTMLElement).style.display = 'block';
-      errorElement.setAttribute('aria-hidden', 'false');
-      errorElement.setAttribute('tabindex', '-1'); // Make focusable for screen readers
+      errorElement.classList.remove("hidden");
+      (errorElement as HTMLElement).style.display = "block";
+      errorElement.setAttribute("aria-hidden", "false");
+      errorElement.setAttribute("tabindex", "-1"); // Make focusable for screen readers
 
       // Manage focus to error message
       this.manageFocus(errorElement);
     }
 
     if (successElement) {
-      successElement.classList.add('hidden');
-      (successElement as HTMLElement).style.display = 'none';
-      successElement.setAttribute('aria-hidden', 'true');
+      successElement.classList.add("hidden");
+      (successElement as HTMLElement).style.display = "none";
+      successElement.setAttribute("aria-hidden", "true");
     }
   }
 
@@ -957,7 +1047,10 @@ export class ContactFormManager {
   /**
    * Set event handlers
    */
-  public on<K extends keyof ContactFormEvents>(event: K, handler: ContactFormEvents[K]): void {
+  public on<K extends keyof ContactFormEvents>(
+    event: K,
+    handler: ContactFormEvents[K],
+  ): void {
     this.eventHandlers[event] = handler;
   }
 
@@ -987,11 +1080,11 @@ export class ContactFormManager {
    */
   public destroy(): void {
     if (this.formElement) {
-      this.formElement.removeEventListener('submit', this.handleSubmit);
+      this.formElement.removeEventListener("submit", this.handleSubmit);
     }
 
     // Clear all validation timeouts
-    this.validationTimeouts.forEach(timeout => {
+    this.validationTimeouts.forEach((timeout) => {
       clearTimeout(timeout);
     });
     this.validationTimeouts.clear();
@@ -1007,7 +1100,7 @@ class EmailService {
   private endpoint: string;
 
   constructor() {
-    this.endpoint = envLoader.get('CONTACT_API_ENDPOINT') || '/api/contact';
+    this.endpoint = envLoader.get("CONTACT_API_ENDPOINT") || "/api/contact";
   }
 
   /**
@@ -1016,10 +1109,10 @@ class EmailService {
   async sendEmail(data: ContactRequest): Promise<boolean> {
     try {
       const response = await fetch(this.endpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({
           name: data.name,
@@ -1030,17 +1123,19 @@ class EmailService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`,
+        );
       }
 
       const result = await response.json();
       return result.success;
     } catch (error) {
-      console.error('Email service error:', error);
+      console.error("Email service error:", error);
       throw new Error(
         error instanceof Error
           ? error.message
-          : 'Falha ao enviar mensagem. Por favor, tente novamente mais tarde.'
+          : "Falha ao enviar mensagem. Por favor, tente novamente mais tarde.",
       );
     }
   }
@@ -1049,16 +1144,18 @@ class EmailService {
 /**
  * Create a contact form manager with default configuration and email service
  */
-export function createContactForm(translationManager?: TranslationManager): ContactFormManager {
+export function createContactForm(
+  translationManager?: TranslationManager,
+): ContactFormManager {
   const config: ContactFormConfig = {
-    formSelector: '#contact-form-element',
-    submitButtonSelector: '#contact-submit',
-    successMessageSelector: '#form-success',
-    errorMessageSelector: '#form-error',
+    formSelector: "#contact-form-element",
+    submitButtonSelector: "#contact-submit",
+    successMessageSelector: "#form-success",
+    errorMessageSelector: "#form-error",
     translationManager,
     accessibility: {
-      liveRegionSelector: '#contact-form-live-region',
-      progressIndicatorSelector: '#form-progress',
+      liveRegionSelector: "#contact-form-live-region",
+      progressIndicatorSelector: "#form-progress",
       focusManagement: true,
       announceStateChanges: true,
     },
@@ -1068,19 +1165,19 @@ export function createContactForm(translationManager?: TranslationManager): Cont
   const emailService = new EmailService();
 
   // Set up email submission handler
-  contactForm.on('onSubmit', async (data: ContactRequest) => {
+  contactForm.on("onSubmit", async (data: ContactRequest) => {
     return await emailService.sendEmail(data);
   });
 
   // Set up success handler
-  contactForm.on('onSuccess', (data: ContactRequest) => {
-    console.log('Contact form submitted successfully:', data);
+  contactForm.on("onSuccess", (data: ContactRequest) => {
+    console.log("Contact form submitted successfully:", data);
   });
 
   // Set up error handler
-  contactForm.on('onError', (error: Error) => {
+  contactForm.on("onError", (error: Error) => {
     // Log error message without exposing sensitive information
-    console.error('Contact form submission failed:', {
+    console.error("Contact form submission failed:", {
       message: error.message,
       timestamp: new Date().toISOString(),
     });

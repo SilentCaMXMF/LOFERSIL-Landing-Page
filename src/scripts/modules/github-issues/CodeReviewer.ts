@@ -5,8 +5,8 @@
  * Performs static analysis, security scanning, and quality assessments.
  */
 
-import { OpenCodeAgent } from '../OpenCodeAgent';
-import { CodeChanges } from './AutonomousResolver';
+import { OpenCodeAgent } from "../OpenCodeAgent";
+import { CodeChanges } from "./AutonomousResolver";
 
 export interface ReviewResult {
   approved: boolean;
@@ -25,16 +25,16 @@ export interface ReviewResult {
 }
 
 export interface ReviewIssue {
-  type: 'error' | 'warning' | 'info';
+  type: "error" | "warning" | "info";
   category:
-    | 'syntax'
-    | 'logic'
-    | 'security'
-    | 'quality'
-    | 'performance'
-    | 'testing'
-    | 'documentation';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+    | "syntax"
+    | "logic"
+    | "security"
+    | "quality"
+    | "performance"
+    | "testing"
+    | "documentation";
+  severity: "low" | "medium" | "high" | "critical";
   message: string;
   file?: string;
   line?: number;
@@ -53,15 +53,15 @@ export interface CodeReviewerConfig {
     name: string;
     pattern: RegExp;
     message: string;
-    severity: 'low' | 'medium' | 'high' | 'critical';
+    severity: "low" | "medium" | "high" | "critical";
     category:
-      | 'syntax'
-      | 'logic'
-      | 'security'
-      | 'quality'
-      | 'performance'
-      | 'testing'
-      | 'documentation';
+      | "syntax"
+      | "logic"
+      | "security"
+      | "quality"
+      | "performance"
+      | "testing"
+      | "documentation";
     suggestion?: string;
   }>;
 }
@@ -78,7 +78,7 @@ export class CodeReviewer {
    */
   async reviewChanges(
     changes: CodeChanges,
-    originalIssue: { number: number; title: string; body: string }
+    originalIssue: { number: number; title: string; body: string },
   ): Promise<ReviewResult> {
     try {
       const startTime = Date.now();
@@ -107,7 +107,8 @@ export class CodeReviewer {
       allIssues.push(...performanceIssues);
 
       // Perform documentation review
-      const documentationIssues = await this.performDocumentationReview(changes);
+      const documentationIssues =
+        await this.performDocumentationReview(changes);
       allIssues.push(...documentationIssues);
 
       // Apply custom rules
@@ -119,11 +120,12 @@ export class CodeReviewer {
       // Check for timeout
       if (Date.now() - startTime > this.config.maxReviewTime) {
         allIssues.push({
-          type: 'error',
-          category: 'logic',
-          severity: 'high',
-          message: 'Code review timed out',
-          suggestion: 'Consider reducing size of changes or optimizing review process',
+          type: "error",
+          category: "logic",
+          severity: "high",
+          message: "Code review timed out",
+          suggestion:
+            "Consider reducing size of changes or optimizing review process",
         });
       }
 
@@ -140,7 +142,11 @@ export class CodeReviewer {
       const approved = this.determineApproval(overallScore, allIssues);
 
       // Generate reasoning
-      const reasoning = this.generateReasoning(overallScore, allIssues, approved);
+      const reasoning = this.generateReasoning(
+        overallScore,
+        allIssues,
+        approved,
+      );
 
       return {
         approved,
@@ -156,15 +162,15 @@ export class CodeReviewer {
         score: 0,
         issues: [
           {
-            type: 'error',
-            category: 'logic',
-            severity: 'critical',
-            message: `Review failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            suggestion: 'Please try again or contact support if issue persists',
+            type: "error",
+            category: "logic",
+            severity: "critical",
+            message: `Review failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+            suggestion: "Please try again or contact support if issue persists",
           },
         ],
-        recommendations: ['Review failed - please retry'],
-        reasoning: 'Code review encountered an error',
+        recommendations: ["Review failed - please retry"],
+        reasoning: "Code review encountered an error",
         metadata: {
           staticAnalysisScore: 0,
           securityScore: 0,
@@ -177,7 +183,9 @@ export class CodeReviewer {
     }
   }
 
-  private async performStaticAnalysis(changes: CodeChanges): Promise<ReviewIssue[]> {
+  private async performStaticAnalysis(
+    changes: CodeChanges,
+  ): Promise<ReviewIssue[]> {
     const issues: ReviewIssue[] = [];
 
     for (const file of changes.files) {
@@ -185,50 +193,51 @@ export class CodeReviewer {
         const content = change.content;
 
         // Check for syntax errors
-        if (content.includes('function broken( {')) {
+        if (content.includes("function broken( {")) {
           issues.push({
-            type: 'error',
-            category: 'syntax',
-            severity: 'critical',
-            message: 'Syntax error: Missing closing parenthesis',
+            type: "error",
+            category: "syntax",
+            severity: "critical",
+            message: "Syntax error: Missing closing parenthesis",
             file: file.path,
-            suggestion: 'Fix the syntax error by adding the missing closing parenthesis',
+            suggestion:
+              "Fix the syntax error by adding the missing closing parenthesis",
           });
         }
 
         // Check for type issues
-        if (content.includes('any)')) {
+        if (content.includes("any)")) {
           issues.push({
-            type: 'warning',
-            category: 'logic',
-            severity: 'medium',
-            message: 'Type issue: Using any type reduces type safety',
+            type: "warning",
+            category: "logic",
+            severity: "medium",
+            message: "Type issue: Using any type reduces type safety",
             file: file.path,
-            suggestion: 'Use specific types instead of any',
+            suggestion: "Use specific types instead of any",
           });
         }
 
         // Check for logic issues
-        if (content.includes('if (true)')) {
+        if (content.includes("if (true)")) {
           issues.push({
-            type: 'warning',
-            category: 'logic',
-            severity: 'low',
-            message: 'constant condition detected',
+            type: "warning",
+            category: "logic",
+            severity: "low",
+            message: "constant condition detected",
             file: file.path,
-            suggestion: 'Remove or fix the constant condition',
+            suggestion: "Remove or fix the constant condition",
           });
         }
 
         // Check for functions without JSDoc
-        if (content.includes('function') && !content.includes('/**')) {
+        if (content.includes("function") && !content.includes("/**")) {
           issues.push({
-            type: 'warning',
-            category: 'logic',
-            severity: 'low',
-            message: 'Function without JSDoc documentation',
+            type: "warning",
+            category: "logic",
+            severity: "low",
+            message: "Function without JSDoc documentation",
             file: file.path,
-            suggestion: 'Add JSDoc comments to document the function',
+            suggestion: "Add JSDoc comments to document the function",
           });
         }
       }
@@ -237,7 +246,9 @@ export class CodeReviewer {
     return issues;
   }
 
-  private async performSecurityScanning(changes: CodeChanges): Promise<ReviewIssue[]> {
+  private async performSecurityScanning(
+    changes: CodeChanges,
+  ): Promise<ReviewIssue[]> {
     const issues: ReviewIssue[] = [];
 
     for (const file of changes.files) {
@@ -245,50 +256,51 @@ export class CodeReviewer {
         const content = change.content;
 
         // Check for eval usage
-        if (content.includes('eval(')) {
+        if (content.includes("eval(")) {
           issues.push({
-            type: 'error',
-            category: 'security',
-            severity: 'critical',
-            message: 'Security issue: eval() usage detected',
+            type: "error",
+            category: "security",
+            severity: "critical",
+            message: "Security issue: eval() usage detected",
             file: file.path,
-            suggestion: 'Avoid using eval() - use safer alternatives',
+            suggestion: "Avoid using eval() - use safer alternatives",
           });
         }
 
         // Check for SQL injection
-        if (content.includes('SELECT * FROM users WHERE id = ')) {
+        if (content.includes("SELECT * FROM users WHERE id = ")) {
           issues.push({
-            type: 'error',
-            category: 'security',
-            severity: 'critical',
-            message: 'Security issue: SQL injection vulnerability detected',
+            type: "error",
+            category: "security",
+            severity: "critical",
+            message: "Security issue: SQL injection vulnerability detected",
             file: file.path,
-            suggestion: 'Use parameterized queries or prepared statements',
+            suggestion: "Use parameterized queries or prepared statements",
           });
         }
 
         // Check for XSS vulnerabilities
-        if (content.includes('innerHTML')) {
+        if (content.includes("innerHTML")) {
           issues.push({
-            type: 'error',
-            category: 'security',
-            severity: 'high',
-            message: 'XSS vulnerability detected: innerHTML usage',
+            type: "error",
+            category: "security",
+            severity: "high",
+            message: "XSS vulnerability detected: innerHTML usage",
             file: file.path,
-            suggestion: 'Use textContent or sanitize input before setting innerHTML',
+            suggestion:
+              "Use textContent or sanitize input before setting innerHTML",
           });
         }
 
         // Check for insecure cookie handling
         if (content.includes('document.cookie = "session="')) {
           issues.push({
-            type: 'warning',
-            category: 'security',
-            severity: 'medium',
-            message: 'Security issue: Insecure cookie handling detected',
+            type: "warning",
+            category: "security",
+            severity: "medium",
+            message: "Security issue: Insecure cookie handling detected",
             file: file.path,
-            suggestion: 'Use secure and HttpOnly flags for cookies',
+            suggestion: "Use secure and HttpOnly flags for cookies",
           });
         }
       }
@@ -297,35 +309,37 @@ export class CodeReviewer {
     return issues;
   }
 
-  private async performQualityAssessment(changes: CodeChanges): Promise<ReviewIssue[]> {
+  private async performQualityAssessment(
+    changes: CodeChanges,
+  ): Promise<ReviewIssue[]> {
     const issues: ReviewIssue[] = [];
 
     for (const file of changes.files) {
       for (const change of file.changes) {
         const content = change.content;
-        const lines = content.split('\n');
+        const lines = content.split("\n");
 
         // Check for TODO comments
-        if (content.includes('TODO:')) {
+        if (content.includes("TODO:")) {
           issues.push({
-            type: 'warning',
-            category: 'quality',
-            severity: 'low',
-            message: 'TODO comment detected',
+            type: "warning",
+            category: "quality",
+            severity: "low",
+            message: "TODO comment detected",
             file: file.path,
-            suggestion: 'Complete the TODO or create a proper task',
+            suggestion: "Complete the TODO or create a proper task",
           });
         }
 
         // Check for console.log
-        if (content.includes('console.log')) {
+        if (content.includes("console.log")) {
           issues.push({
-            type: 'warning',
-            category: 'quality',
-            severity: 'low',
-            message: 'console.log statement detected',
+            type: "warning",
+            category: "quality",
+            severity: "low",
+            message: "console.log statement detected",
             file: file.path,
-            suggestion: 'Remove console.log statements in production code',
+            suggestion: "Remove console.log statements in production code",
           });
         }
 
@@ -334,13 +348,13 @@ export class CodeReviewer {
         const matches = content.match(magicNumberRegex);
         if (matches) {
           // Filter out numbers that appear in regex patterns or string literals
-          const validMagicNumbers = matches.filter(match => {
+          const validMagicNumbers = matches.filter((match) => {
             const index = content.indexOf(match);
             // Check if the number is inside a regex or string
             const beforeChar = content.charAt(index - 1);
             const afterChar = content.charAt(index + match.length);
             return !(
-              (beforeChar === '/' && afterChar === '/') || // regex
+              (beforeChar === "/" && afterChar === "/") || // regex
               beforeChar === '"' ||
               beforeChar === "'" || // string start
               afterChar === '"' ||
@@ -350,12 +364,12 @@ export class CodeReviewer {
 
           if (validMagicNumbers.length > 0) {
             issues.push({
-              type: 'info',
-              category: 'quality',
-              severity: 'low',
-              message: 'magic numbers detected',
+              type: "info",
+              category: "quality",
+              severity: "low",
+              message: "magic numbers detected",
               file: file.path,
-              suggestion: 'Replace magic numbers with named constants',
+              suggestion: "Replace magic numbers with named constants",
             });
           }
         }
@@ -365,13 +379,13 @@ export class CodeReviewer {
           if (lines[i].length > 120) {
             // Increased threshold
             issues.push({
-              type: 'info',
-              category: 'quality',
-              severity: 'low',
+              type: "info",
+              category: "quality",
+              severity: "low",
               message: `Line too long (${lines[i].length} characters)`,
               file: file.path,
               line: i + 1,
-              suggestion: 'Break long lines into multiple lines',
+              suggestion: "Break long lines into multiple lines",
             });
           }
         }
@@ -380,12 +394,12 @@ export class CodeReviewer {
         const complexityScore = this.calculateComplexity(content);
         if (complexityScore > 3) {
           issues.push({
-            type: 'warning',
-            category: 'quality',
-            severity: 'medium',
+            type: "warning",
+            category: "quality",
+            severity: "medium",
             message: `complexity detected (${complexityScore})`,
             file: file.path,
-            suggestion: 'Consider refactoring to reduce complexity',
+            suggestion: "Consider refactoring to reduce complexity",
           });
         }
       }
@@ -394,34 +408,38 @@ export class CodeReviewer {
     return issues;
   }
 
-  private async performTestCoverageAnalysis(changes: CodeChanges): Promise<ReviewIssue[]> {
+  private async performTestCoverageAnalysis(
+    changes: CodeChanges,
+  ): Promise<ReviewIssue[]> {
     const issues: ReviewIssue[] = [];
 
     const hasSourceFiles = changes.files.some(
-      file => file.path.endsWith('.ts') || file.path.endsWith('.js')
+      (file) => file.path.endsWith(".ts") || file.path.endsWith(".js"),
     );
     const hasTestFiles = changes.files.some(
-      file =>
-        file.path.endsWith('.test.ts') ||
-        file.path.endsWith('.test.js') ||
-        file.path.endsWith('.spec.ts') ||
-        file.path.endsWith('.spec.js')
+      (file) =>
+        file.path.endsWith(".test.ts") ||
+        file.path.endsWith(".test.js") ||
+        file.path.endsWith(".spec.ts") ||
+        file.path.endsWith(".spec.js"),
     );
 
     if (hasSourceFiles && !hasTestFiles) {
       issues.push({
-        type: 'warning',
-        category: 'testing',
-        severity: 'medium',
-        message: 'No test files found',
-        suggestion: 'Add test files to ensure code quality',
+        type: "warning",
+        category: "testing",
+        severity: "medium",
+        message: "No test files found",
+        suggestion: "Add test files to ensure code quality",
       });
     }
 
     return issues;
   }
 
-  private async performPerformanceAnalysis(changes: CodeChanges): Promise<ReviewIssue[]> {
+  private async performPerformanceAnalysis(
+    changes: CodeChanges,
+  ): Promise<ReviewIssue[]> {
     const issues: ReviewIssue[] = [];
 
     for (const file of changes.files) {
@@ -429,14 +447,15 @@ export class CodeReviewer {
         const content = change.content;
 
         // Check for inefficient array operations
-        if (content.includes('forEach') && content.includes('push')) {
+        if (content.includes("forEach") && content.includes("push")) {
           issues.push({
-            type: 'info',
-            category: 'performance',
-            severity: 'low',
-            message: 'Inefficient array operation detected',
+            type: "info",
+            category: "performance",
+            severity: "low",
+            message: "Inefficient array operation detected",
             file: file.path,
-            suggestion: 'Consider using map or filter instead of forEach with push',
+            suggestion:
+              "Consider using map or filter instead of forEach with push",
           });
         }
       }
@@ -445,7 +464,9 @@ export class CodeReviewer {
     return issues;
   }
 
-  private async performDocumentationReview(changes: CodeChanges): Promise<ReviewIssue[]> {
+  private async performDocumentationReview(
+    changes: CodeChanges,
+  ): Promise<ReviewIssue[]> {
     const issues: ReviewIssue[] = [];
 
     for (const file of changes.files) {
@@ -453,14 +474,14 @@ export class CodeReviewer {
         const content = change.content;
 
         // Check for JSDoc comments - flag if function without JSDoc
-        if (content.includes('function') && !content.includes('/**')) {
+        if (content.includes("function") && !content.includes("/**")) {
           issues.push({
-            type: 'info',
-            category: 'documentation',
-            severity: 'low',
-            message: 'Missing JSDoc comments',
+            type: "info",
+            category: "documentation",
+            severity: "low",
+            message: "Missing JSDoc comments",
             file: file.path,
-            suggestion: 'Add JSDoc comments to document functions',
+            suggestion: "Add JSDoc comments to document functions",
           });
         }
       }
@@ -481,7 +502,7 @@ export class CodeReviewer {
         for (const rule of this.config.customRules) {
           if (rule.pattern.test(content)) {
             issues.push({
-              type: 'warning',
+              type: "warning",
               category: rule.category,
               severity: rule.severity,
               message: rule.message,
@@ -539,24 +560,36 @@ export class CodeReviewer {
     for (const issue of issues) {
       const penalty = this.getSeverityPenalty(issue.severity);
       switch (issue.category) {
-        case 'syntax':
-        case 'logic':
-          scores.staticAnalysisScore = Math.max(0, scores.staticAnalysisScore - penalty);
+        case "syntax":
+        case "logic":
+          scores.staticAnalysisScore = Math.max(
+            0,
+            scores.staticAnalysisScore - penalty,
+          );
           break;
-        case 'security':
+        case "security":
           scores.securityScore = Math.max(0, scores.securityScore - penalty);
           break;
-        case 'quality':
+        case "quality":
           scores.qualityScore = Math.max(0, scores.qualityScore - penalty);
           break;
-        case 'testing':
-          scores.testCoverageScore = Math.max(0, scores.testCoverageScore - penalty);
+        case "testing":
+          scores.testCoverageScore = Math.max(
+            0,
+            scores.testCoverageScore - penalty,
+          );
           break;
-        case 'performance':
-          scores.performanceScore = Math.max(0, scores.performanceScore - penalty);
+        case "performance":
+          scores.performanceScore = Math.max(
+            0,
+            scores.performanceScore - penalty,
+          );
           break;
-        case 'documentation':
-          scores.documentationScore = Math.max(0, scores.documentationScore - penalty);
+        case "documentation":
+          scores.documentationScore = Math.max(
+            0,
+            scores.documentationScore - penalty,
+          );
           break;
       }
     }
@@ -564,15 +597,17 @@ export class CodeReviewer {
     return scores;
   }
 
-  private getSeverityPenalty(severity: 'low' | 'medium' | 'high' | 'critical'): number {
+  private getSeverityPenalty(
+    severity: "low" | "medium" | "high" | "critical",
+  ): number {
     switch (severity) {
-      case 'critical':
+      case "critical":
         return 1.0;
-      case 'high':
+      case "high":
         return 0.6;
-      case 'medium':
+      case "medium":
         return 0.4;
-      case 'low':
+      case "low":
         return 0.5;
       default:
         return 0.1;
@@ -588,10 +623,10 @@ export class CodeReviewer {
       performanceScore: number;
       documentationScore: number;
     },
-    issues: ReviewIssue[]
+    issues: ReviewIssue[],
   ): number {
     // If there are critical issues, score is 0
-    if (issues.some(issue => issue.severity === 'critical')) {
+    if (issues.some((issue) => issue.severity === "critical")) {
       return 0;
     }
 
@@ -618,36 +653,40 @@ export class CodeReviewer {
       testCoverageScore: number;
       performanceScore: number;
       documentationScore: number;
-    }
+    },
   ): string[] {
     const recommendations: string[] = [];
 
     // Security recommendations
     if (scores.securityScore < 0.8) {
-      recommendations.push('Security issues must be resolved before deployment');
+      recommendations.push(
+        "Security issues must be resolved before deployment",
+      );
     }
 
     // High severity recommendations
     const highSeverityIssues = issues.filter(
-      issue => issue.severity === 'high' || issue.severity === 'critical'
+      (issue) => issue.severity === "high" || issue.severity === "critical",
     );
     if (highSeverityIssues.length > 0) {
-      recommendations.push('Address high-severity issues before approval');
+      recommendations.push("Address high-severity issues before approval");
     }
 
     // Quality recommendations
     if (scores.qualityScore < 0.7) {
-      recommendations.push('Improve code quality by addressing style and maintainability issues');
+      recommendations.push(
+        "Improve code quality by addressing style and maintainability issues",
+      );
     }
 
     // Test recommendations
     if (scores.testCoverageScore < 0.8) {
-      recommendations.push('Add tests to improve code coverage');
+      recommendations.push("Add tests to improve code coverage");
     }
 
     // Documentation recommendations
     if (scores.documentationScore < 0.8) {
-      recommendations.push('Add documentation to improve code maintainability');
+      recommendations.push("Add documentation to improve code maintainability");
     }
 
     return recommendations;
@@ -655,7 +694,9 @@ export class CodeReviewer {
 
   private determineApproval(score: number, issues: ReviewIssue[]): boolean {
     // Check for critical issues
-    const hasCriticalIssues = issues.some(issue => issue.severity === 'critical');
+    const hasCriticalIssues = issues.some(
+      (issue) => issue.severity === "critical",
+    );
     if (hasCriticalIssues) {
       return false;
     }
@@ -667,7 +708,9 @@ export class CodeReviewer {
 
     // In strict mode, reject high severity issues
     if (this.config.strictMode) {
-      const hasHighSeverityIssues = issues.some(issue => issue.severity === 'high');
+      const hasHighSeverityIssues = issues.some(
+        (issue) => issue.severity === "high",
+      );
       if (hasHighSeverityIssues) {
         return false;
       }
@@ -676,25 +719,32 @@ export class CodeReviewer {
     return true;
   }
 
-  private generateReasoning(score: number, issues: ReviewIssue[], approved: boolean): string {
+  private generateReasoning(
+    score: number,
+    issues: ReviewIssue[],
+    approved: boolean,
+  ): string {
     if (!approved) {
-      if (issues.some(issue => issue.severity === 'critical')) {
-        return 'Code rejected due to critical security or syntax issues';
+      if (issues.some((issue) => issue.severity === "critical")) {
+        return "Code rejected due to critical security or syntax issues";
       }
       if (score < this.config.minApprovalScore) {
         return `Code rejected due to low quality score (${score.toFixed(2)} < ${this.config.minApprovalScore})`;
       }
-      if (this.config.strictMode && issues.some(issue => issue.severity === 'high')) {
-        return 'Code rejected in strict mode due to high severity issues';
+      if (
+        this.config.strictMode &&
+        issues.some((issue) => issue.severity === "high")
+      ) {
+        return "Code rejected in strict mode due to high severity issues";
       }
     }
 
     if (score >= 0.9) {
-      return 'Excellent code quality with minimal issues';
+      return "Excellent code quality with minimal issues";
     } else if (score >= 0.7) {
-      return 'Good code quality with some minor improvements needed';
+      return "Good code quality with some minor improvements needed";
     } else {
-      return 'Code needs significant improvements before approval';
+      return "Code needs significant improvements before approval";
     }
   }
 }

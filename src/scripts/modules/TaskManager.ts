@@ -6,8 +6,8 @@ export interface TaskInfo {
   id: string;
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  status: 'pending' | 'in_progress' | 'completed' | 'blocked';
+  priority: "low" | "medium" | "high" | "critical";
+  status: "pending" | "in_progress" | "completed" | "blocked";
   assignee?: string;
   labels: string[];
   createdAt: Date;
@@ -38,11 +38,17 @@ export class TaskManager {
     this.tasks.delete(taskId);
   }
 
-  async getTasksByStatus(status: TaskInfo['status']): Promise<TaskInfo[]> {
-    return Array.from(this.tasks.values()).filter(task => task.status === status);
+  async getTasksByStatus(status: TaskInfo["status"]): Promise<TaskInfo[]> {
+    return Array.from(this.tasks.values()).filter(
+      (task) => task.status === status,
+    );
   }
 
-  async getTasksByPriority(priority: TaskInfo['priority']): Promise<TaskInfo[]> {
-    return Array.from(this.tasks.values()).filter(task => task.priority === priority);
+  async getTasksByPriority(
+    priority: TaskInfo["priority"],
+  ): Promise<TaskInfo[]> {
+    return Array.from(this.tasks.values()).filter(
+      (task) => task.priority === priority,
+    );
   }
 }

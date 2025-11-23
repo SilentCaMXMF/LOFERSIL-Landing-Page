@@ -142,6 +142,5 @@ describe('IssueAnalyzer Core Logic', () => {
       }
       expect(requirements).toEqual(['Add validation', 'Show errors']);
     });
-  });
-});</content>
+  });</content>
 <parameter name="filePath">src/scripts/modules/github-issues/IssueAnalyzer-core.test.ts

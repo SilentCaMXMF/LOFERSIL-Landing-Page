@@ -5,7 +5,7 @@
  * with configurable behavior for different test scenarios.
  */
 
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 /**
  * Mock factory for IssueAnalyzer

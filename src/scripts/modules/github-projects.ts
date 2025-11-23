@@ -3,7 +3,7 @@
  * Automated kanban board management for AI-powered GitHub Issues Reviewer
  */
 
-import { logger } from './logger';
+import { logger } from "./logger";
 
 export interface KanbanCard {
   id: string;
@@ -32,12 +32,17 @@ export interface KanbanProject {
 
 export class GitHubProjectsIntegration {
   private accessToken: string;
-  private baseUrl = 'https://api.github.com/graphql';
+  private baseUrl = "https://api.github.com/graphql";
   private projectId: string;
   private owner: string;
   private repo: string;
 
-  constructor(accessToken: string, projectId: string, owner: string, repo: string) {
+  constructor(
+    accessToken: string,
+    projectId: string,
+    owner: string,
+    repo: string,
+  ) {
     this.accessToken = accessToken;
     this.projectId = projectId;
     this.owner = owner;
@@ -49,21 +54,23 @@ export class GitHubProjectsIntegration {
    */
   private async makeGraphQLRequest(
     query: string,
-    variables: Record<string, unknown> = {}
+    variables: Record<string, unknown> = {},
   ): Promise<any> {
     try {
       const response = await fetch(this.baseUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/vnd.github.v4.idl',
+          "Content-Type": "application/json",
+          Accept: "application/vnd.github.v4.idl",
         },
         body: JSON.stringify({ query, variables }),
       });
 
       if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `GitHub API error: ${response.status} ${response.statusText}`,
+        );
       }
 
       const result = await response.json();
@@ -74,7 +81,9 @@ export class GitHubProjectsIntegration {
 
       return result.data;
     } catch (error) {
-      logger.error('GitHub Projects API request failed', { error: (error as Error).message });
+      logger.error("GitHub Projects API request failed", {
+        error: (error as Error).message,
+      });
       throw error;
     }
   }
@@ -105,14 +114,16 @@ export class GitHubProjectsIntegration {
     `;
 
     try {
-      const data = await this.makeGraphQLRequest(query, { projectId: this.projectId });
+      const data = await this.makeGraphQLRequest(query, {
+        projectId: this.projectId,
+      });
 
       const statusField = data.node.fields.nodes.find(
-        (field: any) => field.name === 'Status' || field.name === 'status'
+        (field: any) => field.name === "Status" || field.name === "status",
       );
 
       if (!statusField) {
-        throw new Error('Status field not found in project');
+        throw new Error("Status field not found in project");
       }
 
       return statusField.options.map((option: any, index: number) => ({
@@ -121,7 +132,9 @@ export class GitHubProjectsIntegration {
         position: index,
       }));
     } catch (error) {
-      logger.error('Failed to get project columns', { error: (error as Error).message });
+      logger.error("Failed to get project columns", {
+        error: (error as Error).message,
+      });
       throw error;
     }
   }
@@ -129,7 +142,9 @@ export class GitHubProjectsIntegration {
   /**
    * Create a new card in the kanban board
    */
-  async createCard(card: Omit<KanbanCard, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  async createCard(
+    card: Omit<KanbanCard, "id" | "createdAt" | "updatedAt">,
+  ): Promise<string> {
     // First, create the issue if it doesn't exist
     let issueId: string;
 
@@ -147,7 +162,7 @@ export class GitHubProjectsIntegration {
     // Set status field
     await this.updateCardStatus(itemId, card.status);
 
-    logger.info('Created kanban card', {
+    logger.info("Created kanban card", {
       title: card.title,
       status: card.status,
       issueNumber: card.issueNumber,
@@ -194,9 +209,9 @@ export class GitHubProjectsIntegration {
         optionId: statusOptionId,
       });
 
-      logger.info('Updated card status', { itemId, status });
+      logger.info("Updated card status", { itemId, status });
     } catch (error) {
-      logger.error('Failed to update card status', {
+      logger.error("Failed to update card status", {
         itemId,
         status,
         error: (error as Error).message,
@@ -256,19 +271,24 @@ export class GitHubProjectsIntegration {
     `;
 
     try {
-      const data = await this.makeGraphQLRequest(query, { projectId: this.projectId });
+      const data = await this.makeGraphQLRequest(query, {
+        projectId: this.projectId,
+      });
 
       return data.node.items.nodes.map((item: any) => {
         const statusField = item.fieldValues.nodes.find(
-          (field: any) => field.field?.name === 'Status' || field.field?.name === 'status'
+          (field: any) =>
+            field.field?.name === "Status" || field.field?.name === "status",
         );
 
         return {
           id: item.id,
           title: item.content.title,
-          body: item.content.body || '',
-          status: statusField?.name || 'No Status',
-          assignees: item.content.assignees.nodes.map((assignee: any) => assignee.login),
+          body: item.content.body || "",
+          status: statusField?.name || "No Status",
+          assignees: item.content.assignees.nodes.map(
+            (assignee: any) => assignee.login,
+          ),
           labels: item.content.labels.nodes.map((label: any) => label.name),
           issueNumber: item.content.number,
           createdAt: new Date(item.content.createdAt),
@@ -276,7 +296,9 @@ export class GitHubProjectsIntegration {
         };
       });
     } catch (error) {
-      logger.error('Failed to get all cards', { error: (error as Error).message });
+      logger.error("Failed to get all cards", {
+        error: (error as Error).message,
+      });
       throw error;
     }
   }
@@ -304,7 +326,10 @@ export class GitHubProjectsIntegration {
 
       return data.repository.issue.id;
     } catch (error) {
-      logger.error('Failed to get issue ID', { issueNumber, error: (error as Error).message });
+      logger.error("Failed to get issue ID", {
+        issueNumber,
+        error: (error as Error).message,
+      });
       throw error;
     }
   }
@@ -312,7 +337,11 @@ export class GitHubProjectsIntegration {
   /**
    * Create a new issue
    */
-  private async createIssue(title: string, body: string, labels: string[] = []): Promise<string> {
+  private async createIssue(
+    title: string,
+    body: string,
+    labels: string[] = [],
+  ): Promise<string> {
     const mutation = `
       mutation($repositoryId: ID!, $title: String!, $body: String!, $labelIds: [ID!]) {
         createIssue(
@@ -344,7 +373,7 @@ export class GitHubProjectsIntegration {
 
       return data.createIssue.issue.id;
     } catch (error) {
-      logger.error('Failed to create issue', {
+      logger.error("Failed to create issue", {
         title,
         error: error instanceof Error ? error.message : String(error),
       });
@@ -379,7 +408,10 @@ export class GitHubProjectsIntegration {
 
       return data.addProjectV2ItemById.item.id;
     } catch (error) {
-      logger.error('Failed to add issue to project', { issueId, error: (error as Error).message });
+      logger.error("Failed to add issue to project", {
+        issueId,
+        error: (error as Error).message,
+      });
       throw error;
     }
   }
@@ -404,7 +436,7 @@ export class GitHubProjectsIntegration {
 
       return data.repository.id;
     } catch (error) {
-      logger.error('Failed to get repository ID', {
+      logger.error("Failed to get repository ID", {
         owner: this.owner,
         repo: this.repo,
         error: (error as Error).message,
@@ -442,7 +474,9 @@ export class GitHubProjectsIntegration {
           labelNames: [labelName],
         });
 
-        const label = data.repository.labels.nodes.find((label: any) => label.name === labelName);
+        const label = data.repository.labels.nodes.find(
+          (label: any) => label.name === labelName,
+        );
 
         if (label) {
           labelIds.push(label.id);
@@ -451,7 +485,10 @@ export class GitHubProjectsIntegration {
 
       return labelIds;
     } catch (error) {
-      logger.error('Failed to get label IDs', { labelNames, error: (error as Error).message });
+      logger.error("Failed to get label IDs", {
+        labelNames,
+        error: (error as Error).message,
+      });
       return [];
     }
   }
@@ -478,19 +515,23 @@ export class GitHubProjectsIntegration {
     `;
 
     try {
-      const data = await this.makeGraphQLRequest(query, { projectId: this.projectId });
+      const data = await this.makeGraphQLRequest(query, {
+        projectId: this.projectId,
+      });
 
       const statusField = data.node.fields.nodes.find(
-        (field: any) => field.name === 'Status' || field.name === 'status'
+        (field: any) => field.name === "Status" || field.name === "status",
       );
 
       if (!statusField) {
-        throw new Error('Status field not found in project');
+        throw new Error("Status field not found in project");
       }
 
       return statusField.id;
     } catch (error) {
-      logger.error('Failed to get status field ID', { error: (error as Error).message });
+      logger.error("Failed to get status field ID", {
+        error: (error as Error).message,
+      });
       throw error;
     }
   }
@@ -521,18 +562,20 @@ export class GitHubProjectsIntegration {
     `;
 
     try {
-      const data = await this.makeGraphQLRequest(query, { projectId: this.projectId });
+      const data = await this.makeGraphQLRequest(query, {
+        projectId: this.projectId,
+      });
 
       const statusField = data.node.fields.nodes.find(
-        (field: any) => field.name === 'Status' || field.name === 'status'
+        (field: any) => field.name === "Status" || field.name === "status",
       );
 
       if (!statusField) {
-        throw new Error('Status field not found in project');
+        throw new Error("Status field not found in project");
       }
 
       const option = statusField.options.find(
-        (opt: any) => opt.name.toLowerCase() === statusName.toLowerCase()
+        (opt: any) => opt.name.toLowerCase() === statusName.toLowerCase(),
       );
 
       if (!option) {
@@ -541,7 +584,7 @@ export class GitHubProjectsIntegration {
 
       return option.id;
     } catch (error) {
-      logger.error('Failed to get status option ID', {
+      logger.error("Failed to get status option ID", {
         statusName,
         error: (error as Error).message,
       });
@@ -552,19 +595,26 @@ export class GitHubProjectsIntegration {
   /**
    * Sync task status with kanban board
    */
-  async syncTaskStatus(taskId: string, status: string, issueNumber?: number): Promise<void> {
+  async syncTaskStatus(
+    taskId: string,
+    status: string,
+    issueNumber?: number,
+  ): Promise<void> {
     try {
       if (!issueNumber) {
-        logger.warn('Cannot sync task status without issue number', { taskId, status });
+        logger.warn("Cannot sync task status without issue number", {
+          taskId,
+          status,
+        });
         return;
       }
 
       // Find the card for this issue
       const cards = await this.getAllCards();
-      const card = cards.find(c => c.issueNumber === issueNumber);
+      const card = cards.find((c) => c.issueNumber === issueNumber);
 
       if (!card) {
-        logger.warn('Card not found for issue', { issueNumber, taskId });
+        logger.warn("Card not found for issue", { issueNumber, taskId });
         return;
       }
 
@@ -574,14 +624,14 @@ export class GitHubProjectsIntegration {
       // Update card status
       await this.updateCardStatus(card.id, kanbanStatus);
 
-      logger.info('Synced task status with kanban board', {
+      logger.info("Synced task status with kanban board", {
         taskId,
         issueNumber,
         status,
         kanbanStatus,
       });
     } catch (error) {
-      logger.error('Failed to sync task status', {
+      logger.error("Failed to sync task status", {
         taskId,
         status,
         issueNumber,
@@ -595,15 +645,15 @@ export class GitHubProjectsIntegration {
    */
   private mapTaskStatusToKanban(taskStatus: string): string {
     const statusMap: { [key: string]: string } = {
-      pending: 'Backlog',
-      in_progress: 'In Progress',
-      completed: 'Done',
-      blocked: 'Blocked',
-      processing: 'In Progress',
-      failed: 'Blocked',
+      pending: "Backlog",
+      in_progress: "In Progress",
+      completed: "Done",
+      blocked: "Blocked",
+      processing: "In Progress",
+      failed: "Blocked",
     };
 
-    return statusMap[taskStatus] || 'Backlog';
+    return statusMap[taskStatus] || "Backlog";
   }
 
   /**
@@ -613,7 +663,7 @@ export class GitHubProjectsIntegration {
     issueNumber: number,
     taskId: string,
     workflowStage: string,
-    progress: number
+    progress: number,
   ): Promise<void> {
     try {
       const title = `🤖 AI Processing: Issue #${issueNumber}`;
@@ -626,34 +676,34 @@ export class GitHubProjectsIntegration {
 **Progress:** ${progress}%
 
 ### Workflow Stages:
-- [${progress >= 25 ? 'x' : ' '}] Issue Analysis
-- [${progress >= 50 ? 'x' : ' '}] Code Generation
-- [${progress >= 75 ? 'x' : ' '}] Code Review
-- [${progress >= 100 ? 'x' : ' '}] PR Creation
+- [${progress >= 25 ? "x" : " "}] Issue Analysis
+- [${progress >= 50 ? "x" : " "}] Code Generation
+- [${progress >= 75 ? "x" : " "}] Code Review
+- [${progress >= 100 ? "x" : " "}] PR Creation
 
 *This card is automatically updated by the AI system.*
       `;
 
-      const status = progress === 100 ? 'Done' : 'In Progress';
+      const status = progress === 100 ? "Done" : "In Progress";
 
       await this.createCard({
         title,
         body,
         status,
         assignees: [],
-        labels: ['ai-processing', 'automated'],
+        labels: ["ai-processing", "automated"],
         issueNumber,
         taskId,
       });
 
-      logger.info('Created workflow progress card', {
+      logger.info("Created workflow progress card", {
         issueNumber,
         taskId,
         workflowStage,
         progress,
       });
     } catch (error) {
-      logger.error('Failed to create workflow progress card', {
+      logger.error("Failed to create workflow progress card", {
         issueNumber,
         taskId,
         workflowStage,
@@ -670,14 +720,16 @@ export class GitHubProjectsIntegration {
     issueNumber: number,
     taskId: string,
     workflowStage: string,
-    progress: number
+    progress: number,
   ): Promise<void> {
     try {
       // Find existing progress card
       const cards = await this.getAllCards();
       const progressCard = cards.find(
-        c =>
-          c.issueNumber === issueNumber && c.labels.includes('ai-processing') && c.taskId === taskId
+        (c) =>
+          c.issueNumber === issueNumber &&
+          c.labels.includes("ai-processing") &&
+          c.taskId === taskId,
       );
 
       if (progressCard) {
@@ -688,19 +740,31 @@ export class GitHubProjectsIntegration {
 
         // Update checkboxes based on progress
         const updatedBodyWithCheckboxes = updatedBody
-          .replace(/\[x\]\] Issue Analysis/, `[${progress >= 25 ? 'x' : ' '}] Issue Analysis`)
-          .replace(/\[x\]\] Code Generation/, `[${progress >= 50 ? 'x' : ' '}] Code Generation`)
-          .replace(/\[x\]\] Code Review/, `[${progress >= 75 ? 'x' : ' '}] Code Review`)
-          .replace(/\[x\]\] PR Creation/, `[${progress >= 100 ? 'x' : ' '}] PR Creation`);
+          .replace(
+            /\[x\]\] Issue Analysis/,
+            `[${progress >= 25 ? "x" : " "}] Issue Analysis`,
+          )
+          .replace(
+            /\[x\]\] Code Generation/,
+            `[${progress >= 50 ? "x" : " "}] Code Generation`,
+          )
+          .replace(
+            /\[x\]\] Code Review/,
+            `[${progress >= 75 ? "x" : " "}] Code Review`,
+          )
+          .replace(
+            /\[x\]\] PR Creation/,
+            `[${progress >= 100 ? "x" : " "}] PR Creation`,
+          );
 
         // Note: GitHub Projects API doesn't easily support updating card content
         // This would require additional implementation
 
         // Update status
-        const status = progress === 100 ? 'Done' : 'In Progress';
+        const status = progress === 100 ? "Done" : "In Progress";
         await this.updateCardStatus(progressCard.id, status);
 
-        logger.info('Updated workflow progress', {
+        logger.info("Updated workflow progress", {
           issueNumber,
           taskId,
           workflowStage,
@@ -708,10 +772,15 @@ export class GitHubProjectsIntegration {
         });
       } else {
         // Create new progress card
-        await this.createWorkflowProgressCard(issueNumber, taskId, workflowStage, progress);
+        await this.createWorkflowProgressCard(
+          issueNumber,
+          taskId,
+          workflowStage,
+          progress,
+        );
       }
     } catch (error) {
-      logger.error('Failed to update workflow progress', {
+      logger.error("Failed to update workflow progress", {
         issueNumber,
         taskId,
         workflowStage,

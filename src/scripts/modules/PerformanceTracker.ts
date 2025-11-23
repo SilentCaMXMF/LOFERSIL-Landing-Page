@@ -3,7 +3,7 @@
  * Tracks performance metrics, Core Web Vitals, and sends data to analytics
  */
 
-import { ErrorManager } from './ErrorManager.js';
+import { ErrorManager } from "./ErrorManager.js";
 
 /**
  * Performance metrics interface
@@ -74,7 +74,10 @@ export class PerformanceTracker {
         this.setupAnalytics();
       }
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to setup performance tracking');
+      this.errorHandler.handleError(
+        error,
+        "Failed to setup performance tracking",
+      );
     }
   }
 
@@ -83,33 +86,34 @@ export class PerformanceTracker {
    */
   private trackBasicPerformance(): void {
     // Track load event
-    window.addEventListener('load', () => {
+    window.addEventListener("load", () => {
       this.trackPerformance();
     });
 
     // Track DOM Content Loaded
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener("DOMContentLoaded", () => {
       if (window.performance && window.performance.timing) {
         const timing = window.performance.timing;
-        this.metrics.domContentLoaded = timing.domContentLoadedEventEnd - timing.navigationStart;
+        this.metrics.domContentLoaded =
+          timing.domContentLoadedEventEnd - timing.navigationStart;
       }
     });
 
     // Track First Contentful Paint using Performance Observer
-    if ('PerformanceObserver' in window) {
+    if ("PerformanceObserver" in window) {
       try {
-        const observer = new PerformanceObserver(list => {
+        const observer = new PerformanceObserver((list) => {
           const entries = list.getEntries();
-          entries.forEach(entry => {
-            if (entry.name === 'first-contentful-paint') {
+          entries.forEach((entry) => {
+            if (entry.name === "first-contentful-paint") {
               this.metrics.firstContentfulPaint = entry.startTime;
-              this.sendToAnalytics('FCP', entry.startTime);
+              this.sendToAnalytics("FCP", entry.startTime);
             }
           });
         });
-        observer.observe({ entryTypes: ['paint'] });
+        observer.observe({ entryTypes: ["paint"] });
       } catch (error) {
-        this.errorHandler.handleError(error, 'Failed to observe paint metrics');
+        this.errorHandler.handleError(error, "Failed to observe paint metrics");
       }
     }
   }
@@ -120,7 +124,7 @@ export class PerformanceTracker {
   private trackCoreWebVitals(): void {
     // Web-vitals temporarily disabled to fix build issues
     // TODO: Re-enable when build issues are resolved
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Placeholder for web vitals tracking
       setTimeout(() => {
         this.getWebVitalsMetrics();
@@ -133,7 +137,7 @@ export class PerformanceTracker {
    */
   private setupAnalytics(): void {
     // Setup Google Analytics if ID is provided
-    if (this.config.analyticsId && typeof window.gtag !== 'undefined') {
+    if (this.config.analyticsId && typeof window.gtag !== "undefined") {
       // Google Analytics is already loaded globally
       // Additional setup can be done here if needed
     }
@@ -147,16 +151,17 @@ export class PerformanceTracker {
       if (window.performance && window.performance.timing) {
         const timing = window.performance.timing;
         this.metrics.loadTime = timing.loadEventEnd - timing.navigationStart;
-        this.metrics.domContentLoaded = timing.domContentLoadedEventEnd - timing.navigationStart;
+        this.metrics.domContentLoaded =
+          timing.domContentLoadedEventEnd - timing.navigationStart;
       }
 
       // Send metrics to analytics
       if (this.config.enableAnalytics) {
-        this.sendToAnalytics('LoadTime', this.metrics.loadTime);
-        this.sendToAnalytics('DOMContentLoaded', this.metrics.domContentLoaded);
+        this.sendToAnalytics("LoadTime", this.metrics.loadTime);
+        this.sendToAnalytics("DOMContentLoaded", this.metrics.domContentLoaded);
       }
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to track performance');
+      this.errorHandler.handleError(error, "Failed to track performance");
     }
   }
 
@@ -166,14 +171,14 @@ export class PerformanceTracker {
   private sendToAnalytics(metricName: string, value: number): void {
     try {
       // Store locally for debugging
-      const metricsData = JSON.parse(localStorage.getItem('webVitals') || '{}');
+      const metricsData = JSON.parse(localStorage.getItem("webVitals") || "{}");
       metricsData[metricName] = value;
-      localStorage.setItem('webVitals', JSON.stringify(metricsData));
+      localStorage.setItem("webVitals", JSON.stringify(metricsData));
 
       // Send to Google Analytics if available
-      if (this.config.enableAnalytics && typeof window.gtag !== 'undefined') {
-        window.gtag('event', 'web_vitals', {
-          event_category: 'Web Vitals',
+      if (this.config.enableAnalytics && typeof window.gtag !== "undefined") {
+        window.gtag("event", "web_vitals", {
+          event_category: "Web Vitals",
           event_label: metricName,
           value: Math.round(value * 1000), // Convert to milliseconds for GA
           non_interaction: true,
@@ -185,14 +190,17 @@ export class PerformanceTracker {
         this.sendToCustomAnalytics(metricName, value);
       }
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to send analytics data');
+      this.errorHandler.handleError(error, "Failed to send analytics data");
     }
   }
 
   /**
    * Send to custom analytics endpoint
    */
-  private async sendToCustomAnalytics(metricName: string, value: number): Promise<void> {
+  private async sendToCustomAnalytics(
+    metricName: string,
+    value: number,
+  ): Promise<void> {
     try {
       // Example: Send to custom analytics API
       // await fetch('/api/analytics', {
@@ -208,7 +216,7 @@ export class PerformanceTracker {
       // });
     } catch (error) {
       // Silently fail for analytics errors
-      this.errorHandler.handleError(error, 'Failed to send custom analytics');
+      this.errorHandler.handleError(error, "Failed to send custom analytics");
     }
   }
 
@@ -250,8 +258,8 @@ export class PerformanceTracker {
    * Track page view
    */
   public trackPageView(path: string): void {
-    if (this.config.enableAnalytics && typeof window.gtag !== 'undefined') {
-      window.gtag('config', this.config.analyticsId!, {
+    if (this.config.enableAnalytics && typeof window.gtag !== "undefined") {
+      window.gtag("config", this.config.analyticsId!, {
         page_path: path,
       });
     }
@@ -260,9 +268,14 @@ export class PerformanceTracker {
   /**
    * Track event
    */
-  public trackEvent(category: string, action: string, label?: string, value?: number): void {
-    if (this.config.enableAnalytics && typeof window.gtag !== 'undefined') {
-      window.gtag('event', action, {
+  public trackEvent(
+    category: string,
+    action: string,
+    label?: string,
+    value?: number,
+  ): void {
+    if (this.config.enableAnalytics && typeof window.gtag !== "undefined") {
+      window.gtag("event", action, {
         event_category: category,
         event_label: label,
         value: value,
@@ -281,7 +294,7 @@ export class PerformanceTracker {
    * Clear stored metrics
    */
   public clearMetrics(): void {
-    localStorage.removeItem('webVitals');
+    localStorage.removeItem("webVitals");
     this.metrics = {
       loadTime: 0,
       domContentLoaded: 0,

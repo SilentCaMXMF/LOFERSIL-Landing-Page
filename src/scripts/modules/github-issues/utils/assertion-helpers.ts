@@ -5,9 +5,13 @@
  * with detailed error messages and common test patterns.
  */
 
-import { GitHubIssue, GitHubPR, GitHubComment } from '../mocks/github-api';
-import { OpenCodeAnalysis, OpenCodeSolution, OpenCodeReviewResult } from '../mocks/opencode-agent';
-import { WorktreeInfo } from '../mocks/worktree-manager';
+import { GitHubIssue, GitHubPR, GitHubComment } from "../mocks/github-api";
+import {
+  OpenCodeAnalysis,
+  OpenCodeSolution,
+  OpenCodeReviewResult,
+} from "../mocks/opencode-agent";
+import { WorktreeInfo } from "../mocks/worktree-manager";
 
 /**
  * Assertions for GitHub Issues
@@ -16,31 +20,42 @@ export const assertIssue = {
   /**
    * Asserts that an issue has the expected properties
    */
-  hasValidStructure: (issue: any, message?: string): asserts issue is GitHubIssue => {
+  hasValidStructure: (
+    issue: any,
+    message?: string,
+  ): asserts issue is GitHubIssue => {
     const required = [
-      'id',
-      'number',
-      'title',
-      'body',
-      'labels',
-      'state',
-      'user',
-      'created_at',
-      'updated_at',
-      'html_url',
+      "id",
+      "number",
+      "title",
+      "body",
+      "labels",
+      "state",
+      "user",
+      "created_at",
+      "updated_at",
+      "html_url",
     ];
-    const missing = required.filter(prop => !(prop in issue));
+    const missing = required.filter((prop) => !(prop in issue));
 
     if (missing.length > 0) {
-      throw new Error(message || `Issue is missing required properties: ${missing.join(', ')}`);
+      throw new Error(
+        message ||
+          `Issue is missing required properties: ${missing.join(", ")}`,
+      );
     }
 
-    if (typeof issue.number !== 'number' || issue.number <= 0) {
-      throw new Error(message || `Issue number must be a positive number, got ${issue.number}`);
+    if (typeof issue.number !== "number" || issue.number <= 0) {
+      throw new Error(
+        message ||
+          `Issue number must be a positive number, got ${issue.number}`,
+      );
     }
 
-    if (!issue.title || typeof issue.title !== 'string') {
-      throw new Error(message || `Issue title must be a non-empty string, got ${issue.title}`);
+    if (!issue.title || typeof issue.title !== "string") {
+      throw new Error(
+        message || `Issue title must be a non-empty string, got ${issue.title}`,
+      );
     }
   },
 
@@ -48,12 +63,12 @@ export const assertIssue = {
    * Asserts that an issue has a specific label
    */
   hasLabel: (issue: GitHubIssue, labelName: string, message?: string): void => {
-    const hasLabel = issue.labels.some(label => label.name === labelName);
+    const hasLabel = issue.labels.some((label) => label.name === labelName);
     if (!hasLabel) {
-      const availableLabels = issue.labels.map(l => l.name).join(', ');
+      const availableLabels = issue.labels.map((l) => l.name).join(", ");
       throw new Error(
         message ||
-          `Issue #${issue.number} does not have label "${labelName}". Available labels: ${availableLabels}`
+          `Issue #${issue.number} does not have label "${labelName}". Available labels: ${availableLabels}`,
       );
     }
   },
@@ -61,11 +76,15 @@ export const assertIssue = {
   /**
    * Asserts that an issue is in a specific state
    */
-  hasState: (issue: GitHubIssue, expectedState: string, message?: string): void => {
+  hasState: (
+    issue: GitHubIssue,
+    expectedState: string,
+    message?: string,
+  ): void => {
     if (issue.state !== expectedState) {
       throw new Error(
         message ||
-          `Issue #${issue.number} is in state "${issue.state}", expected "${expectedState}"`
+          `Issue #${issue.number} is in state "${issue.state}", expected "${expectedState}"`,
       );
     }
   },
@@ -73,11 +92,15 @@ export const assertIssue = {
   /**
    * Asserts that an issue belongs to a specific user
    */
-  hasAssignee: (issue: GitHubIssue, expectedUser: string, message?: string): void => {
+  hasAssignee: (
+    issue: GitHubIssue,
+    expectedUser: string,
+    message?: string,
+  ): void => {
     if (issue.user.login !== expectedUser) {
       throw new Error(
         message ||
-          `Issue #${issue.number} is assigned to "${issue.user.login}", expected "${expectedUser}"`
+          `Issue #${issue.number} is assigned to "${issue.user.login}", expected "${expectedUser}"`,
       );
     }
   },
@@ -90,29 +113,36 @@ export const assertAnalysis = {
   /**
    * Asserts that an analysis has valid structure
    */
-  hasValidStructure: (analysis: any, message?: string): asserts analysis is OpenCodeAnalysis => {
+  hasValidStructure: (
+    analysis: any,
+    message?: string,
+  ): asserts analysis is OpenCodeAnalysis => {
     const required = [
-      'category',
-      'complexity',
-      'requirements',
-      'acceptanceCriteria',
-      'feasible',
-      'confidence',
-      'reasoning',
+      "category",
+      "complexity",
+      "requirements",
+      "acceptanceCriteria",
+      "feasible",
+      "confidence",
+      "reasoning",
     ];
-    const missing = required.filter(prop => !(prop in analysis));
+    const missing = required.filter((prop) => !(prop in analysis));
 
     if (missing.length > 0) {
-      throw new Error(message || `Analysis is missing required properties: ${missing.join(', ')}`);
+      throw new Error(
+        message ||
+          `Analysis is missing required properties: ${missing.join(", ")}`,
+      );
     }
 
     if (
-      typeof analysis.confidence !== 'number' ||
+      typeof analysis.confidence !== "number" ||
       analysis.confidence < 0 ||
       analysis.confidence > 1
     ) {
       throw new Error(
-        message || `Analysis confidence must be between 0 and 1, got ${analysis.confidence}`
+        message ||
+          `Analysis confidence must be between 0 and 1, got ${analysis.confidence}`,
       );
     }
   },
@@ -120,10 +150,15 @@ export const assertAnalysis = {
   /**
    * Asserts that an analysis has a specific category
    */
-  hasCategory: (analysis: OpenCodeAnalysis, expectedCategory: string, message?: string): void => {
+  hasCategory: (
+    analysis: OpenCodeAnalysis,
+    expectedCategory: string,
+    message?: string,
+  ): void => {
     if (analysis.category !== expectedCategory) {
       throw new Error(
-        message || `Analysis has category "${analysis.category}", expected "${expectedCategory}"`
+        message ||
+          `Analysis has category "${analysis.category}", expected "${expectedCategory}"`,
       );
     }
   },
@@ -134,12 +169,12 @@ export const assertAnalysis = {
   hasComplexity: (
     analysis: OpenCodeAnalysis,
     expectedComplexity: string,
-    message?: string
+    message?: string,
   ): void => {
     if (analysis.complexity !== expectedComplexity) {
       throw new Error(
         message ||
-          `Analysis has complexity "${analysis.complexity}", expected "${expectedComplexity}"`
+          `Analysis has complexity "${analysis.complexity}", expected "${expectedComplexity}"`,
       );
     }
   },
@@ -149,7 +184,10 @@ export const assertAnalysis = {
    */
   isFeasible: (analysis: OpenCodeAnalysis, message?: string): void => {
     if (!analysis.feasible) {
-      throw new Error(message || `Analysis indicates issue is not feasible: ${analysis.reasoning}`);
+      throw new Error(
+        message ||
+          `Analysis indicates issue is not feasible: ${analysis.reasoning}`,
+      );
     }
   },
 
@@ -158,17 +196,25 @@ export const assertAnalysis = {
    */
   isNotFeasible: (analysis: OpenCodeAnalysis, message?: string): void => {
     if (analysis.feasible) {
-      throw new Error(message || `Analysis indicates issue is feasible, but expected it not to be`);
+      throw new Error(
+        message ||
+          `Analysis indicates issue is feasible, but expected it not to be`,
+      );
     }
   },
 
   /**
    * Asserts that an analysis has minimum confidence
    */
-  hasMinConfidence: (analysis: OpenCodeAnalysis, minConfidence: number, message?: string): void => {
+  hasMinConfidence: (
+    analysis: OpenCodeAnalysis,
+    minConfidence: number,
+    message?: string,
+  ): void => {
     if (analysis.confidence < minConfidence) {
       throw new Error(
-        message || `Analysis confidence ${analysis.confidence} is below minimum ${minConfidence}`
+        message ||
+          `Analysis confidence ${analysis.confidence} is below minimum ${minConfidence}`,
       );
     }
   },
@@ -181,12 +227,18 @@ export const assertSolution = {
   /**
    * Asserts that a solution has valid structure
    */
-  hasValidStructure: (solution: any, message?: string): asserts solution is OpenCodeSolution => {
-    const required = ['changes', 'explanation', 'testCases', 'documentation'];
-    const missing = required.filter(prop => !(prop in solution));
+  hasValidStructure: (
+    solution: any,
+    message?: string,
+  ): asserts solution is OpenCodeSolution => {
+    const required = ["changes", "explanation", "testCases", "documentation"];
+    const missing = required.filter((prop) => !(prop in solution));
 
     if (missing.length > 0) {
-      throw new Error(message || `Solution is missing required properties: ${missing.join(', ')}`);
+      throw new Error(
+        message ||
+          `Solution is missing required properties: ${missing.join(", ")}`,
+      );
     }
 
     if (!Array.isArray(solution.changes) || solution.changes.length === 0) {
@@ -197,12 +249,19 @@ export const assertSolution = {
   /**
    * Asserts that a solution modifies a specific file
    */
-  modifiesFile: (solution: OpenCodeSolution, filePath: string, message?: string): void => {
-    const modifiesFile = solution.changes.some(change => change.file === filePath);
+  modifiesFile: (
+    solution: OpenCodeSolution,
+    filePath: string,
+    message?: string,
+  ): void => {
+    const modifiesFile = solution.changes.some(
+      (change) => change.file === filePath,
+    );
     if (!modifiesFile) {
-      const modifiedFiles = solution.changes.map(c => c.file).join(', ');
+      const modifiedFiles = solution.changes.map((c) => c.file).join(", ");
       throw new Error(
-        message || `Solution does not modify file "${filePath}". Modified files: ${modifiedFiles}`
+        message ||
+          `Solution does not modify file "${filePath}". Modified files: ${modifiedFiles}`,
       );
     }
   },
@@ -210,10 +269,15 @@ export const assertSolution = {
   /**
    * Asserts that a solution has a specific number of changes
    */
-  hasChangeCount: (solution: OpenCodeSolution, expectedCount: number, message?: string): void => {
+  hasChangeCount: (
+    solution: OpenCodeSolution,
+    expectedCount: number,
+    message?: string,
+  ): void => {
     if (solution.changes.length !== expectedCount) {
       throw new Error(
-        message || `Solution has ${solution.changes.length} changes, expected ${expectedCount}`
+        message ||
+          `Solution has ${solution.changes.length} changes, expected ${expectedCount}`,
       );
     }
   },
@@ -235,34 +299,43 @@ export const assertReview = {
   /**
    * Asserts that a review has valid structure
    */
-  hasValidStructure: (review: any, message?: string): asserts review is OpenCodeReviewResult => {
+  hasValidStructure: (
+    review: any,
+    message?: string,
+  ): asserts review is OpenCodeReviewResult => {
     const required = [
-      'approved',
-      'score',
-      'comments',
-      'securityIssues',
-      'qualityScore',
-      'performanceScore',
-      'maintainabilityScore',
-      'testCoverageScore',
-      'recommendations',
+      "approved",
+      "score",
+      "comments",
+      "securityIssues",
+      "qualityScore",
+      "performanceScore",
+      "maintainabilityScore",
+      "testCoverageScore",
+      "recommendations",
     ];
-    const missing = required.filter(prop => !(prop in review));
+    const missing = required.filter((prop) => !(prop in review));
 
     if (missing.length > 0) {
-      throw new Error(message || `Review is missing required properties: ${missing.join(', ')}`);
+      throw new Error(
+        message ||
+          `Review is missing required properties: ${missing.join(", ")}`,
+      );
     }
 
     const scores = [
-      'qualityScore',
-      'performanceScore',
-      'maintainabilityScore',
-      'testCoverageScore',
+      "qualityScore",
+      "performanceScore",
+      "maintainabilityScore",
+      "testCoverageScore",
     ];
     for (const scoreProp of scores) {
       const score = (review as any)[scoreProp];
-      if (typeof score !== 'number' || score < 0 || score > 1) {
-        throw new Error(message || `Review ${scoreProp} must be between 0 and 1, got ${score}`);
+      if (typeof score !== "number" || score < 0 || score > 1) {
+        throw new Error(
+          message ||
+            `Review ${scoreProp} must be between 0 and 1, got ${score}`,
+        );
       }
     }
   },
@@ -272,7 +345,10 @@ export const assertReview = {
    */
   isApproved: (review: OpenCodeReviewResult, message?: string): void => {
     if (!review.approved) {
-      throw new Error(message || `Review is not approved. Comments: ${review.comments.join(', ')}`);
+      throw new Error(
+        message ||
+          `Review is not approved. Comments: ${review.comments.join(", ")}`,
+      );
     }
   },
 
@@ -288,9 +364,15 @@ export const assertReview = {
   /**
    * Asserts that a review has a minimum score
    */
-  hasMinScore: (review: OpenCodeReviewResult, minScore: number, message?: string): void => {
+  hasMinScore: (
+    review: OpenCodeReviewResult,
+    minScore: number,
+    message?: string,
+  ): void => {
     if (review.score < minScore) {
-      throw new Error(message || `Review score ${review.score} is below minimum ${minScore}`);
+      throw new Error(
+        message || `Review score ${review.score} is below minimum ${minScore}`,
+      );
     }
   },
 
@@ -299,16 +381,24 @@ export const assertReview = {
    */
   hasSecurityIssues: (review: OpenCodeReviewResult, message?: string): void => {
     if (!review.securityIssues || review.securityIssues.length === 0) {
-      throw new Error(message || `Review should have security issues but has none`);
+      throw new Error(
+        message || `Review should have security issues but has none`,
+      );
     }
   },
 
   /**
    * Asserts that a review has no security issues
    */
-  hasNoSecurityIssues: (review: OpenCodeReviewResult, message?: string): void => {
+  hasNoSecurityIssues: (
+    review: OpenCodeReviewResult,
+    message?: string,
+  ): void => {
     if (review.securityIssues && review.securityIssues.length > 0) {
-      throw new Error(message || `Review has security issues: ${review.securityIssues.join(', ')}`);
+      throw new Error(
+        message ||
+          `Review has security issues: ${review.securityIssues.join(", ")}`,
+      );
     }
   },
 };
@@ -320,31 +410,41 @@ export const assertWorktree = {
   /**
    * Asserts that a worktree has valid structure
    */
-  hasValidStructure: (worktree: any, message?: string): asserts worktree is WorktreeInfo => {
+  hasValidStructure: (
+    worktree: any,
+    message?: string,
+  ): asserts worktree is WorktreeInfo => {
     const required = [
-      'branch',
-      'path',
-      'issueId',
-      'createdAt',
-      'status',
-      'commitSha',
-      'parentBranch',
+      "branch",
+      "path",
+      "issueId",
+      "createdAt",
+      "status",
+      "commitSha",
+      "parentBranch",
     ];
-    const missing = required.filter(prop => !(prop in worktree));
+    const missing = required.filter((prop) => !(prop in worktree));
 
     if (missing.length > 0) {
-      throw new Error(message || `Worktree is missing required properties: ${missing.join(', ')}`);
+      throw new Error(
+        message ||
+          `Worktree is missing required properties: ${missing.join(", ")}`,
+      );
     }
   },
 
   /**
    * Asserts that a worktree has a specific status
    */
-  hasStatus: (worktree: WorktreeInfo, expectedStatus: string, message?: string): void => {
+  hasStatus: (
+    worktree: WorktreeInfo,
+    expectedStatus: string,
+    message?: string,
+  ): void => {
     if (worktree.status !== expectedStatus) {
       throw new Error(
         message ||
-          `Worktree for issue #${worktree.issueId} has status "${worktree.status}", expected "${expectedStatus}"`
+          `Worktree for issue #${worktree.issueId} has status "${worktree.status}", expected "${expectedStatus}"`,
       );
     }
   },
@@ -352,10 +452,15 @@ export const assertWorktree = {
   /**
    * Asserts that a worktree belongs to a specific issue
    */
-  belongsToIssue: (worktree: WorktreeInfo, issueId: number, message?: string): void => {
+  belongsToIssue: (
+    worktree: WorktreeInfo,
+    issueId: number,
+    message?: string,
+  ): void => {
     if (worktree.issueId !== issueId) {
       throw new Error(
-        message || `Worktree belongs to issue #${worktree.issueId}, expected #${issueId}`
+        message ||
+          `Worktree belongs to issue #${worktree.issueId}, expected #${issueId}`,
       );
     }
   },
@@ -370,19 +475,21 @@ export const assertPR = {
    */
   hasValidStructure: (pr: any, message?: string): asserts pr is GitHubPR => {
     const required = [
-      'number',
-      'title',
-      'body',
-      'html_url',
-      'state',
-      'merged',
-      'created_at',
-      'updated_at',
+      "number",
+      "title",
+      "body",
+      "html_url",
+      "state",
+      "merged",
+      "created_at",
+      "updated_at",
     ];
-    const missing = required.filter(prop => !(prop in pr));
+    const missing = required.filter((prop) => !(prop in pr));
 
     if (missing.length > 0) {
-      throw new Error(message || `PR is missing required properties: ${missing.join(', ')}`);
+      throw new Error(
+        message || `PR is missing required properties: ${missing.join(", ")}`,
+      );
     }
   },
 
@@ -399,8 +506,10 @@ export const assertPR = {
    * Asserts that a PR is open
    */
   isOpen: (pr: GitHubPR, message?: string): void => {
-    if (pr.state !== 'open') {
-      throw new Error(message || `PR #${pr.number} is not open (state: ${pr.state})`);
+    if (pr.state !== "open") {
+      throw new Error(
+        message || `PR #${pr.number} is not open (state: ${pr.state})`,
+      );
     }
   },
 
@@ -410,7 +519,8 @@ export const assertPR = {
   hasTitle: (pr: GitHubPR, expectedTitle: string, message?: string): void => {
     if (pr.title !== expectedTitle) {
       throw new Error(
-        message || `PR #${pr.number} has title "${pr.title}", expected "${expectedTitle}"`
+        message ||
+          `PR #${pr.number} has title "${pr.title}", expected "${expectedTitle}"`,
       );
     }
   },
@@ -425,7 +535,7 @@ export const assertWorkflow = {
    */
   isSuccessful: (result: any, message?: string): void => {
     if (!result || !result.success) {
-      const errorMsg = result?.error ? `: ${result.error}` : '';
+      const errorMsg = result?.error ? `: ${result.error}` : "";
       throw new Error(message || `Workflow failed${errorMsg}`);
     }
   },
@@ -449,7 +559,8 @@ export const assertWorkflow = {
 
     if (result.executionTime > maxTime) {
       throw new Error(
-        message || `Workflow took ${result.executionTime}ms, exceeded limit of ${maxTime}ms`
+        message ||
+          `Workflow took ${result.executionTime}ms, exceeded limit of ${maxTime}ms`,
       );
     }
   },
@@ -459,7 +570,9 @@ export const assertWorkflow = {
    */
   hasOutput: (result: any, outputKey: string, message?: string): void => {
     if (!result || !result.outputs || !(outputKey in result.outputs)) {
-      throw new Error(message || `Workflow result missing output: ${outputKey}`);
+      throw new Error(
+        message || `Workflow result missing output: ${outputKey}`,
+      );
     }
   },
 };
@@ -480,11 +593,16 @@ export const assertMock = {
   /**
    * Asserts that a mock function was called a specific number of times
    */
-  wasCalledTimes: (mock: any, expectedCalls: number, message?: string): void => {
+  wasCalledTimes: (
+    mock: any,
+    expectedCalls: number,
+    message?: string,
+  ): void => {
     const actualCalls = mock.mock?.calls?.length || 0;
     if (actualCalls !== expectedCalls) {
       throw new Error(
-        message || `Mock function was called ${actualCalls} times, expected ${expectedCalls}`
+        message ||
+          `Mock function was called ${actualCalls} times, expected ${expectedCalls}`,
       );
     }
   },
@@ -501,7 +619,8 @@ export const assertMock = {
 
     if (!matchingCall) {
       throw new Error(
-        message || `Mock function was not called with arguments: ${JSON.stringify(expectedArgs)}`
+        message ||
+          `Mock function was not called with arguments: ${JSON.stringify(expectedArgs)}`,
       );
     }
   },
@@ -511,10 +630,15 @@ export const assertMock = {
    */
   returned: (mock: any, expectedValue: any, message?: string): void => {
     const results = mock.mock?.results || [];
-    const matchingResult = results.find((result: any) => result.value === expectedValue);
+    const matchingResult = results.find(
+      (result: any) => result.value === expectedValue,
+    );
 
     if (!matchingResult) {
-      throw new Error(message || `Mock function did not return: ${JSON.stringify(expectedValue)}`);
+      throw new Error(
+        message ||
+          `Mock function did not return: ${JSON.stringify(expectedValue)}`,
+      );
     }
   },
 };

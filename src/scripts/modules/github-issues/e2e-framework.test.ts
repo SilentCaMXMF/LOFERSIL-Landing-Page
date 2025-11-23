@@ -5,17 +5,42 @@
  * and test data generators for end-to-end testing of the GitHub Issues Reviewer system.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi, beforeAll, afterAll } from 'vitest';
-import { WorkflowOrchestrator, WorkflowResult, WorkflowState } from './WorkflowOrchestrator';
-import { IssueAnalyzer } from './IssueAnalyzer';
-import { AutonomousResolver } from './AutonomousResolver';
-import { CodeReviewer } from './CodeReviewer';
-import { PRGenerator } from './PRGenerator';
-import { DEFAULT_TEST_CONFIG, TEST_SCENARIOS, TestScenario } from './test-config';
-import { GitHubAPIMock, mockGitHubAPI } from './mocks/github-api';
-import { OpenCodeAgentMock, mockOpenCodeAgent } from './mocks/opencode-agent';
-import { WorktreeManagerMock, mockWorktreeManager } from './mocks/worktree-manager';
-import { TEST_ISSUES, TEST_ANALYSES, TEST_SOLUTIONS, TEST_REVIEWS } from './mocks/test-fixtures';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  beforeAll,
+  afterAll,
+} from "vitest";
+import {
+  WorkflowOrchestrator,
+  WorkflowResult,
+  WorkflowState,
+} from "./WorkflowOrchestrator";
+import { IssueAnalyzer } from "./IssueAnalyzer";
+import { AutonomousResolver } from "./AutonomousResolver";
+import { CodeReviewer } from "./CodeReviewer";
+import { PRGenerator } from "./PRGenerator";
+import {
+  DEFAULT_TEST_CONFIG,
+  TEST_SCENARIOS,
+  TestScenario,
+} from "./test-config";
+import { GitHubAPIMock, mockGitHubAPI } from "./mocks/github-api";
+import { OpenCodeAgentMock, mockOpenCodeAgent } from "./mocks/opencode-agent";
+import {
+  WorktreeManagerMock,
+  mockWorktreeManager,
+} from "./mocks/worktree-manager";
+import {
+  TEST_ISSUES,
+  TEST_ANALYSES,
+  TEST_SOLUTIONS,
+  TEST_REVIEWS,
+} from "./mocks/test-fixtures";
 
 // Test Context Interface
 export interface E2ETestContext {
@@ -85,11 +110,12 @@ export function createTestOrchestrator(
     codeReviewer: CodeReviewer;
     prGenerator: PRGenerator;
     config: any;
-  }> = {}
+  }> = {},
 ): WorkflowOrchestrator {
   const config = {
     issueAnalyzer: overrides.issueAnalyzer || createMockIssueAnalyzer(),
-    autonomousResolver: overrides.autonomousResolver || createMockAutonomousResolver(),
+    autonomousResolver:
+      overrides.autonomousResolver || createMockAutonomousResolver(),
     codeReviewer: overrides.codeReviewer || createMockCodeReviewer(),
     prGenerator: overrides.prGenerator || createMockPRGenerator(),
     maxWorkflowTime: DEFAULT_TEST_CONFIG.benchmarks.workflowTimeout,
@@ -144,11 +170,11 @@ export class PerformanceMonitor {
 
   private getCurrentMemoryUsage(): number {
     // In Node.js environment, we can get memory usage
-    if (typeof process !== 'undefined' && process.memoryUsage) {
+    if (typeof process !== "undefined" && process.memoryUsage) {
       return process.memoryUsage().heapUsed;
     }
     // In browser environment, use performance.memory if available
-    if (typeof performance !== 'undefined' && (performance as any).memory) {
+    if (typeof performance !== "undefined" && (performance as any).memory) {
       return (performance as any).memory.usedJSHeapSize;
     }
     return 0;
@@ -164,7 +190,9 @@ export class PerformanceMonitor {
 
 // Test Data Generators
 export class TestDataGenerator {
-  static generateRandomIssue(overrides: Partial<typeof TEST_ISSUES.simpleBug> = {}): typeof TEST_ISSUES.simpleBug {
+  static generateRandomIssue(
+    overrides: Partial<typeof TEST_ISSUES.simpleBug> = {},
+  ): typeof TEST_ISSUES.simpleBug {
     const baseIssue = { ...TEST_ISSUES.simpleBug };
     return {
       ...baseIssue,
@@ -175,7 +203,10 @@ export class TestDataGenerator {
     };
   }
 
-  static generateIssueBatch(count: number, template: keyof typeof TEST_ISSUES = 'simpleBug'): typeof TEST_ISSUES.simpleBug[] {
+  static generateIssueBatch(
+    count: number,
+    template: keyof typeof TEST_ISSUES = "simpleBug",
+  ): (typeof TEST_ISSUES.simpleBug)[] {
     return Array.from({ length: count }, (_, index) => ({
       ...TEST_ISSUES[template],
       number: 1000 + index,
@@ -185,27 +216,33 @@ export class TestDataGenerator {
 
   static generateComplexWorkflowScenario(): TestScenario {
     return {
-      name: 'generated-complex-scenario',
-      description: 'Auto-generated complex workflow scenario',
-      issueType: 'feature',
-      complexity: 'high',
-      expectedOutcome: 'human_review',
+      name: "generated-complex-scenario",
+      description: "Auto-generated complex workflow scenario",
+      issueType: "feature",
+      complexity: "high",
+      expectedOutcome: "human_review",
       performanceTarget: 10000,
-      tags: ['generated', 'complex', 'human-review'],
+      tags: ["generated", "complex", "human-review"],
     };
   }
 }
 
 // Test Assertion Helpers
 export class TestAssertions {
-  static assertWorkflowSuccess(result: WorkflowResult, expectedState: WorkflowState = WorkflowState.PR_COMPLETE): void {
+  static assertWorkflowSuccess(
+    result: WorkflowResult,
+    expectedState: WorkflowState = WorkflowState.PR_COMPLETE,
+  ): void {
     expect(result.success).toBe(true);
     expect(result.finalState).toBe(expectedState);
     expect(result.executionTime).toBeGreaterThan(0);
     expect(result.workflowId).toMatch(/^workflow-\d+-/);
   }
 
-  static assertWorkflowFailure(result: WorkflowResult, expectedError?: string): void {
+  static assertWorkflowFailure(
+    result: WorkflowResult,
+    expectedError?: string,
+  ): void {
     expect(result.success).toBe(false);
     expect(result.finalState).toBe(WorkflowState.FAILED);
     if (expectedError) {
@@ -219,7 +256,10 @@ export class TestAssertions {
     expect(result.requiresHumanReview).toBe(true);
   }
 
-  static assertPerformanceWithinBounds(result: WorkflowResult, maxDuration: number): void {
+  static assertPerformanceWithinBounds(
+    result: WorkflowResult,
+    maxDuration: number,
+  ): void {
     expect(result.executionTime).toBeLessThanOrEqual(maxDuration);
   }
 
@@ -231,7 +271,7 @@ export class TestAssertions {
       github?: number;
       openCode?: number;
       worktree?: number;
-    }
+    },
   ): void {
     if (expectedCalls.github !== undefined) {
       // Note: This would require tracking actual call counts in mocks
@@ -289,13 +329,21 @@ export class E2EScenarioRunner {
     return this.context;
   }
 
-  async runScenario(issueNumber: number, title?: string, body?: string): Promise<E2ETestResult> {
+  async runScenario(
+    issueNumber: number,
+    title?: string,
+    body?: string,
+  ): Promise<E2ETestResult> {
     if (!this.context) {
-      throw new Error('Test context not initialized. Call setupTest() first.');
+      throw new Error("Test context not initialized. Call setupTest() first.");
     }
 
     this.performanceMonitor.startStep();
-    const result = await this.context.orchestrator.processIssue(issueNumber, title, body);
+    const result = await this.context.orchestrator.processIssue(
+      issueNumber,
+      title,
+      body,
+    );
     const duration = this.performanceMonitor.endStep();
 
     const performanceMetrics = this.performanceMonitor.end();

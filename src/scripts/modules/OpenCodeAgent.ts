@@ -16,6 +16,6 @@ export class OpenCodeAgent {
   }
 
   async query(prompt: string, options?: any): Promise<any> {
-    return { response: 'stub response' };
+    return { response: "stub response" };
   }
 }

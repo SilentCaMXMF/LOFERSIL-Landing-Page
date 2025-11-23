@@ -4,7 +4,10 @@
 declare global {
   interface Window {
     DOMPurify: {
-      sanitize: (dirty: string | Node, config?: Record<string, unknown>) => string;
+      sanitize: (
+        dirty: string | Node,
+        config?: Record<string, unknown>,
+      ) => string;
     };
   }
 }
@@ -72,7 +75,7 @@ export interface OpenCodeEvent {
  * Session idle event
  */
 export interface SessionIdleEvent extends OpenCodeEvent {
-  type: 'session.idle';
+  type: "session.idle";
   idleDuration: number; // Duration in milliseconds since last activity
   lastActivity: string; // ISO timestamp of last activity
   sessionStart: string; // ISO timestamp when session started
@@ -86,7 +89,7 @@ export interface SessionIdleEvent extends OpenCodeEvent {
  * Message updated event
  */
 export interface MessageUpdatedEvent extends OpenCodeEvent {
-  type: 'message.updated';
+  type: "message.updated";
   messageId: string;
   content: string;
   timestamp: string;
@@ -98,7 +101,7 @@ export interface MessageUpdatedEvent extends OpenCodeEvent {
  * Message part updated event
  */
 export interface MessagePartUpdatedEvent extends OpenCodeEvent {
-  type: 'message.part.updated';
+  type: "message.part.updated";
   messageId: string;
   partId: string;
   content: string;
@@ -112,7 +115,9 @@ export interface MessagePartUpdatedEvent extends OpenCodeEvent {
 /**
  * Generic event handler type
  */
-export type EventHandler<T extends OpenCodeEvent = OpenCodeEvent> = (event: T) => void;
+export type EventHandler<T extends OpenCodeEvent = OpenCodeEvent> = (
+  event: T,
+) => void;
 
 /**
  * Event listener registry

@@ -5,20 +5,20 @@
  * Provides bidirectional sync between AI processing states and GitHub Projects v2 board.
  */
 
-import { GitHubProjectsIntegration } from './github-projects';
-import { logger } from './logger';
+import { GitHubProjectsIntegration } from "./github-projects";
+import { logger } from "./logger";
 
 export enum KanbanStatus {
-  BACKLOG = 'Backlog',
-  IN_PROGRESS = 'In Progress',
-  IN_REVIEW = 'In Review',
-  DONE = 'Done',
+  BACKLOG = "Backlog",
+  IN_PROGRESS = "In Progress",
+  IN_REVIEW = "In Review",
+  DONE = "Done",
 }
 
 export enum AIProcessingState {
-  TODO = 'todo',
-  ONGOING = 'ongoing',
-  COMPLETED = 'completed',
+  TODO = "todo",
+  ONGOING = "ongoing",
+  COMPLETED = "completed",
 }
 
 export interface KanbanConfig {
@@ -54,7 +54,7 @@ export class KanbanManager {
       config.accessToken,
       config.projectId,
       config.owner,
-      config.repo
+      config.repo,
     );
   }
 
@@ -63,7 +63,7 @@ export class KanbanManager {
    */
   async initialize(): Promise<void> {
     try {
-      logger.info('Initializing KanbanManager');
+      logger.info("Initializing KanbanManager");
 
       // Load existing mappings from storage (if available)
       await this.loadExistingMappings();
@@ -74,9 +74,11 @@ export class KanbanManager {
       }
 
       this.isInitialized = true;
-      logger.info('KanbanManager initialized successfully');
+      logger.info("KanbanManager initialized successfully");
     } catch (error) {
-      logger.error('Failed to initialize KanbanManager', { error: (error as Error).message });
+      logger.error("Failed to initialize KanbanManager", {
+        error: (error as Error).message,
+      });
       throw error;
     }
   }
@@ -90,14 +92,21 @@ export class KanbanManager {
       this.syncInterval = undefined;
     }
     this.isInitialized = false;
-    logger.info('KanbanManager shutdown');
+    logger.info("KanbanManager shutdown");
   }
 
   /**
    * Update issue status when AI processing starts
    */
-  async onProcessingStart(issueNumber: number, workflowId?: string): Promise<void> {
-    await this.updateIssueStatus(issueNumber, AIProcessingState.ONGOING, workflowId);
+  async onProcessingStart(
+    issueNumber: number,
+    workflowId?: string,
+  ): Promise<void> {
+    await this.updateIssueStatus(
+      issueNumber,
+      AIProcessingState.ONGOING,
+      workflowId,
+    );
   }
 
   /**
@@ -108,27 +117,37 @@ export class KanbanManager {
       issueNumber,
       AIProcessingState.ONGOING,
       workflowId,
-      KanbanStatus.IN_REVIEW
+      KanbanStatus.IN_REVIEW,
     );
   }
 
   /**
    * Update issue status when processing is completed
    */
-  async onProcessingComplete(issueNumber: number, workflowId?: string): Promise<void> {
-    await this.updateIssueStatus(issueNumber, AIProcessingState.COMPLETED, workflowId);
+  async onProcessingComplete(
+    issueNumber: number,
+    workflowId?: string,
+  ): Promise<void> {
+    await this.updateIssueStatus(
+      issueNumber,
+      AIProcessingState.COMPLETED,
+      workflowId,
+    );
   }
 
   /**
    * Update issue status when processing fails
    */
-  async onProcessingFailed(issueNumber: number, workflowId?: string): Promise<void> {
+  async onProcessingFailed(
+    issueNumber: number,
+    workflowId?: string,
+  ): Promise<void> {
     // Move back to backlog for manual review
     await this.updateIssueStatus(
       issueNumber,
       AIProcessingState.TODO,
       workflowId,
-      KanbanStatus.BACKLOG
+      KanbanStatus.BACKLOG,
     );
   }
 
@@ -139,10 +158,10 @@ export class KanbanManager {
     issueNumber: number,
     aiState: AIProcessingState,
     workflowId?: string,
-    forcedStatus?: KanbanStatus
+    forcedStatus?: KanbanStatus,
   ): Promise<void> {
     if (!this.isInitialized) {
-      throw new Error('KanbanManager not initialized');
+      throw new Error("KanbanManager not initialized");
     }
 
     try {
@@ -161,14 +180,14 @@ export class KanbanManager {
         workflowId,
       });
 
-      logger.info('Updated issue kanban status', {
+      logger.info("Updated issue kanban status", {
         issueNumber,
         aiState,
         kanbanStatus,
         workflowId,
       });
     } catch (error) {
-      logger.error('Failed to update issue status', {
+      logger.error("Failed to update issue status", {
         issueNumber,
         aiState,
         workflowId,
@@ -197,11 +216,17 @@ export class KanbanManager {
 
         const currentKanbanStatus = card.status as KanbanStatus;
         if (currentKanbanStatus !== mapping.currentStatus) {
-          await this.handleManualStatusChange(card.issueNumber, currentKanbanStatus, mapping);
+          await this.handleManualStatusChange(
+            card.issueNumber,
+            currentKanbanStatus,
+            mapping,
+          );
         }
       }
     } catch (error) {
-      logger.error('Failed to check for manual changes', { error: (error as Error).message });
+      logger.error("Failed to check for manual changes", {
+        error: (error as Error).message,
+      });
     }
   }
 
@@ -211,9 +236,9 @@ export class KanbanManager {
   private async handleManualStatusChange(
     issueNumber: number,
     newKanbanStatus: KanbanStatus,
-    mapping: IssueKanbanMapping
+    mapping: IssueKanbanMapping,
   ): Promise<void> {
-    logger.info('Detected manual status change', {
+    logger.info("Detected manual status change", {
       issueNumber,
       oldStatus: mapping.currentStatus,
       newStatus: newKanbanStatus,
@@ -225,9 +250,16 @@ export class KanbanManager {
     mapping.lastAISync = new Date();
 
     // If moved back to Backlog or In Progress, it might indicate need for AI reprocessing
-    if (newKanbanStatus === KanbanStatus.BACKLOG || newKanbanStatus === KanbanStatus.IN_PROGRESS) {
+    if (
+      newKanbanStatus === KanbanStatus.BACKLOG ||
+      newKanbanStatus === KanbanStatus.IN_PROGRESS
+    ) {
       // Emit event for workflow orchestrator to handle
-      this.emitManualInterventionEvent(issueNumber, newKanbanStatus, mapping.workflowId);
+      this.emitManualInterventionEvent(
+        issueNumber,
+        newKanbanStatus,
+        mapping.workflowId,
+      );
     }
   }
 
@@ -237,15 +269,15 @@ export class KanbanManager {
   private emitManualInterventionEvent(
     issueNumber: number,
     kanbanStatus: KanbanStatus,
-    workflowId?: string
+    workflowId?: string,
   ): void {
     // This would typically emit an event that the Workflow Orchestrator listens to
     // For now, we'll log it - the orchestrator integration will handle this
-    logger.info('Manual intervention detected', {
+    logger.info("Manual intervention detected", {
       issueNumber,
       kanbanStatus,
       workflowId,
-      action: 'workflow_resume_needed',
+      action: "workflow_resume_needed",
     });
   }
 
@@ -262,13 +294,13 @@ export class KanbanManager {
     // Try to find existing card
     try {
       const cards = await this.githubProjects.getAllCards();
-      const existingCard = cards.find(c => c.issueNumber === issueNumber);
+      const existingCard = cards.find((c) => c.issueNumber === issueNumber);
 
       if (existingCard) {
         return existingCard.id;
       }
     } catch (error) {
-      logger.warn('Failed to check existing cards, will create new', {
+      logger.warn("Failed to check existing cards, will create new", {
         issueNumber,
         error: (error as Error).message,
       });
@@ -280,7 +312,7 @@ export class KanbanManager {
       body: `GitHub Issue #${issueNumber} - AI processing in progress`,
       status: KanbanStatus.BACKLOG,
       assignees: [],
-      labels: ['ai-processed'],
+      labels: ["ai-processed"],
       issueNumber,
     });
 
@@ -328,7 +360,9 @@ export class KanbanManager {
       await this.checkForManualChanges();
     }, this.config.syncIntervalMs);
 
-    logger.info('Started bidirectional sync', { intervalMs: this.config.syncIntervalMs });
+    logger.info("Started bidirectional sync", {
+      intervalMs: this.config.syncIntervalMs,
+    });
   }
 
   /**
@@ -352,9 +386,13 @@ export class KanbanManager {
         }
       }
 
-      logger.info('Loaded existing mappings', { count: this.issueMappings.size });
+      logger.info("Loaded existing mappings", {
+        count: this.issueMappings.size,
+      });
     } catch (error) {
-      logger.warn('Failed to load existing mappings', { error: (error as Error).message });
+      logger.warn("Failed to load existing mappings", {
+        error: (error as Error).message,
+      });
     }
   }
 
@@ -381,16 +419,23 @@ export class KanbanManager {
 
     try {
       const cards = await this.githubProjects.getAllCards();
-      const card = cards.find(c => c.issueNumber === issueNumber);
+      const card = cards.find((c) => c.issueNumber === issueNumber);
 
       if (card) {
         const currentStatus = card.status as KanbanStatus;
         if (currentStatus !== mapping.currentStatus) {
-          await this.handleManualStatusChange(issueNumber, currentStatus, mapping);
+          await this.handleManualStatusChange(
+            issueNumber,
+            currentStatus,
+            mapping,
+          );
         }
       }
     } catch (error) {
-      logger.error('Failed to force sync issue', { issueNumber, error: (error as Error).message });
+      logger.error("Failed to force sync issue", {
+        issueNumber,
+        error: (error as Error).message,
+      });
     }
   }
 }

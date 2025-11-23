@@ -3,10 +3,10 @@
  * Test suite for utility functions
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { debounce, throttle, isInViewport } from './Utils.js';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { debounce, throttle, isInViewport } from "./Utils.js";
 
-describe('Utils', () => {
+describe("Utils", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -15,8 +15,8 @@ describe('Utils', () => {
     vi.restoreAllMocks();
   });
 
-  describe('debounce', () => {
-    it('should delay function execution', () => {
+  describe("debounce", () => {
+    it("should delay function execution", () => {
       const mockFn = vi.fn();
       const debouncedFn = debounce(mockFn, 100);
 
@@ -30,7 +30,7 @@ describe('Utils', () => {
       expect(mockFn).toHaveBeenCalledTimes(1);
     });
 
-    it('should reset delay on multiple calls', () => {
+    it("should reset delay on multiple calls", () => {
       const mockFn = vi.fn();
       const debouncedFn = debounce(mockFn, 100);
 
@@ -45,19 +45,19 @@ describe('Utils', () => {
       expect(mockFn).toHaveBeenCalledTimes(1);
     });
 
-    it('should pass arguments correctly', () => {
+    it("should pass arguments correctly", () => {
       const mockFn = vi.fn();
       const debouncedFn = debounce(mockFn, 100);
 
-      debouncedFn('arg1', 'arg2');
+      debouncedFn("arg1", "arg2");
       vi.advanceTimersByTime(100);
 
-      expect(mockFn).toHaveBeenCalledWith('arg1', 'arg2');
+      expect(mockFn).toHaveBeenCalledWith("arg1", "arg2");
     });
   });
 
-  describe('throttle', () => {
-    it('should limit function execution rate', () => {
+  describe("throttle", () => {
+    it("should limit function execution rate", () => {
       const mockFn = vi.fn();
       const throttledFn = throttle(mockFn, 100);
 
@@ -72,17 +72,17 @@ describe('Utils', () => {
       expect(mockFn).toHaveBeenCalledTimes(2); // Now allowed again
     });
 
-    it('should pass arguments correctly', () => {
+    it("should pass arguments correctly", () => {
       const mockFn = vi.fn();
       const throttledFn = throttle(mockFn, 100);
 
-      throttledFn('arg1', 'arg2');
-      expect(mockFn).toHaveBeenCalledWith('arg1', 'arg2');
+      throttledFn("arg1", "arg2");
+      expect(mockFn).toHaveBeenCalledWith("arg1", "arg2");
     });
   });
 
-  describe('isInViewport', () => {
-    it('should return true for fully visible element', () => {
+  describe("isInViewport", () => {
+    it("should return true for fully visible element", () => {
       const mockElement = {
         getBoundingClientRect: () => ({
           top: 10,
@@ -92,13 +92,13 @@ describe('Utils', () => {
         }),
       };
 
-      Object.defineProperty(window, 'innerHeight', { value: 200 });
-      Object.defineProperty(window, 'innerWidth', { value: 200 });
+      Object.defineProperty(window, "innerHeight", { value: 200 });
+      Object.defineProperty(window, "innerWidth", { value: 200 });
 
       expect(isInViewport(mockElement as Element)).toBe(true);
     });
 
-    it('should return false for partially visible element', () => {
+    it("should return false for partially visible element", () => {
       const mockElement = {
         getBoundingClientRect: () => ({
           top: -10,
@@ -108,13 +108,13 @@ describe('Utils', () => {
         }),
       };
 
-      Object.defineProperty(window, 'innerHeight', { value: 200 });
-      Object.defineProperty(window, 'innerWidth', { value: 200 });
+      Object.defineProperty(window, "innerHeight", { value: 200 });
+      Object.defineProperty(window, "innerWidth", { value: 200 });
 
       expect(isInViewport(mockElement as Element)).toBe(false);
     });
 
-    it('should return false for element outside viewport', () => {
+    it("should return false for element outside viewport", () => {
       const mockElement = {
         getBoundingClientRect: () => ({
           top: 300,
@@ -124,8 +124,8 @@ describe('Utils', () => {
         }),
       };
 
-      Object.defineProperty(window, 'innerHeight', { value: 200 });
-      Object.defineProperty(window, 'innerWidth', { value: 200 });
+      Object.defineProperty(window, "innerHeight", { value: 200 });
+      Object.defineProperty(window, "innerWidth", { value: 200 });
 
       expect(isInViewport(mockElement as Element)).toBe(false);
     });
