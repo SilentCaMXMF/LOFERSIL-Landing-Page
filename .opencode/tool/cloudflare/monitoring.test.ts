@@ -20,10 +20,16 @@ vi.mock("fs", () => ({
   constants: { F_OK: 0 },
 }));
 
-vi.mock("path", () => ({
-  join: (...args: string[]) => args.join("/"),
-  dirname: (path: string) => path.split("/").slice(0, -1).join("/"),
-}));
+vi.mock("path", () => {
+  const mockPath = {
+    join: (...args: string[]) => args.join("/"),
+    dirname: (path: string) => path.split("/").slice(0, -1).join("/"),
+  };
+  return {
+    default: mockPath,
+    ...mockPath,
+  };
+});
 
 describe("CloudflareMonitoring", () => {
   let monitor: CloudflareMonitoring;

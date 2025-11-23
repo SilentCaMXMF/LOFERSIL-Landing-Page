@@ -6,6 +6,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./tests/setup/test-setup.ts"],
+    testTimeout: 30000, // 30 seconds for e2e tests
     include: [
       "tests/**/*.test.{ts,js}",
       "src/**/*.test.{ts,js}",

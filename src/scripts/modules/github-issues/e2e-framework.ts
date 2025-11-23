@@ -48,6 +48,7 @@ export interface E2ETestContext {
   githubMock: GitHubAPIMock;
   openCodeMock: OpenCodeAgentMock;
   worktreeMock: WorktreeManagerMock;
+  prGenerator: any; // Expose for mocking
   startTime: number;
   performanceMetrics: PerformanceMetrics;
   testScenario?: TestScenario;
@@ -301,12 +302,59 @@ export class E2EScenarioRunner {
     const openCodeMock = new OpenCodeAgentMock();
     const worktreeMock = new WorktreeManagerMock();
 
+    // Create mock PR generator
+    const mockPRGenerator = { createPullRequest: vi.fn() } as any;
+
     // Create orchestrator with mocked dependencies
     const orchestrator = createTestOrchestrator({
       issueAnalyzer: { analyzeIssue: openCodeMock.analyze } as any,
-      autonomousResolver: { resolveIssue: openCodeMock.generateCode } as any,
-      codeReviewer: { reviewChanges: openCodeMock.reviewCode } as any,
-      prGenerator: { createPullRequest: vi.fn() } as any,
+      autonomousResolver: {
+        resolveIssue: async (analysis: any, issue: any) => {
+          const solution = await openCodeMock.generateCode(analysis);
+          return {
+            success: true,
+            solution: {
+              files: solution.changes.map((change: any) => ({
+                path: change.file,
+                changes: [
+                  {
+                    type: "modify" as const,
+                    content: change.newCode,
+                    lineNumber: change.line,
+                  },
+                ],
+              })),
+            },
+            worktree: { path: "/tmp/worktree", branch: `fix-${issue.number}` },
+            iterations: 1,
+            reasoning: solution.explanation,
+          };
+        },
+      } as any,
+      codeReviewer: {
+        reviewChanges: async (changes: any, originalIssue: any) => {
+          // Convert CodeChanges to OpenCodeSolution format for the mock
+          const solution = {
+            changes: changes.files.flatMap((file: any) =>
+              file.changes.map((change: any) => ({
+                file: file.path,
+                line: change.lineNumber || 1,
+                oldCode: "// old code",
+                newCode: change.content,
+              })),
+            ),
+            explanation: "Code changes for review",
+          };
+          return await openCodeMock.reviewCode(solution);
+        },
+      } as any,
+      prGenerator: mockPRGenerator,
+      config: {
+        maxWorkflowTime: DEFAULT_TEST_CONFIG.benchmarks.workflowTimeout,
+        enableMetrics: true,
+        retryAttempts: DEFAULT_TEST_CONFIG.environment.retries,
+        humanInterventionThreshold: 3,
+      },
     });
 
     this.context = {
@@ -314,6 +362,7 @@ export class E2EScenarioRunner {
       githubMock,
       openCodeMock,
       worktreeMock,
+      prGenerator: mockPRGenerator,
       startTime: Date.now(),
       performanceMetrics: {
         totalDuration: 0,

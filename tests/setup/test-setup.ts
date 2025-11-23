@@ -95,3 +95,29 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 })) as any;
+
+// Mock environment variables for EnvironmentLoader
+(global as any).window = (global as any).window || {};
+(global as any).window.ENV = {
+  OPENAI_API_KEY: "test-openai-key",
+  GEMINI_API_KEY: "test-gemini-key",
+  NODE_ENV: "test",
+  GOOGLE_ANALYTICS_ID: "GA-TEST",
+  MCP_API_KEY: "test-mcp-key",
+  MCP_SERVER_URL: "ws://test-server:3000",
+  ENABLE_MCP_INTEGRATION: "true",
+  CLOUDFLARE_API_TOKEN: "test-cloudflare-token",
+  CLOUDFLARE_ACCOUNT_ID: "test-cloudflare-account-id",
+  EMAILJS_SERVICE_ID: "test-service-id",
+  EMAILJS_TEMPLATE_ID: "test-template-id",
+  EMAILJS_PUBLIC_KEY: "test-public-key",
+};
+
+// Also set process.env as fallback
+(global as any).process = (global as any).process || {};
+(global as any).process.env = {
+  ...((global as any).process.env || {}),
+  OPENAI_API_KEY: "test-openai-key",
+  GEMINI_API_KEY: "test-gemini-key",
+  NODE_ENV: "test",
+};

@@ -40,8 +40,7 @@ describe("End-to-End: Complete AI-Powered GitHub Issues Workflow", () => {
       const issue = TEST_ISSUES.simpleBug;
 
       // Setup mocks for successful workflow
-      context.githubMock.issues.get.mockResolvedValue({ data: issue });
-      context.openCodeMock.analyze.mockResolvedValue({
+      context.openCodeMock.analyze.mockImplementation(async (issue) => ({
         category: "bug",
         complexity: "low",
         requirements: ["Fix login button styling"],
@@ -49,19 +48,47 @@ describe("End-to-End: Complete AI-Powered GitHub Issues Workflow", () => {
         feasible: true,
         confidence: 0.95,
         reasoning: "Simple CSS fix",
-      });
+      }));
 
-      context.openCodeMock.generateCode.mockResolvedValue({
-        changes: [
-          {
-            file: "src/components/LoginButton.css",
-            line: 10,
-            oldCode: "padding: 8px;",
-            newCode: "padding: 12px;",
-          },
-        ],
-        explanation: "Fixed button padding",
-      });
+      context.openCodeMock.generateCode.mockImplementation(
+        async (analysis) => ({
+          changes: [
+            {
+              file: "src/components/LoginButton.css",
+              line: 10,
+              oldCode: "padding: 8px;",
+              newCode: "padding: 12px;",
+            },
+          ],
+          explanation: "Fixed button padding",
+        }),
+      );
+
+      context.openCodeMock.reviewCode.mockImplementation(async (solution) => ({
+        approved: true,
+        score: 0.92,
+        comments: [],
+        securityIssues: [],
+        qualityScore: 0.95,
+        performanceScore: 0.88,
+        maintainabilityScore: 0.9,
+        testCoverageScore: 0.85,
+        recommendations: [],
+      }));
+
+      context.openCodeMock.generateCode.mockImplementation(
+        async (analysis) => ({
+          changes: [
+            {
+              file: "src/components/LoginButton.css",
+              line: 10,
+              oldCode: "padding: 8px;",
+              newCode: "padding: 12px;",
+            },
+          ],
+          explanation: "Fixed button padding",
+        }),
+      );
 
       context.openCodeMock.reviewCode.mockResolvedValue({
         approved: true,
@@ -75,11 +102,12 @@ describe("End-to-End: Complete AI-Powered GitHub Issues Workflow", () => {
         recommendations: [],
       });
 
-      context.githubMock.pulls.create.mockResolvedValue({
-        data: {
-          number: 100,
-          html_url: "https://github.com/test/repo/pull/100",
-        },
+      // Mock the PR generator used by the orchestrator
+      context.prGenerator.createPullRequest.mockResolvedValue({
+        number: 100,
+        title: "Fix bug",
+        body: "This PR fixes the bug",
+        html_url: "https://github.com/test/repo/pull/100",
       });
 
       const result = await scenarioRunner.runScenario(
@@ -121,8 +149,9 @@ describe("End-to-End: Complete AI-Powered GitHub Issues Workflow", () => {
       const context = scenarioRunner.getCurrentContext()!;
       const issue = TEST_ISSUES.simpleBug;
 
-      context.githubMock.issues.get.mockRejectedValue(
-        new Error("GitHub API rate limit exceeded"),
+      // Mock the analysis to fail (simulating API failure)
+      context.openCodeMock.analyze.mockRejectedValue(
+        new Error("OpenCode API service unavailable"),
       );
 
       const result = await scenarioRunner.runScenario(
@@ -131,7 +160,7 @@ describe("End-to-End: Complete AI-Powered GitHub Issues Workflow", () => {
         issue.body,
       );
 
-      TestAssertions.assertWorkflowFailure(result, "GitHub API");
+      TestAssertions.assertWorkflowFailure(result, "OpenCode API");
     });
   });
 });

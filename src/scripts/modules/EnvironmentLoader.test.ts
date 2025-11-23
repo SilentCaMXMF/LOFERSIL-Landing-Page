@@ -130,16 +130,20 @@ describe("EnvironmentLoader", () => {
 
     it("should fail validation when required variable is missing", () => {
       const originalEnv = (global.window as any).ENV;
-      (global.window as any).ENV = { ...originalEnv };
-      delete (global.window as any).ENV.GEMINI_API_KEY;
+      const originalProcess = (global.process as any).env;
 
-      const invalidLoader = new EnvironmentLoader();
-      const validation = invalidLoader.validateRequired();
-      expect(validation.valid).toBe(false);
-      expect(validation.missing).toEqual(["GEMINI_API_KEY"]);
+      // Clear both window.ENV and process.env completely
+      (global.window as any).ENV = { OPENAI_API_KEY: "test-key" };
+      (global.process as any).env = { NODE_ENV: "test" };
+
+      // Create a new loader that should fail validation
+      expect(() => new EnvironmentLoader()).toThrow(
+        "Missing required environment variables: GEMINI_API_KEY",
+      );
 
       // Restore
       (global.window as any).ENV = originalEnv;
+      (global.process as any).env = originalProcess;
     });
   });
 

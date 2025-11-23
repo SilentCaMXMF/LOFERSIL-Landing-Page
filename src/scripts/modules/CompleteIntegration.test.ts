@@ -13,7 +13,11 @@ import request from "supertest";
 import express from "express";
 import { TaskManagementIntegration } from "./TaskManagementIntegration";
 import { createTaskManagementRouter } from "./TaskManagementApi";
-import { initializeGitHubIssuesReviewerIntegration } from "./GitHubIssuesReviewerMain";
+import {
+  initializeGitHubIssuesReviewerIntegration,
+  ENVIRONMENT_VARIABLES,
+  DEFAULT_CONFIG,
+} from "./GitHubIssuesReviewerMain";
 
 describe("Complete GitHub Issues Reviewer System Integration", () => {
   let app: express.Application;
@@ -277,8 +281,6 @@ describe("Complete GitHub Issues Reviewer System Integration", () => {
     });
 
     it("should have proper environment variables defined", () => {
-      const { ENVIRONMENT_VARIABLES } = require("../GitHubIssuesReviewerMain");
-
       expect(ENVIRONMENT_VARIABLES).toBeDefined();
       expect(
         ENVIRONMENT_VARIABLES.GITHUB_ISSUES_REVIEWER_API_KEY,
@@ -288,8 +290,6 @@ describe("Complete GitHub Issues Reviewer System Integration", () => {
     });
 
     it("should have default configuration for different environments", () => {
-      const { DEFAULT_CONFIG } = require("../GitHubIssuesReviewerMain");
-
       expect(DEFAULT_CONFIG).toBeDefined();
       expect(DEFAULT_CONFIG.development).toBeDefined();
       expect(DEFAULT_CONFIG.production).toBeDefined();
