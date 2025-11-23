@@ -16,7 +16,7 @@ import { GitHubProjectsIntegration } from "./github-projects";
 
 // Mock the GitHubProjectsIntegration
 vi.mock("./github-projects", () => ({
-  GitHubProjectsIntegration: class {
+  GitHubProjectsIntegration: class MockGitHubProjectsIntegration {
     updateCardStatus = vi.fn();
     getAllCards = vi.fn();
     createCard = vi.fn();
@@ -40,15 +40,7 @@ describe("KanbanManager", () => {
       retryDelayMs: 1000,
     };
 
-    mockGitHubProjects = {
-      updateCardStatus: vi.fn(),
-      getAllCards: vi.fn(),
-      createCard: vi.fn(),
-    };
-
-    (GitHubProjectsIntegration as any).mockImplementation(
-      () => mockGitHubProjects,
-    );
+    // The mock class will be used directly
 
     kanbanManager = new KanbanManager(config);
   });
@@ -59,11 +51,13 @@ describe("KanbanManager", () => {
 
   describe("initialization", () => {
     it("should initialize successfully", async () => {
-      mockGitHubProjects.getAllCards.mockResolvedValue([]);
+      // Access the mocked instance through the kanbanManager
+      const mockInstance = (kanbanManager as any).githubProjects;
+      mockInstance.getAllCards.mockResolvedValue([]);
 
       await kanbanManager.initialize();
 
-      expect(mockGitHubProjects.getAllCards).toHaveBeenCalled();
+      expect(mockInstance.getAllCards).toHaveBeenCalled();
     });
 
     it("should load existing mappings from board", async () => {

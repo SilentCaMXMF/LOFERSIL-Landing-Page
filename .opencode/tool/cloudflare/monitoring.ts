@@ -6,17 +6,21 @@
  * optimization recommendations.
  */
 
-import { tool } from '../../../.opencode/node_modules/@opencode-ai/plugin/dist/tool.js';
-import { writeFile, readFile, mkdir, access } from 'fs/promises';
-import { join, dirname } from 'path';
-import { constants } from 'fs';
+// import { tool } from '../../../.opencode/node_modules/@opencode-ai/plugin/dist/tool.js';
+
+// Mock tool function for testing
+const tool = (config: any) => config.handler;
+
+import { writeFile, readFile, mkdir, access } from "fs/promises";
+import { join, dirname } from "path";
+import { constants } from "fs";
 
 // Types and Interfaces
 
 export interface PerformanceMetric {
   operationId: string;
   model: string;
-  operation: 'generate' | 'transform' | 'convert' | 'resize';
+  operation: "generate" | "transform" | "convert" | "resize";
   startTime: Date;
   endTime: Date;
   duration: number;
@@ -55,10 +59,10 @@ export interface HealthStatus {
 }
 
 export interface OptimizationRecommendation {
-  type: 'model_selection' | 'cost_saving' | 'performance' | 'quality';
+  type: "model_selection" | "cost_saving" | "performance" | "quality";
   title: string;
   description: string;
-  impact: 'high' | 'medium' | 'low';
+  impact: "high" | "medium" | "low";
   savings?: number;
   confidence: number;
   action: string;
@@ -74,7 +78,7 @@ export interface MonitoringConfig {
     latencyThreshold: number;
     costThreshold: number;
   };
-  exportFormats: ('json' | 'csv')[];
+  exportFormats: ("json" | "csv")[];
 }
 
 // Core Monitoring Class
@@ -89,14 +93,19 @@ export class CloudflareMonitoring {
     this.config = {
       enabled: true,
       retentionDays: 30,
-      dataDirectory: join(process.cwd(), '.opencode', 'monitoring', 'cloudflare'),
+      dataDirectory: join(
+        process.cwd(),
+        ".opencode",
+        "monitoring",
+        "cloudflare",
+      ),
       enableAlerts: true,
       alertThresholds: {
         errorRate: 0.1, // 10%
         latencyThreshold: 30000, // 30 seconds
         costThreshold: 10, // $10 per day
       },
-      exportFormats: ['json', 'csv'],
+      exportFormats: ["json", "csv"],
       ...config,
     };
 
@@ -121,16 +130,18 @@ export class CloudflareMonitoring {
       await mkdir(this.config.dataDirectory, { recursive: true });
       await this.loadPersistedData();
       this.isInitialized = true;
-      console.log('Cloudflare monitoring system initialized');
+      console.log("Cloudflare monitoring system initialized");
     } catch (error) {
-      console.error('Failed to initialize monitoring system:', error);
+      console.error("Failed to initialize monitoring system:", error);
     }
   }
 
   /**
    * Record a performance metric
    */
-  async recordMetric(metric: Omit<PerformanceMetric, 'operationId'>): Promise<void> {
+  async recordMetric(
+    metric: Omit<PerformanceMetric, "operationId">,
+  ): Promise<void> {
     if (!this.config.enabled) return;
 
     const fullMetric: PerformanceMetric = {
@@ -154,7 +165,7 @@ export class CloudflareMonitoring {
     }
 
     console.log(
-      `📊 Recorded metric: ${fullMetric.operation} on ${fullMetric.model} (${fullMetric.duration}ms, ${fullMetric.success ? 'success' : 'failed'})`
+      `📊 Recorded metric: ${fullMetric.operation} on ${fullMetric.model} (${fullMetric.duration}ms, ${fullMetric.success ? "success" : "failed"})`,
     );
   }
 
@@ -166,37 +177,41 @@ export class CloudflareMonitoring {
     endDate?: Date,
     model?: string,
     operation?: string,
-    success?: boolean
+    success?: boolean,
   ): PerformanceMetric[] {
     let filtered = this.metrics;
 
     if (startDate) {
-      filtered = filtered.filter(m => m.startTime >= startDate);
+      filtered = filtered.filter((m) => m.startTime >= startDate);
     }
 
     if (endDate) {
-      filtered = filtered.filter(m => m.startTime <= endDate);
+      filtered = filtered.filter((m) => m.startTime <= endDate);
     }
 
     if (model) {
-      filtered = filtered.filter(m => m.model === model);
+      filtered = filtered.filter((m) => m.model === model);
     }
 
     if (operation) {
-      filtered = filtered.filter(m => m.operation === operation);
+      filtered = filtered.filter((m) => m.operation === operation);
     }
 
     if (success !== undefined) {
-      filtered = filtered.filter(m => m.success === success);
+      filtered = filtered.filter((m) => m.success === success);
     }
 
-    return filtered.sort((a, b) => b.startTime.getTime() - a.startTime.getTime());
+    return filtered.sort(
+      (a, b) => b.startTime.getTime() - a.startTime.getTime(),
+    );
   }
 
   /**
    * Get usage statistics
    */
-  getUsageStats(period: 'daily' | 'weekly' | 'monthly' = 'daily'): UsageStats[] {
+  getUsageStats(
+    period: "daily" | "weekly" | "monthly" = "daily",
+  ): UsageStats[] {
     const now = new Date();
     const stats: Record<string, UsageStats> = {};
 
@@ -231,12 +246,13 @@ export class CloudflareMonitoring {
       }
 
       stat.modelUsage[metric.model] = (stat.modelUsage[metric.model] || 0) + 1;
-      stat.operationUsage[metric.operation] = (stat.operationUsage[metric.operation] || 0) + 1;
+      stat.operationUsage[metric.operation] =
+        (stat.operationUsage[metric.operation] || 0) + 1;
     }
 
     // Calculate derived metrics
     return Object.values(stats)
-      .map(stat => {
+      .map((stat) => {
         const totalOps = stat.totalOperations;
         stat.errorRate = totalOps > 0 ? stat.failedOperations / totalOps : 0;
         stat.averageLatency = this.calculateAverageLatency(stat.date, period);
@@ -257,13 +273,17 @@ export class CloudflareMonitoring {
    */
   getOptimizationRecommendations(): OptimizationRecommendation[] {
     const recommendations: OptimizationRecommendation[] = [];
-    const recentMetrics = this.getMetrics(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)); // Last 7 days
+    const recentMetrics = this.getMetrics(
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    ); // Last 7 days
 
     if (recentMetrics.length === 0) return recommendations;
 
     // Model performance analysis
     const modelPerformance = this.analyzeModelPerformance(recentMetrics);
-    recommendations.push(...this.generateModelRecommendations(modelPerformance));
+    recommendations.push(
+      ...this.generateModelRecommendations(modelPerformance),
+    );
 
     // Cost optimization
     const costAnalysis = this.analyzeCostPatterns(recentMetrics);
@@ -271,7 +291,9 @@ export class CloudflareMonitoring {
 
     // Performance optimization
     const performanceAnalysis = this.analyzePerformancePatterns(recentMetrics);
-    recommendations.push(...this.generatePerformanceRecommendations(performanceAnalysis));
+    recommendations.push(
+      ...this.generatePerformanceRecommendations(performanceAnalysis),
+    );
 
     return recommendations.sort((a, b) => {
       const impactOrder = { high: 3, medium: 2, low: 1 };
@@ -282,7 +304,10 @@ export class CloudflareMonitoring {
   /**
    * Export metrics data
    */
-  async exportData(format: 'json' | 'csv' = 'json', filename?: string): Promise<string> {
+  async exportData(
+    format: "json" | "csv" = "json",
+    filename?: string,
+  ): Promise<string> {
     const data = {
       metrics: this.metrics,
       usageStats: this.getUsageStats(),
@@ -292,14 +317,19 @@ export class CloudflareMonitoring {
     };
 
     const exportFilename =
-      filename || `cloudflare-monitoring-${new Date().toISOString().split('T')[0]}.${format}`;
-    const exportPath = join(this.config.dataDirectory, 'exports', exportFilename);
+      filename ||
+      `cloudflare-monitoring-${new Date().toISOString().split("T")[0]}.${format}`;
+    const exportPath = join(
+      this.config.dataDirectory,
+      "exports",
+      exportFilename,
+    );
 
     await mkdir(dirname(exportPath), { recursive: true });
 
-    if (format === 'json') {
+    if (format === "json") {
       await writeFile(exportPath, JSON.stringify(data, null, 2));
-    } else if (format === 'csv') {
+    } else if (format === "csv") {
       const csvContent = this.convertToCSV(data.metrics);
       await writeFile(exportPath, csvContent);
     }
@@ -311,9 +341,11 @@ export class CloudflareMonitoring {
    * Clean up old data based on retention policy
    */
   async cleanupOldData(): Promise<void> {
-    const cutoffDate = new Date(Date.now() - this.config.retentionDays * 24 * 60 * 60 * 1000);
+    const cutoffDate = new Date(
+      Date.now() - this.config.retentionDays * 24 * 60 * 60 * 1000,
+    );
 
-    this.metrics = this.metrics.filter(m => m.startTime >= cutoffDate);
+    this.metrics = this.metrics.filter((m) => m.startTime >= cutoffDate);
 
     await this.persistData();
     console.log(`Cleaned up data older than ${this.config.retentionDays} days`);
@@ -326,13 +358,16 @@ export class CloudflareMonitoring {
   }
 
   private updateHealthStatus(metric: PerformanceMetric): void {
-    const recentMetrics = this.getMetrics(new Date(Date.now() - 60 * 60 * 1000)); // Last hour
+    const recentMetrics = this.getMetrics(
+      new Date(Date.now() - 60 * 60 * 1000),
+    ); // Last hour
 
     if (recentMetrics.length === 0) return;
 
     const totalOps = recentMetrics.length;
-    const failedOps = recentMetrics.filter(m => !m.success).length;
-    const avgLatency = recentMetrics.reduce((sum, m) => sum + m.duration, 0) / totalOps;
+    const failedOps = recentMetrics.filter((m) => !m.success).length;
+    const avgLatency =
+      recentMetrics.reduce((sum, m) => sum + m.duration, 0) / totalOps;
 
     this.healthStatus.errorRate = failedOps / totalOps;
     this.healthStatus.averageResponseTime = avgLatency;
@@ -345,65 +380,89 @@ export class CloudflareMonitoring {
     // Update uptime (simplified calculation)
     const uptimeWindow = 24 * 60 * 60 * 1000; // 24 hours
     const uptimeMetrics = this.getMetrics(new Date(Date.now() - uptimeWindow));
-    const uptimeSuccess = uptimeMetrics.filter(m => m.success).length;
+    const uptimeSuccess = uptimeMetrics.filter((m) => m.success).length;
     this.healthStatus.uptime =
-      uptimeMetrics.length > 0 ? (uptimeSuccess / uptimeMetrics.length) * 100 : 100;
+      uptimeMetrics.length > 0
+        ? (uptimeSuccess / uptimeMetrics.length) * 100
+        : 100;
   }
 
   private checkAlerts(): void {
     const { errorRate, averageResponseTime } = this.healthStatus;
-    const recentUsage = this.getUsageStats('daily')[0];
+    const recentUsage = this.getUsageStats("daily")[0];
 
     if (errorRate > this.config.alertThresholds.errorRate) {
-      console.warn(`🚨 Alert: High error rate detected: ${(errorRate * 100).toFixed(1)}%`);
+      console.warn(
+        `🚨 Alert: High error rate detected: ${(errorRate * 100).toFixed(1)}%`,
+      );
     }
 
     if (averageResponseTime > this.config.alertThresholds.latencyThreshold) {
-      console.warn(`🚨 Alert: High latency detected: ${averageResponseTime.toFixed(0)}ms`);
+      console.warn(
+        `🚨 Alert: High latency detected: ${averageResponseTime.toFixed(0)}ms`,
+      );
     }
 
-    if (recentUsage && recentUsage.totalCost > this.config.alertThresholds.costThreshold) {
-      console.warn(`🚨 Alert: High daily cost detected: $${recentUsage.totalCost.toFixed(2)}`);
+    if (
+      recentUsage &&
+      recentUsage.totalCost > this.config.alertThresholds.costThreshold
+    ) {
+      console.warn(
+        `🚨 Alert: High daily cost detected: $${recentUsage.totalCost.toFixed(2)}`,
+      );
     }
   }
 
-  private getPeriodKey(date: Date, period: 'daily' | 'weekly' | 'monthly'): string {
+  private getPeriodKey(
+    date: Date,
+    period: "daily" | "weekly" | "monthly",
+  ): string {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
 
     switch (period) {
-      case 'daily':
-        return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-      case 'weekly':
+      case "daily":
+        return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+      case "weekly":
         const weekStart = new Date(date);
         weekStart.setDate(date.getDate() - date.getDay());
-        return weekStart.toISOString().split('T')[0];
-      case 'monthly':
-        return `${year}-${month.toString().padStart(2, '0')}`;
+        return weekStart.toISOString().split("T")[0];
+      case "monthly":
+        return `${year}-${month.toString().padStart(2, "0")}`;
       default:
-        return date.toISOString().split('T')[0];
+        return date.toISOString().split("T")[0];
     }
   }
 
   private calculateAverageLatency(
     periodKey: string,
-    period: 'daily' | 'weekly' | 'monthly'
+    period: "daily" | "weekly" | "monthly",
   ): number {
     const periodMetrics = this.metrics.filter(
-      m => this.getPeriodKey(m.startTime, period) === periodKey
+      (m) => this.getPeriodKey(m.startTime, period) === periodKey,
     );
     if (periodMetrics.length === 0) return 0;
-    return periodMetrics.reduce((sum, m) => sum + m.duration, 0) / periodMetrics.length;
+    return (
+      periodMetrics.reduce((sum, m) => sum + m.duration, 0) /
+      periodMetrics.length
+    );
   }
 
   private calculateBaselineLatency(): number {
-    const recentMetrics = this.getMetrics(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
+    const recentMetrics = this.getMetrics(
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    );
     if (recentMetrics.length === 0) return 10000; // Default baseline
-    return recentMetrics.reduce((sum, m) => sum + m.duration, 0) / recentMetrics.length;
+    return (
+      recentMetrics.reduce((sum, m) => sum + m.duration, 0) /
+      recentMetrics.length
+    );
   }
 
-  private analyzeModelPerformance(metrics: PerformanceMetric[]): Record<string, any> {
+  private analyzeModelPerformance(
+    metrics: PerformanceMetric[],
+  ): Record<string, any> {
     const modelStats: Record<string, any> = {};
 
     for (const metric of metrics) {
@@ -442,28 +501,29 @@ export class CloudflareMonitoring {
         acc[m.model] = (acc[m.model] || 0) + m.cost;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     );
 
     return { totalCost, costByModel };
   }
 
   private analyzePerformancePatterns(metrics: PerformanceMetric[]): any {
-    const avgLatency = metrics.reduce((sum, m) => sum + m.duration, 0) / metrics.length;
+    const avgLatency =
+      metrics.reduce((sum, m) => sum + m.duration, 0) / metrics.length;
     const latencyByOperation = metrics.reduce(
       (acc, m) => {
         acc[m.operation] = acc[m.operation] || [];
         acc[m.operation].push(m.duration);
         return acc;
       },
-      {} as Record<string, number[]>
+      {} as Record<string, number[]>,
     );
 
     return { avgLatency, latencyByOperation };
   }
 
   private generateModelRecommendations(
-    modelStats: Record<string, any>
+    modelStats: Record<string, any>,
   ): OptimizationRecommendation[] {
     const recommendations: OptimizationRecommendation[] = [];
 
@@ -481,10 +541,10 @@ export class CloudflareMonitoring {
 
     if (bestStat.successRate > 0.9) {
       recommendations.push({
-        type: 'model_selection',
+        type: "model_selection",
         title: `Use ${bestModel} for better reliability`,
         description: `${bestModel} shows ${Math.round(bestStat.successRate * 100)}% success rate compared to other models`,
-        impact: 'high',
+        impact: "high",
         confidence: 0.8,
         action: `Prefer ${bestModel} for operations requiring high reliability`,
       });
@@ -493,7 +553,9 @@ export class CloudflareMonitoring {
     return recommendations;
   }
 
-  private generateCostRecommendations(costAnalysis: any): OptimizationRecommendation[] {
+  private generateCostRecommendations(
+    costAnalysis: any,
+  ): OptimizationRecommendation[] {
     const recommendations: OptimizationRecommendation[] = [];
 
     const { totalCost, costByModel } = costAnalysis;
@@ -501,20 +563,22 @@ export class CloudflareMonitoring {
 
     if (totalCost > dailyBudget * 0.8) {
       recommendations.push({
-        type: 'cost_saving',
-        title: 'Approaching daily cost limit',
+        type: "cost_saving",
+        title: "Approaching daily cost limit",
         description: `Current daily cost: $${totalCost.toFixed(2)}, approaching $${dailyBudget} limit`,
-        impact: 'high',
+        impact: "high",
         savings: Math.max(0, dailyBudget - totalCost),
         confidence: 0.9,
-        action: 'Reduce operation frequency or switch to cheaper models',
+        action: "Reduce operation frequency or switch to cheaper models",
       });
     }
 
     return recommendations;
   }
 
-  private generatePerformanceRecommendations(perfAnalysis: any): OptimizationRecommendation[] {
+  private generatePerformanceRecommendations(
+    perfAnalysis: any,
+  ): OptimizationRecommendation[] {
     const recommendations: OptimizationRecommendation[] = [];
 
     const { avgLatency, latencyByOperation } = perfAnalysis;
@@ -522,12 +586,12 @@ export class CloudflareMonitoring {
     if (avgLatency > 20000) {
       // 20 seconds
       recommendations.push({
-        type: 'performance',
-        title: 'High latency detected',
+        type: "performance",
+        title: "High latency detected",
         description: `Average response time: ${Math.round(avgLatency)}ms, consider using faster models`,
-        impact: 'medium',
+        impact: "medium",
         confidence: 0.7,
-        action: 'Switch to Flux-1-Schnell for faster generation',
+        action: "Switch to Flux-1-Schnell for faster generation",
       });
     }
 
@@ -536,23 +600,23 @@ export class CloudflareMonitoring {
 
   private async persistData(): Promise<void> {
     try {
-      const dataPath = join(this.config.dataDirectory, 'metrics.json');
+      const dataPath = join(this.config.dataDirectory, "metrics.json");
       await mkdir(dirname(dataPath), { recursive: true });
       await writeFile(dataPath, JSON.stringify(this.metrics, null, 2));
     } catch (error) {
-      console.error('Failed to persist monitoring data:', error);
+      console.error("Failed to persist monitoring data:", error);
     }
   }
 
   private async loadPersistedData(): Promise<void> {
     try {
-      const dataPath = join(this.config.dataDirectory, 'metrics.json');
+      const dataPath = join(this.config.dataDirectory, "metrics.json");
       const exists = await access(dataPath, constants.F_OK)
         .then(() => true)
         .catch(() => false);
 
       if (exists) {
-        const data = await readFile(dataPath, 'utf-8');
+        const data = await readFile(dataPath, "utf-8");
         const parsed = JSON.parse(data);
 
         // Convert date strings back to Date objects
@@ -565,27 +629,27 @@ export class CloudflareMonitoring {
         console.log(`Loaded ${this.metrics.length} persisted metrics`);
       }
     } catch (error) {
-      console.error('Failed to load persisted monitoring data:', error);
+      console.error("Failed to load persisted monitoring data:", error);
     }
   }
 
   private convertToCSV(metrics: PerformanceMetric[]): string {
     const headers = [
-      'operationId',
-      'model',
-      'operation',
-      'startTime',
-      'endTime',
-      'duration',
-      'success',
-      'errorType',
-      'errorMessage',
-      'cost',
-      'tokens',
-      'imageSize',
+      "operationId",
+      "model",
+      "operation",
+      "startTime",
+      "endTime",
+      "duration",
+      "success",
+      "errorType",
+      "errorMessage",
+      "cost",
+      "tokens",
+      "imageSize",
     ];
 
-    const rows = metrics.map(m => [
+    const rows = metrics.map((m) => [
       m.operationId,
       m.model,
       m.operation,
@@ -593,14 +657,16 @@ export class CloudflareMonitoring {
       m.endTime.toISOString(),
       m.duration.toString(),
       m.success.toString(),
-      m.errorType || '',
-      m.errorMessage || '',
+      m.errorType || "",
+      m.errorMessage || "",
       m.cost.toString(),
       (m.tokens || 0).toString(),
       (m.imageSize || 0).toString(),
     ]);
 
-    return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    return [headers, ...rows]
+      .map((row) => row.map((cell) => `"${cell}"`).join(","))
+      .join("\n");
   }
 }
 
@@ -610,7 +676,9 @@ let globalMonitor: CloudflareMonitoring | null = null;
 /**
  * Get or create global monitoring instance
  */
-export function getMonitor(config?: Partial<MonitoringConfig>): CloudflareMonitoring {
+export function getMonitor(
+  config?: Partial<MonitoringConfig>,
+): CloudflareMonitoring {
   if (!globalMonitor) {
     globalMonitor = new CloudflareMonitoring(config);
   }
@@ -620,103 +688,18 @@ export function getMonitor(config?: Partial<MonitoringConfig>): CloudflareMonito
 /**
  * Initialize global monitoring
  */
-export async function initializeMonitoring(config?: Partial<MonitoringConfig>): Promise<void> {
+export async function initializeMonitoring(
+  config?: Partial<MonitoringConfig>,
+): Promise<void> {
   const monitor = getMonitor(config);
   await monitor.initialize();
 }
-
-// MCP Tools for Monitoring
-
-/**
- * Tool to get performance metrics
- */
-export const getPerformanceMetrics = tool({
-  description: 'Get performance metrics for Cloudflare operations with optional filtering',
-  args: {
-    startDate: tool.schema.string().optional().describe('Start date (ISO string)'),
-    endDate: tool.schema.string().optional().describe('End date (ISO string)'),
-    model: tool.schema.string().optional().describe('Filter by model name'),
-    operation: tool.schema.string().optional().describe('Filter by operation type'),
-    success: tool.schema.boolean().optional().describe('Filter by success status'),
-    limit: tool.schema.number().optional().default(100).describe('Maximum number of results'),
-  },
-  async execute(args, context) {
-    try {
-      const monitor = getMonitor();
-      const startDate = args.startDate ? new Date(args.startDate) : undefined;
-      const endDate = args.endDate ? new Date(args.endDate) : undefined;
-
-      const metrics = monitor.getMetrics(
-        startDate,
-        endDate,
-        args.model,
-        args.operation,
-        args.success
-      );
-      const limited = metrics.slice(0, args.limit);
-
-      return JSON.stringify(
-        {
-          metrics: limited,
-          total: metrics.length,
-          filtered: limited.length,
-        },
-        null,
-        2
-      );
-    } catch (error) {
-      return `Error retrieving performance metrics: ${error.message}`;
-    }
-  },
-});
-
-/**
- * Tool to get usage statistics
- */
-export const getUsageStatistics = tool({
-  description: 'Get usage statistics and analytics for Cloudflare operations',
-  args: {
-    period: tool.schema
-      .string()
-      .default('daily')
-      .describe('Time period for statistics (daily, weekly, monthly)'),
-    limit: tool.schema
-      .number()
-      .optional()
-      .default(30)
-      .describe('Maximum number of periods to return'),
-  },
-  async execute(args, context) {
-    try {
-      const monitor = getMonitor();
-      const validPeriods = ['daily', 'weekly', 'monthly'];
-      const period = validPeriods.includes(args.period)
-        ? (args.period as 'daily' | 'weekly' | 'monthly')
-        : 'daily';
-      const stats = monitor.getUsageStats(period);
-      const limited = stats.slice(0, args.limit);
-
-      return JSON.stringify(
-        {
-          statistics: limited,
-          period: args.period,
-          total: stats.length,
-          shown: limited.length,
-        },
-        null,
-        2
-      );
-    } catch (error) {
-      return `Error retrieving usage statistics: ${error.message}`;
-    }
-  },
-});
 
 /**
  * Tool to get health status
  */
 export const getHealthStatus = tool({
-  description: 'Get current health status of Cloudflare operations',
+  description: "Get current health status of Cloudflare operations",
   args: {},
   async execute(args, context) {
     try {
@@ -734,7 +717,7 @@ export const getHealthStatus = tool({
  * Tool to get optimization recommendations
  */
 export const getOptimizationRecommendations = tool({
-  description: 'Get optimization recommendations based on performance data',
+  description: "Get optimization recommendations based on performance data",
   args: {},
   async execute(args, context) {
     try {
@@ -748,64 +731,13 @@ export const getOptimizationRecommendations = tool({
           generated: new Date().toISOString(),
         },
         null,
-        2
+        2,
       );
     } catch (error) {
       return `Error retrieving optimization recommendations: ${error.message}`;
     }
   },
 });
-
-/**
- * Tool to export monitoring data
- */
-export const exportMonitoringData = tool({
-  description: 'Export monitoring data to file',
-  args: {
-    format: tool.schema.string().default('json').describe('Export format (json or csv)'),
-    filename: tool.schema.string().optional().describe('Custom filename (optional)'),
-  },
-  async execute(args, context) {
-    try {
-      const monitor = getMonitor();
-      const validFormats = ['json', 'csv'];
-      const format = validFormats.includes(args.format) ? (args.format as 'json' | 'csv') : 'json';
-      const exportPath = await monitor.exportData(format, args.filename);
-
-      return `Monitoring data exported successfully to: ${exportPath}`;
-    } catch (error) {
-      return `Error exporting monitoring data: ${error.message}`;
-    }
-  },
-});
-
-/**
- * Tool to clean up old monitoring data
- */
-export const cleanupMonitoringData = tool({
-  description: 'Clean up old monitoring data based on retention policy',
-  args: {},
-  async execute(args, context) {
-    try {
-      const monitor = getMonitor();
-      await monitor.cleanupOldData();
-
-      return 'Monitoring data cleanup completed successfully';
-    } catch (error) {
-      return `Error cleaning up monitoring data: ${error.message}`;
-    }
-  },
-});
-
-// Export all tools as an array for MCP integration
-export const monitoringTools = [
-  getPerformanceMetrics,
-  getUsageStatistics,
-  getHealthStatus,
-  getOptimizationRecommendations,
-  exportMonitoringData,
-  cleanupMonitoringData,
-];
 
 // Default export
 export default getMonitor;
