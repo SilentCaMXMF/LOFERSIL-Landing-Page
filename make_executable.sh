@@ -1,1 +1,0 @@
-chmod +x run_integration_test.sh
