@@ -303,6 +303,49 @@ const isProduction =
     console.warn('⚠️ Favicon generation failed, continuing...');
   }
 
+  // Security constants for image validation
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
+  const ALLOWED_FORMATS = ['jpeg', 'png'];
+  const MALICIOUS_SIGNATURES = [
+    Buffer.from('3c3f706870', 'hex'), // <?php
+    Buffer.from('3c736372697074', 'hex'), // <script
+    Buffer.from('4a617661736372697074', 'hex'), // Javascript
+  ];
+
+  // Security validation function
+  const validateImageFile = async filePath => {
+    try {
+      // Check file size
+      const stats = fs.statSync(filePath);
+      if (stats.size > MAX_FILE_SIZE) {
+        throw new Error(`File too large: ${stats.size} bytes (max: ${MAX_FILE_SIZE})`);
+      }
+
+      // Check for malicious signatures in first 512 bytes
+      const buffer = Buffer.alloc(512);
+      const fd = fs.openSync(filePath, 'r');
+      fs.readSync(fd, buffer, 0, 512, 0);
+      fs.closeSync(fd);
+
+      const fileContent = buffer.toString('hex');
+      for (const sig of MALICIOUS_SIGNATURES) {
+        if (fileContent.includes(sig.toString('hex'))) {
+          throw new Error('Potentially malicious file detected');
+        }
+      }
+
+      // Validate with sharp
+      const metadata = await sharp(filePath).metadata();
+      if (!ALLOWED_FORMATS.includes(metadata.format)) {
+        throw new Error(`Unsupported format: ${metadata.format}`);
+      }
+      return metadata;
+    } catch (error) {
+      console.error(`❌ Security validation failed for ${filePath}: ${error.message}`);
+      return null;
+    }
+  };
+
   // Optimize images
   console.log('🖼️ Optimizing images...');
   const optimizeImages = async () => {
@@ -320,14 +363,25 @@ const isProduction =
             const baseName = path.parse(file).name;
             const webpBase = path.join(imagesDir, baseName);
 
-            // Create responsive WebP versions and full-size WebP in parallel
+            // Security validation
+            const metadata = await validateImageFile(inputPath);
+            if (!metadata) {
+              console.log(`Skipping ${file} due to security validation failure`);
+              return;
+            }
+
+            // Create responsive WebP and JPEG versions in parallel
             const sizes = [400, 800, 1200];
-            const sizePromises = sizes.map(size =>
+            const sizePromises = sizes.flatMap(size => [
               sharp(inputPath)
                 .resize(size, null, { withoutEnlargement: true })
                 .webp({ quality: 80 })
-                .toFile(`${webpBase}-${size}w.webp`)
-            );
+                .toFile(`${webpBase}-${size}w.webp`),
+              sharp(inputPath)
+                .resize(size, null, { withoutEnlargement: true })
+                .jpeg({ quality: 80 })
+                .toFile(`${webpBase}-${size}w.jpg`),
+            ]);
 
             // Add full-size WebP conversion
             sizePromises.push(sharp(inputPath).webp({ quality: 80 }).toFile(`${webpBase}.webp`));
