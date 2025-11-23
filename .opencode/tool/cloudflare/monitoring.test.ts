@@ -20,13 +20,10 @@ vi.mock("fs", () => ({
   constants: { F_OK: 0 },
 }));
 
-vi.mock("path", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    default: actual.default,
-  };
-});
+vi.mock("path", () => ({
+  join: (...args: string[]) => args.join("/"),
+  dirname: (path: string) => path.split("/").slice(0, -1).join("/"),
+}));
 
 describe("CloudflareMonitoring", () => {
   let monitor: CloudflareMonitoring;

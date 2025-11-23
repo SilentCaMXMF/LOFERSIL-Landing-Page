@@ -10,7 +10,7 @@ import {
   E2EScenarioRunner,
   TestAssertions,
   E2ETestResult,
-} from "./e2e-framework.test";
+} from "./e2e-framework";
 import { TEST_ISSUES } from "./mocks/test-fixtures";
 
 describe("End-to-End: Complete AI-Powered GitHub Issues Workflow", () => {

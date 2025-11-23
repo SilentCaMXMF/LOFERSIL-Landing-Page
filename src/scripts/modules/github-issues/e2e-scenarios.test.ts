@@ -17,7 +17,7 @@ import {
   e2eTestSetup,
   createE2ETestContext,
   E2ETestResult,
-} from "./e2e-framework.test";
+} from "./e2e-framework";
 
 // Setup global test environment
 e2eTestSetup.setupTestEnvironment();

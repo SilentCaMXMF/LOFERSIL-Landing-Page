@@ -5,24 +5,26 @@
  * and utilities used across all tests.
  */
 
-import { beforeAll, afterAll, vi } from 'vitest';
+import { beforeAll, afterAll, vi } from "vitest";
+import "dotenv/config";
 
 // Mock DOMPurify globally
 const mockDOMPurify = {
   sanitize: (input: string) => {
     // Simulate DOMPurify behavior - remove script tags and dangerous attributes
     return input
-      .replace(/<script[^>]*>.*?<\/script>/gi, '')
-      .replace(/<[^>]*on\w+="[^"]*"[^>]*>/gi, '')
-      .replace(/javascript:/gi, '');
+      .replace(/<script[^>]*>.*?<\/script>/gi, "")
+      .replace(/<[^>]*on\w+="[^"]*"[^>]*>/gi, "")
+      .replace(/javascript:/gi, "");
   },
 };
 
 // Set up global DOMPurify
-(globalThis as unknown as { DOMPurify: typeof mockDOMPurify }).DOMPurify = mockDOMPurify;
+(globalThis as unknown as { DOMPurify: typeof mockDOMPurify }).DOMPurify =
+  mockDOMPurify;
 
 // Mock window.gtag for Google Analytics
-Object.defineProperty(window, 'gtag', {
+Object.defineProperty(window, "gtag", {
   value: vi.fn(),
   writable: true,
 });
@@ -62,7 +64,7 @@ const sessionStorageMock = {
 global.sessionStorage = sessionStorageMock as any;
 
 // Mock navigator.serviceWorker
-Object.defineProperty(navigator, 'serviceWorker', {
+Object.defineProperty(navigator, "serviceWorker", {
   value: {
     register: vi.fn().mockResolvedValue({}),
     ready: Promise.resolve({
@@ -76,8 +78,8 @@ Object.defineProperty(navigator, 'serviceWorker', {
 
 // Mock Notification API
 global.Notification = {
-  requestPermission: vi.fn().mockResolvedValue('granted'),
-  permission: 'default',
+  requestPermission: vi.fn().mockResolvedValue("granted"),
+  permission: "default",
 } as any;
 
 // Mock IntersectionObserver

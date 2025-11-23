@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { E2EScenarioRunner, TestAssertions } from "./e2e-framework.test";
+import { E2EScenarioRunner, TestAssertions } from "./e2e-framework";
 import { TEST_ISSUES } from "./mocks/test-fixtures";
 import { WorkflowOrchestrator, WorkflowResult } from "./WorkflowOrchestrator";
 import { GitHubAPIMock } from "./mocks/github-api";
