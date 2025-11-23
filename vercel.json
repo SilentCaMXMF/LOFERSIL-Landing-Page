@@ -14,15 +14,15 @@
     },
     "api/github/webhooks/*.js": {
       "runtime": "nodejs18.x",
-      "maxDuration": 1800
+      "maxDuration": 900
     },
     "api/github/workflows/*.js": {
       "runtime": "nodejs18.x",
-      "maxDuration": 1800
+      "maxDuration": 900
     },
     "src/scripts/modules/github-issues/**/*.js": {
       "runtime": "nodejs18.x",
-      "maxDuration": 1800
+      "maxDuration": 900
     }
   },
   "regions": ["fra1"],

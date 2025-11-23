@@ -46,6 +46,7 @@
   "author": "LOFERSIL",
   "license": "MIT",
   "devDependencies": {
+    "@axe-core/cli": "^4.11.0",
     "@eslint/js": "^9.0.0",
     "@types/dompurify": "^3.2.0",
     "@types/express": "^5.0.5",
