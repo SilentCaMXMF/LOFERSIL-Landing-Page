@@ -1,15 +1,1347 @@
 {
   "repository": "LOFERSIL-Landing-Page",
-  "last_updated": "2025-11-22T23:48:53.211Z",
+  "last_updated": "2025-11-23T01:41:49.206Z",
   "tasks": [
     {
-      "id": "TEST-001",
-      "title": "Test Kanban Population",
+      "id": "README",
+      "title": "LOFERSIL Task Management System",
       "group": "Todo",
       "status": "Todo",
       "priority": "P1",
-      "source": "test",
-      "notes": "Test task for kanban population"
+      "source": "tasks/README.md",
+      "notes": "This directory contains all task management files organized by completion status. Tasks are categorized into three main folders for clear prioritization and progress tracking."
+    },
+    {
+      "id": "CONTEXT7-INTEGRATION-TEST-SUITE-README",
+      "title": "Context7 Integration Test Suite",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/CONTEXT7-INTEGRATION-TEST-SUITE-README.md",
+      "notes": "A consolidated test suite that combines functionality from multiple Context7 integration files into a single, unified testing framework."
+    },
+    {
+      "id": "MCP-Context7-Integration-Test-Results",
+      "title": "MCP Context7 Integration Test Results",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/MCP-Context7-Integration-Test-Results.md",
+      "notes": "Test the MCP Context7 integration to fetch OpenCode documentation on agent prompting and GitHub worktrees functionality for creating a GitHub issues reviewer."
+    },
+    {
+      "id": "MCP-FILE-CLEANUP-DOCUMENTATION",
+      "title": "MCP File Cleanup Process Documentation",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/MCP-FILE-CLEANUP-DOCUMENTATION.md",
+      "notes": "This document details the comprehensive cleanup and consolidation of MCP (Model Context Protocol) related files that occurred in November 2025. The cleanup aimed to reduce code duplication, improve ma"
+    },
+    {
+      "id": "add-performance-reliability-tests",
+      "title": "Run all performance and reliability tests",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "'P1'",
+      "source": "tasks/completed/add-performance-reliability-tests.md",
+      "notes": "Successfully created comprehensive performance and reliability tests for the AI-powered GitHub Issues Reviewer system. The tests extend the existing E2E framework with specialized testing for system p"
+    },
+    {
+      "id": "ai-powered-github-issues-reviewer-system-01",
+      "title": "01. Implement Issue Intake & Analysis Component",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/01-implement-issue-intake-analysis.md",
+      "notes": "id: ai-powered-github-issues-reviewer-system-01"
+    },
+    {
+      "id": "ai-powered-github-issues-reviewer-system-02",
+      "title": "02. Implement Autonomous Resolver Component",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/02-implement-autonomous-resolver.md",
+      "notes": "id: ai-powered-github-issues-reviewer-system-02"
+    },
+    {
+      "id": "ai-powered-github-issues-reviewer-system-03",
+      "title": "03. Implement Code Reviewer Component",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/03-implement-code-reviewer.md",
+      "notes": "id: ai-powered-github-issues-reviewer-system-03"
+    },
+    {
+      "id": "ai-powered-github-issues-reviewer-system-04",
+      "title": "04. Implement PR Generator Component",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/04-implement-pr-generator.md",
+      "notes": "id: ai-powered-github-issues-reviewer-system-04"
+    },
+    {
+      "id": "ai-powered-github-issues-reviewer-system-05",
+      "title": "05. Implement Workflow Orchestrator Component",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/05-implement-workflow-orchestrator.md",
+      "notes": "id: ai-powered-github-issues-reviewer-system-05"
+    },
+    {
+      "id": "06-add-to-task-management-system",
+      "title": "Task 6: Add System to Main Task Management - COMPLETED ✅",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/06-add-to-task-management-system.md",
+      "notes": "Successfully integrated the AI-powered GitHub Issues Reviewer System with the main LOFERSIL landing page application, providing complete task management, API endpoints, automation triggers, and monito"
+    },
+    {
+      "id": "ai-powered-github-issues-reviewer-system-07",
+      "title": "07. Create Comprehensive Test Suites for All Components",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/07-create-comprehensive-test-suites.md",
+      "notes": "**Status**: ✅ **COMPLETED** - Comprehensive test suites implemented with extensive coverage"
+    },
+    {
+      "id": "ai-powered-github-issues-reviewer-system-08",
+      "title": "08. Implement End-to-End Testing of Complete Workflow",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/08-end-to-end-testing-workflow.md",
+      "notes": "**Status**: ✅ **COMPLETED** - E2E testing framework implemented with comprehensive workflow validation"
+    },
+    {
+      "id": "ai-powered-github-issues-reviewer-system-09",
+      "title": "09. Add GitHub Integration with Webhooks and API",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/09-github-integration-webhooks-api.md",
+      "notes": "**Status**: ✅ **COMPLETED** - Full GitHub integration implemented with webhooks, API client, and security measures"
+    },
+    {
+      "id": "ai-powered-github-issues-reviewer-system-10",
+      "title": "10. Set Up Production Deployment Configuration",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/10-production-deployment-setup.md",
+      "notes": "id: ai-powered-github-issues-reviewer-system-10"
+    },
+    {
+      "id": "ai-powered-github-issues-reviewer-system-11",
+      "title": "11. Implement Kanban Board Integration",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/11-implement-kanban-board-integration.md",
+      "notes": "**Status**: ✅ **COMPLETED** - Kanban board integration implemented with real-time status updates and manual intervention support"
+    },
+    {
+      "id": "README",
+      "title": "AI-Powered GitHub Issues Reviewer System",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/README.md",
+      "notes": "Objective: Implement a complete AI-powered system to autonomously review, analyze, and resolve GitHub issues with PR generation"
+    },
+    {
+      "id": "github-issues-reviewer-architecture",
+      "title": "AI-Powered GitHub Issues Reviewer Architecture",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/ai-powered-github-issues-reviewer-system/github-issues-reviewer-architecture.md",
+      "notes": "An autonomous system that analyzes GitHub issues, generates solutions using AI agents, and creates pull requests for review. The system integrates OpenCode agents for analysis and review, Git worktree"
+    },
+    {
+      "id": "cloudflare-mcp-integration",
+      "title": "Cloudflare Workers AI MCP Integration",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/cloudflare-mcp-integration.md",
+      "notes": "Successfully integrated Cloudflare Workers AI endpoints into the MCP (Model Context Protocol) configuration system. This enables AI-powered tools for text generation, image generation, and text embedd"
+    },
+    {
+      "id": "fix-build-assets-and-sw-errors-01",
+      "title": "01. Investigate hero-image.svg 404 error",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/fix-build-assets-and-sw-errors/01-investigate-hero-image-path.md",
+      "notes": "id: fix-build-assets-and-sw-errors-01"
+    },
+    {
+      "id": "fix-build-assets-and-sw-errors-02",
+      "title": "02. Verify build process copies assets correctly",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/fix-build-assets-and-sw-errors/02-check-build-asset-copying.md",
+      "notes": "id: fix-build-assets-and-sw-errors-02"
+    },
+    {
+      "id": "fix-build-assets-and-sw-errors-03",
+      "title": "03. Analyze service worker cache failure",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/fix-build-assets-and-sw-errors/03-analyze-service-worker-cache.md",
+      "notes": "id: fix-build-assets-and-sw-errors-03"
+    },
+    {
+      "id": "fix-build-assets-and-sw-errors-04",
+      "title": "04. Fix asset paths or build configuration",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/fix-build-assets-and-sw-errors/04-fix-asset-paths-or-build.md",
+      "notes": "id: fix-build-assets-and-sw-errors-04"
+    },
+    {
+      "id": "fix-build-assets-and-sw-errors-05",
+      "title": "05. Update service worker cached resources list",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/fix-build-assets-and-sw-errors/05-update-service-worker-resources.md",
+      "notes": "id: fix-build-assets-and-sw-errors-05"
+    },
+    {
+      "id": "fix-build-assets-and-sw-errors-06",
+      "title": "06. Test build and verify fixes in deployment",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/fix-build-assets-and-sw-errors/06-test-build-and-deploy.md",
+      "notes": "id: fix-build-assets-and-sw-errors-06"
+    },
+    {
+      "id": "README",
+      "title": "Fix Build Assets and SW Errors",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/fix-build-assets-and-sw-errors/README.md",
+      "notes": "Objective: Resolve 404 error for hero-image.svg and service worker cache failure in production build"
+    },
+    {
+      "id": "future-improvements",
+      "title": "Future Improvements - OpenCode Integration",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/future-improvements.md",
+      "notes": "This file contains prioritized tasks identified during the OpenCode integration verification process. These are optional improvements that can enhance the system over time."
+    },
+    {
+      "id": "PROGRESS-SUMMARY",
+      "title": "IMPLEMENTATION-PLAN-REVIEW-001 - PROGRESS SUMMARY",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/implementation-plan-review-progress/PROGRESS-SUMMARY.md",
+      "notes": "**Date**: November 22, 2025"
+    },
+    {
+      "id": "mcp-integration",
+      "title": "Integração MCP - Model Context Protocol",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/mcp-integration.md",
+      "notes": "**Objetivo**: Integrar Model Context Protocol (MCP) ao sistema OpenCode"
+    },
+    {
+      "id": "mcp-server-management",
+      "title": "MCP Server Management",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/mcp-server-management.md",
+      "notes": "To connect to an MCP server, follow these steps:"
+    },
+    {
+      "id": "mcp-tool-operations",
+      "title": "MCP Tool Operations",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/mcp-tool-operations.md",
+      "notes": "To list all available MCP tools:"
+    },
+    {
+      "id": "opencode-integration-completion-01",
+      "title": "01. Fix MCP Test Suite Syntax Errors",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/opencode-integration-completion/01-fix-mcp-test-suite-syntax-errors.md",
+      "notes": "id: opencode-integration-completion-01"
+    },
+    {
+      "id": "opencode-integration-completion-02",
+      "title": "02. Update ESLint Configuration for Test Files",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/opencode-integration-completion/02-update-eslint-config-for-tests.md",
+      "notes": "id: opencode-integration-completion-02"
+    },
+    {
+      "id": "opencode-integration-completion-03",
+      "title": "03. Add Environment Variable Validation on Startup",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/opencode-integration-completion/03-add-environment-variable-validation.md",
+      "notes": "id: opencode-integration-completion-03"
+    },
+    {
+      "id": "opencode-integration-completion-04",
+      "title": "04. Enhance Command Documentation with Examples",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/opencode-integration-completion/04-enhance-command-documentation.md",
+      "notes": "id: opencode-integration-completion-04"
+    },
+    {
+      "id": "opencode-integration-completion-05",
+      "title": "05. Standardize MCP Error Handling Across Tools",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P2",
+      "source": "tasks/completed/opencode-integration-completion/05-standardize-mcp-error-handling.md",
+      "notes": "id: opencode-integration-completion-05"
+    },
+    {
+      "id": "README",
+      "title": "OpenCode Integration Completion",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/opencode-integration-completion/README.md",
+      "notes": "Objective: Complete the remaining 5% of OpenCode integration gaps to achieve 100% completeness and resolve all critical issues"
+    },
+    {
+      "id": "integration-gaps-verification",
+      "title": "OpenCode Integration Gaps & Improvements",
+      "group": "Completed",
+      "status": "Completed",
+      "priority": "P1",
+      "source": "tasks/completed/opencode-integration-completion/integration-gaps-verification.md",
+      "notes": "**Overall Status: 100% Complete** - The .opencode integration is fully functional and production-ready."
+    },
+    {
+      "id": "frontend-specialist-agent-01",
+      "title": "01. Analyze Current Frontend Architecture",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/frontend-specialist-agent/01-analyze-current-frontend-architecture.md",
+      "notes": "id: frontend-specialist-agent-01"
+    },
+    {
+      "id": "frontend-specialist-agent-02",
+      "title": "02. Design Agent Workflow Architecture",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/frontend-specialist-agent/02-design-agent-module-structure.md",
+      "notes": "id: frontend-specialist-agent-02"
+    },
+    {
+      "id": "frontend-specialist-agent-03",
+      "title": "03. Design Frontend Analysis Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/frontend-specialist-agent/03-implement-frontend-analysis-tools.md",
+      "notes": "id: frontend-specialist-agent-03"
+    },
+    {
+      "id": "frontend-specialist-agent-04",
+      "title": "04. Design UI Component Generation Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/04-add-ui-component-generator.md",
+      "notes": "id: frontend-specialist-agent-04"
+    },
+    {
+      "id": "frontend-specialist-agent-05",
+      "title": "05. Design Responsive Design Analysis Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/05-implement-responsive-design-helper.md",
+      "notes": "id: frontend-specialist-agent-05"
+    },
+    {
+      "id": "frontend-specialist-agent-06",
+      "title": "06. Design Performance Optimization Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/06-create-performance-optimization-module.md",
+      "notes": "id: frontend-specialist-agent-06"
+    },
+    {
+      "id": "frontend-specialist-agent-07",
+      "title": "07. Design Accessibility Auditing Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/07-add-accessibility-auditor.md",
+      "notes": "id: frontend-specialist-agent-07"
+    },
+    {
+      "id": "frontend-specialist-agent-08",
+      "title": "08. Design CSS Framework Integration Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/08-implement-modern-css-framework-integration.md",
+      "notes": "id: frontend-specialist-agent-08"
+    },
+    {
+      "id": "frontend-specialist-agent-09",
+      "title": "09. Design Frontend Testing Framework Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/09-create-testing-framework-for-frontend.md",
+      "notes": "id: frontend-specialist-agent-09"
+    },
+    {
+      "id": "frontend-specialist-agent-10",
+      "title": "10. Design Build Process Optimization Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/10-add-build-process-optimization.md",
+      "notes": "id: frontend-specialist-agent-10"
+    },
+    {
+      "id": "frontend-specialist-agent-11",
+      "title": "11. Design Cross-Browser Compatibility Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/11-implement-cross-browser-compatibility.md",
+      "notes": "id: frontend-specialist-agent-11"
+    },
+    {
+      "id": "frontend-specialist-agent-12",
+      "title": "12. Design Frontend Documentation Generator Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/12-create-frontend-documentation-generator.md",
+      "notes": "id: frontend-specialist-agent-12"
+    },
+    {
+      "id": "frontend-specialist-agent-13",
+      "title": "13. Design Automated Frontend Testing Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/13-add-automated-frontend-testing.md",
+      "notes": "id: frontend-specialist-agent-13"
+    },
+    {
+      "id": "frontend-specialist-agent-14",
+      "title": "14. Design Performance Monitoring Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/14-implement-performance-monitoring.md",
+      "notes": "id: frontend-specialist-agent-14"
+    },
+    {
+      "id": "frontend-specialist-agent-15",
+      "title": "15. Design Frontend Best Practices Validator Workflow",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/frontend-specialist-agent/15-create-frontend-best-practices-validator.md",
+      "notes": "id: frontend-specialist-agent-15"
+    },
+    {
+      "id": "README",
+      "title": "Frontend Specialist Agent",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/frontend-specialist-agent/README.md",
+      "notes": "Objective: Design agent-based workflows for frontend specialization using existing subagents (@task-manager, @coder-agent, @tester-agent, @reviewer-agent) to handle UI/UX improvements, responsive desi"
+    },
+    {
+      "id": "openai-image-specialist-agent-01",
+      "title": "01. Design agent architecture",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/openai-image-specialist-agent/01-design-agent-architecture.md",
+      "notes": "id: openai-image-specialist-agent-01"
+    },
+    {
+      "id": "openai-image-specialist-agent-02",
+      "title": "02. Implement agent core",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/openai-image-specialist-agent/02-implement-agent-core.md",
+      "notes": "id: openai-image-specialist-agent-02"
+    },
+    {
+      "id": "openai-image-specialist-agent-03",
+      "title": "03. Add workflow orchestration",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/openai-image-specialist-agent/03-add-workflow-orchestration.md",
+      "notes": "id: openai-image-specialist-agent-03"
+    },
+    {
+      "id": "openai-image-specialist-agent-04",
+      "title": "04. Integrate image specialist",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/openai-image-specialist-agent/04-integrate-image-specialist.md",
+      "notes": "id: openai-image-specialist-agent-04"
+    },
+    {
+      "id": "openai-image-specialist-agent-05",
+      "title": "05. Add intelligent decision making",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/openai-image-specialist-agent/05-add-intelligent-decision-making.md",
+      "notes": "id: openai-image-specialist-agent-05"
+    },
+    {
+      "id": "openai-image-specialist-agent-06",
+      "title": "06. Implement error recovery",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/openai-image-specialist-agent/06-implement-error-recovery.md",
+      "notes": "id: openai-image-specialist-agent-06"
+    },
+    {
+      "id": "openai-image-specialist-agent-07",
+      "title": "07. Add performance optimization",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/07-add-performance-optimization.md",
+      "notes": "id: openai-image-specialist-agent-07"
+    },
+    {
+      "id": "openai-image-specialist-agent-08",
+      "title": "08. Create agent interface",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/08-create-agent-interface.md",
+      "notes": "id: openai-image-specialist-agent-08"
+    },
+    {
+      "id": "openai-image-specialist-agent-09",
+      "title": "09. Add monitoring logging",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/09-add-monitoring-logging.md",
+      "notes": "id: openai-image-specialist-agent-09"
+    },
+    {
+      "id": "openai-image-specialist-agent-10",
+      "title": "10. Test agent functionality",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/openai-image-specialist-agent/10-test-agent-functionality.md",
+      "notes": "id: openai-image-specialist-agent-10"
+    },
+    {
+      "id": "openai-image-specialist-agent-11",
+      "title": "11. Document agent usage",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/11-document-agent-usage.md",
+      "notes": "id: openai-image-specialist-agent-11"
+    },
+    {
+      "id": "README",
+      "title": "OpenAI Image Specialist Agent",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/openai-image-specialist-agent/README.md",
+      "notes": "Objective: Create an intelligent agent that leverages the OpenAI Image Specialist for automated image processing, analysis, and enhancement workflows"
+    },
+    {
+      "id": "add-workflow-orchestration-01",
+      "title": "01. Design Workflow Data Structures",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/01-design-workflow-data-structures.md",
+      "notes": "id: add-workflow-orchestration-01"
+    },
+    {
+      "id": "add-workflow-orchestration-02",
+      "title": "02. Implement Workflow Validation",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/02-implement-workflow-validation.md",
+      "notes": "id: add-workflow-orchestration-02"
+    },
+    {
+      "id": "add-workflow-orchestration-03",
+      "title": "03. Create Workflow Executor Engine",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/03-create-workflow-executor-engine.md",
+      "notes": "id: add-workflow-orchestration-03"
+    },
+    {
+      "id": "add-workflow-orchestration-04",
+      "title": "04. Add Step Execution Management",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/04-add-step-execution-management.md",
+      "notes": "id: add-workflow-orchestration-04"
+    },
+    {
+      "id": "add-workflow-orchestration-05",
+      "title": "05. Implement Conditional Branching",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/05-implement-conditional-branching.md",
+      "notes": "id: add-workflow-orchestration-05"
+    },
+    {
+      "id": "add-workflow-orchestration-06",
+      "title": "06. Create Progress Tracking System",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/06-create-progress-tracking-system.md",
+      "notes": "id: add-workflow-orchestration-06"
+    },
+    {
+      "id": "add-workflow-orchestration-07",
+      "title": "07. Add Workflow Persistence",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/07-add-workflow-persistence.md",
+      "notes": "id: add-workflow-orchestration-07"
+    },
+    {
+      "id": "add-workflow-orchestration-08",
+      "title": "08. Implement Timeout Handling",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/08-implement-timeout-handling.md",
+      "notes": "id: add-workflow-orchestration-08"
+    },
+    {
+      "id": "add-workflow-orchestration-09",
+      "title": "09. Integrate Result Aggregation",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/09-integrate-result-aggregation.md",
+      "notes": "id: add-workflow-orchestration-09"
+    },
+    {
+      "id": "add-workflow-orchestration-10",
+      "title": "10. Test Orchestration Integration",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/10-test-orchestration-integration.md",
+      "notes": "id: add-workflow-orchestration-10"
+    },
+    {
+      "id": "README",
+      "title": "Add Workflow Orchestration",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/openai-image-specialist-agent/add-workflow-orchestration/README.md",
+      "notes": "Objective: Implement a workflow orchestration system for managing complex image processing pipelines, supporting linear and branching workflows with state tracking, conditional logic, persistence, tim"
+    },
+    {
+      "id": "production-readiness-improvements-01",
+      "title": "01. Analyze Current Dependencies and Update Requirements",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/production-readiness-improvements/01-analyze-current-dependencies.md",
+      "notes": "id: production-readiness-improvements-01"
+    },
+    {
+      "id": "production-readiness-improvements-02",
+      "title": "02. Update Express from Version 4 to 5",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/production-readiness-improvements/02-update-express-dependency.md",
+      "notes": "id: production-readiness-improvements-02"
+    },
+    {
+      "id": "production-readiness-improvements-03",
+      "title": "03. Update OpenAI from Version 4 to 6",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/production-readiness-improvements/03-update-openai-dependency.md",
+      "notes": "id: production-readiness-improvements-03"
+    },
+    {
+      "id": "production-readiness-improvements-04",
+      "title": "04. Update Helmet from Version 7 to 8",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/production-readiness-improvements/04-update-helmet-dependency.md",
+      "notes": "id: production-readiness-improvements-04"
+    },
+    {
+      "id": "production-readiness-improvements-05",
+      "title": "05. Run Comprehensive Tests After Dependency Updates",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/production-readiness-improvements/05-run-comprehensive-tests.md",
+      "notes": "id: production-readiness-improvements-05"
+    },
+    {
+      "id": "production-readiness-improvements-06",
+      "title": "06. Set Up Chrome-Enabled Environment for Lighthouse",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/production-readiness-improvements/06-setup-chrome-environment.md",
+      "notes": "id: production-readiness-improvements-06"
+    },
+    {
+      "id": "production-readiness-improvements-07",
+      "title": "07. Configure Lighthouse Performance Testing",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/production-readiness-improvements/07-configure-lighthouse-testing.md",
+      "notes": "id: production-readiness-improvements-07"
+    },
+    {
+      "id": "production-readiness-improvements-08",
+      "title": "08. Identify Required Environment Variables",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/production-readiness-improvements/08-identify-required-env-vars.md",
+      "notes": "id: production-readiness-improvements-08"
+    },
+    {
+      "id": "production-readiness-improvements-09",
+      "title": "09. Configure Production Environment Variables",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/production-readiness-improvements/09-configure-production-env-vars.md",
+      "notes": "id: production-readiness-improvements-09"
+    },
+    {
+      "id": "README",
+      "title": "Production Readiness Improvements",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/production-readiness-improvements/README.md",
+      "notes": "Objective: Enhance production readiness by updating key dependencies with testing, setting up Lighthouse performance testing, and ensuring proper environment variable configuration"
+    },
+    {
+      "id": "01-verify-github-secrets",
+      "title": "Verify GitHub Secrets Configuration",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/test-email-sending-implementation/01-verify-github-secrets.md",
+      "notes": "Verify all SMTP secrets are properly configured in GitHub repository."
+    },
+    {
+      "id": "README",
+      "title": "Test Email Sending Implementation",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/test-email-sending-implementation/README.md",
+      "notes": "Objective: Comprehensive testing plan for Gmail SMTP integration with contact form to ensure emails are properly sent from pedroocalado@gmail.com to a35255@campus.fcsh.unl.pt."
+    },
+    {
+      "id": "troubleshoot-kanban-population-01",
+      "title": "01. Verify GitHub workflow trigger for kanban_payload.json",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "high",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/01-verify-workflow-trigger.md",
+      "notes": "id: troubleshoot-kanban-population-01"
+    },
+    {
+      "id": "troubleshoot-kanban-population-02",
+      "title": "02. Fetch latest Actions run logs for kanban-sync-classic.yml",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "high",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/02-fetch-action-run-logs.md",
+      "notes": "id: troubleshoot-kanban-population-02"
+    },
+    {
+      "id": "troubleshoot-kanban-population-03",
+      "title": "03. Confirm the target GitHub Project V2 board exists",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "high",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/03-confirm-target-project-v2.md",
+      "notes": "id: troubleshoot-kanban-population-03"
+    },
+    {
+      "id": "troubleshoot-kanban-population-04",
+      "title": "04. Inspect the Status field on Project V2",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "medium",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/04-inspect-status-field.md",
+      "notes": "id: troubleshoot-kanban-population-04"
+    },
+    {
+      "id": "troubleshoot-kanban-population-05",
+      "title": "05. Check the kanban script for GraphQL mutations",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "medium",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/05-check-graphql-mutations.md",
+      "notes": "id: troubleshoot-kanban-population-05"
+    },
+    {
+      "id": "troubleshoot-kanban-population-06",
+      "title": "06. Verify the workflow's GitHub token permissions",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "high",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/06-verify-token-permissions.md",
+      "notes": "id: troubleshoot-kanban-population-06"
+    },
+    {
+      "id": "troubleshoot-kanban-population-07",
+      "title": "07. Create a small dry-run payload and test",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "high",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/07-create-dry-run-test.md",
+      "notes": "id: troubleshoot-kanban-population-07"
+    },
+    {
+      "id": "troubleshoot-kanban-population-08",
+      "title": "08. Collect and categorize any errors from the run",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "low",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/08-collect-errors.md",
+      "notes": "id: troubleshoot-kanban-population-08"
+    },
+    {
+      "id": "troubleshoot-kanban-population-09",
+      "title": "09. Document diagnostic findings and recommended steps",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "low",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/09-document-findings.md",
+      "notes": "id: troubleshoot-kanban-population-09"
+    },
+    {
+      "id": "README",
+      "title": "Troubleshoot Kanban Population",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/troubleshoot-kanban-population/README.md",
+      "notes": "Objective: Diagnose and resolve why the Kanban board is not populating despite successful issue creation in the kanban-sync-classic.yml workflow, ensuring the Project V2 board reflects all tasks from "
+    },
+    {
+      "id": "update-kanban-payload-01",
+      "title": "01. Inventory Completed Tasks",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/update-kanban-payload/01-inventory-completed-tasks.md",
+      "notes": "id: update-kanban-payload-01"
+    },
+    {
+      "id": "update-kanban-payload-02",
+      "title": "02. Inventory Ongoing Tasks",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/update-kanban-payload/02-inventory-ongoing-tasks.md",
+      "notes": "id: update-kanban-payload-02"
+    },
+    {
+      "id": "update-kanban-payload-03",
+      "title": "03. Inventory Todo Tasks",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/update-kanban-payload/03-inventory-todo-tasks.md",
+      "notes": "id: update-kanban-payload-03"
+    },
+    {
+      "id": "update-kanban-payload-04",
+      "title": "04. Inventory Plans Tasks",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/update-kanban-payload/04-inventory-plans-tasks.md",
+      "notes": "id: update-kanban-payload-04"
+    },
+    {
+      "id": "update-kanban-payload-05",
+      "title": "05. Format Tasks for Payload",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/update-kanban-payload/05-format-tasks-for-payload.md",
+      "notes": "id: update-kanban-payload-05"
+    },
+    {
+      "id": "update-kanban-payload-06",
+      "title": "06. Update Kanban Payload JSON",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P2",
+      "source": "tasks/ongoing/update-kanban-payload/06-update-kanban-payload-json.md",
+      "notes": "id: update-kanban-payload-06"
+    },
+    {
+      "id": "README",
+      "title": "Update Kanban Payload",
+      "group": "Ongoing",
+      "status": "Ongoing",
+      "priority": "P1",
+      "source": "tasks/ongoing/update-kanban-payload/README.md",
+      "notes": "Objective: Update kanban_payload.json to include all ongoing, completed, and backlog tasks from the tasks/ directory, ensuring the Kanban board is fully populated with accurate task data for workflow "
+    },
+    {
+      "id": "fix-ai-github-issues-reviewer-critical-issues",
+      "title": "Fix AI GitHub Issues Reviewer Critical Issues",
+      "group": "Plans",
+      "status": "Plans",
+      "priority": "P1",
+      "source": "tasks/plans/fix-ai-github-issues-reviewer-critical-issues.md",
+      "notes": "**Feature Slug**: `fix-ai-github-issues-reviewer-critical-issues`"
+    },
+    {
+      "id": "openai-image-specialist-agent-plan",
+      "title": "OpenAI Image Specialist Agent - Implementation Plan",
+      "group": "Plans",
+      "status": "Plans",
+      "priority": "P1",
+      "source": "tasks/plans/openai-image-specialist-agent-plan.md",
+      "notes": "**Feature**: `openai-image-specialist-agent`"
+    },
+    {
+      "id": "security-fix-plan",
+      "title": "Security Fix Plan for LOFERSIL Landing Page",
+      "group": "Plans",
+      "status": "Plans",
+      "priority": "P1",
+      "source": "tasks/plans/security-fix-plan.md",
+      "notes": "**Status**: Ready for Implementation"
+    },
+    {
+      "id": "complete-ai-powered-github-issues-reviewer-system-01",
+      "title": "01. Create comprehensive test suites for all components with >80% coverage",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P1",
+      "source": "tasks/subtasks/complete-ai-powered-github-issues-reviewer-system/01-create-comprehensive-test-suites.md",
+      "notes": "id: complete-ai-powered-github-issues-reviewer-system-01"
+    },
+    {
+      "id": "complete-ai-powered-github-issues-reviewer-system-02",
+      "title": "02. Implement end-to-end testing of complete workflow with mock issues",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P1",
+      "source": "tasks/subtasks/complete-ai-powered-github-issues-reviewer-system/02-implement-end-to-end-testing.md",
+      "notes": "id: complete-ai-powered-github-issues-reviewer-system-02"
+    },
+    {
+      "id": "complete-ai-powered-github-issues-reviewer-system-03",
+      "title": "03. Add GitHub integration with webhooks and API for live issue processing",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P1",
+      "source": "tasks/subtasks/complete-ai-powered-github-issues-reviewer-system/03-add-github-integration-webhooks-api.md",
+      "notes": "id: complete-ai-powered-github-issues-reviewer-system-03"
+    },
+    {
+      "id": "complete-ai-powered-github-issues-reviewer-system-04",
+      "title": "04. Set up production deployment configuration and monitoring",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P2",
+      "source": "tasks/subtasks/complete-ai-powered-github-issues-reviewer-system/04-setup-production-deployment.md",
+      "notes": "id: complete-ai-powered-github-issues-reviewer-system-04"
+    },
+    {
+      "id": "complete-ai-powered-github-issues-reviewer-system-05",
+      "title": "05. Implement kanban board integration for automated task tracking",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P2",
+      "source": "tasks/subtasks/complete-ai-powered-github-issues-reviewer-system/05-implement-kanban-board-integration.md",
+      "notes": "id: complete-ai-powered-github-issues-reviewer-system-05"
+    },
+    {
+      "id": "README",
+      "title": "Complete AI-Powered GitHub Issues Reviewer System",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P1",
+      "source": "tasks/subtasks/complete-ai-powered-github-issues-reviewer-system/README.md",
+      "notes": "Objective: Complete the remaining 5 tasks to finish the AI-powered GitHub Issues Reviewer System with comprehensive testing, GitHub integration, production deployment, and kanban board integration"
+    },
+    {
+      "id": "fix-ai-github-issues-reviewer-critical-issues-01",
+      "title": "01. Assess Current Component State and Dependencies",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P1",
+      "source": "tasks/subtasks/fix-ai-github-issues-reviewer-critical-issues/01-assess-current-component-state.md",
+      "notes": "id: fix-ai-github-issues-reviewer-critical-issues-01"
+    },
+    {
+      "id": "README",
+      "title": "Fix AI-Powered GitHub Issues Reviewer Critical Issues",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P1",
+      "source": "tasks/subtasks/fix-ai-github-issues-reviewer-critical-issues/README.md",
+      "notes": "Objective: Resolve critical blockers preventing the AI-Powered GitHub Issues Reviewer System from functioning"
+    },
+    {
+      "id": "implement-tasks-folder-recommendations-01",
+      "title": "01. Audit all tasks and folders for accurate inventory",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P2",
+      "source": "tasks/subtasks/implement-tasks-folder-recommendations/01-audit-all-tasks-and-folders.md",
+      "notes": "id: implement-tasks-folder-recommendations-01"
+    },
+    {
+      "id": "implement-tasks-folder-recommendations-02",
+      "title": "02. Reorganize misplaced folders and integrate subtasks",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P2",
+      "source": "tasks/subtasks/implement-tasks-folder-recommendations/02-reorganize-misplaced-folders.md",
+      "notes": "id: implement-tasks-folder-recommendations-02"
+    },
+    {
+      "id": "implement-tasks-folder-recommendations-03",
+      "title": "03. Update main README with correct categorization and progress",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P2",
+      "source": "tasks/subtasks/implement-tasks-folder-recommendations/03-update-main-readme.md",
+      "notes": "id: implement-tasks-folder-recommendations-03"
+    },
+    {
+      "id": "implement-tasks-folder-recommendations-04",
+      "title": "04. Standardize all individual task READMEs with accurate status",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P2",
+      "source": "tasks/subtasks/implement-tasks-folder-recommendations/04-standardize-individual-readmes.md",
+      "notes": "id: implement-tasks-folder-recommendations-04"
+    },
+    {
+      "id": "implement-tasks-folder-recommendations-05",
+      "title": "05. Implement automation for progress tracking and reports",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P2",
+      "source": "tasks/subtasks/implement-tasks-folder-recommendations/05-implement-progress-automation.md",
+      "notes": "id: implement-tasks-folder-recommendations-05"
+    },
+    {
+      "id": "implement-tasks-folder-recommendations-06",
+      "title": "06. Establish weekly review process for ongoing maintenance",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P2",
+      "source": "tasks/subtasks/implement-tasks-folder-recommendations/06-establish-review-process.md",
+      "notes": "id: implement-tasks-folder-recommendations-06"
+    },
+    {
+      "id": "README",
+      "title": "Implement Tasks Folder Recommendations",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P1",
+      "source": "tasks/subtasks/implement-tasks-folder-recommendations/README.md",
+      "notes": "Objective: Update and reorganize the tasks folder to resolve discrepancies, improve accuracy, and enhance management system"
+    },
+    {
+      "id": "audit-report",
+      "title": "Tasks Folder Audit Report",
+      "group": "Subtasks",
+      "status": "Subtasks",
+      "priority": "P1",
+      "source": "tasks/subtasks/implement-tasks-folder-recommendations/audit-report.md",
+      "notes": "Comprehensive audit of the tasks/ directory structure, completed on [current date]. Total of 115+ tasks identified across 13 main task groups, with significant discrepancies between actual progress an"
+    },
+    {
+      "id": "README",
+      "title": "Build GitHubIssuesReviewer Integration",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/build-github-integration/README.md",
+      "notes": "**Issue**: The GitHubIssuesReviewer component exists as a simple mock and doesn't integrate all the implemented components into a working system."
+    },
+    {
+      "id": "README",
+      "title": "Fix CodeReviewer Component Implementation",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/fix-code-reviewer-implementation/README.md",
+      "notes": "**Issue**: The CodeReviewer component has broken/missing implementation methods that prevent proper code analysis and review functionality."
+    },
+    {
+      "id": "README",
+      "title": "Implement Full WorkflowOrchestrator Component",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/implement-workflow-orchestrator/README.md",
+      "notes": "**Issue**: The WorkflowOrchestrator component exists as a basic mock and lacks real workflow coordination logic."
+    },
+    {
+      "id": "README",
+      "title": "Implementation Plan for System Completion",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/implementation-plan-review/README.md",
+      "notes": "Comprehensive plan to fix critical blockers and complete the AI-Powered GitHub Issues Reviewer System. This plan addresses all identified issues from the system review and provides a structured path t"
+    },
+    {
+      "id": "01-analyze-current-form-issues",
+      "title": "Contact Form Accessibility Testing Report",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/improve-contact-form-accessibility-ux/01-analyze-current-form-issues.md",
+      "notes": "The enhanced contact form has been tested against WCAG 2.1 AA compliance requirements. All existing functionality has been preserved while adding comprehensive accessibility features."
+    },
+    {
+      "id": "improve-contact-form-accessibility-ux-02",
+      "title": "02. Integrate Validation Messages with TranslationManager",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/improve-contact-form-accessibility-ux/02-integrate-validation-localization.md",
+      "notes": "id: improve-contact-form-accessibility-ux-02"
+    },
+    {
+      "id": "improve-contact-form-accessibility-ux-03",
+      "title": "03. Add Advanced Accessibility Features",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/improve-contact-form-accessibility-ux/03-enhance-accessibility-features.md",
+      "notes": "id: improve-contact-form-accessibility-ux-03"
+    },
+    {
+      "id": "README",
+      "title": "Improve Contact Form Accessibility and UX",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/improve-contact-form-accessibility-ux/README.md",
+      "notes": "Objective: Enhance the contact form section with better accessibility features, improved user experience, and integration with existing LOFERSIL architecture patterns."
+    },
+    {
+      "id": "improve-gemini-tool-01",
+      "title": "01. Extract common API call and response parsing logic into reusable helpers",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/improve-gemini-tool/01-refactor-api-helpers.md",
+      "notes": "id: improve-gemini-tool-01"
+    },
+    {
+      "id": "improve-gemini-tool-02",
+      "title": "02. Standardize error handling with custom error types and better validation",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/improve-gemini-tool/02-improve-error-handling.md",
+      "notes": "id: improve-gemini-tool-02"
+    },
+    {
+      "id": "improve-gemini-tool-03",
+      "title": "03. Improve TypeScript types and add input validation",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/improve-gemini-tool/03-enhance-type-safety.md",
+      "notes": "id: improve-gemini-tool-03"
+    },
+    {
+      "id": "improve-gemini-tool-04",
+      "title": "04. Refactor file path and saving logic for better reliability",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/improve-gemini-tool/04-optimize-file-operations.md",
+      "notes": "id: improve-gemini-tool-04"
+    },
+    {
+      "id": "improve-gemini-tool-05",
+      "title": "05. Add JSDoc comments and improve code readability",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/improve-gemini-tool/05-add-documentation.md",
+      "notes": "id: improve-gemini-tool-05"
+    },
+    {
+      "id": "improve-gemini-tool-06",
+      "title": "06. Review and clean up exports and default export",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/improve-gemini-tool/06-cleanup-exports.md",
+      "notes": "id: improve-gemini-tool-06"
+    },
+    {
+      "id": "README",
+      "title": "Improve Gemini Tool",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/improve-gemini-tool/README.md",
+      "notes": "Objective: Enhance the Gemini tool implementation for better structure, error handling, and maintainability"
+    },
+    {
+      "id": "review-opencode-plugin-console-logs-01",
+      "title": "01. List Plugin Files",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/review-opencode-plugin-console-logs/01-list-plugin-files.md",
+      "notes": "id: review-opencode-plugin-console-logs-01"
+    },
+    {
+      "id": "review-opencode-plugin-console-logs-02",
+      "title": "02. Search Console Logs",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/review-opencode-plugin-console-logs/02-search-console-logs.md",
+      "notes": "id: review-opencode-plugin-console-logs-02"
+    },
+    {
+      "id": "review-opencode-plugin-console-logs-03",
+      "title": "03. Review Each Occurrence",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/review-opencode-plugin-console-logs/03-review-each-occurrence.md",
+      "notes": "id: review-opencode-plugin-console-logs-03"
+    },
+    {
+      "id": "review-opencode-plugin-console-logs-04",
+      "title": "04. Fix Or Remove Logs",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/review-opencode-plugin-console-logs/04-fix-or-remove-logs.md",
+      "notes": "id: review-opencode-plugin-console-logs-04"
+    },
+    {
+      "id": "review-opencode-plugin-console-logs-05",
+      "title": "05. Verify Changes",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P2",
+      "source": "tasks/todo/review-opencode-plugin-console-logs/05-verify-changes.md",
+      "notes": "id: review-opencode-plugin-console-logs-05"
+    },
+    {
+      "id": "README",
+      "title": "Review Opencode Plugin Console Logs",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/review-opencode-plugin-console-logs/README.md",
+      "notes": "Objective: Identify and address inappropriate console.log statements in the @.opencode/plugin/"
+    },
+    {
+      "id": "README",
+      "title": "Security Fix Plan",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/security-fix-plan/README.md",
+      "notes": "Objective: Fix critical security vulnerabilities and improve overall security posture of the LOFERSIL landing page."
+    },
+    {
+      "id": "README",
+      "title": "Test Gemini Tool and Favicon",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/todo/test-gemini-tool-and-favicon/README.md",
+      "notes": "Objective: Test Gemini tool functionality across all features and generate favicon assets for the application."
+    },
+    {
+      "id": "weekly-review-process",
+      "title": "Weekly Tasks Review Process",
+      "group": "Todo",
+      "status": "Todo",
+      "priority": "P1",
+      "source": "tasks/weekly-review-process.md",
+      "notes": "This document outlines the weekly review process for maintaining the accuracy and organization of the tasks folder. Reviews ensure that progress is tracked correctly, discrepancies are resolved prompt"
     }
   ]
 }
