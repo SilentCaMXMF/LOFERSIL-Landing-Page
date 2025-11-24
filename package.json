@@ -63,7 +63,7 @@
     "vitest": "^4.0.10"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "22.x"
   },
   "packageManager": "npm@10.0.0",
   "dependencies": {
