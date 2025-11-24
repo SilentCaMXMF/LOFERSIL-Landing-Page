@@ -5,23 +5,23 @@
   "framework": null,
   "functions": {
     "src/scripts/**/*.js": {
-      "runtime": "nodejs22.x",
+      "runtime": "nodejs20.x",
       "maxDuration": 30
     },
     "api/**/*.js": {
-      "runtime": "nodejs22.x",
+      "runtime": "nodejs20.x",
       "maxDuration": 30
     },
     "api/github/webhooks/*.js": {
-      "runtime": "nodejs22.x",
+      "runtime": "nodejs20.x",
       "maxDuration": 300
     },
     "api/github/workflows/*.js": {
-      "runtime": "nodejs22.x",
+      "runtime": "nodejs20.x",
       "maxDuration": 300
     },
     "src/scripts/modules/github-issues/**/*.js": {
-      "runtime": "nodejs22.x",
+      "runtime": "nodejs20.x",
       "maxDuration": 300
     }
   },
