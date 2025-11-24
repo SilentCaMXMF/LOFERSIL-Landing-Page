@@ -13,7 +13,7 @@ declare global {
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
   readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed';
+    outcome: "accepted" | "dismissed";
     platform: string;
   }>;
   prompt(): Promise<void>;
@@ -29,7 +29,7 @@ export class PWAInstaller {
   }
 
   private initializeInstallPrompt(): void {
-    window.addEventListener('beforeinstallprompt', event => {
+    window.addEventListener("beforeinstallprompt", (event) => {
       // Prevent the default mini-infobar
       event.preventDefault();
 
@@ -40,8 +40,8 @@ export class PWAInstaller {
       this.showInstallButton();
     });
 
-    window.addEventListener('appinstalled', event => {
-      console.log('[PWA] App was installed');
+    window.addEventListener("appinstalled", (event) => {
+      console.log("[PWA] App was installed");
 
       // Hide install button
       this.hideInstallButton();
@@ -52,23 +52,23 @@ export class PWAInstaller {
   }
 
   private createInstallButton(): void {
-    this.installButton = document.createElement('button');
-    this.installButton.id = 'pwa-install-btn';
+    this.installButton = document.createElement("button");
+    this.installButton.id = "pwa-install-btn";
     this.installButton.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
         <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
       </svg>
       Instalar App
     `;
-    this.installButton.className = 'pwa-install-button';
-    this.installButton.style.display = 'none';
+    this.installButton.className = "pwa-install-button";
+    this.installButton.style.display = "none";
 
-    this.installButton.addEventListener('click', () => {
+    this.installButton.addEventListener("click", () => {
       this.installApp();
     });
 
     // Add to page header
-    const header = document.querySelector('header');
+    const header = document.querySelector("header");
     if (header) {
       header.appendChild(this.installButton);
     }
@@ -76,7 +76,7 @@ export class PWAInstaller {
 
   private showInstallButton(): void {
     if (this.installButton && !this.isInstalled()) {
-      this.installButton.style.display = 'flex';
+      this.installButton.style.display = "flex";
 
       // Auto-hide after 30 seconds if not clicked
       setTimeout(() => {
@@ -87,7 +87,7 @@ export class PWAInstaller {
 
   private hideInstallButton(): void {
     if (this.installButton) {
-      this.installButton.style.display = 'none';
+      this.installButton.style.display = "none";
     }
   }
 
@@ -115,26 +115,26 @@ export class PWAInstaller {
   private isInstalled(): boolean {
     // Check if app is already installed
     return (
-      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as any).standalone === true
     );
   }
 
   private trackInstallation(): void {
     // Track successful installation
-    if (typeof window.gtag !== 'undefined') {
-      window.gtag('event', 'pwa_install', {
-        event_category: 'engagement',
-        event_label: 'PWA Installation',
+    if (typeof window.gtag !== "undefined") {
+      window.gtag("event", "pwa_install", {
+        event_category: "engagement",
+        event_label: "PWA Installation",
       });
     }
   }
 
-  private trackInstallPromptResult(outcome: 'accepted' | 'dismissed'): void {
+  private trackInstallPromptResult(outcome: "accepted" | "dismissed"): void {
     // Track install prompt result
-    if (typeof window.gtag !== 'undefined') {
-      window.gtag('event', 'pwa_install_prompt', {
-        event_category: 'engagement',
+    if (typeof window.gtag !== "undefined") {
+      window.gtag("event", "pwa_install_prompt", {
+        event_category: "engagement",
         event_label: outcome,
       });
     }
@@ -144,21 +144,21 @@ export class PWAInstaller {
    * Check if PWA features are supported
    */
   public static isSupported(): boolean {
-    return 'serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window;
+    return "serviceWorker" in navigator && "BeforeInstallPromptEvent" in window;
   }
 
   /**
    * Get PWA installation status
    */
-  public getInstallStatus(): 'installed' | 'installable' | 'unsupported' {
+  public getInstallStatus(): "installed" | "installable" | "unsupported" {
     if (this.isInstalled()) {
-      return 'installed';
+      return "installed";
     }
 
     if (PWAInstaller.isSupported() && this.deferredPrompt) {
-      return 'installable';
+      return "installable";
     }
 
-    return 'unsupported';
+    return "unsupported";
   }
 }

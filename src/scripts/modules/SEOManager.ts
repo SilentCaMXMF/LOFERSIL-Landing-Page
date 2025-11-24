@@ -3,7 +3,7 @@
  * Manages SEO-related functionality including meta tags and structured data
  */
 
-import { ErrorManager } from './ErrorManager.js';
+import { ErrorManager } from "./ErrorManager.js";
 
 /**
  * SEO configuration interface
@@ -25,7 +25,7 @@ interface MetaTagOptions {
   description?: string;
   image?: string;
   url?: string;
-  type?: 'website' | 'article';
+  type?: "website" | "article";
 }
 
 /**
@@ -50,16 +50,23 @@ export class SEOManager {
       this.addStructuredData();
 
       // Set default meta tags
-      this.updateMetaTags(this.config.defaultTitle, this.config.defaultDescription);
+      this.updateMetaTags(
+        this.config.defaultTitle,
+        this.config.defaultDescription,
+      );
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to setup SEO');
+      this.errorHandler.handleError(error, "Failed to setup SEO");
     }
   }
 
   /**
    * Update meta tags for SEO
    */
-  public updateMetaTags(title: string, description: string, options?: MetaTagOptions): void {
+  public updateMetaTags(
+    title: string,
+    description: string,
+    options?: MetaTagOptions,
+  ): void {
     try {
       // Sanitize and validate inputs
       const sanitizedTitle = this.sanitizeText(title);
@@ -69,55 +76,59 @@ export class SEOManager {
       document.title = sanitizedTitle;
 
       // Update meta tags
-      this.updateMetaTag('description', sanitizedDescription);
+      this.updateMetaTag("description", sanitizedDescription);
 
       // Open Graph tags
       this.updateMetaTag(
-        'og:title',
-        options?.title ? this.sanitizeText(options.title) : sanitizedTitle
+        "og:title",
+        options?.title ? this.sanitizeText(options.title) : sanitizedTitle,
       );
       this.updateMetaTag(
-        'og:description',
-        options?.description ? this.sanitizeText(options.description) : sanitizedDescription
+        "og:description",
+        options?.description
+          ? this.sanitizeText(options.description)
+          : sanitizedDescription,
       );
-      this.updateMetaTag('og:url', options?.url || window.location.href);
-      this.updateMetaTag('og:type', options?.type || 'website');
-      this.updateMetaTag('og:site_name', this.config.siteName);
+      this.updateMetaTag("og:url", options?.url || window.location.href);
+      this.updateMetaTag("og:type", options?.type || "website");
+      this.updateMetaTag("og:site_name", this.config.siteName);
 
       if (options?.image) {
-        this.updateMetaTag('og:image', options.image);
-        this.updateMetaTag('og:image:alt', sanitizedTitle);
+        this.updateMetaTag("og:image", options.image);
+        this.updateMetaTag("og:image:alt", sanitizedTitle);
       }
 
       // Twitter Card tags
-      this.updateMetaTag('twitter:card', 'summary_large_image');
+      this.updateMetaTag("twitter:card", "summary_large_image");
       this.updateMetaTag(
-        'twitter:title',
-        options?.title ? this.sanitizeText(options.title) : sanitizedTitle
+        "twitter:title",
+        options?.title ? this.sanitizeText(options.title) : sanitizedTitle,
       );
       this.updateMetaTag(
-        'twitter:description',
-        options?.description ? this.sanitizeText(options.description) : sanitizedDescription
+        "twitter:description",
+        options?.description
+          ? this.sanitizeText(options.description)
+          : sanitizedDescription,
       );
 
       if (this.config.twitterHandle) {
-        this.updateMetaTag('twitter:site', this.config.twitterHandle);
+        this.updateMetaTag("twitter:site", this.config.twitterHandle);
       }
 
       if (options?.image) {
-        this.updateMetaTag('twitter:image', options.image);
-        this.updateMetaTag('twitter:image:alt', title);
+        this.updateMetaTag("twitter:image", options.image);
+        this.updateMetaTag("twitter:image:alt", title);
       }
 
       // Additional meta tags
       if (this.config.facebookAppId) {
-        this.updateMetaTag('fb:app_id', this.config.facebookAppId);
+        this.updateMetaTag("fb:app_id", this.config.facebookAppId);
       }
 
       // Canonical URL
       this.updateCanonicalLink(options?.url);
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to update meta tags');
+      this.errorHandler.handleError(error, "Failed to update meta tags");
     }
   }
 
@@ -137,13 +148,13 @@ export class SEOManager {
     try {
       const urlObj = new URL(url, window.location.origin);
       // Only allow http and https protocols
-      if (!['http:', 'https:'].includes(urlObj.protocol)) {
-        throw new Error('Invalid protocol');
+      if (!["http:", "https:"].includes(urlObj.protocol)) {
+        throw new Error("Invalid protocol");
       }
       return urlObj.href;
     } catch {
       // If URL is invalid, return empty string
-      return '';
+      return "";
     }
   }
 
@@ -156,27 +167,33 @@ export class SEOManager {
       (document.querySelector(`meta[property="${name}"]`) as HTMLMetaElement);
 
     if (!meta) {
-      meta = document.createElement('meta');
-      if (name.startsWith('og:') || name.startsWith('twitter:') || name.startsWith('fb:')) {
-        meta.setAttribute('property', name);
+      meta = document.createElement("meta");
+      if (
+        name.startsWith("og:") ||
+        name.startsWith("twitter:") ||
+        name.startsWith("fb:")
+      ) {
+        meta.setAttribute("property", name);
       } else {
-        meta.setAttribute('name', name);
+        meta.setAttribute("name", name);
       }
       document.head.appendChild(meta);
     }
 
-    meta.setAttribute('content', content);
+    meta.setAttribute("content", content);
   }
 
   /**
    * Update canonical link
    */
   private updateCanonicalLink(url?: string): void {
-    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    let canonical = document.querySelector(
+      'link[rel="canonical"]',
+    ) as HTMLLinkElement;
 
     if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.rel = 'canonical';
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
 
@@ -190,8 +207,8 @@ export class SEOManager {
     try {
       // Organization structured data
       const organizationData = {
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
+        "@context": "https://schema.org",
+        "@type": "Organization",
         name: this.config.siteName,
         description: this.config.defaultDescription,
         url: this.config.siteUrl,
@@ -201,25 +218,25 @@ export class SEOManager {
         ],
       };
 
-      this.addJsonLdScript(organizationData, 'organization');
+      this.addJsonLdScript(organizationData, "organization");
 
       // Website structured data
       const websiteData = {
-        '@context': 'https://schema.org',
-        '@type': 'WebSite',
+        "@context": "https://schema.org",
+        "@type": "WebSite",
         name: this.config.siteName,
         url: this.config.siteUrl,
         description: this.config.defaultDescription,
         potentialAction: {
-          '@type': 'SearchAction',
+          "@type": "SearchAction",
           target: `${this.config.siteUrl}/search?q={search_term_string}`,
-          'query-input': 'required name=search_term_string',
+          "query-input": "required name=search_term_string",
         },
       };
 
-      this.addJsonLdScript(websiteData, 'website');
+      this.addJsonLdScript(websiteData, "website");
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to add structured data');
+      this.errorHandler.handleError(error, "Failed to add structured data");
     }
   }
 
@@ -233,9 +250,9 @@ export class SEOManager {
       existingScript.remove();
     }
 
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.id = `jsonld-${id}`;
-    script.type = 'application/ld+json';
+    script.type = "application/ld+json";
     script.textContent = JSON.stringify(data);
     document.head.appendChild(script);
   }
@@ -243,22 +260,24 @@ export class SEOManager {
   /**
    * Add breadcrumb structured data
    */
-  public addBreadcrumbData(breadcrumbs: Array<{ name: string; url: string }>): void {
+  public addBreadcrumbData(
+    breadcrumbs: Array<{ name: string; url: string }>,
+  ): void {
     try {
       const breadcrumbData = {
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
         itemListElement: breadcrumbs.map((crumb, index) => ({
-          '@type': 'ListItem',
+          "@type": "ListItem",
           position: index + 1,
           name: crumb.name,
           item: crumb.url,
         })),
       };
 
-      this.addJsonLdScript(breadcrumbData, 'breadcrumb');
+      this.addJsonLdScript(breadcrumbData, "breadcrumb");
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to add breadcrumb data');
+      this.errorHandler.handleError(error, "Failed to add breadcrumb data");
     }
   }
 
@@ -282,25 +301,25 @@ export class SEOManager {
       const sanitizedUrl = this.sanitizeUrl(product.url);
 
       const productData = {
-        '@context': 'https://schema.org',
-        '@type': 'Product',
+        "@context": "https://schema.org",
+        "@type": "Product",
         name: sanitizedName,
         description: sanitizedDescription,
         image: sanitizedImage,
         url: sanitizedUrl,
         ...(product.price && {
           offers: {
-            '@type': 'Offer',
+            "@type": "Offer",
             price: product.price,
-            priceCurrency: product.currency || 'EUR',
-            availability: product.availability || 'https://schema.org/InStock',
+            priceCurrency: product.currency || "EUR",
+            availability: product.availability || "https://schema.org/InStock",
           },
         }),
       };
 
-      this.addJsonLdScript(productData, 'product');
+      this.addJsonLdScript(productData, "product");
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to add product data');
+      this.errorHandler.handleError(error, "Failed to add product data");
     }
   }
 
@@ -331,8 +350,8 @@ export class SEOManager {
         : undefined;
 
       const articleData = {
-        '@context': 'https://schema.org',
-        '@type': 'Article',
+        "@context": "https://schema.org",
+        "@type": "Article",
         headline: sanitizedHeadline,
         description: sanitizedDescription,
         image: sanitizedImage,
@@ -340,23 +359,23 @@ export class SEOManager {
         datePublished: article.datePublished,
         dateModified: article.dateModified || article.datePublished,
         author: {
-          '@type': 'Person',
+          "@type": "Person",
           name: sanitizedAuthorName,
           ...(sanitizedAuthorUrl && { url: sanitizedAuthorUrl }),
         },
         publisher: {
-          '@type': 'Organization',
+          "@type": "Organization",
           name: this.config.siteName,
           logo: {
-            '@type': 'ImageObject',
+            "@type": "ImageObject",
             url: `${this.config.siteUrl}/images/logo.png`,
           },
         },
       };
 
-      this.addJsonLdScript(articleData, 'article');
+      this.addJsonLdScript(articleData, "article");
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to add article data');
+      this.errorHandler.handleError(error, "Failed to add article data");
     }
   }
 
@@ -364,28 +383,30 @@ export class SEOManager {
    * Remove all structured data
    */
   public removeStructuredData(): void {
-    const scripts = document.querySelectorAll('script[type="application/ld+json"]');
-    scripts.forEach(script => script.remove());
+    const scripts = document.querySelectorAll(
+      'script[type="application/ld+json"]',
+    );
+    scripts.forEach((script) => script.remove());
   }
 
   /**
    * Update robots meta tag
    */
   public updateRobotsTag(directives: string[]): void {
-    this.updateMetaTag('robots', directives.join(', '));
+    this.updateMetaTag("robots", directives.join(", "));
   }
 
   /**
    * Set noindex for current page
    */
   public setNoIndex(): void {
-    this.updateRobotsTag(['noindex', 'nofollow']);
+    this.updateRobotsTag(["noindex", "nofollow"]);
   }
 
   /**
    * Remove noindex
    */
   public removeNoIndex(): void {
-    this.updateRobotsTag(['index', 'follow']);
+    this.updateRobotsTag(["index", "follow"]);
   }
 }

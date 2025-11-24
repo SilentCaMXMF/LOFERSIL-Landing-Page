@@ -20,7 +20,8 @@
  */
 
 const IS_DEVELOPMENT =
-  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -30,64 +31,64 @@ const IS_DEVELOPMENT =
  * Error severity levels
  */
 export enum ErrorSeverity {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  CRITICAL = 'critical',
+  LOW = "low",
+  MEDIUM = "medium",
+  HIGH = "high",
+  CRITICAL = "critical",
 }
 
 /**
  * Error categories for classification
  */
 export enum ErrorCategory {
-  NETWORK = 'network',
-  API = 'api',
-  AUTHENTICATION = 'authentication',
-  VALIDATION = 'validation',
-  PROCESSING = 'processing',
-  RESOURCE = 'resource',
-  CONFIGURATION = 'configuration',
-  UNKNOWN = 'unknown',
+  NETWORK = "network",
+  API = "api",
+  AUTHENTICATION = "authentication",
+  VALIDATION = "validation",
+  PROCESSING = "processing",
+  RESOURCE = "resource",
+  CONFIGURATION = "configuration",
+  UNKNOWN = "unknown",
 }
 
 /**
  * Circuit breaker states
  */
 export enum CircuitBreakerState {
-  CLOSED = 'closed', // Normal operation
-  OPEN = 'open', // Failing, requests rejected
-  HALF_OPEN = 'half_open', // Testing if service recovered
+  CLOSED = "closed", // Normal operation
+  OPEN = "open", // Failing, requests rejected
+  HALF_OPEN = "half_open", // Testing if service recovered
 }
 
 /**
  * Recovery action types
  */
 export enum RecoveryAction {
-  RETRY = 'retry',
-  ROLLBACK = 'rollback',
-  SKIP = 'skip',
-  ESCALATE = 'escalate',
-  MANUAL = 'manual',
+  RETRY = "retry",
+  ROLLBACK = "rollback",
+  SKIP = "skip",
+  ESCALATE = "escalate",
+  MANUAL = "manual",
 }
 
 /**
  * Metric types for monitoring
  */
 export enum MetricType {
-  COUNTER = 'counter',
-  GAUGE = 'gauge',
-  HISTOGRAM = 'histogram',
-  SUMMARY = 'summary',
+  COUNTER = "counter",
+  GAUGE = "gauge",
+  HISTOGRAM = "histogram",
+  SUMMARY = "summary",
 }
 
 /**
  * Alert severity levels
  */
 export enum AlertSeverity {
-  INFO = 'info',
-  WARNING = 'warning',
-  ERROR = 'error',
-  CRITICAL = 'critical',
+  INFO = "info",
+  WARNING = "warning",
+  ERROR = "error",
+  CRITICAL = "critical",
 }
 
 // ============================================================================
@@ -125,7 +126,7 @@ export interface ErrorManagerConfig {
     enabled: boolean;
     metricsRetentionHours: number;
     alertConfigs: AlertConfig[];
-    logLevel: 'debug' | 'info' | 'warn' | 'error';
+    logLevel: "debug" | "info" | "warn" | "error";
     enableConsoleLogging: boolean;
     enableFileLogging: boolean;
     logFilePath?: string;
@@ -214,11 +215,11 @@ export interface Alert {
  * System health status
  */
 export interface SystemHealth {
-  overall: 'healthy' | 'degraded' | 'unhealthy';
+  overall: "healthy" | "degraded" | "unhealthy";
   components: Record<
     string,
     {
-      status: 'healthy' | 'degraded' | 'unhealthy';
+      status: "healthy" | "degraded" | "unhealthy";
       metrics: Record<string, number>;
       lastChecked: Date;
     }
@@ -234,9 +235,11 @@ export interface SystemHealth {
  * Basic Error Handler - Handles user notifications and error display
  */
 class ErrorHandlerSubsystem {
-  private config: Pick<ErrorManagerConfig, 'showUserMessages' | 'logToConsole'>;
+  private config: Pick<ErrorManagerConfig, "showUserMessages" | "logToConsole">;
 
-  constructor(config: Pick<ErrorManagerConfig, 'showUserMessages' | 'logToConsole'>) {
+  constructor(
+    config: Pick<ErrorManagerConfig, "showUserMessages" | "logToConsole">,
+  ) {
     this.config = config;
     this.setupGlobalErrorHandling();
   }
@@ -246,35 +249,38 @@ class ErrorHandlerSubsystem {
    */
   private setupGlobalErrorHandling(): void {
     // Global error handler for unhandled errors
-    window.addEventListener('error', event => {
+    window.addEventListener("error", (event) => {
       this.handleError(event.error, `Unhandled error: ${event.message}`, {
-        component: 'Global',
-        operation: 'unhandled_error',
+        component: "Global",
+        operation: "unhandled_error",
         timestamp: new Date(),
       });
     });
 
     // Global handler for unhandled promise rejections
-    window.addEventListener('unhandledrejection', event => {
-      this.handleError(event.reason, 'Unhandled promise rejection', {
-        component: 'Global',
-        operation: 'unhandled_rejection',
+    window.addEventListener("unhandledrejection", (event) => {
+      this.handleError(event.reason, "Unhandled promise rejection", {
+        component: "Global",
+        operation: "unhandled_rejection",
         timestamp: new Date(),
       });
     });
 
     // Handle missing resources
     window.addEventListener(
-      'error',
-      event => {
+      "error",
+      (event) => {
         const target = event.target as HTMLElement;
         if (
           target instanceof HTMLImageElement ||
           target instanceof HTMLScriptElement ||
           target instanceof HTMLLinkElement
         ) {
-          let resourceUrl = '';
-          if (target instanceof HTMLImageElement || target instanceof HTMLScriptElement) {
+          let resourceUrl = "";
+          if (
+            target instanceof HTMLImageElement ||
+            target instanceof HTMLScriptElement
+          ) {
             resourceUrl = target.src;
           } else if (target instanceof HTMLLinkElement) {
             resourceUrl = target.href;
@@ -284,16 +290,20 @@ class ErrorHandlerSubsystem {
           }
         }
       },
-      true
+      true,
     );
   }
 
   /**
    * Handle application errors gracefully
    */
-  handleError(error: unknown, context: string, errorContext?: ErrorContext): void {
+  handleError(
+    error: unknown,
+    context: string,
+    errorContext?: ErrorContext,
+  ): void {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : '';
+    const errorStack = error instanceof Error ? error.stack : "";
 
     // Log error if configured
     if (this.config.logToConsole) {
@@ -308,7 +318,9 @@ class ErrorHandlerSubsystem {
 
     // Show user-friendly message for critical errors
     if (this.config.showUserMessages && this.isCriticalError(context)) {
-      this.showErrorMessage('An unexpected error occurred. Please refresh the page and try again.');
+      this.showErrorMessage(
+        "An unexpected error occurred. Please refresh the page and try again.",
+      );
     }
   }
 
@@ -316,11 +328,11 @@ class ErrorHandlerSubsystem {
    * Show user-friendly error message
    */
   showErrorMessage(message: string, duration: number = 5000): void {
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'notification error';
+    const errorDiv = document.createElement("div");
+    errorDiv.className = "notification error";
     errorDiv.textContent = message;
-    errorDiv.setAttribute('role', 'alert');
-    errorDiv.setAttribute('aria-live', 'assertive');
+    errorDiv.setAttribute("role", "alert");
+    errorDiv.setAttribute("aria-live", "assertive");
 
     // Auto-remove after specified duration
     setTimeout(() => {
@@ -336,11 +348,11 @@ class ErrorHandlerSubsystem {
    * Show success message
    */
   showSuccessMessage(message: string, duration: number = 3000): void {
-    const successDiv = document.createElement('div');
-    successDiv.className = 'notification success';
+    const successDiv = document.createElement("div");
+    successDiv.className = "notification success";
     successDiv.textContent = message;
-    successDiv.setAttribute('role', 'status');
-    successDiv.setAttribute('aria-live', 'polite');
+    successDiv.setAttribute("role", "status");
+    successDiv.setAttribute("aria-live", "polite");
 
     // Auto-remove after specified duration
     setTimeout(() => {
@@ -356,11 +368,11 @@ class ErrorHandlerSubsystem {
    * Show info message
    */
   showInfoMessage(message: string, duration: number = 3000): void {
-    const infoDiv = document.createElement('div');
-    infoDiv.className = 'notification info';
+    const infoDiv = document.createElement("div");
+    infoDiv.className = "notification info";
     infoDiv.textContent = message;
-    infoDiv.setAttribute('role', 'status');
-    infoDiv.setAttribute('aria-live', 'polite');
+    infoDiv.setAttribute("role", "status");
+    infoDiv.setAttribute("aria-live", "polite");
 
     // Auto-remove after specified duration
     setTimeout(() => {
@@ -375,7 +387,11 @@ class ErrorHandlerSubsystem {
   /**
    * Report error to external service (placeholder)
    */
-  private reportError(error: unknown, context: string, errorContext?: ErrorContext): void {
+  private reportError(
+    error: unknown,
+    context: string,
+    errorContext?: ErrorContext,
+  ): void {
     // In a real application, send to error reporting service like Sentry, Rollbar, etc.
     const errorData = {
       error:
@@ -408,19 +424,21 @@ class ErrorHandlerSubsystem {
    */
   private isCriticalError(context: string): boolean {
     const criticalContexts = [
-      'Application initialization failed',
-      'Failed to load translations',
-      'Routing error',
-      'Critical rendering error',
+      "Application initialization failed",
+      "Failed to load translations",
+      "Routing error",
+      "Critical rendering error",
     ];
-    return criticalContexts.some(critical => context.includes(critical));
+    return criticalContexts.some((critical) => context.includes(critical));
   }
 
   /**
    * Update configuration
    */
   updateConfig(
-    newConfig: Partial<Pick<ErrorManagerConfig, 'showUserMessages' | 'logToConsole'>>
+    newConfig: Partial<
+      Pick<ErrorManagerConfig, "showUserMessages" | "logToConsole">
+    >,
   ): void {
     this.config = { ...this.config, ...newConfig };
   }
@@ -439,16 +457,19 @@ class RecoveryManagerSubsystem {
   private lastFailureTimes: Map<string, Date> = new Map();
   private successCounts: Map<string, number> = new Map();
 
-  private config: Pick<ErrorManagerConfig, 'circuitBreaker' | 'retry'>;
+  private config: Pick<ErrorManagerConfig, "circuitBreaker" | "retry">;
 
-  constructor(config: Pick<ErrorManagerConfig, 'circuitBreaker' | 'retry'>) {
+  constructor(config: Pick<ErrorManagerConfig, "circuitBreaker" | "retry">) {
     this.config = config;
   }
 
   /**
    * Handle an error and determine recovery strategy
    */
-  async handleError(error: Error, context: ErrorContext): Promise<RecoveryStrategy> {
+  async handleError(
+    error: Error,
+    context: ErrorContext,
+  ): Promise<RecoveryStrategy> {
     const reviewerError = this.classifyError(error, context);
 
     // Log the error
@@ -458,7 +479,7 @@ class RecoveryManagerSubsystem {
         component: context.component,
         operation: context.operation,
         issueId: context.issueId,
-      }
+      },
     );
 
     // Update circuit breaker
@@ -481,10 +502,10 @@ class RecoveryManagerSubsystem {
 
     // Network errors
     if (
-      errorMessage.includes('network') ||
-      errorMessage.includes('timeout') ||
-      errorMessage.includes('connection') ||
-      errorMessage.includes('fetch')
+      errorMessage.includes("network") ||
+      errorMessage.includes("timeout") ||
+      errorMessage.includes("connection") ||
+      errorMessage.includes("fetch")
     ) {
       category = ErrorCategory.NETWORK;
       severity = ErrorSeverity.MEDIUM;
@@ -492,24 +513,24 @@ class RecoveryManagerSubsystem {
     }
     // API errors
     else if (
-      errorMessage.includes('api') ||
-      errorMessage.includes('http') ||
-      errorMessage.includes('status') ||
-      errorMessage.includes('rate limit')
+      errorMessage.includes("api") ||
+      errorMessage.includes("http") ||
+      errorMessage.includes("status") ||
+      errorMessage.includes("rate limit")
     ) {
       category = ErrorCategory.API;
-      if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
+      if (errorMessage.includes("rate limit") || errorMessage.includes("429")) {
         severity = ErrorSeverity.HIGH;
         retryable = true;
-      } else if (errorMessage.includes('403') || errorMessage.includes('401')) {
+      } else if (errorMessage.includes("403") || errorMessage.includes("401")) {
         category = ErrorCategory.AUTHENTICATION;
         severity = ErrorSeverity.CRITICAL;
         retryable = false;
         requiresHumanIntervention = true;
       } else if (
-        errorMessage.includes('500') ||
-        errorMessage.includes('502') ||
-        errorMessage.includes('503')
+        errorMessage.includes("500") ||
+        errorMessage.includes("502") ||
+        errorMessage.includes("503")
       ) {
         severity = ErrorSeverity.HIGH;
         retryable = true;
@@ -517,10 +538,10 @@ class RecoveryManagerSubsystem {
     }
     // Validation errors
     else if (
-      errorMessage.includes('validation') ||
-      errorMessage.includes('invalid') ||
-      errorMessage.includes('required') ||
-      errorMessage.includes('format')
+      errorMessage.includes("validation") ||
+      errorMessage.includes("invalid") ||
+      errorMessage.includes("required") ||
+      errorMessage.includes("format")
     ) {
       category = ErrorCategory.VALIDATION;
       severity = ErrorSeverity.MEDIUM;
@@ -529,10 +550,10 @@ class RecoveryManagerSubsystem {
     }
     // Resource errors
     else if (
-      errorMessage.includes('memory') ||
-      errorMessage.includes('disk') ||
-      errorMessage.includes('quota') ||
-      errorMessage.includes('limit')
+      errorMessage.includes("memory") ||
+      errorMessage.includes("disk") ||
+      errorMessage.includes("quota") ||
+      errorMessage.includes("limit")
     ) {
       category = ErrorCategory.RESOURCE;
       severity = ErrorSeverity.HIGH;
@@ -540,7 +561,10 @@ class RecoveryManagerSubsystem {
       requiresHumanIntervention = true;
     }
     // Configuration errors
-    else if (errorMessage.includes('config') || errorMessage.includes('environment')) {
+    else if (
+      errorMessage.includes("config") ||
+      errorMessage.includes("environment")
+    ) {
       category = ErrorCategory.CONFIGURATION;
       severity = ErrorSeverity.CRITICAL;
       retryable = false;
@@ -548,10 +572,10 @@ class RecoveryManagerSubsystem {
     }
     // Processing errors (AI/model failures)
     else if (
-      errorMessage.includes('ai') ||
-      errorMessage.includes('model') ||
-      errorMessage.includes('generation') ||
-      errorMessage.includes('token')
+      errorMessage.includes("ai") ||
+      errorMessage.includes("model") ||
+      errorMessage.includes("generation") ||
+      errorMessage.includes("token")
     ) {
       category = ErrorCategory.PROCESSING;
       severity = ErrorSeverity.HIGH;
@@ -591,7 +615,8 @@ class RecoveryManagerSubsystem {
     // Reset failure count if enough time has passed
     if (
       lastFailure &&
-      Date.now() - lastFailure.getTime() > this.config.circuitBreaker.monitoringPeriod
+      Date.now() - lastFailure.getTime() >
+        this.config.circuitBreaker.monitoringPeriod
     ) {
       this.failureCounts.set(component, 0);
     }
@@ -612,8 +637,13 @@ class RecoveryManagerSubsystem {
   /**
    * Determine recovery strategy for an error
    */
-  private determineRecoveryStrategy(error: ReviewerError, context: ErrorContext): RecoveryStrategy {
-    const circuitState = this.circuitBreakers.get(context.component!) || CircuitBreakerState.CLOSED;
+  private determineRecoveryStrategy(
+    error: ReviewerError,
+    context: ErrorContext,
+  ): RecoveryStrategy {
+    const circuitState =
+      this.circuitBreakers.get(context.component!) ||
+      CircuitBreakerState.CLOSED;
 
     // If circuit breaker is open, escalate
     if (circuitState === CircuitBreakerState.OPEN) {
@@ -624,7 +654,10 @@ class RecoveryManagerSubsystem {
     }
 
     // Critical errors require manual intervention
-    if (error.severity === ErrorSeverity.CRITICAL || error.requiresHumanIntervention) {
+    if (
+      error.severity === ErrorSeverity.CRITICAL ||
+      error.requiresHumanIntervention
+    ) {
       return {
         action: RecoveryAction.MANUAL,
         requiresApproval: true,
@@ -632,7 +665,10 @@ class RecoveryManagerSubsystem {
     }
 
     // Retryable errors
-    if (error.retryable && (!context.attempt || context.attempt < this.config.retry.maxAttempts)) {
+    if (
+      error.retryable &&
+      (!context.attempt || context.attempt < this.config.retry.maxAttempts)
+    ) {
       const delay = this.calculateRetryDelay(context.attempt || 0);
       return {
         action: RecoveryAction.RETRY,
@@ -660,7 +696,8 @@ class RecoveryManagerSubsystem {
    */
   private calculateRetryDelay(attempt: number): number {
     let delay =
-      this.config.retry.baseDelay * Math.pow(this.config.retry.backoffMultiplier, attempt);
+      this.config.retry.baseDelay *
+      Math.pow(this.config.retry.backoffMultiplier, attempt);
     delay = Math.min(delay, this.config.retry.maxDelay);
 
     // Add jitter to prevent thundering herd
@@ -696,7 +733,8 @@ class RecoveryManagerSubsystem {
    * Check if component is available (circuit breaker not open)
    */
   isComponentAvailable(component: string): boolean {
-    const state = this.circuitBreakers.get(component) || CircuitBreakerState.CLOSED;
+    const state =
+      this.circuitBreakers.get(component) || CircuitBreakerState.CLOSED;
     return state !== CircuitBreakerState.OPEN;
   }
 
@@ -761,14 +799,15 @@ class RecoveryManagerSubsystem {
   } {
     const components = Array.from(this.circuitBreakers.keys());
     const openCircuits = components.filter(
-      c => this.circuitBreakers.get(c) === CircuitBreakerState.OPEN
+      (c) => this.circuitBreakers.get(c) === CircuitBreakerState.OPEN,
     ).length;
 
-    const recentFailures = components.filter(c => {
+    const recentFailures = components.filter((c) => {
       const lastFailure = this.lastFailureTimes.get(c);
       return (
         lastFailure &&
-        Date.now() - lastFailure.getTime() < this.config.circuitBreaker.monitoringPeriod
+        Date.now() - lastFailure.getTime() <
+          this.config.circuitBreaker.monitoringPeriod
       );
     }).length;
 
@@ -776,7 +815,8 @@ class RecoveryManagerSubsystem {
       totalComponents: components.length,
       openCircuits,
       recentFailures,
-      averageFailureRate: components.length > 0 ? recentFailures / components.length : 0,
+      averageFailureRate:
+        components.length > 0 ? recentFailures / components.length : 0,
     };
   }
 }
@@ -792,9 +832,9 @@ class MetricsCollectorSubsystem {
   private metrics: MetricDataPoint[] = [];
   private alerts: Alert[] = [];
   private activeAlerts: Map<string, Alert> = new Map();
-  private config: ErrorManagerConfig['monitoring'];
+  private config: ErrorManagerConfig["monitoring"];
 
-  constructor(config: ErrorManagerConfig['monitoring']) {
+  constructor(config: ErrorManagerConfig["monitoring"]) {
     this.config = config;
   }
 
@@ -805,7 +845,7 @@ class MetricsCollectorSubsystem {
     name: string,
     value: number,
     type: MetricType = MetricType.COUNTER,
-    labels: Record<string, string> = {}
+    labels: Record<string, string> = {},
   ): void {
     if (!this.config.enabled) return;
 
@@ -841,30 +881,46 @@ class MetricsCollectorSubsystem {
   /**
    * Record a gauge metric
    */
-  recordGauge(name: string, value: number, labels: Record<string, string> = {}): void {
+  recordGauge(
+    name: string,
+    value: number,
+    labels: Record<string, string> = {},
+  ): void {
     this.recordMetric(name, value, MetricType.GAUGE, labels);
   }
 
   /**
    * Record timing metric
    */
-  recordTiming(name: string, durationMs: number, labels: Record<string, string> = {}): void {
-    this.recordMetric(`${name}_duration`, durationMs, MetricType.HISTOGRAM, labels);
+  recordTiming(
+    name: string,
+    durationMs: number,
+    labels: Record<string, string> = {},
+  ): void {
+    this.recordMetric(
+      `${name}_duration`,
+      durationMs,
+      MetricType.HISTOGRAM,
+      labels,
+    );
   }
 
   /**
    * Get metrics by name and labels
    */
-  getMetrics(name?: string, labels?: Partial<Record<string, string>>): MetricDataPoint[] {
+  getMetrics(
+    name?: string,
+    labels?: Partial<Record<string, string>>,
+  ): MetricDataPoint[] {
     let filtered = this.metrics;
 
     if (name) {
-      filtered = filtered.filter(m => m.name === name);
+      filtered = filtered.filter((m) => m.name === name);
     }
 
     if (labels) {
-      filtered = filtered.filter(m =>
-        Object.entries(labels).every(([key, value]) => m.labels[key] === value)
+      filtered = filtered.filter((m) =>
+        Object.entries(labels).every(([key, value]) => m.labels[key] === value),
       );
     }
 
@@ -915,8 +971,10 @@ class MetricsCollectorSubsystem {
    * Clean up old metrics
    */
   private cleanupOldMetrics(): void {
-    const cutoff = new Date(Date.now() - this.config.metricsRetentionHours * 60 * 60 * 1000);
-    this.metrics = this.metrics.filter(m => m.timestamp >= cutoff);
+    const cutoff = new Date(
+      Date.now() - this.config.metricsRetentionHours * 60 * 60 * 1000,
+    );
+    this.metrics = this.metrics.filter((m) => m.timestamp >= cutoff);
   }
 
   /**
@@ -940,7 +998,10 @@ class MetricsCollectorSubsystem {
             name: alertConfig.name,
             severity: alertConfig.severity,
             message: this.generateAlertMessage(alertConfig, aggregatedMetrics),
-            value: this.getMetricValue(alertConfig.condition, aggregatedMetrics),
+            value: this.getMetricValue(
+              alertConfig.condition,
+              aggregatedMetrics,
+            ),
             threshold: alertConfig.threshold,
             labels: { condition: alertConfig.condition },
             timestamp: new Date(),
@@ -965,7 +1026,10 @@ class MetricsCollectorSubsystem {
   /**
    * Evaluate alert condition
    */
-  private evaluateCondition(condition: string, metrics: Record<string, any>): boolean {
+  private evaluateCondition(
+    condition: string,
+    metrics: Record<string, any>,
+  ): boolean {
     try {
       const parts = condition.split(/\s+/);
       if (parts.length !== 3) return false;
@@ -975,17 +1039,17 @@ class MetricsCollectorSubsystem {
       const threshold = parseFloat(thresholdStr);
 
       switch (operator) {
-        case '>':
+        case ">":
           return metricValue > threshold;
-        case '<':
+        case "<":
           return metricValue < threshold;
-        case '>=':
+        case ">=":
           return metricValue >= threshold;
-        case '<=':
+        case "<=":
           return metricValue <= threshold;
-        case '==':
+        case "==":
           return metricValue == threshold; // eslint-disable-line eqeqeq
-        case '!=':
+        case "!=":
           return metricValue != threshold; // eslint-disable-line eqeqeq
         default:
           return false;
@@ -998,7 +1062,10 @@ class MetricsCollectorSubsystem {
   /**
    * Get metric value from condition
    */
-  private getMetricValue(condition: string, metrics: Record<string, any>): number {
+  private getMetricValue(
+    condition: string,
+    metrics: Record<string, any>,
+  ): number {
     try {
       const metricName = condition.split(/\s+/)[0];
       return metrics[metricName]?.latest || 0;
@@ -1010,7 +1077,10 @@ class MetricsCollectorSubsystem {
   /**
    * Generate alert message
    */
-  private generateAlertMessage(alertConfig: AlertConfig, metrics: Record<string, any>): string {
+  private generateAlertMessage(
+    alertConfig: AlertConfig,
+    metrics: Record<string, any>,
+  ): string {
     const value = this.getMetricValue(alertConfig.condition, metrics);
     return `${alertConfig.name}: ${alertConfig.condition} (current: ${value}, threshold: ${alertConfig.threshold})`;
   }
@@ -1019,7 +1089,9 @@ class MetricsCollectorSubsystem {
    * Get active alerts
    */
   getActiveAlerts(): Alert[] {
-    return Array.from(this.activeAlerts.values()).filter(alert => !alert.resolved);
+    return Array.from(this.activeAlerts.values()).filter(
+      (alert) => !alert.resolved,
+    );
   }
 
   /**
@@ -1083,7 +1155,7 @@ export class ErrorManager {
         enabled: true,
         metricsRetentionHours: 24,
         alertConfigs: [],
-        logLevel: 'info',
+        logLevel: "info",
         enableConsoleLogging: true,
         enableFileLogging: false,
         ...config.monitoring,
@@ -1101,7 +1173,9 @@ export class ErrorManager {
       retry: this.config.retry,
     });
 
-    this.metricsCollector = new MetricsCollectorSubsystem(this.config.monitoring);
+    this.metricsCollector = new MetricsCollectorSubsystem(
+      this.config.monitoring,
+    );
   }
 
   // ============================================================================
@@ -1111,12 +1185,16 @@ export class ErrorManager {
   /**
    * Handle application errors gracefully (ErrorHandler compatibility)
    */
-  handleError(error: unknown, context: string, errorContext?: ErrorContext): void {
+  handleError(
+    error: unknown,
+    context: string,
+    errorContext?: ErrorContext,
+  ): void {
     this.errorHandler.handleError(error, context, errorContext);
 
     // Record error metric
-    this.metricsCollector.incrementCounter('errors_total', {
-      component: errorContext?.component || 'unknown',
+    this.metricsCollector.incrementCounter("errors_total", {
+      component: errorContext?.component || "unknown",
       context,
     });
   }
@@ -1162,9 +1240,16 @@ export class ErrorManager {
   /**
    * Handle an error with recovery strategy (ErrorRecoverySystem compatibility)
    */
-  async handleErrorWithRecovery(error: Error, context: ErrorContext): Promise<RecoveryStrategy> {
+  async handleErrorWithRecovery(
+    error: Error,
+    context: ErrorContext,
+  ): Promise<RecoveryStrategy> {
     // Record error in basic handler
-    this.handleError(error, `${context.component}.${context.operation}`, context);
+    this.handleError(
+      error,
+      `${context.component}.${context.operation}`,
+      context,
+    );
 
     // Get recovery strategy
     return this.recoveryManager.handleError(error, context);
@@ -1220,7 +1305,7 @@ export class ErrorManager {
     name: string,
     value: number,
     type: MetricType = MetricType.COUNTER,
-    labels: Record<string, string> = {}
+    labels: Record<string, string> = {},
   ): void {
     this.metricsCollector.recordMetric(name, value, type, labels);
   }
@@ -1235,14 +1320,22 @@ export class ErrorManager {
   /**
    * Record a gauge metric (MonitoringSystem compatibility)
    */
-  recordGauge(name: string, value: number, labels: Record<string, string> = {}): void {
+  recordGauge(
+    name: string,
+    value: number,
+    labels: Record<string, string> = {},
+  ): void {
     this.metricsCollector.recordGauge(name, value, labels);
   }
 
   /**
    * Record timing metric (MonitoringSystem compatibility)
    */
-  recordTiming(name: string, durationMs: number, labels: Record<string, string> = {}): void {
+  recordTiming(
+    name: string,
+    durationMs: number,
+    labels: Record<string, string> = {},
+  ): void {
     this.metricsCollector.recordTiming(name, durationMs, labels);
   }
 
@@ -1253,12 +1346,16 @@ export class ErrorManager {
     const activeAlerts = this.metricsCollector.getActiveAlerts();
 
     // Determine overall health
-    let overall: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
+    let overall: "healthy" | "degraded" | "unhealthy" = "healthy";
 
-    if (activeAlerts.some(alert => alert.severity === 'critical' || alert.severity === 'error')) {
-      overall = 'unhealthy';
-    } else if (activeAlerts.some(alert => alert.severity === 'warning')) {
-      overall = 'degraded';
+    if (
+      activeAlerts.some(
+        (alert) => alert.severity === "critical" || alert.severity === "error",
+      )
+    ) {
+      overall = "unhealthy";
+    } else if (activeAlerts.some((alert) => alert.severity === "warning")) {
+      overall = "degraded";
     }
 
     // Component health (simplified - can be extended)
@@ -1323,7 +1420,7 @@ export class ErrorManager {
       health: this.getSystemHealth(),
       metrics: this.metricsCollector.getAggregatedMetrics(),
       circuitBreakers: Object.fromEntries(
-        Array.from(this.recoveryManager.getErrorStatistics() as any)
+        Array.from(this.recoveryManager.getErrorStatistics() as any),
       ),
       errorStats: this.recoveryManager.getErrorStatistics(),
     };
@@ -1334,7 +1431,7 @@ export class ErrorManager {
    */
   resetAllCircuitBreakers(): void {
     // This would need to be implemented if we track all components
-    console.log('🔄 Reset all circuit breakers requested');
+    console.log("🔄 Reset all circuit breakers requested");
   }
 }
 
@@ -1360,7 +1457,10 @@ export class ErrorRecoveryHandler {
     this.manager = errorHandler || new ErrorManager();
   }
 
-  async handleError(error: Error, context: ErrorContext): Promise<RecoveryStrategy> {
+  async handleError(
+    error: Error,
+    context: ErrorContext,
+  ): Promise<RecoveryStrategy> {
     return this.manager.handleErrorWithRecovery(error, context);
   }
 
@@ -1400,9 +1500,12 @@ export class ErrorRecoveryManager {
   async handleComponentError(
     component: string,
     error: Error,
-    context: ErrorContext
+    context: ErrorContext,
   ): Promise<RecoveryStrategy> {
-    return this.manager.handleErrorWithRecovery(error, { ...context, component });
+    return this.manager.handleErrorWithRecovery(error, {
+      ...context,
+      component,
+    });
   }
 
   recordComponentSuccess(component: string): void {
@@ -1435,11 +1538,15 @@ export class SystemMonitor {
 
   recordWorkflowExecution(_result: any): void {
     // Simplified implementation - would need full workflow result type
-    this.manager.incrementCounter('workflow_total', { success: 'true' });
+    this.manager.incrementCounter("workflow_total", { success: "true" });
   }
 
-  recordError(component: string, errorType: string, recoverable: boolean): void {
-    this.manager.incrementCounter('errors_total', {
+  recordError(
+    component: string,
+    errorType: string,
+    recoverable: boolean,
+  ): void {
+    this.manager.incrementCounter("errors_total", {
       component,
       type: errorType,
       recoverable: recoverable.toString(),
@@ -1459,10 +1566,12 @@ export class SystemMonitor {
     codeReviews: number;
     activeAlerts: number;
   } {
-    const aggregated = this.manager.getMetricsCollector().getAggregatedMetrics();
+    const aggregated = this.manager
+      .getMetricsCollector()
+      .getAggregatedMetrics();
     return {
       totalWorkflows: aggregated.workflow_total?.count || 0,
-      successRate: this.calculateSuccessRate('workflow_total'),
+      successRate: this.calculateSuccessRate("workflow_total"),
       averageDuration: aggregated.workflow_duration?.avg || 0,
       issuesProcessed: aggregated.issue_analysis_total?.count || 0,
       codeGenerations: aggregated.code_generation_total?.count || 0,
@@ -1478,7 +1587,9 @@ export class SystemMonitor {
   private calculateSuccessRate(metricName: string): number {
     const metrics = this.manager.getMetricsCollector().getMetrics(metricName);
     if (metrics.length === 0) return 0;
-    const successful = metrics.filter(m => m.labels.success === 'true').length;
+    const successful = metrics.filter(
+      (m) => m.labels.success === "true",
+    ).length;
     return successful / metrics.length;
   }
 }

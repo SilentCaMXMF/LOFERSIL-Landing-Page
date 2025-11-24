@@ -3,7 +3,7 @@
  * Contains all configuration constants and data structures
  */
 
-import { Config, Language, Metrics } from '../types.js';
+import { Config, Language, Metrics } from "../types.js";
 
 // Application configuration
 export const config: Config = {
@@ -20,6 +20,6 @@ export const metrics: Metrics = {
 
 // Language configuration
 export const languages: Language[] = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
+  { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "pt", name: "Português", flag: "🇵🇹" },
 ];

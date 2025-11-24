@@ -67,3 +67,13 @@ temp/
 .bun.lockb
 .vercel
 .env*.local
+
+# Kanban implementation
+data/kanban_payload.json*
+docs/kanban-*.md
+.github/workflows/kanban-sync-classic.yml
+tools/utils/*kanban*.js
+tools/tests/test-kanban-sync.js
+tasks/subtasks/live-sync-local-tasks-kanban/
+docs/tasks/**/kanban*
+docs/tasks/**/update-kanban-payload/

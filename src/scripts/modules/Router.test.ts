@@ -3,11 +3,11 @@
  * Basic test suite for the Router module
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Router } from './Router.js';
-import { ErrorHandler } from './ErrorManager';
-import { TranslationManager } from './TranslationManager.js';
-import { NavigationManager } from './NavigationManager.js';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { Router } from "./Router.js";
+import { ErrorHandler } from "./ErrorManager";
+import { TranslationManager } from "./TranslationManager.js";
+import { NavigationManager } from "./NavigationManager.js";
 
 // Mock dependencies
 const mockPushState = vi.fn();
@@ -17,14 +17,14 @@ const mockDOMPurify = vi.fn();
 (global as any).DOMPurify = { sanitize: mockDOMPurify };
 
 // Mock History API
-Object.defineProperty(window, 'history', {
+Object.defineProperty(window, "history", {
   value: { pushState: mockPushState },
   writable: true,
 });
 
 // Mock Location
-Object.defineProperty(window, 'location', {
-  value: { pathname: '/' },
+Object.defineProperty(window, "location", {
+  value: { pathname: "/" },
   writable: true,
 });
 
@@ -33,7 +33,7 @@ global.document = {
   addEventListener: mockAddEventListener,
 } as any;
 
-describe('Router', () => {
+describe("Router", () => {
   let router: Router;
   let mockErrorHandler: ErrorHandler;
   let mockTranslationManager: TranslationManager;
@@ -41,7 +41,7 @@ describe('Router', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockDOMPurify.mockReturnValue('<p>Safe content</p>');
+    mockDOMPurify.mockReturnValue("<p>Safe content</p>");
 
     mockErrorHandler = { handleError: vi.fn() } as any;
     mockTranslationManager = { translate: vi.fn() } as any;
@@ -52,37 +52,37 @@ describe('Router', () => {
       mockTranslationManager,
       mockNavigationManager,
       vi.fn(),
-      mockErrorHandler
+      mockErrorHandler,
     );
   });
 
-  describe('Route Validation', () => {
-    it('should validate existing routes', () => {
-      expect(router.isValidRoute('/')).toBe(true);
-      expect(router.isValidRoute('/products')).toBe(true);
+  describe("Route Validation", () => {
+    it("should validate existing routes", () => {
+      expect(router.isValidRoute("/")).toBe(true);
+      expect(router.isValidRoute("/products")).toBe(true);
     });
 
-    it('should reject invalid routes', () => {
-      expect(router.isValidRoute('/invalid')).toBe(false);
-    });
-  });
-
-  describe('Navigation', () => {
-    it('should navigate programmatically', () => {
-      router.navigateTo('/products');
-      expect(mockPushState).toHaveBeenCalledWith(null, '', '/products');
+    it("should reject invalid routes", () => {
+      expect(router.isValidRoute("/invalid")).toBe(false);
     });
   });
 
-  describe('Setup', () => {
-    it('should setup routing event listeners', () => {
+  describe("Navigation", () => {
+    it("should navigate programmatically", () => {
+      router.navigateTo("/products");
+      expect(mockPushState).toHaveBeenCalledWith(null, "", "/products");
+    });
+  });
+
+  describe("Setup", () => {
+    it("should setup routing event listeners", () => {
       router.setupRouting();
       expect(mockAddEventListener).toHaveBeenCalledTimes(2);
     });
   });
 
-  describe('Rendering', () => {
-    it('should render pages without errors', () => {
+  describe("Rendering", () => {
+    it("should render pages without errors", () => {
       expect(() => router.renderPage()).not.toThrow();
     });
   });
