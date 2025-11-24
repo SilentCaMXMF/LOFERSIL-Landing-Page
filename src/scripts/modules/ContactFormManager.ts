@@ -14,7 +14,7 @@ import {
   validateMessage,
   validateContactForm,
 } from "../validation.js";
-import { BackgroundSync } from "./BackgroundSync.js";
+
 import { envLoader } from "./EnvironmentLoader.js";
 import { TranslationManager } from "./TranslationManager.js";
 
@@ -890,20 +890,11 @@ export class ContactFormManager {
 
       // Check if we're offline
       if (!navigator.onLine) {
-        // Try to register for background sync
-        try {
-          await BackgroundSync.registerContactForm(sanitizedData);
-          this.showSuccessMessage(
-            "Mensagem registada para envio quando a ligação for restaurada.",
-          );
-          this.resetForm();
-          this.eventHandlers.onSuccess?.(sanitizedData);
-          return;
-        } catch (syncError) {
-          console.warn("Background sync not available:", syncError);
-          errorMessage =
-            "Está offline. A mensagem será enviada quando a ligação for restaurada.";
-        }
+        this.showErrorMessage(
+          "Sem ligação à internet. Verifique a sua ligação e tente novamente.",
+        );
+        this.eventHandlers.onError?.(new Error("Offline"));
+        return;
       }
 
       this.trackSubmissionAttempt(false, "error");

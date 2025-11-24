@@ -9,6 +9,7 @@
 interface EnvironmentConfig {
   NODE_ENV?: string;
   OPENAI_API_KEY?: string;
+  GEMINI_API_KEY?: string;
   GOOGLE_ANALYTICS_ID?: string;
   MCP_API_KEY?: string;
   MCP_SERVER_URL?: string;
@@ -18,13 +19,15 @@ interface EnvironmentConfig {
   EMAILJS_SERVICE_ID?: string;
   EMAILJS_TEMPLATE_ID?: string;
   EMAILJS_PUBLIC_KEY?: string;
+  CONTACT_API_ENDPOINT?: string;
   [key: string]: string | undefined;
 }
 
 /**
  * Required environment variables
+ * Note: API keys are optional for basic site functionality
  */
-const REQUIRED_ENV_VARS = ["OPENAI_API_KEY", "GEMINI_API_KEY"] as const;
+const REQUIRED_ENV_VARS: readonly string[] = [];
 
 /**
  * Default environment values
@@ -159,6 +162,16 @@ Available variables: ${
    */
   getAll(): EnvironmentConfig {
     return { ...this.config };
+  }
+
+  /**
+   * Check if optional API keys are available
+   */
+  hasApiKeys(): { openai: boolean; gemini: boolean } {
+    return {
+      openai: !!this.config.OPENAI_API_KEY,
+      gemini: !!this.config.GEMINI_API_KEY,
+    };
   }
 
   /**

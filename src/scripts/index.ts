@@ -8,7 +8,6 @@ import { NavigationManager } from "./modules/NavigationManager.js";
 import { ContactFormManager } from "./modules/ContactFormManager.js";
 import { envLoader } from "./modules/EnvironmentLoader.js";
 
-import { PerformanceTracker } from "./modules/PerformanceTracker.js";
 import { ErrorManager } from "./modules/ErrorManager.js";
 import { SEOManager } from "./modules/SEOManager.js";
 import { ScrollManager } from "./modules/ScrollManager.js";
@@ -19,6 +18,7 @@ import { PWAInstaller } from "./modules/PWAInstaller.js";
 import { PushNotificationManager } from "./modules/PushNotificationManager.js";
 import { PWAUpdater } from "./modules/PWAUpdater.js";
 import { ThemeManager } from "./modules/ThemeManager.js";
+import { lazyLoader } from "./modules/LazyLoader.js";
 
 // Extend Window interface for global properties
 declare global {
@@ -35,7 +35,7 @@ class LOFERSILLandingPage {
   private mainContent: HTMLElement | null;
   private translationManager!: TranslationManager;
   private navigationManager!: NavigationManager;
-  private performanceTracker!: PerformanceTracker;
+
   private errorHandler!: ErrorManager;
   private seoManager!: SEOManager;
   private scrollManager!: ScrollManager;
@@ -79,15 +79,7 @@ class LOFERSILLandingPage {
         },
         this.errorHandler,
       );
-      // Initialize performance tracker
-      this.performanceTracker = new PerformanceTracker(
-        {
-          enableWebVitals: true,
-          enableAnalytics: typeof window.gtag !== "undefined",
-          analyticsId: "GA_MEASUREMENT_ID", // Should be configured from environment
-        },
-        this.errorHandler,
-      );
+
       // Initialize scroll manager
       this.scrollManager = new ScrollManager(this.navigationManager);
       this.navigationManager.setupNavigation();
@@ -264,26 +256,15 @@ class LOFERSILLandingPage {
       }
     }
   }
-
-  /**
-   * Get web vitals metrics (public API)
-   */
-  getWebVitalsMetrics() {
-    return this.performanceTracker.getWebVitalsMetrics();
-  }
 }
 
 // Initialize the application when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
-    const app = new LOFERSILLandingPage();
-    // Expose metrics globally for debugging
-    window.getWebVitals = () => app.getWebVitalsMetrics();
+    new LOFERSILLandingPage();
   });
 } else {
-  const app = new LOFERSILLandingPage();
-  // Expose metrics globally for debugging
-  window.getWebVitals = () => app.getWebVitalsMetrics();
+  new LOFERSILLandingPage();
 }
 // Export for potential module usage
 export { LOFERSILLandingPage };
