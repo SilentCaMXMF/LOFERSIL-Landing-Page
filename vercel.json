@@ -52,5 +52,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/((?!api/|assets/|scripts/|src/|\.(js|css|png|jpg|jpeg|svg|webp|ico|json|webmanifest|map)$).*)",
+      "destination": "/index.html"
+    }
   ]
 }
