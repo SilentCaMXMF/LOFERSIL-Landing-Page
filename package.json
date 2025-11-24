@@ -23,7 +23,7 @@
     "test:coverage:unit": "vitest run --coverage tests/unit",
     "test:coverage:integration": "vitest run --coverage tests/integration",
     "test:coverage:e2e": "vitest run --coverage tests/e2e",
-    "test:coverage:github-issues": "vitest run --coverage src/scripts/modules/github-issues",
+    "test:coverage:github-issues": "vitest run --coverage tests/unit/modules/github",
     "test:coverage:threshold": "vitest run --coverage --run",
     "coverage:report": "vitest run --coverage --reporter=json --outputFile=coverage/coverage-summary.json",
     "coverage:badge": "node tools/scripts/generate-coverage-badge.js",
