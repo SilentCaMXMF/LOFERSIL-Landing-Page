@@ -68,6 +68,9 @@ temp/
 .vercel
 .env*.local
 
+# OpenCode agents and configurations
+.opencode/
+
 # Kanban implementation
 data/kanban_payload.json*
 docs/kanban-*.md
