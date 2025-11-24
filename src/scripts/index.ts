@@ -18,6 +18,7 @@ import { PWAInstaller } from "./modules/PWAInstaller.js";
 import { PushNotificationManager } from "./modules/PushNotificationManager.js";
 import { PWAUpdater } from "./modules/PWAUpdater.js";
 import { ThemeManager } from "./modules/ThemeManager.js";
+import { lazyLoader } from "./modules/LazyLoader.js";
 
 // Extend Window interface for global properties
 declare global {
