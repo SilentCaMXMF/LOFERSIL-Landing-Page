@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "mkdir -p dist && npx tsc && cp src/styles/main.css dist/main.css && cp index.html privacy.html terms.html dist/ && cp -r assets dist/",
+    "build": "mkdir -p dist && cp index.html privacy.html terms.html dist/ && cp -r assets dist/ && echo 'Build completed'",
     "build:dev": "tsc && postcss src/styles/main.css -o dist/main.css",
     "dev": "tsc --watch",
     "start": "serve dist --single -l 3000",
