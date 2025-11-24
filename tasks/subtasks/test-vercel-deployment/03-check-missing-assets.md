@@ -32,17 +32,20 @@ tests:
 acceptance_criteria:
 
 - All referenced images exist in assets/images/
-- CSS and JS files are properly linked
+- CSS and JS files properly linked
 - No 404 errors for static assets
 - File paths are correct (case-sensitive)
+- Contact form section exists with proper id="contact-form"
 
 validation:
 
 - Use grep to find all asset references
 - Check file existence with ls/find commands
 - Test loading built HTML in browser to check for missing assets
+- Verify contact form section is present and properly structured
 
 notes:
 
 - Pay attention to image formats and optimization
 - Ensure favicon and manifest files are present
+- **FIXED**: Added missing contact form section from backup file
