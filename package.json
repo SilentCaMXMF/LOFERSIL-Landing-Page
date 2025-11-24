@@ -8,7 +8,7 @@
     "build": "npm run build:compile && npm run build:css && npm run build:copy && npm run build:seo",
     "build:compile": "tsc",
     "build:css": "postcss src/styles/main.css -o dist/main.css",
-    "build:copy": "mkdir -p dist/scripts && rm -rf dist/scripts/modules && mv dist/modules dist/scripts/ && rm -f dist/*.map dist/scripts/modules/*.map",
+    "build:copy": "mkdir -p dist/scripts && rm -rf dist/scripts/modules && mv dist/modules dist/scripts/ && rm -f dist/*.map dist/scripts/modules/*.map && cp index.html dist/ && cp -r assets dist/ && cp privacy.html dist/ && cp terms.html dist/ && cp assets/offline.html dist/ && cp node_modules/dompurify/dist/purify.min.js dist/dompurify.min.js",
     "build:seo": "echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://lofersil-landing-page.vercel.app/</loc><lastmod>'$(date -Iseconds)'</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url></urlset>' > dist/sitemap.xml && echo 'User-agent: *\nAllow: /\n\nSitemap: https://lofersil-landing-page.vercel.app/sitemap.xml' > dist/robots.txt",
     "build:dev": "tsc && postcss src/styles/main.css -o dist/main.css",
     "dev": "tsc --watch",
