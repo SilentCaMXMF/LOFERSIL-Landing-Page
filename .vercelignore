@@ -4,10 +4,11 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# Development files
+# Environment files (keep .env.example for reference)
 .env*
 !.env.example
-.gitignore
+
+# Development configuration
 .eslintrc*
 .prettierrc*
 .vscode
@@ -19,7 +20,6 @@ out
 
 # Source maps (exclude from production)
 *.map
-!.dist/**/*.map
 
 # Logs
 *.log
@@ -52,28 +52,14 @@ ehthumbs.db
 Thumbs.db
 
 # OpenCode development files
-.opencode/plugin/node_modules
-.opencode/tool/node_modules
+.opencode/
 
-# Kanban implementation
-data/kanban_payload.json*
-docs/kanban-*.md
-.github/workflows/kanban-sync-classic.yml
-tools/utils/*kanban*.js
-tools/tests/test-kanban-sync.js
-tasks/subtasks/live-sync-local-tasks-kanban/
-docs/tasks/**/kanban*
-docs/tasks/**/update-kanban-payload/
-
-# Unnecessary directories for deployment
+# Development directories (keep essential ones)
 docs/
-tests/
 tools/
 k8s/
-tasks/
+tasks/subtasks/
 config/
-.github/
-.opencode/
 data/
 
 # Development and test files
@@ -81,23 +67,23 @@ data/
 *.spec.*
 eslint.config.js
 vitest.config.ts
-tsconfig.json
-.prettier*
 .browserslistrc
 make_executable.sh
 test-*.sh
 cloudflare-troubleshoot.js
 extract_tasks.js
 optimize-images.js
-build.js
-tools/build/build.js
 update-task-statuses.cjs
 accessibility-report.json
 axe-report.json
 axe-report-fixed.json
 pa11y-report.json
+
+# Development scripts
+build.js
+tools/build/build.js
+
+# Configuration files (keep essential ones)
 .vercelignore
 .gitignore
 README.md
-.env.example
-package-lock.json

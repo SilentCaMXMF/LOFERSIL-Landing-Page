@@ -1,0 +1,42 @@
+{
+  "name": "LOFERSIL - Produtos Premium & Serviços em Lisboa",
+  "short_name": "LOFERSIL",
+  "description": "Descubra produtos premium e serviços de confiança na LOFERSIL, sua loja de referência em Lisboa. Papelaria, artigos para bebé, joias e muito mais.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt",
+  "categories": ["shopping", "business"],
+  "icons": [
+    {
+      "src": "assets/images/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/favicon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/images/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

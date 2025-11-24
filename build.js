@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import { execSync } from "child_process";
-import { mkdirSync, copyFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+const { execSync } = require("child_process");
+const { mkdirSync, copyFileSync, existsSync } = require("fs");
+const { join, dirname } = require("path");
+const path = require("path");
 
-const __filename = fileURLToPath(import.meta.url);
+const __filename = path.resolve(process.argv[1]);
 const __dirname = dirname(__filename);
 
 console.log("🚀 Building LOFERSIL Landing Page...");
@@ -37,16 +37,7 @@ try {
 
 // Copy static files
 console.log("📋 Copying static files...");
-const staticFiles = [
-  "index.html",
-  "privacy.html",
-  "terms.html",
-  "site.webmanifest",
-  "dompurify.min.js",
-  "favicon.svg",
-  "robots.txt",
-  "sitemap.xml",
-];
+const staticFiles = ["index.html", "privacy.html", "terms.html", "favicon.svg"];
 
 staticFiles.forEach((file) => {
   if (existsSync(file)) {
@@ -57,20 +48,20 @@ staticFiles.forEach((file) => {
   }
 });
 
-// Copy additional static assets (if they exist in root)
-const additionalFiles = [
-  "dompurify.min.js",
-  "favicon.svg",
+// Copy optional static files (if they exist)
+const optionalFiles = [
+  "site.webmanifest",
   "robots.txt",
   "sitemap.xml",
-  "site.webmanifest",
+  "dompurify.min.js",
 ];
-additionalFiles.forEach((file) => {
+
+optionalFiles.forEach((file) => {
   if (existsSync(file)) {
     copyFileSync(file, join("dist", file));
-    console.log(`✅ Copied ${file}`);
+    console.log(`✅ Copied optional ${file}`);
   } else {
-    console.log(`⚠️  ${file} not found in root directory`);
+    console.log(`ℹ️  Optional ${file} not found - will be created later`);
   }
 });
 
