@@ -10,7 +10,7 @@
   "trailingSlash": false,
   "headers": [
     {
-      "source": "/scripts/**/*.js",
+      "source": "/scripts/(.*)\\.js",
       "headers": [
         {
           "key": "Content-Type",
@@ -19,7 +19,7 @@
       ]
     },
     {
-      "source": "/src/**/*.js",
+      "source": "/src/(.*)\\.js",
       "headers": [
         {
           "key": "Content-Type",
@@ -28,7 +28,7 @@
       ]
     },
     {
-      "source": "/api/**/*.js",
+      "source": "/api/(.*)\\.js",
       "headers": [
         {
           "key": "Content-Type",
@@ -37,7 +37,7 @@
       ]
     },
     {
-      "source": "/assets/**/*.js",
+      "source": "/assets/(.*)\\.js",
       "headers": [
         {
           "key": "Content-Type",
