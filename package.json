@@ -5,7 +5,11 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "node build.js",
+    "build": "npm run build:compile && npm run build:css && npm run build:copy && npm run build:seo",
+    "build:compile": "tsc",
+    "build:css": "postcss src/styles/main.css -o dist/main.css",
+    "build:copy": "mkdir -p dist && cp index.html privacy.html terms.html dist/ && mkdir -p dist/images && cp assets/images/logo.jpg assets/images/Frente_loja_100.webp assets/images/hero-image.svg assets/images/dhl-logo.svg dist/images/ && mkdir -p dist/locales && cp -r src/locales/* dist/locales/ && cp -r api dist/",
+    "build:seo": "echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://lofersil-landing-page.vercel.app/</loc><lastmod>'$(date -Iseconds)'</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url></urlset>' > dist/sitemap.xml && echo 'User-agent: *\nAllow: /\n\nSitemap: https://lofersil-landing-page.vercel.app/sitemap.xml' > dist/robots.txt",
     "build:dev": "tsc && postcss src/styles/main.css -o dist/main.css",
     "dev": "tsc --watch",
     "start": "serve dist --single -l 3000",

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { execSync } from "child_process";
-import {
+const { execSync } = require("child_process");
+const {
   mkdirSync,
   copyFileSync,
   existsSync,
@@ -10,12 +10,8 @@ import {
   statSync,
   rmSync,
   unlinkSync,
-} from "fs";
-import { join, dirname, extname } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+} = require("fs");
+const { join } = require("path");
 
 console.log("🚀 Building LOFERSIL Landing Page (Static Site Only)...");
 
@@ -80,7 +76,7 @@ try {
     execSync("cp -r src/locales dist/", { stdio: "inherit" });
   }
 
-  // Copy only essential images (limit to reasonable number)
+  // Copy only essential images
   const essentialImages = [
     "logo.jpg",
     "Frente_loja_100.webp",
