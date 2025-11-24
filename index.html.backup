@@ -227,11 +227,13 @@
               </div>
             </div>
             <div class="hero-image">
-              <img
-                src="assets/images/Frente%20loja.jpg"
-                alt="Fachada da LOFERSIL, loja tradicional em Lisboa com mais de 30 anos de história, localizada na Rua Gomes Freire 187 B"
-                class="hero-img lazy"
-              />
+              <picture>
+                <img
+                  data-src="assets/images/Frente%20loja.jpg"
+                  alt="Fachada da LOFERSIL, loja tradicional em Lisboa com mais de 30 anos de história, localizada na Rua Gomes Freire 187 B"
+                  class="hero-img lazy"
+                />
+              </picture>
             </div>
           </div>
         </div>
@@ -298,6 +300,12 @@
               <div class="about-gallery-item">
                 <picture>
                   <img
+                    src="assets/images/Interior.jpg"
+                    alt="Interior da LOFERSIL"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <img
                     data-src="assets/images/Interior.jpg"
                     alt="Interior acolhedor da LOFERSIL mostrando exposições organizadas de produtos premium e atendimento personalizado"
                     class="about-gallery-img lazy"
@@ -308,6 +316,14 @@
               </div>
               <div class="about-gallery-item">
                 <picture>
+                  <source
+                    srcset="
+                      assets/images/Interior c funcionário-400w.webp   400w,
+                      assets/images/Interior c funcionário-800w.webp   800w,
+                      assets/images/Interior c funcionário-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
                   <img
                     data-src="assets/images/Interior%20c%20funcion%C3%A1rio.jpg"
                     alt="Funcionários especializados da LOFERSIL oferecendo atendimento personalizado aos clientes na loja"
@@ -506,6 +522,14 @@
                   Mais Vendido
                 </div>
                 <picture>
+                  <source
+                    srcset="
+                      assets/images/reborn_doll-400w.webp   400w,
+                      assets/images/reborn_doll-800w.webp   800w,
+                      assets/images/reborn_doll-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
                   <img
                     data-src="assets/images/reborn_doll.jpg"
                     alt="Bonecos reborn hiper-realistas para recém-nascidos, com detalhes impressionantes e materiais premium para colecionadores e terapia"
@@ -534,6 +558,14 @@
               <div class="product-category-image">
                 <div class="product-badge product-badge-new">Novo</div>
                 <picture>
+                  <source
+                    srcset="
+                      assets/images/Caixas_joias-400w.webp   400w,
+                      assets/images/Caixas_joias-800w.webp   800w,
+                      assets/images/Caixas_joias-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
                   <img
                     data-src="assets/images/Caixas_joias.jpg"
                     alt="Imagem da coleção de caixas de joias premium"
@@ -561,6 +593,13 @@
               <div class="product-category-image">
                 <div class="product-badge product-badge-offer">Oferta</div>
                 <picture>
+                  <source
+                    srcset="
+                      assets/images/Canetas_oferta-400w.webp 400w,
+                      assets/images/Canetas_oferta-800w.webp 800w
+                    "
+                    type="image/webp"
+                  />
                   <img
                     data-src="assets/images/Canetas_oferta.jpg"
                     alt="Imagem de canetas promocionais e instrumentos de escrita"
@@ -590,6 +629,14 @@
                   Profissional
                 </div>
                 <picture>
+                  <source
+                    srcset="
+                      assets/images/Dossiers-400w.webp   400w,
+                      assets/images/Dossiers-800w.webp   800w,
+                      assets/images/Dossiers-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
                   <img
                     data-src="assets/images/Dossiers.jpg"
                     alt="Imagem de dossiês e pastas de escritório"
@@ -607,9 +654,9 @@
                 </div>
                 <h3 class="product-category-title">Material de Escritório</h3>
                 <p class="product-category-description">
-                  Materiais de escritório de alta qualidade, incluindo dossiers,
-                  canetas e tintas. Produtos duráveis e funcionais para o seu
-                  ambiente de trabalho.
+                  Organização profissional para o seu espaço de trabalho.
+                  Dossiês elegantes, pastas organizadas e acessórios que
+                  combinam funcionalidade com design sofisticado.
                 </p>
               </div>
             </div>
@@ -619,6 +666,13 @@
                   Tendência
                 </div>
                 <picture>
+                  <source
+                    srcset="
+                      assets/images/Mochilas-400w.webp 400w,
+                      assets/images/Mochilas-800w.webp 800w
+                    "
+                    type="image/webp"
+                  />
                   <img
                     data-src="assets/images/Mochilas.jpg"
                     alt="Imagem de mochilas para escola e viagens"
@@ -646,6 +700,14 @@
               <div class="product-category-image">
                 <div class="product-badge product-badge-eco">Económico</div>
                 <picture>
+                  <source
+                    srcset="
+                      assets/images/Tinteiros-400w.webp   400w,
+                      assets/images/Tinteiros-800w.webp   800w,
+                      assets/images/Tinteiros-1200w.webp 1200w
+                    "
+                    type="image/webp"
+                  />
                   <img
                     data-src="assets/images/Tinteiros.jpg"
                     alt="Imagem de cartuchos de tinta e suprimentos para impressoras"
@@ -916,123 +978,92 @@
       <div class="footer-container">
         <div class="footer-content">
           <div class="footer-section">
-            <div class="footer-logo">
-              <img
-                src="assets/images/logo.svg"
-                alt="LOFERSIL Logo"
-                class="footer-logo-img"
-              />
-              <h3 class="footer-title">LOFERSIL</h3>
-            </div>
+            <h3 class="footer-title">LOFERSIL</h3>
             <p class="footer-description" data-translate="footer.description">
-              Há mais de 30 anos encantando famílias e empresas com produtos
-              premium e atendimento excepcional.
+              Produtos e serviços premium para clientes exigentes.
             </p>
             <div class="footer-contact">
-              <div class="footer-contact-item">
-                <span class="footer-contact-icon">📍</span>
-                <span data-translate="footer.address"
-                  >R. Gomes Freire 187 B, 1150-178 Lisboa</span
-                >
+              <div class="footer-address">
+                R. Gomes Freire 187 B, 1150-178 Lisboa
               </div>
-              <div class="footer-contact-item">
-                <span class="footer-contact-icon">📞</span>
-                <span data-translate="footer.phone">21 353 1555</span>
-              </div>
+              <div class="footer-phone">21 353 1555</div>
             </div>
           </div>
           <div class="footer-section">
-            <h4 class="footer-heading" data-translate="footer.quickLinks">
-              Ligações Rápidas
+            <h4 class="footer-subtitle" data-translate="footer.quickLinks">
+              Links Rápidos
             </h4>
             <ul class="footer-links">
               <li>
-                <a href="#about" data-translate="footer.about">Sobre Nós</a>
-              </li>
-              <li>
-                <a href="#features" data-translate="footer.services"
-                  >Serviços</a
-                >
-              </li>
-              <li>
-                <a href="#products-showcase" data-translate="footer.products"
+                <a href="#products-showcase" data-translate="nav.products"
                   >Produtos</a
                 >
               </li>
               <li>
-                <a href="#contact-form" data-translate="footer.contact"
+                <a href="#features" data-translate="nav.services">Serviços</a>
+              </li>
+              <li><a href="#about" data-translate="nav.about">Sobre Nós</a></li>
+              <li>
+                <a href="#contact-form" data-translate="nav.contact"
                   >Contacto</a
                 >
               </li>
             </ul>
           </div>
           <div class="footer-section">
-            <h4 class="footer-heading" data-translate="footer.services">
-              Serviços
+            <h4 class="footer-subtitle" data-translate="footer.connect">
+              Ligar
             </h4>
             <ul class="footer-links">
               <li>
-                <a href="#features" data-translate="footer.accounting"
-                  >Contabilidade</a
+                <a href="#cta" data-translate="nav.store">Visitar Loja</a>
+              </li>
+              <li>
+                <a href="#contact-form" data-translate="footer.support"
+                  >Suporte</a
                 >
               </li>
               <li>
-                <a href="#features" data-translate="footer.binding"
-                  >Encadernação</a
+                <a href="/privacy.html" data-translate="footer.privacy"
+                  >Política de Privacidade</a
                 >
               </li>
               <li>
-                <a href="#features" data-translate="footer.delivery"
-                  >Entregas</a
+                <a href="/terms.html" data-translate="footer.terms"
+                  >Termos de Serviço</a
                 >
-              </li>
-              <li>
-                <a href="#features" data-translate="footer.support">Suporte</a>
               </li>
             </ul>
           </div>
           <div class="footer-section">
-            <h4 class="footer-heading" data-translate="footer.followUs">
-              Siga-nos
-            </h4>
-            <div class="footer-social">
-              <a
-                href="https://www.facebook.com/lofersil"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="social-link"
-                aria-label="Facebook"
-              >
-                <img
-                  src="assets/images/facebook-favicon-32x32.png"
-                  alt="Facebook"
-                  class="social-icon"
-                />
-              </a>
-            </div>
+            <h4 class="footer-subtitle">Redes Sociais</h4>
+            <ul class="footer-links">
+              <li>
+                <a
+                  href="https://www.facebook.com/p/Lofersil-Lda-100014101877660/?locale=pt_PT"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Visitar página do Facebook da LOFERSIL"
+                  >Facebook</a
+                >
+              </li>
+            </ul>
           </div>
         </div>
         <div class="footer-bottom">
-          <div class="footer-bottom-content">
-            <p data-translate="footer.copyright">
-              © 2024 LOFERSIL. Todos os direitos reservados.
-            </p>
-            <div class="footer-bottom-links">
-              <a href="privacy.html" data-translate="footer.privacy"
-                >Privacidade</a
-              >
-              <a href="terms.html" data-translate="footer.terms">Termos</a>
-            </div>
-          </div>
+          <p data-translate="footer.copyright">
+            © 2024 LOFERSIL. Todos os direitos reservados.
+          </p>
         </div>
       </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="scripts/index.js"></script>
-    <script src="scripts/types.js"></script>
-    <script src="scripts/validation.js"></script>
-    <script src="scripts/modules/ContactFormManager.js"></script>
-    <script src="scripts/modules/BackgroundSync.js"></script>
+    <script
+      src="scripts/index.js"
+      defer
+      type="module"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

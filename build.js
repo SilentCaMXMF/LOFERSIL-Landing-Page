@@ -42,12 +42,40 @@ try {
 
 // Copy static files
 console.log("📋 Copying static files...");
-const staticFiles = ["index.html", "privacy.html", "terms.html"];
+const staticFiles = [
+  "index.html",
+  "privacy.html",
+  "terms.html",
+  "site.webmanifest",
+  "dompurify.min.js",
+  "favicon.svg",
+  "robots.txt",
+  "sitemap.xml",
+];
 
 staticFiles.forEach((file) => {
   if (existsSync(file)) {
     copyFileSync(file, join("dist", file));
     console.log(`✅ Copied ${file}`);
+  } else {
+    console.log(`⚠️  ${file} not found in root directory`);
+  }
+});
+
+// Copy additional static assets (if they exist in root)
+const additionalFiles = [
+  "dompurify.min.js",
+  "favicon.svg",
+  "robots.txt",
+  "sitemap.xml",
+  "site.webmanifest",
+];
+additionalFiles.forEach((file) => {
+  if (existsSync(file)) {
+    copyFileSync(file, join("dist", file));
+    console.log(`✅ Copied ${file}`);
+  } else {
+    console.log(`⚠️  ${file} not found in root directory`);
   }
 });
 
