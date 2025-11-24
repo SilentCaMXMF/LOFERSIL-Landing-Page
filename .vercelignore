@@ -81,7 +81,7 @@ data/
 *.spec.*
 eslint.config.js
 vitest.config.ts
-tsconfig.json
+
 .prettier*
 .browserslistrc
 make_executable.sh
