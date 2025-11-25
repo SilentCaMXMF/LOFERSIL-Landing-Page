@@ -1,0 +1,289 @@
+{
+  "meta": {
+    "title": "LOFERSIL - Produtos Premium & Serviços em Lisboa | Loja de Confiança",
+    "description": "Descubra produtos premium e serviços de confiança na LOFERSIL, sua loja de referência em Lisboa. Papelaria, artigos para bebé, joias e muito mais. Visite-nos!",
+    "keywords": "lofersil lisboa, produtos premium portugal, papelaria lisboa, artigos bebe, caixas joias, canetas promocionais, material escritorio, loja lisboa",
+    "ogTitle": "LOFERSIL - Produtos Premium & Serviços em Lisboa | Loja de Confiança",
+    "ogDescription": "Descubra produtos premium e serviços de confiança na LOFERSIL, sua loja de referência em Lisboa. Papelaria, artigos para bebé, joias e muito mais.",
+    "twitterTitle": "LOFERSIL - Produtos Premium & Serviços em Lisboa | Loja de Confiança",
+    "twitterDescription": "Descubra produtos premium e serviços de confiança na LOFERSIL, sua loja de referência em Lisboa."
+  },
+  "nav": {
+    "home": "Início",
+    "products": "Produtos",
+    "services": "Serviços",
+    "about": "Sobre Nós",
+    "contact": "Contacto",
+    "store": "Visitar Loja",
+    "langToggle": "PT"
+  },
+  "skip": {
+    "mainContent": "Ir para o conteúdo principal",
+    "navigation": "Ir para a navegação"
+  },
+  "hero": {
+    "title": "Descubra a Excelência em Lisboa",
+    "subtitle": "Produtos Premium & Serviços de Confiança",
+    "description": "Há mais de 30 anos servindo Lisboa com produtos de qualidade superior e atendimento personalizado. Da papelaria aos artigos para bebé, encontrará tudo o que precisa numa loja de confiança familiar.",
+    "exploreProducts": "Ver Produtos em Destaque",
+    "ourServices": "Conheça Nossos Serviços"
+  },
+  "features": {
+    "title": "Por que Confiar na LOFERSIL?",
+    "subtitle": "Tradição, qualidade e atendimento que fazem a diferença há mais de 30 anos",
+    "premiumQuality": {
+      "title": "Qualidade Premium",
+      "description": "Selecionamos apenas produtos de excelência, testados e aprovados por nossa equipe especializada."
+    },
+    "personalizedService": {
+      "title": "Atendimento Personalizado",
+      "description": "A nossa equipe conhece cada produto e está pronta para oferecer consultoria especializada para suas necessidades."
+    },
+    "traditionTrust": {
+      "title": "Tradição & Confiança",
+      "description": "Há mais de 30 anos conquistando a confiança de famílias e empresas em Lisboa com integridade e qualidade."
+    },
+    "freeDelivery": {
+      "title": "Entrega Gratuita",
+      "description": "Entrega gratuita em Lisboa para encomendas superiores a 100€. Serviço rápido e confiável diretamente na sua porta."
+    },
+    "accountingServices": {
+      "title": "Serviços Contabilísticos",
+      "description": "Apoio contabilístico para particulares e empresas. Gestão de faturas, declarações fiscais e consultoria especializada."
+    },
+    "bindingLamination": {
+      "title": "Encadernação & Plastificação",
+      "description": "Serviços profissionais de encadernação e plastificação. Proteja e organize seus documentos com acabamento premium."
+    },
+    "dhlService": {
+      "title": "Ponto de Serviço DHL",
+      "description": "Recolha e envio de encomendas através do nosso ponto de serviço DHL autorizado. Acompanhe suas encomendas em tempo real.",
+      "linkText": "Rastrear Encomenda"
+    }
+  },
+  "about": {
+    "title": "Bem-vindo à LOFERSIL",
+    "subtitle": "A sua loja local de confiança no coração de Lisboa",
+    "description": "Entre na nossa loja acolhedora na R. Gomes Freire 187 B e descubra uma seleção cuidadosa de produtos de qualidade. A nossa equipa amigável está aqui para ajudar a encontrar exatamente o que precisa.",
+    "location": "Localização Central em Lisboa",
+    "physicalStore": "Experiência de Loja Física",
+    "expertStaff": "Assistência de Equipa Especializada"
+  },
+  "productsShowcase": {
+    "title": "As Nossas Categorias de Produtos",
+    "subtitle": "Descubra a nossa vasta gama de produtos de qualidade para todas as necessidades",
+    "babyProducts": {
+      "title": "Produtos para Bebés",
+      "description": "Coleção completa de brinquedos macios, bonecos adoráveis e acessórios essenciais para bebés. Produtos seguros, de alta qualidade e feitos para durar."
+    },
+    "jewelryBoxes": {
+      "title": "Caixas de Joias",
+      "description": "Caixas de joias premium com design elegante e compartimentos organizados. Proteja e exiba as suas joias mais preciosas com estilo e segurança."
+    },
+    "pens": {
+      "title": "Canetas Promocionais",
+      "description": "Canetas promocionais premium para empresas e uso pessoal. Escreva com conforto e estilo com as nossas canetas de qualidade superior."
+    },
+    "binders": {
+      "title": "Material de Escritório",
+      "description": "Material de escritório completo incluindo dossiês, pastas e organizadores profissionais. Mantenha os seus documentos organizados e protegidos."
+    },
+    "backpacks": {
+      "title": "Mochilas",
+      "description": "Mochilas resistentes e modernas perfeitas para escola, trabalho ou viagens. Design ergonómico com compartimentos inteligentes para máxima organização."
+    },
+    "ink": {
+      "title": "Cartuchos de Tinta",
+      "description": "Cartuchos de tinta compatíveis de alta qualidade para todas as marcas. Impressões nítidas e económicas para casa e escritório."
+    },
+    "ctaText": "Visite a nossa loja para explorar a nossa coleção completa e encontrar exatamente o que procura",
+    "ctaButton": "Explorar Catálogo Completo"
+  },
+  "cta": {
+    "title": "Pronto para Descobrir?",
+    "description": "Visite-nos hoje e experimente produtos premium com atendimento personalizado. Ofertas especiais disponíveis enquanto durarem os stocks!",
+    "primaryButton": "Visitar Loja Física",
+    "secondaryButton": "Ver Catálogo Online"
+  },
+  "contact": {
+    "title": "Fale Conosco",
+    "subtitle": "Estamos aqui para ajudar. Entre em contato e nossa equipe responderá rapidamente com todo o cuidado que você merece.",
+    "nameLabel": "Nome *",
+    "emailLabel": "Email *",
+    "phoneLabel": "Telefone",
+    "messageLabel": "Mensagem *",
+    "submitButton": "Enviar Mensagem",
+    "submitButtonLoading": "A enviar...",
+    "successMessage": "Mensagem enviada com sucesso! Entraremos em contacto brevemente.",
+    "errorMessage": "Ocorreu um erro ao enviar a mensagem. Por favor, tente novamente.",
+    "validation": {
+      "name": {
+        "required": "Nome é obrigatório",
+        "tooShort": "Nome deve ter pelo menos 2 caracteres",
+        "tooLong": "Nome deve ter menos de 100 caracteres",
+        "invalidChars": "Nome contém caracteres inválidos"
+      },
+      "email": {
+        "required": "Email é obrigatório",
+        "invalid": "Por favor, introduza um endereço de email válido",
+        "tooLong": "Endereço de email é demasiado longo"
+      },
+      "phone": {
+        "invalid": "Por favor, introduza um número de telefone válido",
+        "tooLong": "Número de telefone é demasiado longo"
+      },
+      "message": {
+        "required": "Mensagem é obrigatória",
+        "tooShort": "Mensagem deve ter pelo menos 10 caracteres",
+        "tooLong": "Mensagem deve ter menos de 2000 caracteres"
+      }
+    }
+  },
+  "footer": {
+    "title": "LOFERSIL",
+    "description": "Produtos e serviços premium para clientes exigentes.",
+    "quickLinks": "Links Rápidos",
+    "connect": "Ligar",
+    "support": "Suporte",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Serviço",
+    "copyright": "© 2024 LOFERSIL. Todos os direitos reservados."
+  },
+  "alt": {
+    "storeFront": "Frente da Loja LOFERSIL - R. Gomes Freire 187 B, Lisboa",
+    "storeInterior": "Interior da Loja LOFERSIL - Vista ampla das exposições de produtos",
+    "storeInteriorStaff": "Interior da Loja LOFERSIL - Funcionários a assistir clientes",
+    "babyProducts": "Coleção de Produtos para Bebés e Bonecos",
+    "jewelryBoxes": "Coleção de Caixas de Joias Premium",
+    "pens": "Canetas Promocionais e Instrumentos de Escrita",
+    "binders": "Dossiês e Pastas de Escritório",
+    "backpacks": "Mochilas para Escola e Viagens",
+    "inkCartridges": "Cartuchos de Tinta e Suprimentos para Impressoras",
+    "heroImage": "Imagem Hero da LOFERSIL"
+  },
+  "routes": {
+    "/": {
+      "title": "LOFERSIL - Produtos e Serviços Premium",
+      "description": "Descubra a coleção premium de produtos e serviços da LOFERSIL. Qualidade e excelência em tudo o que fazemos."
+    },
+    "/products": {
+      "title": "Produtos - LOFERSIL",
+      "description": "Explore a nossa coleção premium de produtos. Artigos de alta qualidade selecionados para clientes exigentes.",
+      "heroTitle": "Nossos Produtos",
+      "heroSubtitle": "Coleção Premium",
+      "heroDescription": "Descubra a nossa seleção cuidadosa de produtos de alta qualidade desenhados para satisfazer as suas necessidades.",
+      "sectionTitle": "Categorias de Produtos",
+      "sectionSubtitle": "Encontre exatamente o que procura",
+      "electronics": {
+        "title": "Eletrónicos",
+        "description": "Última tecnologia e dispositivos para a vida moderna."
+      },
+      "fashion": {
+        "title": "Moda",
+        "description": "Roupa elegante e confortável para todas as ocasiões."
+      },
+      "homeGarden": {
+        "title": "Casa e Jardim",
+        "description": "Tudo o que precisa para tornar o seu espaço bonito."
+      },
+      "entertainment": {
+        "title": "Entretenimento",
+        "description": "Produtos divertidos e envolventes para o tempo livre."
+      }
+    },
+    "/services": {
+      "title": "Serviços - LOFERSIL",
+      "description": "Serviços profissionais adaptados às suas necessidades. Soluções especializadas para empresas e indivíduos.",
+      "heroTitle": "Nossos Serviços",
+      "heroSubtitle": "Soluções Especializadas",
+      "heroDescription": "Serviços profissionais desenhados para ajudar a alcançar os seus objetivos com excelência.",
+      "sectionTitle": "Áreas de Serviço",
+      "sectionSubtitle": "Soluções abrangentes para as suas necessidades",
+      "consulting": {
+        "title": "Consultoria",
+        "description": "Aconselhamento especializado e serviços de planeamento estratégico."
+      },
+      "technicalSupport": {
+        "title": "Suporte Técnico",
+        "description": "Assistência técnica fiável e manutenção."
+      },
+      "analytics": {
+        "title": "Análise",
+        "description": "Informações baseadas em dados para otimizar o seu desempenho."
+      },
+      "design": {
+        "title": "Design",
+        "description": "Soluções de design criativo para os seus projetos."
+      }
+    },
+    "/about": {
+      "title": "Sobre Nós - LOFERSIL",
+      "description": "Conheça a missão, valores e compromisso com a qualidade da LOFERSIL. Descubra a nossa história.",
+      "heroTitle": "Sobre a LOFERSIL",
+      "heroSubtitle": "A Nossa História",
+      "heroDescription": "Fundada com paixão pela qualidade e excelência, a LOFERSIL está comprometida em fornecer produtos e serviços premium.",
+      "sectionTitle": "A Nossa Missão",
+      "sectionSubtitle": "Entregar excelência em tudo o que fazemos",
+      "qualityFirst": {
+        "title": "Qualidade Primeiro",
+        "description": "Priorizamos a qualidade em todos os produtos e serviços que oferecemos."
+      },
+      "customerFocus": {
+        "title": "Foco no Cliente",
+        "description": "A sua satisfação é a nossa prioridade máxima."
+      },
+      "innovation": {
+        "title": "Inovação",
+        "description": "Melhorando continuamente e adaptando-nos para satisfazer as suas necessidades."
+      }
+    },
+    "/contact": {
+      "title": "Contacte-nos - LOFERSIL",
+      "description": "Entre em contacto com a LOFERSIL. Estamos aqui para ajudar com quaisquer perguntas ou suporte de que necessite.",
+      "heroTitle": "Contacte-nos",
+      "heroSubtitle": "Entre em Contacto",
+      "heroDescription": "Tem perguntas? Precisa de suporte? Estamos aqui para ajudar em todos os passos.",
+      "sectionTitle": "Informações de Contacto",
+      "sectionSubtitle": "Contacte-nos através de qualquer um destes canais",
+      "email": {
+        "title": "Email",
+        "description": "info@lofersil.com"
+      },
+      "phone": {
+        "title": "Telefone",
+        "description": "+351 21 123 4567"
+      },
+      "address": {
+        "title": "Endereço",
+        "description": "R. Gomes Freire 187 B, 1150-178 Lisboa"
+      }
+    },
+    "/store": {
+      "title": "Loja - LOFERSIL",
+      "description": "Visite a nossa loja online para navegar e comprar a nossa coleção completa de produtos premium.",
+      "heroTitle": "A Nossa Loja",
+      "heroSubtitle": "Experiência de Compras Premium",
+      "heroDescription": "Navegue pela nossa coleção completa de produtos premium. Artigos de qualidade a preços competitivos.",
+      "browseProducts": "Navegar Produtos",
+      "contactSales": "Contactar Vendas",
+      "sectionTitle": "Características da Loja",
+      "sectionSubtitle": "Porquê comprar connosco",
+      "easyShopping": {
+        "title": "Compras Fáceis",
+        "description": "Interface intuitiva para uma experiência de compras sem interrupções."
+      },
+      "fastShipping": {
+        "title": "Entrega Rápida",
+        "description": "Entrega rápida e fiável à sua porta."
+      },
+      "securePayment": {
+        "title": "Pagamento Seguro",
+        "description": "Processamento de pagamentos seguro e protegido."
+      },
+      "qualityGuarantee": {
+        "title": "Garantia de Qualidade",
+        "description": "Garantia de satisfação de 100% em todas as compras."
+      }
+    }
+  }
+}
