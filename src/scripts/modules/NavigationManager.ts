@@ -3,12 +3,15 @@
  * Handles dropdown menu, navigation state, and UI interactions
  */
 
+import { TranslationManager } from "./TranslationManager.js";
+
 export class NavigationManager {
   private navToggle: HTMLElement | null;
   private navMenu: HTMLElement | null;
   private navbar: HTMLElement | null;
   private isMenuOpen: boolean;
   private isDesktop: boolean;
+  private translationManager: TranslationManager | null = null;
 
   constructor() {
     this.navToggle = null;
@@ -71,6 +74,9 @@ export class NavigationManager {
     document.body.classList.toggle("menu-open", this.isMenuOpen);
     // Update ARIA attributes
     this.navToggle?.setAttribute("aria-expanded", this.isMenuOpen.toString());
+
+    // Update aria-label based on menu state
+    this.updateToggleAriaLabel();
   }
 
   /**
@@ -190,6 +196,47 @@ export class NavigationManager {
   }
 
   /**
+   * Set translation manager for dynamic aria-label updates
+   */
+  setTranslationManager(translationManager: TranslationManager): void {
+    this.translationManager = translationManager;
+  }
+
+  /**
+   * Update the toggle button's aria-label based on menu state
+   */
+  private updateToggleAriaLabel(): void {
+    if (!this.navToggle || !this.translationManager) return;
+
+    const currentLang = this.translationManager.getCurrentLanguage();
+    const translations = this.translationManager.getTranslations();
+
+    if (this.isMenuOpen) {
+      const closeLabel = this.getNestedTranslation(
+        translations,
+        "nav.toggleClose",
+      );
+      if (closeLabel) {
+        this.navToggle.setAttribute("aria-label", closeLabel);
+      }
+    } else {
+      const openLabel = this.getNestedTranslation(translations, "nav.toggle");
+      if (openLabel) {
+        this.navToggle.setAttribute("aria-label", openLabel);
+      }
+    }
+  }
+
+  /**
+   * Get nested translation value (copied from TranslationManager to avoid circular dependency)
+   */
+  private getNestedTranslation(obj: any, path: string): string {
+    return path.split(".").reduce((current, key) => {
+      return current && typeof current === "object" ? current[key] : "";
+    }, obj);
+  }
+
+  /**
    * Setup navigation functionality
    */
   setupNavigation(): void {
@@ -197,6 +244,8 @@ export class NavigationManager {
     this.setActiveNavigation();
     // Handle menu state
     this.handleMenuState();
+    // Initialize aria-label
+    this.updateToggleAriaLabel();
   }
 
   /**

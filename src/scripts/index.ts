@@ -90,8 +90,9 @@ class LOFERSILLandingPage {
       );
       // Initialize scroll manager
       this.scrollManager = new ScrollManager(this.navigationManager);
-      this.navigationManager.setupNavigation();
       await this.translationManager.initialize();
+      this.navigationManager.setTranslationManager(this.translationManager);
+      this.navigationManager.setupNavigation();
       this.setupLanguageToggle();
 
       // Initialize theme manager

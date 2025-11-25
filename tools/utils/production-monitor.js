@@ -372,7 +372,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const command = process.argv[2] || "check";
 
   switch (command) {
-    case "check":
+    case "check": {
       monitor
         .performHealthCheck()
         .then(() => {
@@ -389,15 +389,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         })
         .catch(console.error);
       break;
+    }
 
-    case "monitor":
+    case "monitor": {
       const duration = process.argv[3]
         ? parseInt(process.argv[3]) * 1000
         : null;
       monitor.startMonitoring(duration).catch(console.error);
       break;
+    }
 
-    case "performance":
+    case "performance": {
       monitor
         .checkPerformance()
         .then((results) => {
@@ -416,8 +418,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         })
         .catch(console.error);
       break;
+    }
 
-    case "report":
+    case "report": {
       const reportPath = process.argv[3] || "./monitoring-report.json";
       monitor
         .performHealthCheck()
@@ -426,6 +429,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         })
         .catch(console.error);
       break;
+    }
 
     default:
       console.log("Usage:");

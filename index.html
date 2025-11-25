@@ -118,10 +118,13 @@
           </div>
 
           <button
+            id="nav-toggle"
             class="nav-toggle"
             aria-expanded="false"
             aria-controls="nav-menu"
+            aria-label="Open navigation menu"
             data-translate="nav.toggle"
+            data-translate-aria="nav.toggle"
           >
             <span class="nav-toggle-line"></span>
             <span class="nav-toggle-line"></span>
@@ -789,11 +792,18 @@
                     <span class="checkmark"></span>
                     <span data-translate="contact.form.privacy">
                       Li e aceito a
-                      <a href="privacy.html" target="_blank"
+                      <a
+                        href="privacy.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         >Política de Privacidade</a
                       >
                       e os
-                      <a href="terms.html" target="_blank">Termos de Serviço</a
+                      <a
+                        href="terms.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >Termos de Serviço</a
                       >.
                     </span>
                   </label>

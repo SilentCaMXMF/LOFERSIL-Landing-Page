@@ -279,7 +279,7 @@ class DeploymentHealthCheck {
     ];
 
     const configuredHeaders = headers.flatMap((h) =>
-      h.headers.map((header) => header.key),
+      Array.isArray(h.headers) ? h.headers.map((header) => header.key) : [],
     );
     const missingHeaders = securityHeaders.filter(
       (header) => !configuredHeaders.includes(header),

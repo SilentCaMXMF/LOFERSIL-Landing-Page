@@ -1,9 +1,17 @@
 import js from "@eslint/js";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+import globals from "globals";
 
 export default [
   js.configs.recommended,
+  {
+    files: ["build.js", "tools/**/*.js", "server.js", "api/**/*.js"],
+    languageOptions: {
+      sourceType: "module",
+      globals: globals.node,
+    },
+  },
   {
     files: ["src/**/*.ts"],
     languageOptions: {

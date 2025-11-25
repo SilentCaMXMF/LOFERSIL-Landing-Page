@@ -132,6 +132,18 @@ export class TranslationManager {
           }
         }
       }
+
+      // Handle aria-label translations
+      const ariaKey = element.getAttribute("data-translate-aria");
+      if (ariaKey) {
+        const ariaTranslation = this.getNestedTranslation(
+          currentTranslations,
+          ariaKey,
+        );
+        if (ariaTranslation && element instanceof HTMLElement) {
+          element.setAttribute("aria-label", ariaTranslation);
+        }
+      }
     });
     console.log(`${this.currentLanguage} translations applied`);
   }

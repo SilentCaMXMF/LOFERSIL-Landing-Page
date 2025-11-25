@@ -15,7 +15,9 @@
     "about": "About Us",
     "contact": "Contact",
     "store": "Visit Store",
-    "langToggle": "EN"
+    "langToggle": "EN",
+    "toggle": "Open navigation menu",
+    "toggleClose": "Close navigation menu"
   },
   "skip": {
     "mainContent": "Skip to main content",
