@@ -125,3 +125,10 @@ export type EventHandler<T extends OpenCodeEvent = OpenCodeEvent> = (
 export interface EventListeners {
   [eventType: string]: EventHandler[];
 }
+
+// ============================================================================
+// MCP TYPES RE-EXPORT
+// ============================================================================
+
+// Re-export all MCP types for easy importing
+export * from "./modules/mcp/types";
