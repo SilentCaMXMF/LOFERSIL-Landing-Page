@@ -11,17 +11,20 @@ export class PWAUpdater {
   }
 
   private initializeUpdateHandling(): void {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(registration => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
         this.registration = registration;
 
         // Check for updates
-        registration.addEventListener('updatefound', () => {
+        registration.addEventListener("updatefound", () => {
           const newWorker = registration.installing;
 
           if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            newWorker.addEventListener("statechange", () => {
+              if (
+                newWorker.state === "installed" &&
+                navigator.serviceWorker.controller
+              ) {
                 this.showUpdateNotification();
               }
             });
@@ -30,7 +33,7 @@ export class PWAUpdater {
       });
 
       // Listen for controller change (new SW activated)
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
         window.location.reload();
       });
     }
@@ -40,8 +43,8 @@ export class PWAUpdater {
     this.updateAvailable = true;
 
     // Create update banner
-    const banner = document.createElement('div');
-    banner.id = 'pwa-update-banner';
+    const banner = document.createElement("div");
+    banner.id = "pwa-update-banner";
     banner.innerHTML = `
       <div class="update-banner-content">
         <span>Nova versão disponível!</span>
@@ -66,12 +69,12 @@ export class PWAUpdater {
     document.body.appendChild(banner);
 
     // Handle update button
-    document.getElementById('update-btn')?.addEventListener('click', () => {
+    document.getElementById("update-btn")?.addEventListener("click", () => {
       this.applyUpdate();
     });
 
     // Handle dismiss button
-    document.getElementById('dismiss-btn')?.addEventListener('click', () => {
+    document.getElementById("dismiss-btn")?.addEventListener("click", () => {
       this.dismissUpdate();
     });
   }
@@ -79,12 +82,12 @@ export class PWAUpdater {
   private applyUpdate(): void {
     if (this.registration && this.registration.waiting) {
       // Tell the new SW to skip waiting
-      this.registration.waiting.postMessage({ action: 'skipWaiting' });
+      this.registration.waiting.postMessage({ action: "skipWaiting" });
     }
   }
 
   private dismissUpdate(): void {
-    const banner = document.getElementById('pwa-update-banner');
+    const banner = document.getElementById("pwa-update-banner");
     if (banner) {
       banner.remove();
     }

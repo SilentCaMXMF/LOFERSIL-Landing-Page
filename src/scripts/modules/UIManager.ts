@@ -3,9 +3,9 @@
  * Manages UI state, scroll effects, and user interactions
  */
 
-import { ErrorManager } from './ErrorManager.js';
-import { validateContactForm, ContactFormValidator } from '../validation.js';
-import { envLoader } from './EnvironmentLoader.js';
+import { ErrorManager } from "./ErrorManager.js";
+import { validateContactForm, ContactFormValidator } from "../validation.js";
+import { envLoader } from "./EnvironmentLoader.js";
 
 // API Types
 interface ContactRequest {
@@ -54,12 +54,12 @@ export class UIManager {
    */
   private setupDOMElements(): void {
     try {
-      this.navbar = document.getElementById('navbar') as HTMLElement;
+      this.navbar = document.getElementById("navbar") as HTMLElement;
       // Additional critical DOM elements can be added here
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to setup DOM elements', {
-        component: 'UIManager',
-        operation: 'setupDOMElements',
+      this.errorHandler.handleError(error, "Failed to setup DOM elements", {
+        component: "UIManager",
+        operation: "setupDOMElements",
         timestamp: new Date(),
       });
     }
@@ -75,16 +75,16 @@ export class UIManager {
       // Navbar background on scroll
       if (this.navbar) {
         if (scrollY > this.config.scrollThreshold) {
-          this.navbar.classList.add('scrolled');
+          this.navbar.classList.add("scrolled");
         } else {
-          this.navbar.classList.remove('scrolled');
+          this.navbar.classList.remove("scrolled");
         }
       }
 
       // Parallax effect for hero section
-      const hero = document.getElementById('hero');
+      const hero = document.getElementById("hero");
       if (hero) {
-        const heroImage = hero.querySelector('.hero-img') as HTMLElement;
+        const heroImage = hero.querySelector(".hero-img") as HTMLElement;
         if (heroImage) {
           const parallaxOffset = scrollY * 0.5;
           heroImage.style.transform = `translateY(${parallaxOffset}px)`;
@@ -101,7 +101,7 @@ export class UIManager {
       }
     };
 
-    window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+    window.addEventListener("scroll", requestScrollUpdate, { passive: true });
   }
 
   /**
@@ -109,10 +109,12 @@ export class UIManager {
    */
   private setupContactForm(): void {
     const contactForm = document.querySelector(
-      this.config.contactFormSelector || 'form[action="/api/contact"]'
+      this.config.contactFormSelector || 'form[action="/api/contact"]',
     ) as HTMLFormElement;
     if (contactForm) {
-      contactForm.addEventListener('submit', e => this.handleContactFormSubmit(e));
+      contactForm.addEventListener("submit", (e) =>
+        this.handleContactFormSubmit(e),
+      );
     }
   }
 
@@ -127,10 +129,10 @@ export class UIManager {
       // Get form data
       const formData = new FormData(form);
       const contactRequest: ContactRequest = {
-        name: formData.get('name') as string,
-        email: formData.get('email') as string,
-        phone: formData.get('phone') as string,
-        message: formData.get('message') as string,
+        name: formData.get("name") as string,
+        email: formData.get("email") as string,
+        phone: formData.get("phone") as string,
+        message: formData.get("message") as string,
       };
 
       // Submit form
@@ -138,54 +140,61 @@ export class UIManager {
 
       if (response.success) {
         this.errorHandler.showSuccessMessage(
-          "Message sent successfully! We'll get back to you soon."
+          "Message sent successfully! We'll get back to you soon.",
         );
         form.reset();
       } else {
         this.errorHandler.showErrorMessage(
-          response.error || 'Failed to send message. Please try again.'
+          response.error || "Failed to send message. Please try again.",
         );
       }
     } catch (error) {
-      this.errorHandler.handleError(error, 'Failed to submit contact form');
-      this.errorHandler.showErrorMessage('Failed to send message. Please try again.');
+      this.errorHandler.handleError(error, "Failed to submit contact form");
+      this.errorHandler.showErrorMessage(
+        "Failed to send message. Please try again.",
+      );
     }
   }
 
   /**
    * Submit contact form via API
    */
-  private async submitContact(request: ContactRequest): Promise<ApiResponse<{ id: string }>> {
+  private async submitContact(
+    request: ContactRequest,
+  ): Promise<ApiResponse<{ id: string }>> {
     // Validate form data before submission
     const validation = validateContactForm(request);
     if (!validation.isValid) {
       return {
         success: false,
-        data: { id: '' },
-        error: `Validation failed: ${Object.values(validation.errors).join(', ')}`,
+        data: { id: "" },
+        error: `Validation failed: ${Object.values(validation.errors).join(", ")}`,
         timestamp: new Date().toISOString(),
       };
     }
 
     try {
-      const response = await fetch(envLoader.get('CONTACT_API_ENDPOINT') || '/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        envLoader.get("CONTACT_API_ENDPOINT") || "/api/contact",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(request),
         },
-        body: JSON.stringify(request),
-      });
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to submit contact form');
+        throw new Error("Failed to submit contact form");
       }
 
       return await response.json();
     } catch (error) {
       return {
         success: false,
-        data: { id: '' },
-        error: error instanceof Error ? error.message : 'Unknown error',
+        data: { id: "" },
+        error: error instanceof Error ? error.message : "Unknown error",
         timestamp: new Date().toISOString(),
       };
     }
@@ -218,10 +227,13 @@ export class UIManager {
   /**
    * Show loading state
    */
-  public showLoading(element: HTMLElement, message: string = 'Loading...'): void {
-    element.style.position = 'relative';
+  public showLoading(
+    element: HTMLElement,
+    message: string = "Loading...",
+  ): void {
+    element.style.position = "relative";
 
-    const loadingOverlay = document.createElement('div');
+    const loadingOverlay = document.createElement("div");
     loadingOverlay.style.cssText = `
       position: absolute;
       top: 0;
@@ -257,7 +269,9 @@ export class UIManager {
    * Hide loading state
    */
   public hideLoading(element: HTMLElement): void {
-    const loadingOverlay = element.querySelector('div[style*="position: absolute"]');
+    const loadingOverlay = element.querySelector(
+      'div[style*="position: absolute"]',
+    );
     if (loadingOverlay) {
       loadingOverlay.remove();
     }
@@ -267,8 +281,9 @@ export class UIManager {
    * Toggle element visibility
    */
   public toggleVisibility(element: HTMLElement, show?: boolean): void {
-    const willShow = show !== undefined ? show : element.style.display === 'none';
-    element.style.display = willShow ? 'block' : 'none';
+    const willShow =
+      show !== undefined ? show : element.style.display === "none";
+    element.style.display = willShow ? "block" : "none";
   }
 
   /**
@@ -277,12 +292,13 @@ export class UIManager {
   public scrollToElement(selector: string, offset: number = 0): void {
     const element = document.querySelector(selector) as HTMLElement;
     if (element) {
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const elementPosition =
+        element.getBoundingClientRect().top + window.pageYOffset;
       const offsetPosition = elementPosition - offset;
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   }
@@ -290,7 +306,11 @@ export class UIManager {
   /**
    * Add CSS class temporarily
    */
-  public addTemporaryClass(element: HTMLElement, className: string, duration: number = 1000): void {
+  public addTemporaryClass(
+    element: HTMLElement,
+    className: string,
+    duration: number = 1000,
+  ): void {
     element.classList.add(className);
     setTimeout(() => {
       element.classList.remove(className);
@@ -303,12 +323,12 @@ export class UIManager {
   public animateElement(
     element: HTMLElement,
     animation: string,
-    duration: number = 300
+    duration: number = 300,
   ): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       element.style.animation = `${animation} ${duration}ms ease-in-out`;
       setTimeout(() => {
-        element.style.animation = '';
+        element.style.animation = "";
         resolve();
       }, duration);
     });
@@ -319,22 +339,24 @@ export class UIManager {
    */
   private setupLazyLoading(): void {
     // Check if browser supports Intersection Observer
-    if (!('IntersectionObserver' in window)) {
-      console.warn('Intersection Observer not supported, falling back to native lazy loading');
+    if (!("IntersectionObserver" in window)) {
+      console.warn(
+        "Intersection Observer not supported, falling back to native lazy loading",
+      );
       return;
     }
 
     const imageObserver = new IntersectionObserver(
       (entries, observer) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const img = entry.target as HTMLImageElement;
 
             // Load the image if it has data-src
             if (img.dataset.src) {
               img.src = img.dataset.src;
-              img.classList.remove('lazy');
-              img.classList.add('lazy-loaded');
+              img.classList.remove("lazy");
+              img.classList.add("lazy-loaded");
 
               // Remove data-src to prevent re-processing
               delete img.dataset.src;
@@ -347,14 +369,14 @@ export class UIManager {
       },
       {
         // Start loading when image is 50px from viewport
-        rootMargin: '50px 0px',
+        rootMargin: "50px 0px",
         threshold: 0.01,
-      }
+      },
     );
 
     // Find all images with lazy loading
-    const lazyImages = document.querySelectorAll('img[data-src]');
-    lazyImages.forEach(img => {
+    const lazyImages = document.querySelectorAll("img[data-src]");
+    lazyImages.forEach((img) => {
       imageObserver.observe(img);
     });
 
@@ -367,18 +389,18 @@ export class UIManager {
    */
   private observeDynamicImages(observer: IntersectionObserver): void {
     // Create a mutation observer to watch for new images
-    const mutationObserver = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
+    const mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             const element = node as Element;
             // Check if it's an image with data-src
-            if (element.tagName === 'IMG' && element.hasAttribute('data-src')) {
+            if (element.tagName === "IMG" && element.hasAttribute("data-src")) {
               observer.observe(element as HTMLImageElement);
             }
             // Also check child images
-            const images = element.querySelectorAll('img[data-src]');
-            images.forEach(img => observer.observe(img));
+            const images = element.querySelectorAll("img[data-src]");
+            images.forEach((img) => observer.observe(img));
           }
         });
       });

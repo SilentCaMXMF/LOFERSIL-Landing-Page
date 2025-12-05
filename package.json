@@ -5,7 +5,11 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "node build.js",
+    "build": "npm run build:compile && npm run build:css && npm run build:copy && npm run build:seo",
+    "build:compile": "tsc",
+    "build:css": "postcss src/styles/main.css -o dist/main.css",
+    "build:copy": "mkdir -p dist/scripts && rm -rf dist/scripts/modules && mv dist/modules dist/scripts/ && mv dist/index.js dist/scripts/ && rm -f dist/*.map dist/scripts/modules/*.map && cp index.html dist/ && cp -r assets dist/ && cp -r src/locales dist/ && cp privacy.html dist/ && cp terms.html dist/ && cp assets/offline.html dist/ && cp node_modules/dompurify/dist/purify.min.js dist/dompurify.min.js",
+    "build:seo": "echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://lofersil-landing-page.vercel.app/</loc><lastmod>'$(date -Iseconds)'</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url></urlset>' > dist/sitemap.xml && echo 'User-agent: *\nAllow: /\n\nSitemap: https://lofersil-landing-page.vercel.app/sitemap.xml' > dist/robots.txt",
     "build:dev": "tsc && postcss src/styles/main.css -o dist/main.css",
     "dev": "tsc --watch",
     "start": "serve dist --single -l 3000",
@@ -15,13 +19,22 @@
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
     "test:e2e": "vitest run tests/e2e",
-    "test:coverage": "vitest run --coverage tests/unit",
-    "lint": "eslint src/**/*.ts",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:unit": "vitest run --coverage tests/unit",
+    "test:coverage:integration": "vitest run --coverage tests/integration",
+    "test:coverage:e2e": "vitest run --coverage tests/e2e",
+    "test:coverage:github-issues": "vitest run --coverage tests/unit/modules/github",
+    "test:coverage:threshold": "vitest run --coverage --run",
+    "coverage:report": "vitest run --coverage --reporter=json --outputFile=coverage/coverage-summary.json",
+    "coverage:badge": "node tools/scripts/generate-coverage-badge.js",
+    "lint": "eslint src/**/*.ts --ignore-pattern \"src/**/*.test.ts\"",
     "format": "prettier --write src/**/*.{ts,css}",
     "optimize-images": "imagemin assets/images/* --out-dir=dist/images",
     "prebuild": "npm run format",
     "lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
-    "vercel-deploy": "./vercel-deploy.sh",
+    "tasks-progress": "node tools/utils/tasks-progress.js",
+    "health-check": "node tools/utils/health-check.js",
+    "vercel-deploy": "./tools/deploy/vercel-deploy.sh",
     "deploy:preview": "vercel",
     "deploy:prod": "vercel --prod",
     "build-and-serve-8000": "npm run build && serve dist --single -l 8000",
@@ -37,6 +50,7 @@
   "author": "LOFERSIL",
   "license": "MIT",
   "devDependencies": {
+    "@axe-core/cli": "^4.11.0",
     "@eslint/js": "^9.0.0",
     "@types/dompurify": "^3.2.0",
     "@types/express": "^5.0.5",
@@ -63,7 +77,7 @@
     "vitest": "^4.0.10"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "22.x"
   },
   "packageManager": "npm@10.0.0",
   "dependencies": {

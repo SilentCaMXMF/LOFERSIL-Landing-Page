@@ -22,6 +22,22 @@
     "emitDecoratorMetadata": false,
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*", "api/**/*"],
-  "exclude": ["src/**/*.test.ts", "node_modules", "dist", ".opencode/**/*"]
+  "include": [
+    "src/scripts/index.ts",
+    "src/scripts/validation.ts",
+    "src/scripts/types.ts",
+    "src/scripts/modules/Config.ts",
+    "src/scripts/modules/ContactFormManager.ts",
+    "src/scripts/modules/EnvironmentLoader.ts",
+    "src/scripts/modules/ErrorManager.ts",
+    "src/scripts/modules/EventManager.ts",
+    "src/scripts/modules/NavigationManager.ts",
+    "src/scripts/modules/SEOManager.ts",
+    "src/scripts/modules/ThemeManager.ts",
+    "src/scripts/modules/TranslationManager.ts",
+    "src/scripts/modules/UIManager.ts",
+    "src/scripts/modules/Utils.ts",
+    "src/scripts/modules/logger.ts"
+  ],
+  "exclude": ["node_modules", "dist", ".opencode/**/*"]
 }

@@ -1,99 +1,37 @@
-# AGENTS.md
+# AGENTS.md - Development Guidelines
 
-## Build/Lint/Test Commands
+## Commands
 
-- **Build**: `npm run build` (custom build script: TypeScript compilation, CSS processing, asset optimization)
-- **Dev**: `npm run dev` (TypeScript watch mode for development)
-- **Lint**: `npm run lint` (ESLint on src/\*_/_.ts with TypeScript rules)
-- **Format**: `npm run format` (Prettier on src/\*_/_.{ts,css,html})
-- **Test**: `npm run test` (Vitest with watch mode) or `npm run test:run` (Vitest run once)
-- **Single test**: `npm run test:run src/scripts/index.test.ts` or `vitest run src/scripts/validation.test.ts`
-- **Performance audit**: `npm run lighthouse` (Lighthouse performance testing on localhost:3000)
-- **Serve**: `npm run start` (serve dist folder on port 3000)
+- **Build**: `npm run build` (full) / `npm run build:dev` (dev)
+- **Lint**: `npm run lint` (ESLint) / `npm run format` (Prettier)
+- **Test**: `npm run test` (watch) / `npm run test:run` (single run)
+- **Single Test**: `vitest run path/to/test.test.ts`
+- **Coverage**: `npm run test:coverage` / `npm run test:coverage:unit`
 
-## Code Style Guidelines
+## Code Style
 
-### Language & Environment
+- **TypeScript**: Strict mode, ES2020 target, interfaces over types
+- **Imports**: Use `type` imports for types: `import type { Config }`
+- **Naming**: PascalCase for classes/interfaces, camelCase for variables/functions
+- **Formatting**: 2-space indent, single quotes, no trailing commas
+- **Error Handling**: Always catch promises, use ErrorManager for logging
 
-- **TypeScript**: ES2020 target, strict mode enabled, DOM types included
-- **Module system**: ES modules (`"type": "module"` in package.json)
-- **Runtime**: Browser environment with Node.js types for build tools
+## Architecture
 
-### Imports & Dependencies
+- **Modules**: Export classes, use singleton pattern for managers
+- **Types**: Centralized in `src/scripts/types.ts`
+- **Security**: Use DOMPurify for HTML sanitization, no eval()
+- **Performance**: Lazy loading, event delegation, memory leak prevention
 
-- **Import style**: ES6 imports with named imports preferred
-- **Grouping**: External libraries first (e.g., DOMPurify), then internal modules
-- **Example**:
-
-  ```typescript
-  import { ErrorManager } from './modules/ErrorManager';
-  import { NavigationManager } from './modules/NavigationManager';
-  ```
-
-### Formatting & Style
-
-- **Formatter**: Prettier with single quotes, semicolons, trailing commas
-- **Line width**: 100 characters
-- **Indentation**: 2 spaces (configured in Prettier)
-- **CSS**: Processed with PostCSS, minified in production
-
-### Types & TypeScript
-
-- **Strict mode**: Enabled in tsconfig.json
-- **Type annotations**: Explicit types required, avoid `any`
-- **Interfaces**: PascalCase, descriptive names (e.g., `NavigationConfig`, `Service`)
-- **Generic types**: Used for utility functions (e.g., `debounce<T>`)
-- **Global declarations**: Used for browser APIs and CDN-loaded libraries
-
-### Naming Conventions
-
-- **Variables/Functions**: camelCase (e.g., `navigationConfig`, `initializeApp`)
-- **Classes/Interfaces**: PascalCase (e.g., `LOFERSILLandingPage`, `ErrorManager`)
-- **Constants**: UPPER_SNAKE_CASE for config objects (e.g., `IS_DEVELOPMENT`)
-- **Files**: PascalCase for class files, camelCase for utility files
-- **Directories**: lowercase with hyphens if needed
-
-### Error Handling
-
-- **Try-catch blocks**: Used for async operations and external API calls
-- **Custom errors**: Throw descriptive errors with context
-- **Fallbacks**: Graceful degradation (e.g., routes fallback to home page)
-- **Logging**: Console statements allowed for debugging in development
-
-### Architecture Patterns
-
-- **Modular design**: Separate concerns into modules (NavigationManager, SEOManager, etc.)
-- **Configuration objects**: Centralized config for different features
-- **Event-driven**: Custom events for cross-module communication
-- **Utility functions**: Pure functions for common operations (debounce, throttle, etc.)
-- **Class-based**: Main application logic in classes with dependency injection
-
-### Testing
+## Testing
 
 - **Framework**: Vitest with jsdom environment
-- **Mocking**: Comprehensive mocking of DOM APIs and external dependencies
-- **Test structure**: Describe blocks for features, it blocks for specific behaviors
-- **Coverage**: Focus on critical paths and error conditions
-- **Environment**: Tests run in isolated environment with mocked globals
+- **Structure**: unit/integration/e2e in separate directories
+- **Coverage**: 80% threshold required
+- **Globals**: describe/it/expect available
 
-### Build & Deployment
+## Security
 
-- **Build process**: Custom Node.js script handling TypeScript, CSS, assets
-- **Optimization**: Minification, image optimization (WebP), source maps in production
-- **Asset management**: Images converted to multiple sizes and formats
-- **SEO**: Automatic sitemap and robots.txt generation
-- **Deployment**: Vercel-ready with environment-specific builds
-
-### Additional Rules
-
-- **No unused variables**: Enforced by ESLint
-- **Console statements**: Allowed for debugging (warn level in production)
-- **Comments**: JSDoc-style for public APIs and complex logic
-- **Security**: DOMPurify for HTML sanitization, input validation
-- **Performance**: Debounced/throttled event handlers, lazy loading
-- **Accessibility**: Semantic HTML, proper ARIA attributes where needed
-
-### No External Rules
-
-- No Cursor rules (.cursor/rules/ or .cursorrules) defined
-- No Copilot rules (.github/copilot-instructions.md) defined
+- **XSS**: Always sanitize HTML with DOMPurify
+- **CSRF**: Use tokens for forms
+- **API**: Validate inputs with Joi, rate limiting enabled

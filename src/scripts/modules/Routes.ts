@@ -3,12 +3,12 @@
  * Contains all route definitions and content
  */
 
-import { Route } from '../types.js';
+import { Route } from "../types.js";
 
 // Routes configuration
 export const routes: Record<string, Route> = {
-  '/': {
-    title: 'LOFERSIL - Premium Products & Services',
+  "/": {
+    title: "LOFERSIL - Premium Products & Services",
     description:
       "Discover LOFERSIL's premium collection of products and services. Quality and excellence in everything we do.",
     content: `
@@ -73,10 +73,10 @@ export const routes: Record<string, Route> = {
       </section>
     `,
   },
-  '/products': {
-    title: 'Products - LOFERSIL',
+  "/products": {
+    title: "Products - LOFERSIL",
     description:
-      'Explore our premium product collection. High-quality items curated for discerning customers.',
+      "Explore our premium product collection. High-quality items curated for discerning customers.",
     content: `
       <section class="hero">
         <div class="hero-container">
@@ -122,10 +122,10 @@ export const routes: Record<string, Route> = {
       </section>
     `,
   },
-  '/services': {
-    title: 'Services - LOFERSIL',
+  "/services": {
+    title: "Services - LOFERSIL",
     description:
-      'Professional services tailored to your needs. Expert solutions for businesses and individuals.',
+      "Professional services tailored to your needs. Expert solutions for businesses and individuals.",
     content: `
       <section class="hero">
         <div class="hero-container">
@@ -171,8 +171,8 @@ export const routes: Record<string, Route> = {
       </section>
     `,
   },
-  '/about': {
-    title: 'About Us - LOFERSIL',
+  "/about": {
+    title: "About Us - LOFERSIL",
     description:
       "Learn about LOFERSIL's mission, values, and commitment to quality. Discover our story.",
     content: `
@@ -215,8 +215,8 @@ export const routes: Record<string, Route> = {
       </section>
     `,
   },
-  '/contact': {
-    title: 'Contact Us - LOFERSIL',
+  "/contact": {
+    title: "Contact Us - LOFERSIL",
     description:
       "Get in touch with LOFERSIL. We're here to help with any questions or support you need.",
     content: `
@@ -259,10 +259,10 @@ export const routes: Record<string, Route> = {
       </section>
     `,
   },
-  '/store': {
-    title: 'Store - LOFERSIL',
+  "/store": {
+    title: "Store - LOFERSIL",
     description:
-      'Visit our online store to browse and purchase our complete collection of premium products.',
+      "Visit our online store to browse and purchase our complete collection of premium products.",
     content: `
       <section class="hero">
         <div class="hero-container">

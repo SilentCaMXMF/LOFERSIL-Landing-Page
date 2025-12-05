@@ -5,17 +5,17 @@
  * Handles commit generation, PR creation, reviewer assignment, and branch management.
  */
 
-import { OpenCodeAgent } from '../OpenCodeAgent';
-import { WorktreeInfo } from './WorktreeManager';
-import { ResolutionResult } from './AutonomousResolver';
-import { ReviewResult } from './CodeReviewer';
+import { OpenCodeAgent } from "../OpenCodeAgent";
+import { WorktreeInfo } from "./WorktreeManager";
+import { ResolutionResult } from "./AutonomousResolver";
+import { ReviewResult } from "./CodeReviewer";
 
 export interface PullRequest {
   number: number;
   title: string;
   body: string;
   html_url: string;
-  state: 'open' | 'closed';
+  state: "open" | "closed";
   merged: boolean;
   created_at: string;
   updated_at: string;
@@ -56,7 +56,7 @@ export class PRGenerator {
   async createPullRequest(
     resolution: ResolutionResult,
     review: ReviewResult,
-    originalIssue: { number: number; title: string; body: string }
+    originalIssue: { number: number; title: string; body: string },
   ): Promise<PullRequest> {
     try {
       // Generate branch name if not already created
@@ -66,13 +66,26 @@ export class PRGenerator {
       const commits = await this.createCommits(resolution.solution, branchName);
 
       // Generate PR title
-      const prTitle = await this.generatePRTitle(resolution, review, originalIssue);
+      const prTitle = await this.generatePRTitle(
+        resolution,
+        review,
+        originalIssue,
+      );
 
       // Generate PR description
-      const prBody = await this.generatePRDescription(resolution, review, originalIssue, commits);
+      const prBody = await this.generatePRDescription(
+        resolution,
+        review,
+        originalIssue,
+        commits,
+      );
 
       // Determine reviewers
-      const reviewers = await this.determineReviewers(resolution, review, originalIssue);
+      const reviewers = await this.determineReviewers(
+        resolution,
+        review,
+        originalIssue,
+      );
 
       // Determine labels
       const labels = this.determineLabels(resolution, review, originalIssue);
@@ -92,8 +105,10 @@ export class PRGenerator {
 
       return pr;
     } catch (error) {
-      console.error('Failed to create pull request:', error);
-      throw new Error(`PR creation failed: ${error.message}`);
+      console.error("Failed to create pull request:", error);
+      throw new Error(
+        `PR creation failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
@@ -101,8 +116,8 @@ export class PRGenerator {
    * Create commits from the code changes
    */
   private async createCommits(
-    changes: ResolutionResult['solution'],
-    branchName: string
+    changes: ResolutionResult["solution"],
+    branchName: string,
   ): Promise<Array<{ message: string; hash: string }>> {
     const commits: Array<{ message: string; hash: string }> = [];
 
@@ -131,7 +146,7 @@ export class PRGenerator {
       // Push to remote
       await this.gitPush(branchName);
     } catch (error) {
-      console.error('Failed to create commits:', error);
+      console.error("Failed to create commits:", error);
       throw error;
     }
 
@@ -144,14 +159,14 @@ export class PRGenerator {
   private async generatePRTitle(
     resolution: ResolutionResult,
     review: ReviewResult,
-    originalIssue: { number: number; title: string; body: string }
+    originalIssue: { number: number; title: string; body: string },
   ): Promise<string> {
     // Use AI to generate a concise, meaningful title
     const prompt = `Generate a concise, meaningful pull request title for the following changes:
 
 Original Issue: #${originalIssue.number} - ${originalIssue.title}
 Changes Summary: ${this.summarizeChanges(resolution.solution)}
-Review Status: ${review.approved ? 'Approved' : 'Needs Review'} (Score: ${(review.score * 100).toFixed(1)}%)
+Review Status: ${review.approved ? "Approved" : "Needs Review"} (Score: ${(review.score * 100).toFixed(1)}%)
 
 Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descriptive but concise, follow conventional commit style if applicable.`;
 
@@ -162,20 +177,23 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
       });
 
       // Clean and validate the title
-      const cleanTitle = aiTitle.trim().replace(/^["']|["']$/g, '');
-      if (cleanTitle.length > 0 && cleanTitle.length <= this.config.maxPRTitleLength) {
+      const cleanTitle = aiTitle.trim().replace(/^["']|["']$/g, "");
+      if (
+        cleanTitle.length > 0 &&
+        cleanTitle.length <= this.config.maxPRTitleLength
+      ) {
         return cleanTitle;
       }
     } catch (error) {
-      console.warn('AI title generation failed, using fallback');
+      console.warn("AI title generation failed, using fallback");
     }
 
     // Fallback title generation
     const issueType = this.inferIssueType(originalIssue);
-    const action = resolution.success ? 'feat' : 'fix';
+    const action = resolution.success ? "feat" : "fix";
     const scope = this.inferScope(resolution.solution);
 
-    return `${action}${scope ? `(${scope})` : ''}: ${originalIssue.title.substring(0, 50)}${originalIssue.title.length > 50 ? '...' : ''}`;
+    return `${action}${scope ? `(${scope})` : ""}: ${originalIssue.title.substring(0, 50)}${originalIssue.title.length > 50 ? "..." : ""}`;
   }
 
   /**
@@ -185,7 +203,7 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
     resolution: ResolutionResult,
     review: ReviewResult,
     originalIssue: { number: number; title: string; body: string },
-    commits: Array<{ message: string; hash: string }>
+    commits: Array<{ message: string; hash: string }>,
   ): Promise<string> {
     const sections = [
       this.generateHeader(resolution, review, originalIssue),
@@ -196,7 +214,7 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
       this.generateFooter(originalIssue),
     ];
 
-    return sections.filter(Boolean).join('\n\n');
+    return sections.filter(Boolean).join("\n\n");
   }
 
   /**
@@ -205,24 +223,24 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
   private async determineReviewers(
     resolution: ResolutionResult,
     review: ReviewResult,
-    originalIssue: { number: number; title: string; body: string }
+    originalIssue: { number: number; title: string; body: string },
   ): Promise<string[]> {
     const reviewers = new Set<string>(this.config.defaultReviewers);
 
     // Add reviewers based on change scope
     const scopeReviewers = this.getReviewersForScope(resolution.solution);
-    scopeReviewers.forEach(reviewer => reviewers.add(reviewer));
+    scopeReviewers.forEach((reviewer) => reviewers.add(reviewer));
 
     // Add security reviewers for security-related changes
-    if (review.issues.some(issue => issue.category === 'security')) {
+    if (review.issues.some((issue) => issue.category === "security")) {
       const securityReviewers = this.getSecurityReviewers();
-      securityReviewers.forEach(reviewer => reviewers.add(reviewer));
+      securityReviewers.forEach((reviewer) => reviewers.add(reviewer));
     }
 
     // Add reviewers based on complexity
     if (this.isHighComplexity(resolution.solution)) {
       const seniorReviewers = this.getSeniorReviewers();
-      seniorReviewers.forEach(reviewer => reviewers.add(reviewer));
+      seniorReviewers.forEach((reviewer) => reviewers.add(reviewer));
     }
 
     return Array.from(reviewers);
@@ -234,7 +252,7 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
   private determineLabels(
     resolution: ResolutionResult,
     review: ReviewResult,
-    originalIssue: { number: number; title: string; body: string }
+    originalIssue: { number: number; title: string; body: string },
   ): string[] {
     const labels = [this.config.labels.autoGenerated];
 
@@ -244,7 +262,7 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
     }
 
     // Add security label if security issues found
-    if (review.issues.some(issue => issue.category === 'security')) {
+    if (review.issues.some((issue) => issue.category === "security")) {
       labels.push(this.config.labels.security);
     }
 
@@ -255,10 +273,10 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
 
     // Add size-based labels
     const size = this.calculatePRSize(resolution.solution);
-    if (size === 'large') {
-      labels.push('size/large');
-    } else if (size === 'medium') {
-      labels.push('size/medium');
+    if (size === "large") {
+      labels.push("size/large");
+    } else if (size === "medium") {
+      labels.push("size/medium");
     }
 
     return labels;
@@ -267,9 +285,12 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
   /**
    * Update worktree status after PR creation
    */
-  private async updateWorktreeStatus(worktree: WorktreeInfo, pr: PullRequest): Promise<void> {
+  private async updateWorktreeStatus(
+    worktree: WorktreeInfo,
+    pr: PullRequest,
+  ): Promise<void> {
     // Mark worktree as completed
-    worktree.status = 'completed';
+    worktree.status = "completed";
 
     // Could add PR reference to worktree metadata
     console.log(`Worktree ${worktree.branch} completed with PR #${pr.number}`);
@@ -277,7 +298,7 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
 
   // Helper methods for commit creation
   private groupChangesForCommits(
-    changes: ResolutionResult['solution']
+    changes: ResolutionResult["solution"],
   ): Array<{ files: any[]; description: string }> {
     // Group related changes into logical commits
     const groups: Array<{ files: any[]; description: string }> = [];
@@ -302,14 +323,15 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
     const scope = this.inferCommitScope(group.files);
 
     let message = this.config.commitMessageTemplate
-      .replace('{type}', this.inferCommitType(group.files))
-      .replace('{scope}', scope)
-      .replace('{description}', group.description)
-      .replace('{files}', fileTypes.join(', '));
+      .replace("{type}", this.inferCommitType(group.files))
+      .replace("{scope}", scope)
+      .replace("{description}", group.description)
+      .replace("{files}", fileTypes.join(", "));
 
     // Truncate if too long
     if (message.length > this.config.maxCommitMessageLength) {
-      message = message.substring(0, this.config.maxCommitMessageLength - 3) + '...';
+      message =
+        message.substring(0, this.config.maxCommitMessageLength - 3) + "...";
     }
 
     return message;
@@ -324,7 +346,7 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
   private async gitCommit(message: string): Promise<string> {
     // Implementation would use child_process to run git commit
     console.log(`git commit -m "${message}"`);
-    return 'mock-commit-hash';
+    return "mock-commit-hash";
   }
 
   private async gitPush(branchName: string): Promise<void> {
@@ -336,24 +358,29 @@ Requirements: Keep under ${this.config.maxPRTitleLength} characters, be descript
   private generateHeader(
     resolution: ResolutionResult,
     review: ReviewResult,
-    originalIssue: { number: number; title: string; body: string }
+    originalIssue: { number: number; title: string; body: string },
   ): string {
-    const status = review.approved ? '✅ Approved' : '⚠️ Needs Review';
+    const status = review.approved ? "✅ Approved" : "⚠️ Needs Review";
     const score = (review.score * 100).toFixed(1);
 
     return `## 🤖 AI-Generated Pull Request
 
 **Original Issue:** #${originalIssue.number} - ${originalIssue.title}
-**Resolution Status:** ${resolution.success ? 'Successful' : 'Partial'}
+**Resolution Status:** ${resolution.success ? "Successful" : "Partial"}
 **Review Status:** ${status} (Score: ${score}%)
 **Complexity:** ${this.getComplexityLabel(resolution.solution)}
 
 This pull request was automatically generated to resolve the linked issue.`;
   }
 
-  private generateChangesSummary(changes: ResolutionResult['solution']): string {
+  private generateChangesSummary(
+    changes: ResolutionResult["solution"],
+  ): string {
     const fileCount = changes.files.length;
-    const totalChanges = changes.files.reduce((sum, file) => sum + file.changes.length, 0);
+    const totalChanges = changes.files.reduce(
+      (sum, file) => sum + file.changes.length,
+      0,
+    );
 
     let summary = `## 📝 Changes Summary
 
@@ -362,15 +389,17 @@ This pull request was automatically generated to resolve the linked issue.`;
 - **Change Types:** ${this.summarizeChangeTypes(changes)}
 
 ### Modified Files:
-${changes.files.map(file => `- \`${file.path}\` (${file.changes.length} changes)`).join('\n')}`;
+${changes.files.map((file) => `- \`${file.path}\` (${file.changes.length} changes)`).join("\n")}`;
 
     return summary;
   }
 
   private generateReviewSummary(review: ReviewResult): string {
     const issueCount = review.issues.length;
-    const criticalCount = review.issues.filter(i => i.severity === 'critical').length;
-    const highCount = review.issues.filter(i => i.severity === 'high').length;
+    const criticalCount = review.issues.filter(
+      (i) => i.severity === "critical",
+    ).length;
+    const highCount = review.issues.filter((i) => i.severity === "high").length;
 
     let summary = `## 🔍 Code Review Results
 
@@ -387,7 +416,7 @@ ${changes.files.map(file => `- \`${file.path}\` (${file.changes.length} changes)
 - **Documentation:** ${(review.metadata.documentationScore * 100).toFixed(1)}%`;
 
     if (review.recommendations.length > 0) {
-      summary += `\n\n### Recommendations:\n${review.recommendations.map(rec => `- ${rec}`).join('\n')}`;
+      summary += `\n\n### Recommendations:\n${review.recommendations.map((rec) => `- ${rec}`).join("\n")}`;
     }
 
     return summary;
@@ -396,25 +425,32 @@ ${changes.files.map(file => `- \`${file.path}\` (${file.changes.length} changes)
   private generateTestingInfo(resolution: ResolutionResult): string {
     let testing = `## 🧪 Testing Information
 
-**Tests Executed:** ${resolution.testsPassed !== undefined ? (resolution.testsPassed ? '✅ Passed' : '❌ Failed') : 'Not Run'}
+**Tests Executed:** ${resolution.testsPassed !== undefined ? (resolution.testsPassed ? "✅ Passed" : "❌ Failed") : "Not Run"}
 **Test Coverage:** ${this.estimateTestCoverage(resolution.solution)}%`;
 
     if (resolution.testsPassed === false) {
-      testing += '\n\n⚠️ **Warning:** Automated tests failed. Manual testing recommended.';
+      testing +=
+        "\n\n⚠️ **Warning:** Automated tests failed. Manual testing recommended.";
     }
 
     return testing;
   }
 
-  private generateCommitsList(commits: Array<{ message: string; hash: string }>): string {
-    if (commits.length === 0) return '';
+  private generateCommitsList(
+    commits: Array<{ message: string; hash: string }>,
+  ): string {
+    if (commits.length === 0) return "";
 
     return `## 📋 Commits
 
-${commits.map(commit => `- ${commit.hash.substring(0, 7)}: ${commit.message}`).join('\n')}`;
+${commits.map((commit) => `- ${commit.hash.substring(0, 7)}: ${commit.message}`).join("\n")}`;
   }
 
-  private generateFooter(originalIssue: { number: number; title: string; body: string }): string {
+  private generateFooter(originalIssue: {
+    number: number;
+    title: string;
+    body: string;
+  }): string {
     return `## 🔗 Related
 
 - **Closes:** #${originalIssue.number}
@@ -425,33 +461,47 @@ ${commits.map(commit => `- ${commit.hash.substring(0, 7)}: ${commit.message}`).j
   }
 
   // Reviewer determination helpers
-  private getReviewersForScope(changes: ResolutionResult['solution']): string[] {
+  private getReviewersForScope(
+    changes: ResolutionResult["solution"],
+  ): string[] {
     const reviewers: string[] = [];
 
     // Check for frontend changes
-    if (changes.files.some(f => f.path.includes('component') || f.path.includes('ui'))) {
-      reviewers.push('frontend-lead');
+    if (
+      changes.files.some(
+        (f) => f.path.includes("component") || f.path.includes("ui"),
+      )
+    ) {
+      reviewers.push("frontend-lead");
     }
 
     // Check for backend changes
-    if (changes.files.some(f => f.path.includes('api') || f.path.includes('server'))) {
-      reviewers.push('backend-lead');
+    if (
+      changes.files.some(
+        (f) => f.path.includes("api") || f.path.includes("server"),
+      )
+    ) {
+      reviewers.push("backend-lead");
     }
 
     // Check for infrastructure changes
-    if (changes.files.some(f => f.path.includes('config') || f.path.includes('docker'))) {
-      reviewers.push('devops-lead');
+    if (
+      changes.files.some(
+        (f) => f.path.includes("config") || f.path.includes("docker"),
+      )
+    ) {
+      reviewers.push("devops-lead");
     }
 
     return reviewers;
   }
 
   private getSecurityReviewers(): string[] {
-    return ['security-lead', 'compliance-officer'];
+    return ["security-lead", "compliance-officer"];
   }
 
   private getSeniorReviewers(): string[] {
-    return ['tech-lead', 'architect'];
+    return ["tech-lead", "architect"];
   }
 
   // GitHub API integration (simplified)
@@ -464,7 +514,7 @@ ${commits.map(commit => `- ${commit.hash.substring(0, 7)}: ${commit.message}`).j
     labels: string[];
   }): Promise<PullRequest> {
     // Implementation would use GitHub API
-    console.log('Creating PR:', params);
+    console.log("Creating PR:", params);
 
     // Mock response for now
     return {
@@ -472,7 +522,7 @@ ${commits.map(commit => `- ${commit.hash.substring(0, 7)}: ${commit.message}`).j
       title: params.title,
       body: params.body,
       html_url: `https://github.com/${this.config.repository.owner}/${this.config.repository.name}/pull/${Math.floor(Math.random() * 1000) + 1}`,
-      state: 'open',
+      state: "open",
       merged: false,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -480,114 +530,142 @@ ${commits.map(commit => `- ${commit.hash.substring(0, 7)}: ${commit.message}`).j
   }
 
   // Utility methods
-  private summarizeChanges(changes: ResolutionResult['solution']): string {
+  private summarizeChanges(changes: ResolutionResult["solution"]): string {
     const fileCount = changes.files.length;
-    const changeCount = changes.files.reduce((sum, file) => sum + file.changes.length, 0);
+    const changeCount = changes.files.reduce(
+      (sum, file) => sum + file.changes.length,
+      0,
+    );
     return `${changeCount} changes across ${fileCount} files`;
   }
 
-  private inferIssueType(issue: { number: number; title: string; body: string }): string {
+  private inferIssueType(issue: {
+    number: number;
+    title: string;
+    body: string;
+  }): string {
     const title = issue.title.toLowerCase();
     const body = issue.body.toLowerCase();
 
-    if (title.includes('fix') || title.includes('bug') || body.includes('error')) {
-      return 'bug';
+    if (
+      title.includes("fix") ||
+      title.includes("bug") ||
+      body.includes("error")
+    ) {
+      return "bug";
     }
-    if (title.includes('add') || title.includes('feature') || title.includes('implement')) {
-      return 'feature';
+    if (
+      title.includes("add") ||
+      title.includes("feature") ||
+      title.includes("implement")
+    ) {
+      return "feature";
     }
-    if (title.includes('docs') || body.includes('documentation')) {
-      return 'documentation';
+    if (title.includes("docs") || body.includes("documentation")) {
+      return "documentation";
     }
 
-    return 'enhancement';
+    return "enhancement";
   }
 
-  private inferScope(changes: ResolutionResult['solution']): string {
-    const paths = changes.files.map(f => f.path);
+  private inferScope(changes: ResolutionResult["solution"]): string {
+    const paths = changes.files.map((f) => f.path);
 
-    if (paths.some(p => p.includes('component') || p.includes('ui'))) return 'frontend';
-    if (paths.some(p => p.includes('api') || p.includes('server'))) return 'backend';
-    if (paths.some(p => p.includes('test'))) return 'testing';
-    if (paths.some(p => p.includes('config'))) return 'config';
+    if (paths.some((p) => p.includes("component") || p.includes("ui")))
+      return "frontend";
+    if (paths.some((p) => p.includes("api") || p.includes("server")))
+      return "backend";
+    if (paths.some((p) => p.includes("test"))) return "testing";
+    if (paths.some((p) => p.includes("config"))) return "config";
 
-    return '';
+    return "";
   }
 
   private inferCommitType(files: any[]): string {
-    if (files.some(f => f.path.includes('test'))) return 'test';
-    if (files.some(f => f.path.includes('docs'))) return 'docs';
-    if (files.some(f => f.path.includes('config'))) return 'ci';
-    return 'feat';
+    if (files.some((f) => f.path.includes("test"))) return "test";
+    if (files.some((f) => f.path.includes("docs"))) return "docs";
+    if (files.some((f) => f.path.includes("config"))) return "ci";
+    return "feat";
   }
 
   private getFileTypes(files: any[]): string[] {
-    return [...new Set(files.map(f => f.path.split('.').pop()))];
+    return [...new Set(files.map((f) => f.path.split(".").pop()))];
   }
 
   private inferCommitScope(files: any[]): string {
-    return this.inferScope({ files } as ResolutionResult['solution']);
+    return this.inferScope({ files } as ResolutionResult["solution"]);
   }
 
-  private summarizeChangeTypes(changes: ResolutionResult['solution']): string {
-    const types = changes.files.flatMap(f => f.changes.map(c => c.type));
+  private summarizeChangeTypes(changes: ResolutionResult["solution"]): string {
+    const types = changes.files.flatMap((f) => f.changes.map((c) => c.type));
     const typeCounts = types.reduce(
       (acc, type) => {
         acc[type] = (acc[type] || 0) + 1;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     );
 
     return Object.entries(typeCounts)
       .map(([type, count]) => `${count} ${type}`)
-      .join(', ');
+      .join(", ");
   }
 
-  private getComplexityLabel(changes: ResolutionResult['solution']): string {
+  private getComplexityLabel(changes: ResolutionResult["solution"]): string {
     const fileCount = changes.files.length;
-    const changeCount = changes.files.reduce((sum, file) => sum + file.changes.length, 0);
+    const changeCount = changes.files.reduce(
+      (sum, file) => sum + file.changes.length,
+      0,
+    );
 
-    if (fileCount > 10 || changeCount > 50) return 'High';
-    if (fileCount > 5 || changeCount > 20) return 'Medium';
-    return 'Low';
+    if (fileCount > 10 || changeCount > 50) return "High";
+    if (fileCount > 5 || changeCount > 20) return "Medium";
+    return "Low";
   }
 
-  private isHighComplexity(changes: ResolutionResult['solution']): boolean {
+  private isHighComplexity(changes: ResolutionResult["solution"]): boolean {
     const fileCount = changes.files.length;
-    const changeCount = changes.files.reduce((sum, file) => sum + file.changes.length, 0);
+    const changeCount = changes.files.reduce(
+      (sum, file) => sum + file.changes.length,
+      0,
+    );
     return fileCount > 5 || changeCount > 25;
   }
 
-  private isBreakingChange(changes: ResolutionResult['solution']): boolean {
+  private isBreakingChange(changes: ResolutionResult["solution"]): boolean {
     // Check for breaking patterns in changes
-    return changes.files.some(file =>
+    return changes.files.some((file) =>
       file.changes.some(
-        change =>
-          change.content.includes('BREAKING') ||
-          change.content.includes('breaking') ||
-          change.content.includes('!') // Conventional commit breaking indicator
-      )
+        (change) =>
+          change.content.includes("BREAKING") ||
+          change.content.includes("breaking") ||
+          change.content.includes("!"), // Conventional commit breaking indicator
+      ),
     );
   }
 
-  private calculatePRSize(changes: ResolutionResult['solution']): 'small' | 'medium' | 'large' {
+  private calculatePRSize(
+    changes: ResolutionResult["solution"],
+  ): "small" | "medium" | "large" {
     const fileCount = changes.files.length;
-    const changeCount = changes.files.reduce((sum, file) => sum + file.changes.length, 0);
+    const changeCount = changes.files.reduce(
+      (sum, file) => sum + file.changes.length,
+      0,
+    );
 
-    if (fileCount > 10 || changeCount > 100) return 'large';
-    if (fileCount > 3 || changeCount > 20) return 'medium';
-    return 'small';
+    if (fileCount > 10 || changeCount > 100) return "large";
+    if (fileCount > 3 || changeCount > 20) return "medium";
+    return "small";
   }
 
-  private estimateTestCoverage(changes: ResolutionResult['solution']): number {
+  private estimateTestCoverage(changes: ResolutionResult["solution"]): number {
     // Simple estimation based on presence of test files
     const hasTests = changes.files.some(
-      file =>
-        file.path.includes('.test.') ||
-        file.path.includes('.spec.') ||
-        file.path.includes('/tests/') ||
-        file.path.includes('/test/')
+      (file) =>
+        file.path.includes(".test.") ||
+        file.path.includes(".spec.") ||
+        file.path.includes("/tests/") ||
+        file.path.includes("/test/"),
     );
 
     return hasTests ? 80 : 0; // Rough estimate

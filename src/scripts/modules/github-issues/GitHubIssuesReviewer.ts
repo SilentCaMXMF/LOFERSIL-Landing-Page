@@ -17,11 +17,11 @@ export class GitHubIssuesReviewer {
     return {
       title: `Issue #${issueNumber}`,
       description: `Description for issue #${issueNumber}`,
-      priority: 'medium',
-      labels: ['bug', 'test'],
+      priority: "medium",
+      labels: ["bug", "test"],
       complexity: 3,
-      suggestedApproach: 'Test approach',
-      analysis: 'Test analysis',
+      suggestedApproach: "Test approach",
+      analysis: "Test analysis",
     };
   }
 }

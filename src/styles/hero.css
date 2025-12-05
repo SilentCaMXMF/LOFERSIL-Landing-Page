@@ -127,7 +127,7 @@
 }
 
 /* Dark Mode Styles for Hero Section */
-[data-theme='dark'] .hero {
+[data-theme="dark"] .hero {
   background: linear-gradient(
     135deg,
     var(--section-bg-primary) 0%,
@@ -135,25 +135,25 @@
   );
 }
 
-[data-theme='dark'] .hero-title {
+[data-theme="dark"] .hero-title {
   color: var(--text-primary);
 }
 
-[data-theme='dark'] .hero-subtitle {
+[data-theme="dark"] .hero-subtitle {
   color: var(--brand-primary-light);
 }
 
-[data-theme='dark'] .hero-description {
+[data-theme="dark"] .hero-description {
   color: var(--text-secondary);
 }
 
-[data-theme='dark'] .btn-secondary {
+[data-theme="dark"] .btn-secondary {
   background-color: var(--surface-bg);
   color: var(--text-primary);
   border-color: var(--surface-border);
 }
 
-[data-theme='dark'] .btn-secondary:hover {
+[data-theme="dark"] .btn-secondary:hover {
   background-color: var(--hover-bg);
   color: var(--text-primary);
 }

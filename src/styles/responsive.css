@@ -33,7 +33,7 @@
   }
 
   #nav-menu::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -70,7 +70,7 @@
     z-index: auto;
   }
 
-  [data-theme='dark'] #nav-menu {
+  [data-theme="dark"] #nav-menu {
     background: var(--gray-900);
     border-top-color: var(--gray-700);
   }

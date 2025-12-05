@@ -5,8 +5,11 @@
  * capabilities for the AI-powered GitHub Issues Reviewer System.
  */
 
-import { TaskInfo } from './TaskManagementIntegration';
-import { AutomationTriggersManager, AutomationEvent } from './AutomationTriggers';
+import { TaskInfo } from "./TaskManagementIntegration";
+import {
+  AutomationTriggersManager,
+  AutomationEvent,
+} from "./AutomationTriggers";
 
 export interface SystemMetrics {
   timestamp: Date;
@@ -39,7 +42,7 @@ export interface SystemMetrics {
 
 export interface ReportData {
   id: string;
-  type: 'daily' | 'weekly' | 'monthly' | 'custom';
+  type: "daily" | "weekly" | "monthly" | "custom";
   period: {
     start: Date;
     end: Date;
@@ -52,7 +55,7 @@ export interface ReportData {
 
 export interface Alert {
   id: string;
-  type: 'warning' | 'error' | 'critical';
+  type: "warning" | "error" | "critical";
   title: string;
   message: string;
   timestamp: Date;
@@ -84,7 +87,7 @@ export class MonitoringReportingManager {
       () => {
         this.collectMetrics();
       },
-      5 * 60 * 1000
+      5 * 60 * 1000,
     );
 
     // Generate daily report at midnight
@@ -100,10 +103,10 @@ export class MonitoringReportingManager {
       () => {
         this.cleanupOldData();
       },
-      60 * 60 * 1000
+      60 * 60 * 1000,
     );
 
-    console.log('📊 Monitoring system initialized');
+    console.log("📊 Monitoring system initialized");
   }
 
   /**
@@ -122,7 +125,7 @@ export class MonitoringReportingManager {
 
     // Keep only last 24 hours of metrics
     const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    this.metrics = this.metrics.filter(m => m.timestamp > cutoff);
+    this.metrics = this.metrics.filter((m) => m.timestamp > cutoff);
 
     // Check for alerts
     await this.checkAlerts(metrics);
@@ -133,7 +136,7 @@ export class MonitoringReportingManager {
   /**
    * Get task-related metrics
    */
-  private async getTaskMetrics(): Promise<SystemMetrics['tasks']> {
+  private async getTaskMetrics(): Promise<SystemMetrics["tasks"]> {
     // This would integrate with the TaskManager
     // For now, return mock data
     return {
@@ -148,7 +151,7 @@ export class MonitoringReportingManager {
   /**
    * Get performance metrics
    */
-  private async getPerformanceMetrics(): Promise<SystemMetrics['performance']> {
+  private async getPerformanceMetrics(): Promise<SystemMetrics["performance"]> {
     const recentMetrics = this.metrics.slice(-12); // Last hour (5 min intervals)
 
     if (recentMetrics.length === 0) {
@@ -159,9 +162,13 @@ export class MonitoringReportingManager {
       };
     }
 
-    const completedTasks = recentMetrics.reduce((sum, m) => sum + m.tasks.completed, 0);
+    const completedTasks = recentMetrics.reduce(
+      (sum, m) => sum + m.tasks.completed,
+      0,
+    );
     const totalTasks = recentMetrics.reduce((sum, m) => sum + m.tasks.total, 0);
-    const successRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+    const successRate =
+      totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
     const throughput = completedTasks; // tasks per hour
 
     return {
@@ -174,7 +181,7 @@ export class MonitoringReportingManager {
   /**
    * Get system resource metrics
    */
-  private getSystemMetrics(): SystemMetrics['system'] {
+  private getSystemMetrics(): SystemMetrics["system"] {
     const uptime = process.uptime();
     return {
       uptime,
@@ -186,14 +193,14 @@ export class MonitoringReportingManager {
   /**
    * Get error metrics
    */
-  private getErrorMetrics(): SystemMetrics['errors'] {
+  private getErrorMetrics(): SystemMetrics["errors"] {
     const recentAlerts = Array.from(this.alerts.values())
-      .filter(alert => !alert.resolved && alert.type !== 'warning')
+      .filter((alert) => !alert.resolved && alert.type !== "warning")
       .slice(-10);
 
     return {
       total: recentAlerts.length,
-      recent: recentAlerts.map(alert => ({
+      recent: recentAlerts.map((alert) => ({
         timestamp: alert.timestamp,
         error: alert.message,
         context: alert.metadata,
@@ -208,44 +215,52 @@ export class MonitoringReportingManager {
     // Check success rate
     if (metrics.performance.successRate < 50) {
       await this.createAlert(
-        'critical',
-        'Low Success Rate',
+        "critical",
+        "Low Success Rate",
         `Task success rate is ${metrics.performance.successRate.toFixed(1)}%`,
-        { successRate: metrics.performance.successRate }
+        { successRate: metrics.performance.successRate },
       );
     }
 
     // Check memory usage
     const memoryUsagePercent =
-      (metrics.system.memoryUsage.heapUsed / metrics.system.memoryUsage.heapTotal) * 100;
+      (metrics.system.memoryUsage.heapUsed /
+        metrics.system.memoryUsage.heapTotal) *
+      100;
     if (memoryUsagePercent > 90) {
       await this.createAlert(
-        'critical',
-        'High Memory Usage',
+        "critical",
+        "High Memory Usage",
         `Memory usage is ${memoryUsagePercent.toFixed(1)}%`,
-        { memoryUsage: metrics.system.memoryUsage }
+        { memoryUsage: metrics.system.memoryUsage },
       );
     }
 
     // Check blocked tasks
     if (metrics.tasks.blocked > metrics.tasks.total * 0.3) {
       await this.createAlert(
-        'warning',
-        'High Blocked Tasks',
+        "warning",
+        "High Blocked Tasks",
         `${metrics.tasks.blocked} tasks are blocked (${((metrics.tasks.blocked / metrics.tasks.total) * 100).toFixed(1)}%)`,
-        { blockedTasks: metrics.tasks.blocked, totalTasks: metrics.tasks.total }
+        {
+          blockedTasks: metrics.tasks.blocked,
+          totalTasks: metrics.tasks.total,
+        },
       );
     }
 
     // Trigger automation for alerts
     if (metrics.errors.total > 0) {
       await this.automationManager.triggerAutomation({
-        type: 'system.health.warning',
+        type: "system.health.warning",
         data: {
-          health: { overall: 'warning', issues: [`${metrics.errors.total} errors detected`] },
+          health: {
+            overall: "warning",
+            issues: [`${metrics.errors.total} errors detected`],
+          },
         },
         timestamp: new Date(),
-        source: 'monitoring',
+        source: "monitoring",
       });
     }
   }
@@ -254,10 +269,10 @@ export class MonitoringReportingManager {
    * Create an alert
    */
   private async createAlert(
-    type: Alert['type'],
+    type: Alert["type"],
     title: string,
     message: string,
-    metadata: any
+    metadata: any,
   ): Promise<void> {
     const alertId = `alert-${Date.now()}`;
     const alert: Alert = {
@@ -279,16 +294,24 @@ export class MonitoringReportingManager {
    */
   async generateDailyReport(): Promise<ReportData> {
     const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const endOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+    );
 
     const dayMetrics = this.metrics.filter(
-      m => m.timestamp >= startOfDay && m.timestamp < endOfDay
+      (m) => m.timestamp >= startOfDay && m.timestamp < endOfDay,
     );
 
     const report: ReportData = {
-      id: `daily-${now.toISOString().split('T')[0]}`,
-      type: 'daily',
+      id: `daily-${now.toISOString().split("T")[0]}`,
+      type: "daily",
       period: { start: startOfDay, end: endOfDay },
       metrics: this.aggregateMetrics(dayMetrics),
       insights: this.generateInsights(dayMetrics),
@@ -297,7 +320,7 @@ export class MonitoringReportingManager {
     };
 
     this.reports.set(report.id, report);
-    console.log('📊 Daily report generated:', report.id);
+    console.log("📊 Daily report generated:", report.id);
 
     return report;
   }
@@ -309,11 +332,11 @@ export class MonitoringReportingManager {
     const now = new Date();
     const startOfWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    const weekMetrics = this.metrics.filter(m => m.timestamp >= startOfWeek);
+    const weekMetrics = this.metrics.filter((m) => m.timestamp >= startOfWeek);
 
     const report: ReportData = {
-      id: `weekly-${now.toISOString().split('T')[0]}`,
-      type: 'weekly',
+      id: `weekly-${now.toISOString().split("T")[0]}`,
+      type: "weekly",
       period: { start: startOfWeek, end: now },
       metrics: this.aggregateMetrics(weekMetrics),
       insights: this.generateInsights(weekMetrics),
@@ -322,7 +345,7 @@ export class MonitoringReportingManager {
     };
 
     this.reports.set(report.id, report);
-    console.log('📊 Weekly report generated:', report.id);
+    console.log("📊 Weekly report generated:", report.id);
 
     return report;
   }
@@ -334,11 +357,13 @@ export class MonitoringReportingManager {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const monthMetrics = this.metrics.filter(m => m.timestamp >= startOfMonth);
+    const monthMetrics = this.metrics.filter(
+      (m) => m.timestamp >= startOfMonth,
+    );
 
     const report: ReportData = {
-      id: `monthly-${now.toISOString().split('T')[0]}`,
-      type: 'monthly',
+      id: `monthly-${now.toISOString().split("T")[0]}`,
+      type: "monthly",
       period: { start: startOfMonth, end: now },
       metrics: this.aggregateMetrics(monthMetrics),
       insights: this.generateInsights(monthMetrics),
@@ -347,7 +372,7 @@ export class MonitoringReportingManager {
     };
 
     this.reports.set(report.id, report);
-    console.log('📊 Monthly report generated:', report.id);
+    console.log("📊 Monthly report generated:", report.id);
 
     return report;
   }
@@ -367,11 +392,17 @@ export class MonitoringReportingManager {
       tasks: latest.tasks,
       performance: {
         averageProcessingTime:
-          metricsData.reduce((sum, m) => sum + m.performance.averageProcessingTime, 0) /
-          metricsData.length,
+          metricsData.reduce(
+            (sum, m) => sum + m.performance.averageProcessingTime,
+            0,
+          ) / metricsData.length,
         successRate:
-          metricsData.reduce((sum, m) => sum + m.performance.successRate, 0) / metricsData.length,
-        throughput: metricsData.reduce((sum, m) => sum + m.performance.throughput, 0),
+          metricsData.reduce((sum, m) => sum + m.performance.successRate, 0) /
+          metricsData.length,
+        throughput: metricsData.reduce(
+          (sum, m) => sum + m.performance.throughput,
+          0,
+        ),
       },
       system: latest.system,
       errors: latest.errors,
@@ -385,29 +416,31 @@ export class MonitoringReportingManager {
     const insights: string[] = [];
 
     if (metricsData.length === 0) {
-      return ['No data available for analysis'];
+      return ["No data available for analysis"];
     }
 
     const avgSuccessRate =
-      metricsData.reduce((sum, m) => sum + m.performance.successRate, 0) / metricsData.length;
+      metricsData.reduce((sum, m) => sum + m.performance.successRate, 0) /
+      metricsData.length;
     const avgThroughput =
-      metricsData.reduce((sum, m) => sum + m.performance.throughput, 0) / metricsData.length;
+      metricsData.reduce((sum, m) => sum + m.performance.throughput, 0) /
+      metricsData.length;
 
     if (avgSuccessRate > 80) {
-      insights.push('High success rate indicates good system performance');
+      insights.push("High success rate indicates good system performance");
     } else if (avgSuccessRate < 50) {
-      insights.push('Low success rate requires immediate attention');
+      insights.push("Low success rate requires immediate attention");
     }
 
     if (avgThroughput > 10) {
-      insights.push('High task throughput indicates efficient processing');
+      insights.push("High task throughput indicates efficient processing");
     } else if (avgThroughput < 2) {
-      insights.push('Low throughput may indicate bottlenecks');
+      insights.push("Low throughput may indicate bottlenecks");
     }
 
     const totalErrors = metricsData.reduce((sum, m) => sum + m.errors.total, 0);
     if (totalErrors === 0) {
-      insights.push('No errors detected - system running smoothly');
+      insights.push("No errors detected - system running smoothly");
     } else {
       insights.push(`${totalErrors} errors detected - review error patterns`);
     }
@@ -422,29 +455,40 @@ export class MonitoringReportingManager {
     const recommendations: string[] = [];
 
     if (metricsData.length === 0) {
-      return ['Start monitoring to get recommendations'];
+      return ["Start monitoring to get recommendations"];
     }
 
     const avgSuccessRate =
-      metricsData.reduce((sum, m) => sum + m.performance.successRate, 0) / metricsData.length;
+      metricsData.reduce((sum, m) => sum + m.performance.successRate, 0) /
+      metricsData.length;
     const avgMemoryUsage =
       metricsData.reduce(
-        (sum, m) => sum + m.system.memoryUsage.heapUsed / m.system.memoryUsage.heapTotal,
-        0
+        (sum, m) =>
+          sum + m.system.memoryUsage.heapUsed / m.system.memoryUsage.heapTotal,
+        0,
       ) / metricsData.length;
 
     if (avgSuccessRate < 70) {
-      recommendations.push('Review and optimize AI resolution workflows');
-      recommendations.push('Consider adding more human intervention checkpoints');
+      recommendations.push("Review and optimize AI resolution workflows");
+      recommendations.push(
+        "Consider adding more human intervention checkpoints",
+      );
     }
 
     if (avgMemoryUsage > 0.8) {
-      recommendations.push('Optimize memory usage and consider increasing resources');
+      recommendations.push(
+        "Optimize memory usage and consider increasing resources",
+      );
     }
 
-    const totalBlocked = metricsData.reduce((sum, m) => sum + m.tasks.blocked, 0);
+    const totalBlocked = metricsData.reduce(
+      (sum, m) => sum + m.tasks.blocked,
+      0,
+    );
     if (totalBlocked > metricsData.length * 2) {
-      recommendations.push('Review blocked tasks and improve escalation process');
+      recommendations.push(
+        "Review blocked tasks and improve escalation process",
+      );
     }
 
     return recommendations;
@@ -458,7 +502,11 @@ export class MonitoringReportingManager {
       timestamp: new Date(),
       tasks: { total: 0, completed: 0, inProgress: 0, blocked: 0, pending: 0 },
       performance: { averageProcessingTime: 0, successRate: 0, throughput: 0 },
-      system: { uptime: 0, memoryUsage: process.memoryUsage(), cpuUsage: process.cpuUsage() },
+      system: {
+        uptime: 0,
+        memoryUsage: process.memoryUsage(),
+        cpuUsage: process.cpuUsage(),
+      },
       errors: { total: 0, recent: [] },
     };
   }
@@ -470,7 +518,7 @@ export class MonitoringReportingManager {
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     // Clean old metrics
-    this.metrics = this.metrics.filter(m => m.timestamp > oneWeekAgo);
+    this.metrics = this.metrics.filter((m) => m.timestamp > oneWeekAgo);
 
     // Clean old reports (keep last 30 days)
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -488,7 +536,7 @@ export class MonitoringReportingManager {
       }
     }
 
-    console.log('🧹 Old data cleaned up');
+    console.log("🧹 Old data cleaned up");
   }
 
   /**
@@ -496,39 +544,42 @@ export class MonitoringReportingManager {
    */
   async getSystemHealth(): Promise<any> {
     const latestMetrics = this.metrics[this.metrics.length - 1];
-    const activeAlerts = Array.from(this.alerts.values()).filter(a => !a.resolved);
+    const activeAlerts = Array.from(this.alerts.values()).filter(
+      (a) => !a.resolved,
+    );
 
     if (!latestMetrics) {
       return {
-        overall: 'unknown',
-        issues: ['No metrics available'],
+        overall: "unknown",
+        issues: ["No metrics available"],
         metrics: null,
         alerts: activeAlerts,
       };
     }
 
     const issues: string[] = [];
-    let overall = 'healthy';
+    let overall = "healthy";
 
     if (latestMetrics.performance.successRate < 50) {
-      overall = 'critical';
-      issues.push('Low success rate');
+      overall = "critical";
+      issues.push("Low success rate");
     } else if (latestMetrics.performance.successRate < 75) {
-      overall = 'warning';
-      issues.push('Moderate success rate');
+      overall = "warning";
+      issues.push("Moderate success rate");
     }
 
     if (latestMetrics.errors.total > 5) {
-      overall = overall === 'healthy' ? 'warning' : overall;
-      issues.push('Multiple errors detected');
+      overall = overall === "healthy" ? "warning" : overall;
+      issues.push("Multiple errors detected");
     }
 
     const memoryUsagePercent =
-      (latestMetrics.system.memoryUsage.heapUsed / latestMetrics.system.memoryUsage.heapTotal) *
+      (latestMetrics.system.memoryUsage.heapUsed /
+        latestMetrics.system.memoryUsage.heapTotal) *
       100;
     if (memoryUsagePercent > 90) {
-      overall = 'critical';
-      issues.push('High memory usage');
+      overall = "critical";
+      issues.push("High memory usage");
     }
 
     return {
@@ -548,7 +599,7 @@ export class MonitoringReportingManager {
       .sort((a, b) => b.generatedAt.getTime() - a.generatedAt.getTime())
       .slice(0, 5);
     const activeAlerts = Array.from(this.alerts.values())
-      .filter(a => !a.resolved)
+      .filter((a) => !a.resolved)
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
     return {

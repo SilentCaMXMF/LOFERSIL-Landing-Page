@@ -9,6 +9,7 @@
 interface EnvironmentConfig {
   NODE_ENV?: string;
   OPENAI_API_KEY?: string;
+  GEMINI_API_KEY?: string;
   GOOGLE_ANALYTICS_ID?: string;
   MCP_API_KEY?: string;
   MCP_SERVER_URL?: string;
@@ -18,21 +19,23 @@ interface EnvironmentConfig {
   EMAILJS_SERVICE_ID?: string;
   EMAILJS_TEMPLATE_ID?: string;
   EMAILJS_PUBLIC_KEY?: string;
+  CONTACT_API_ENDPOINT?: string;
   [key: string]: string | undefined;
 }
 
 /**
  * Required environment variables
+ * Note: API keys are optional for basic site functionality
  */
-const REQUIRED_ENV_VARS = ['OPENAI_API_KEY'] as const;
+const REQUIRED_ENV_VARS: readonly string[] = [];
 
 /**
  * Default environment values
  */
 const DEFAULT_ENV_VALUES: Partial<EnvironmentConfig> = {
-  NODE_ENV: 'development',
-  ENABLE_MCP_INTEGRATION: 'false',
-  MCP_SERVER_URL: 'ws://localhost:3000',
+  NODE_ENV: "development",
+  ENABLE_MCP_INTEGRATION: "false",
+  MCP_SERVER_URL: "ws://localhost:3000",
 };
 
 /**
@@ -44,6 +47,7 @@ export class EnvironmentLoader {
 
   constructor() {
     this.config = this.loadEnvironmentVariables();
+    this.validateRequiredAndThrow();
     this.loaded = true;
   }
 
@@ -55,12 +59,12 @@ export class EnvironmentLoader {
 
     // In browser environment, try to load from global window object
     // This assumes env vars are injected at build time or loaded via script
-    if (typeof window !== 'undefined' && (window as any).ENV) {
+    if (typeof window !== "undefined" && (window as any).ENV) {
       Object.assign(config, (window as any).ENV);
     }
 
     // For Node.js environment (build time)
-    if (typeof process !== 'undefined' && process.env) {
+    if (typeof process !== "undefined" && process.env) {
       Object.assign(config, process.env as Partial<EnvironmentConfig>);
     }
 
@@ -96,14 +100,14 @@ export class EnvironmentLoader {
    * Check if running in development mode
    */
   isDevelopment(): boolean {
-    return this.config.NODE_ENV !== 'production';
+    return this.config.NODE_ENV !== "production";
   }
 
   /**
    * Check if running in production mode
    */
   isProduction(): boolean {
-    return this.config.NODE_ENV === 'production';
+    return this.config.NODE_ENV === "production";
   }
 
   /**
@@ -125,10 +129,49 @@ export class EnvironmentLoader {
   }
 
   /**
+   * Validate required environment variables and throw if any are missing
+   */
+  private validateRequiredAndThrow(): void {
+    const validation = this.validateRequired();
+    if (!validation.valid) {
+      const errorMessage = `Missing required environment variables: ${validation.missing.join(", ")}
+
+To fix this issue:
+
+1. Create a .env file in your project root with the following variables:
+${validation.missing.map((v) => `${v}=your_${v.toLowerCase()}_here`).join("\n")}
+
+2. Or set them in your environment:
+${validation.missing.map((v) => `export ${v}=your_value_here`).join("\n")}
+
+3. Or configure them in your deployment platform
+
+Current environment: ${this.config.NODE_ENV || "unknown"}
+Available variables: ${
+        Object.keys(this.config)
+          .filter((k) => REQUIRED_ENV_VARS.includes(k as any))
+          .join(", ") || "none"
+      }`;
+
+      throw new Error(errorMessage);
+    }
+  }
+
+  /**
    * Get all configuration
    */
   getAll(): EnvironmentConfig {
     return { ...this.config };
+  }
+
+  /**
+   * Check if optional API keys are available
+   */
+  hasApiKeys(): { openai: boolean; gemini: boolean } {
+    return {
+      openai: !!this.config.OPENAI_API_KEY,
+      gemini: !!this.config.GEMINI_API_KEY,
+    };
   }
 
   /**

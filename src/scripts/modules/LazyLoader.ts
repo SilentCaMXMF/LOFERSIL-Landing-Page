@@ -18,12 +18,12 @@ export class LazyLoader {
   private initializeObserver(): void {
     const options = {
       root: null,
-      rootMargin: '50px 0px', // Start loading 50px before element enters viewport
+      rootMargin: "50px 0px", // Start loading 50px before element enters viewport
       threshold: 0.1,
     };
 
-    this.observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           this.loadElement(entry.target as HTMLElement);
         }
@@ -36,20 +36,20 @@ export class LazyLoader {
    */
   private setupLazyLoading(): void {
     // Load images immediately if Intersection Observer is not supported
-    if (!('IntersectionObserver' in window)) {
+    if (!("IntersectionObserver" in window)) {
       this.loadAllLazyImages();
       return;
     }
 
     // Observe all lazy images
-    const lazyImages = document.querySelectorAll('img.lazy[data-src]');
-    lazyImages.forEach(img => {
+    const lazyImages = document.querySelectorAll("img.lazy[data-src]");
+    lazyImages.forEach((img) => {
       this.observer?.observe(img);
     });
 
     // Also observe lazy background images
-    const lazyBackgrounds = document.querySelectorAll('[data-bg]');
-    lazyBackgrounds.forEach(element => {
+    const lazyBackgrounds = document.querySelectorAll("[data-bg]");
+    lazyBackgrounds.forEach((element) => {
       this.observer?.observe(element);
     });
   }
@@ -58,9 +58,9 @@ export class LazyLoader {
    * Load a lazy element when it enters the viewport
    */
   private loadElement(element: HTMLElement): void {
-    if (element.tagName === 'IMG') {
+    if (element.tagName === "IMG") {
       this.loadImage(element as HTMLImageElement);
-    } else if (element.hasAttribute('data-bg')) {
+    } else if (element.hasAttribute("data-bg")) {
       this.loadBackgroundImage(element);
     }
 
@@ -72,7 +72,7 @@ export class LazyLoader {
    * Load a lazy image
    */
   private loadImage(img: HTMLImageElement): void {
-    const src = img.getAttribute('data-src');
+    const src = img.getAttribute("data-src");
     if (!src || this.loadedImages.has(src)) {
       return;
     }
@@ -83,18 +83,18 @@ export class LazyLoader {
     newImg.onload = () => {
       // Replace data-src with src and add loaded class
       img.src = src;
-      img.classList.remove('lazy');
-      img.classList.add('lazy-loaded');
+      img.classList.remove("lazy");
+      img.classList.add("lazy-loaded");
       this.loadedImages.add(src);
 
       // Remove data-src attribute
-      img.removeAttribute('data-src');
+      img.removeAttribute("data-src");
     };
 
     newImg.onerror = () => {
       console.warn(`Failed to load image: ${src}`);
       // Remove lazy class to prevent infinite loading attempts
-      img.classList.remove('lazy');
+      img.classList.remove("lazy");
     };
 
     newImg.src = src;
@@ -104,13 +104,13 @@ export class LazyLoader {
    * Load a lazy background image
    */
   private loadBackgroundImage(element: HTMLElement): void {
-    const bgSrc = element.getAttribute('data-bg');
+    const bgSrc = element.getAttribute("data-bg");
     if (!bgSrc) return;
 
     const img = new Image();
     img.onload = () => {
       element.style.backgroundImage = `url(${bgSrc})`;
-      element.removeAttribute('data-bg');
+      element.removeAttribute("data-bg");
     };
 
     img.src = bgSrc;
@@ -120,8 +120,8 @@ export class LazyLoader {
    * Fallback method to load all lazy images immediately (for browsers without Intersection Observer)
    */
   private loadAllLazyImages(): void {
-    const lazyImages = document.querySelectorAll('img.lazy[data-src]');
-    lazyImages.forEach(img => {
+    const lazyImages = document.querySelectorAll("img.lazy[data-src]");
+    lazyImages.forEach((img) => {
       this.loadImage(img as HTMLImageElement);
     });
   }
@@ -131,7 +131,7 @@ export class LazyLoader {
    */
   public loadSpecific(selector: string): void {
     const elements = document.querySelectorAll(selector);
-    elements.forEach(element => {
+    elements.forEach((element) => {
       if (element instanceof HTMLElement) {
         this.loadElement(element);
       }
@@ -149,7 +149,7 @@ export class LazyLoader {
    * Get loading statistics
    */
   public getStats(): { loaded: number; total: number } {
-    const total = document.querySelectorAll('img[data-src]').length;
+    const total = document.querySelectorAll("img[data-src]").length;
     return {
       loaded: this.loadedImages.size,
       total,

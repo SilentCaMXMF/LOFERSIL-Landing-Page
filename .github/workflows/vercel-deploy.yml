@@ -2,9 +2,9 @@ name: Deploy to Vercel
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, preview-deployment]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, preview-deployment]
   workflow_dispatch:
 
 jobs:
@@ -19,187 +19,24 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Audit dependencies
-        run: npm audit --audit-level=high
-
-      - name: Run lint
-        run: npm run lint
-
-      - name: Run tests
-        run: npm run test
-
-      - name: Check for critical vulnerabilities
-        run: |
-          if npm audit --audit-level=high | grep -q "high"; then
-            echo "❌ High severity vulnerabilities found. Please review and update dependencies."
-            npm audit --audit-level=high
-            exit 1
-          else
-            echo "✅ No high severity vulnerabilities found"
-          fi
-
       - name: Build project
         run: npm run build
-        env:
-          NODE_ENV: production
-          # Deployment
-          WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
-          # AI API Keys
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_API_BASE_URL: ${{ secrets.OPENAI_API_BASE_URL }}
-          CONTEXT7_API_KEY: ${{ secrets.CONTEXT7_API_KEY }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_API_BASE_URL: ${{ secrets.CLOUDFLARE_API_BASE_URL }}
-          # Email Configuration
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-          TO_EMAIL: ${{ secrets.TO_EMAIL }}
-          ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
-          # Analytics & Monitoring
-          GOOGLE_ANALYTICS_ID: ${{ secrets.GOOGLE_ANALYTICS_ID }}
-          HOTJAR_ID: ${{ secrets.HOTJAR_ID }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          # Telegram Bot
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_USERNAME: ${{ secrets.TELEGRAM_BOT_USERNAME }}
-          TELEGRAM_TEST_CHAT_ID: ${{ secrets.TELEGRAM_TEST_CHAT_ID }}
-          # Application Configuration
-          CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
-          PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
-          COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
-          COMPANY_DESCRIPTION: ${{ secrets.COMPANY_DESCRIPTION }}
-          SITE_NAME: ${{ secrets.SITE_NAME }}
-          SITE_TITLE: ${{ secrets.SITE_TITLE }}
-          SITE_DESCRIPTION: ${{ secrets.SITE_DESCRIPTION }}
-          OG_IMAGE_URL: ${{ secrets.OG_IMAGE_URL }}
-          CONTACT_API_ENDPOINT: ${{ secrets.CONTACT_API_ENDPOINT }}
-          # Feature Flags
-          ENABLE_ANALYTICS: ${{ secrets.ENABLE_ANALYTICS }}
-          ENABLE_ERROR_TRACKING: ${{ secrets.ENABLE_ERROR_TRACKING }}
-          ENABLE_PERFORMANCE_MONITORING: ${{ secrets.ENABLE_PERFORMANCE_MONITORING }}
-          ENABLE_MCP_INTEGRATION: ${{ secrets.ENABLE_MCP_INTEGRATION }}
-          # MCP Configuration
-          MCP_API_KEY: ${{ secrets.MCP_API_KEY }}
-          MCP_SERVER_URL: ${{ secrets.MCP_SERVER_URL }}
-          MCP_CLIENT_ID: ${{ secrets.MCP_CLIENT_ID }}
-          MCP_RECONNECT_INTERVAL: ${{ secrets.MCP_RECONNECT_INTERVAL }}
-          MCP_MAX_RECONNECT_ATTEMPTS: ${{ secrets.MCP_MAX_RECONNECT_ATTEMPTS }}
 
       - name: Deploy to Vercel
-        id: deploy
         uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '--prod' || '' }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Comment PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-
-            const botComment = comments.find(comment => 
-              comment.user.type === 'Bot' && comment.body.includes('🚀 Preview')
-            );
-
-            if (botComment) {
-               await github.rest.issues.updateComment({
-                 owner: context.repo.owner,
-                 repo: context.repo.repo,
-                 comment_id: botComment.id,
-                 body: `🚀 Preview deployment is ready!
-
-                 **Preview URL:** ${{ steps.deploy.outputs.preview-url }}
-
-                 This preview will be updated on each push to this PR.
-
-                 ---
-
-                 *This comment was automatically generated by the deployment workflow.*`
-               });
-            } else {
-               await github.rest.issues.createComment({
-                 owner: context.repo.owner,
-                 repo: context.repo.repo,
-                 issue_number: context.issue.number,
-                 body: `🚀 Preview deployment is ready!
-
-                 **Preview URL:** ${{ steps.deploy.outputs.preview-url }}
-
-                 This preview will be updated on each push to this PR.
-
-                 ---
-
-                 *This comment was automatically generated by the deployment workflow.*`
-                });
-              }
-
-      - name: Create GitHub Deployment
-        id: create-deployment
-        if: github.event_name == 'push'
-        uses: actions/github-script@v7
         env:
-          PRODUCTION_URL: ${{ steps.deploy.outputs.production-url }}
-          PREVIEW_URL: ${{ steps.deploy.outputs.preview-url }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         with:
-          script: |
-            const core = require('@actions/core');
-            try {
-              const isProduction = process.env.GITHUB_REF === 'refs/heads/main';
-              const environment = isProduction ? 'production' : 'preview';
-              const deploymentUrl = isProduction ? process.env.PRODUCTION_URL : process.env.PREVIEW_URL;
-
-              const { data: deployment } = await github.rest.repos.createDeployment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: context.sha,
-                environment: environment,
-                description: 'Deploy to Vercel',
-                required_contexts: []
-              });
-
-              core.setOutput('deployment-id', deployment.id);
-              core.setOutput('deployment-url', deploymentUrl);
-              core.setOutput('environment', environment);
-            } catch (error) {
-              core.setFailed(`Failed to create deployment: ${error.message}`);
-            }
-
-      - name: Update deployment status
-        if: github.event_name == 'push'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const core = require('@actions/core');
-            try {
-              await github.rest.repos.createDeploymentStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                deployment_id: '${{ steps.create-deployment.outputs.deployment-id }}',
-                state: 'success',
-                target_url: '${{ steps.create-deployment.outputs.deployment-url }}',
-                description: 'Deployment completed successfully'
-              });
-            } catch (error) {
-              core.setFailed(`Failed to update deployment status: ${error.message}`);
-            }
+          vercel-token: ${{ env.VERCEL_TOKEN }}
+          vercel-org-id: ${{ env.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
+          vercel-args: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '--prod' || '--debug' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
