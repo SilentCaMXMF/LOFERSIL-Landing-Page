@@ -26,6 +26,7 @@
     "src/scripts/index.ts",
     "src/scripts/validation.ts",
     "src/scripts/types.ts",
+    "src/scripts/modules/BackgroundSync.ts",
     "src/scripts/modules/Config.ts",
     "src/scripts/modules/ContactFormManager.ts",
     "src/scripts/modules/EnvironmentLoader.ts",

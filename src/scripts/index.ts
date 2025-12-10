@@ -19,6 +19,7 @@ import { PushNotificationManager } from "./modules/PushNotificationManager.js";
 import { PWAUpdater } from "./modules/PWAUpdater.js";
 import { ThemeManager } from "./modules/ThemeManager.js";
 import { lazyLoader } from "./modules/LazyLoader.js";
+import { BackgroundSync } from "./modules/BackgroundSync.js";
 
 // Extend Window interface for global properties
 declare global {
@@ -243,6 +244,9 @@ class LOFERSILLandingPage {
         await navigator.serviceWorker.register("/sw.js", {
           scope: "/",
         });
+
+        // Initialize BackgroundSync after service worker is ready
+        await BackgroundSync.initialize();
       } catch (error) {
         this.errorHandler.handleError(
           error,

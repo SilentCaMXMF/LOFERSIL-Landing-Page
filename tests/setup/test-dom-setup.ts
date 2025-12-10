@@ -237,19 +237,21 @@ if (!(global.navigator as any).geolocation) {
 }
 
 // Mock MediaDevices API
-Object.defineProperty(global.navigator, "mediaDevices", {
-  value: {
-    getUserMedia: () =>
-      Promise.resolve({
-        getTracks: () => [],
-        getAudioTracks: () => [],
-        getVideoTracks: () => [],
-      }),
-    enumerateDevices: () => Promise.resolve([]),
-  },
-  writable: true,
-  configurable: true,
-});
+if (!global.navigator.mediaDevices) {
+  Object.defineProperty(global.navigator, "mediaDevices", {
+    value: {
+      getUserMedia: () =>
+        Promise.resolve({
+          getTracks: () => [],
+          getAudioTracks: () => [],
+          getVideoTracks: () => [],
+        }),
+      enumerateDevices: () => Promise.resolve([]),
+    },
+    writable: true,
+    configurable: true,
+  });
+}
 
 // Mock Notification API
 global.Notification = class Notification {
@@ -267,25 +269,27 @@ global.Notification = class Notification {
 } as any;
 
 // Mock Service Worker API
-Object.defineProperty(global.navigator, "serviceWorker", {
-  value: {
-    register: () =>
-      Promise.resolve({
-        installing: null,
-        waiting: null,
+if (!global.navigator.serviceWorker) {
+  Object.defineProperty(global.navigator, "serviceWorker", {
+    value: {
+      register: () =>
+        Promise.resolve({
+          installing: null,
+          waiting: null,
+          active: null,
+          scope: "/",
+          update: () => Promise.resolve(),
+          unregister: () => Promise.resolve(true),
+        }),
+      controller: null,
+      ready: Promise.resolve({
         active: null,
-        scope: "/",
-        update: () => Promise.resolve(),
-        unregister: () => Promise.resolve(true),
       }),
-    controller: null,
-    ready: Promise.resolve({
-      active: null,
-    }),
-  },
-  writable: true,
-  configurable: true,
-});
+    },
+    writable: true,
+    configurable: true,
+  });
+}
 
 // Export DOM utilities for tests
 export const domUtils = {

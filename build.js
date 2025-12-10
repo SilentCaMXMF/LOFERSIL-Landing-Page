@@ -194,7 +194,6 @@ try {
           item.endsWith(".map") ||
           item.includes(".test.") ||
           item === "AutomationTriggers.js" ||
-          item === "BackgroundSync.js" ||
           item === "MonitoringReporting.js" ||
           item === "OpenCodeAgent.js" ||
           item === "PerformanceTracker.js" ||

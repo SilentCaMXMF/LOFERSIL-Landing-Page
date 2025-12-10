@@ -10,33 +10,9 @@
   "scope": "/",
   "icons": [
     {
-      "src": "assets/images/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
       "src": "assets/images/icon-96x96.svg",
       "sizes": "96x96",
       "type": "image/svg+xml",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "assets/images/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "assets/images/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "assets/images/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
       "purpose": "maskable any"
     },
     {
