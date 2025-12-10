@@ -23,7 +23,7 @@ if (!existsSync("dist")) {
 // Compile TypeScript (only essential modules)
 console.log("📝 Compiling TypeScript...");
 try {
-  execSync("npx tsc", { stdio: "inherit" });
+  execSync("npx tsc --noEmitOnError", { stdio: "inherit" });
 } catch (error) {
   console.error("❌ TypeScript compilation failed");
   process.exit(1);
@@ -178,6 +178,7 @@ try {
         // Remove entire directories we don't need
         if (
           item === "github-issues" ||
+          item === "mcp" ||
           item === "tasks" ||
           item === "prompts" ||
           item === "tests" ||

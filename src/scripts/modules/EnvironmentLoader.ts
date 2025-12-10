@@ -63,9 +63,13 @@ export class EnvironmentLoader {
       Object.assign(config, (window as any).ENV);
     }
 
-    // For Node.js environment (build time)
-    if (typeof process !== "undefined" && process.env) {
-      Object.assign(config, process.env as Partial<EnvironmentConfig>);
+    // Browser-safe environment detection
+    // Check for import.meta.env (Vite) or fallback to development
+    if (typeof import.meta !== "undefined" && import.meta.env) {
+      Object.assign(config, {
+        NODE_ENV: import.meta.env.MODE || "development",
+        // Add any other env vars that might be available at build time
+      });
     }
 
     return config;

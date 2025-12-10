@@ -14,13 +14,15 @@
     "isolatedModules": true,
     "outDir": "dist",
     "declaration": false,
-    "sourceMap": true,
+    "sourceMap": false,
     "removeComments": false,
     "importHelpers": false,
     "downlevelIteration": false,
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "noEmitOnError": true,
+    "skipDefaultLibCheck": true
   },
   "include": [
     "src/scripts/index.ts",
@@ -40,5 +42,24 @@
     "src/scripts/modules/Utils.ts",
     "src/scripts/modules/logger.ts"
   ],
-  "exclude": ["node_modules", "dist", ".opencode/**/*"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".opencode/**/*",
+    "src/scripts/modules/github-issues/**/*",
+    "src/scripts/modules/mcp/**/*",
+    "src/scripts/modules/AutomationTriggers.ts",
+    "src/scripts/modules/GitHubApiClient.ts",
+    "src/scripts/modules/GitHubIntegrationManager.ts",
+    "src/scripts/modules/GitHubIssuesReviewerMain.ts",
+    "src/scripts/modules/GitHubWebhookHandler.ts",
+    "src/scripts/modules/MonitoringReporting.ts",
+    "src/scripts/modules/OpenCodeAgent.ts",
+    "src/scripts/modules/PerformanceTracker.ts",
+    "src/scripts/modules/PushNotificationManager.ts",
+    "src/scripts/modules/TaskManagementApi.ts",
+    "src/scripts/modules/TaskManagementIntegration.ts",
+    "src/scripts/modules/TaskManager.ts",
+    "src/scripts/modules/github-projects.ts"
+  ]
 }
