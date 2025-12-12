@@ -474,19 +474,22 @@ export class ProtocolHandler {
     const category = this.classifyProtocolError(error);
     const severity = determineMCPErrorSeverity(error, category);
 
-    const mcpError: MCPError = {
-      id: generateMCPErrorId(),
-      message: sanitizeMCPErrorMessage(error.message),
-      category,
-      severity,
-      context,
-      cause: error,
-      stack: error.stack,
-      recoverable: this.isProtocolErrorRecoverable(category, severity),
-      retryable: this.isProtocolErrorRetryable(category, severity),
-      requiresHumanIntervention: severity === MCPErrorSeverity.CRITICAL,
-      correlationId: generateMCPCorrelationId(),
-    };
+    // Create a proper Error object that extends MCPError
+    const mcpError = new Error(
+      sanitizeMCPErrorMessage(error.message),
+    ) as MCPError;
+    mcpError.name = "MCPError";
+    mcpError.id = generateMCPErrorId();
+    mcpError.message = sanitizeMCPErrorMessage(error.message);
+    mcpError.category = category;
+    mcpError.severity = severity;
+    mcpError.context = context;
+    mcpError.cause = error;
+    mcpError.stack = error.stack;
+    mcpError.recoverable = this.isProtocolErrorRecoverable(category, severity);
+    mcpError.retryable = this.isProtocolErrorRetryable(category, severity);
+    mcpError.requiresHumanIntervention = severity === MCPErrorSeverity.CRITICAL;
+    mcpError.correlationId = generateMCPCorrelationId();
 
     // Report to ErrorManager
     this.errorManager.handleError(error, `ProtocolHandler.${operation}`, {

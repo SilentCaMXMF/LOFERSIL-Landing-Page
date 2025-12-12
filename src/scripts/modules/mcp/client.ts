@@ -1068,22 +1068,26 @@ export class MCPClient {
       category,
       context.attempt,
     );
-    const mcpError: MCPError = {
-      id: generateMCPErrorId(),
-      message: sanitizeMCPErrorMessage(error.message),
+    const errorId = generateMCPErrorId();
+    const errorMessage = sanitizeMCPErrorMessage(error.message);
+
+    // Create a proper Error object that extends MCPError
+    const mcpError = new Error(errorMessage) as MCPError;
+    mcpError.name = "MCPError";
+    mcpError.id = errorId;
+    mcpError.message = errorMessage;
+    mcpError.category = category;
+    mcpError.severity = severity;
+    mcpError.context = context;
+    mcpError.cause = error;
+    mcpError.stack = error.stack;
+    mcpError.recoverable = this.isErrorRecoverable(category, severity);
+    mcpError.retryable = this.isErrorRetryable(category, severity);
+    mcpError.requiresHumanIntervention = this.requiresHumanIntervention(
       category,
       severity,
-      context,
-      cause: error,
-      stack: error.stack,
-      recoverable: this.isErrorRecoverable(category, severity),
-      retryable: this.isErrorRetryable(category, severity),
-      requiresHumanIntervention: this.requiresHumanIntervention(
-        category,
-        severity,
-      ),
-      correlationId: generateMCPCorrelationId(),
-    };
+    );
+    mcpError.correlationId = generateMCPCorrelationId();
 
     // Update error statistics
     this.updateErrorStatistics(mcpError);
@@ -1860,7 +1864,7 @@ export class MCPClient {
     // Connection state changes
     this.wsClient.addEventListener(
       MCPClientEventType.CONNECTION_STATE_CHANGED,
-      (event) => {
+      (event: any) => {
         this.handleConnectionStateChange(event.data.newState);
       },
     );
@@ -1868,7 +1872,7 @@ export class MCPClient {
     // Message events
     this.wsClient.addEventListener(
       MCPClientEventType.MESSAGE_RECEIVED,
-      (event) => {
+      (event: any) => {
         // Forward to protocol handler
         if (event.data.message) {
           this.protocolHandler.handleMessage(
@@ -1881,7 +1885,7 @@ export class MCPClient {
     // Error events
     this.wsClient.addEventListener(
       MCPClientEventType.ERROR_OCCURRED,
-      (event) => {
+      (event: any) => {
         this.handleWebSocketError(event.data.error);
       },
     );

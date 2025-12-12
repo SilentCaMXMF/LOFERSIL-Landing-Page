@@ -62,6 +62,41 @@ import {
   ProtocolHandler,
   MCPProtocol,
 } from "./protocol";
+import { HTTPTransport, type HTTPTransportConfig } from "./http-transport";
+import {
+  MCPTransport,
+  type TransportConfig,
+  type TransportStats,
+  type TransportEventData,
+  TransportError,
+  TransportErrorType,
+  createTransportError,
+  validateTransportConfig,
+} from "./transport-interface";
+
+import {
+  MCPTransportFactory,
+  createTransportFactory,
+  createContext7TransportFactory,
+} from "./transport-factory";
+import type {
+  MCPTransportFactoryConfig,
+  TransportCreationOptions,
+  TransportHealthStatus,
+  TransportFactoryStats,
+} from "./transport-factory";
+
+import {
+  MCPMultiTransportClient,
+  createMultiTransportClient,
+  createContext7Client,
+} from "./multi-transport-client";
+import type {
+  MCPMultiTransportClientConfig,
+  TransportConnectionStatus,
+  MultiTransportClientStats,
+} from "./multi-transport-client";
+
 import {
   // Core MCP Types
   MCPCapabilities,
@@ -105,6 +140,13 @@ import {
   MCPPerformanceMetrics,
   MCPHealthCheck,
 
+  // HTTP Transport Types
+  MCPHTTPTransportConfig,
+  MCPHTTPClientConfig,
+  Context7Config,
+  HTTPTransportErrorCategory,
+  DEFAULT_CONTEXT7_CONFIG,
+
   // Utility Types
   MCPEventHandler,
   MCPRequestPromise,
@@ -124,6 +166,9 @@ import {
   isMCPResource,
   isMCPPrompt,
   validateMCPClientConfig,
+  validateHTTPTransportConfig,
+  createHTTPTransportConfig,
+  mergeContext7Config,
 } from "./types";
 
 import { ErrorManager } from "../ErrorManager";
@@ -137,6 +182,49 @@ export { MCPClient };
 export type { MCPClientExtendedConfig };
 
 // ============================================================================
+// TRANSPORT LAYER EXPORTS
+// ============================================================================
+
+export { HTTPTransport };
+export type { HTTPTransportConfig };
+
+export { createTransportError, validateTransportConfig };
+export type { MCPTransport };
+
+export type {
+  TransportConfig,
+  TransportStats,
+  TransportEventData,
+  TransportError,
+  TransportErrorType,
+};
+
+// MULTI-TRANSPORT EXPORTS
+// ============================================================================
+
+export {
+  MCPTransportFactory,
+  createTransportFactory,
+  createContext7TransportFactory,
+};
+export type {
+  MCPTransportFactoryConfig,
+  TransportCreationOptions,
+  TransportHealthStatus,
+  TransportFactoryStats,
+};
+
+export {
+  MCPMultiTransportClient,
+  createMultiTransportClient,
+  createContext7Client,
+};
+export type {
+  MCPMultiTransportClientConfig,
+  TransportConnectionStatus,
+  MultiTransportClientStats,
+};
+
 // WEBSOCKET CLIENT EXPORTS
 // ============================================================================
 
@@ -203,6 +291,11 @@ export type {
   MCPPerformanceMetrics,
   MCPHealthCheck,
 
+  // HTTP Transport Types
+  MCPHTTPTransportConfig,
+  MCPHTTPClientConfig,
+  Context7Config,
+
   // Utility Types
   MCPEventHandler,
   MCPRequestPromise,
@@ -230,6 +323,11 @@ export {
   isMCPResource,
   isMCPPrompt,
   validateMCPClientConfig,
+  validateHTTPTransportConfig,
+  createHTTPTransportConfig,
+  mergeContext7Config,
+  HTTPTransportErrorCategory,
+  DEFAULT_CONTEXT7_CONFIG,
 };
 
 // ============================================================================
@@ -283,6 +381,42 @@ export function createWebSocketClient(
   errorHandler: ErrorManager,
 ): MCPWebSocketClient {
   return new MCPWebSocketClient(config, errorHandler);
+}
+
+/**
+ * Create an HTTP transport client with default settings
+ */
+export function createHTTPTransport(
+  config: HTTPTransportConfig,
+): HTTPTransport {
+  return new HTTPTransport(config);
+}
+
+/**
+ * Create an HTTP transport client for Context7
+ */
+export function createContext7Transport(
+  apiKey: string,
+  mcpEndpoint?: string,
+): HTTPTransport {
+  const config: HTTPTransportConfig = {
+    serverUrl: mcpEndpoint || "https://mcp.context7.com/mcp",
+    context7: {
+      apiKey,
+      mcpEndpoint: mcpEndpoint || "https://mcp.context7.com/mcp",
+      apiVersion: "v1",
+    },
+    requestTimeout: 30000,
+    maxRetries: 3,
+    enableCaching: false,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "User-Agent": "LOFERSIL-MCP-Client/1.0.0",
+    },
+  };
+
+  return new HTTPTransport(config);
 }
 
 // ============================================================================

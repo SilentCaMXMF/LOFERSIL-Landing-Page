@@ -725,6 +725,8 @@ export interface MCPErrorContext {
   promptName?: string;
   /** Attempt number */
   attempt?: number;
+  /** Transport type (if applicable) */
+  transportType?: string;
   /** Additional metadata */
   metadata?: Record<string, unknown>;
 }
@@ -732,11 +734,13 @@ export interface MCPErrorContext {
 /**
  * MCP-specific error information
  */
-export interface MCPError {
+export interface MCPError extends Error {
   /** Unique error ID */
   id: string;
   /** Error message */
   message: string;
+  /** Error name */
+  name: string;
   /** Error category */
   category: MCPErrorCategory;
   /** Error severity */
@@ -894,6 +898,10 @@ export interface MCPErrorContextBuilder {
   promptName?: string;
   /** Attempt number */
   attempt?: number;
+  /** Transport type */
+  transportType?: string;
+  /** Timestamp */
+  timestamp?: Date;
   /** Additional metadata */
   metadata?: Record<string, unknown>;
 }
@@ -1083,7 +1091,7 @@ export function createMCPErrorContext(
   return {
     component: builder.component,
     operation: builder.operation,
-    timestamp: new Date(),
+    timestamp: builder.timestamp || new Date(),
     sessionId: builder.sessionId,
     requestId: builder.requestId,
     connectionId: builder.connectionId,
@@ -1091,6 +1099,7 @@ export function createMCPErrorContext(
     resourceUri: builder.resourceUri,
     promptName: builder.promptName,
     attempt: builder.attempt,
+    transportType: builder.transportType,
     metadata: builder.metadata,
   };
 }
@@ -1258,6 +1267,249 @@ export function sanitizeMCPErrorMessage(message: string): string {
     .replace(/secret[=\/][\w\-\.]+/gi, "secret=REDACTED")
     .replace(/authorization[=:]\s*[^\s,}]+/gi, "authorization=REDACTED")
     .replace(/bearer\s+[^\s,}]+/gi, "bearer=REDACTED");
+}
+
+// ============================================================================
+// HTTP TRANSPORT TYPES EXTENSIONS
+// ============================================================================
+
+/**
+ * HTTP transport specific configuration
+ */
+export interface MCPHTTPTransportConfig {
+  /** Base URL for API endpoints */
+  baseUrl?: string;
+  /** Context7 specific configuration */
+  context7?: {
+    /** API key */
+    apiKey: string;
+    /** MCP endpoint URL */
+    mcpEndpoint?: string;
+    /** API version */
+    apiVersion?: string;
+  };
+  /** HTTP request timeout in milliseconds */
+  requestTimeout?: number;
+  /** Maximum retry attempts */
+  maxRetries?: number;
+  /** Base delay for exponential backoff (ms) */
+  retryBaseDelay?: number;
+  /** Maximum retry delay (ms) */
+  retryMaxDelay?: number;
+  /** Enable jitter for retry delays */
+  retryJitter?: boolean;
+  /** Rate limiting configuration */
+  rateLimit?: {
+    /** Maximum requests per window */
+    maxRequests: number;
+    /** Window duration in milliseconds */
+    windowMs: number;
+    /** Retry after rate limit hit (ms) */
+    retryAfter: number;
+  };
+  /** Enable request/response compression */
+  enableCompression?: boolean;
+  /** Enable caching */
+  enableCaching?: boolean;
+  /** Cache TTL in milliseconds */
+  cacheTTL?: number;
+  /** Custom HTTP headers */
+  headers?: Record<string, string>;
+}
+
+/**
+ * Extended MCP client configuration with HTTP transport support
+ */
+export interface MCPHTTPClientConfig extends MCPClientConfig {
+  /** Transport type ('websocket' or 'http') */
+  transportType: "websocket" | "http";
+  /** HTTP transport specific configuration */
+  httpTransport?: MCPHTTPTransportConfig;
+}
+
+/**
+ * Context7 specific configuration for MCP client
+ */
+export interface Context7Config {
+  /** Context7 API key */
+  apiKey: string;
+  /** MCP endpoint URL */
+  mcpEndpoint?: string;
+  /** API version */
+  apiVersion?: string;
+  /** Environment (development, staging, production) */
+  environment?: "development" | "staging" | "production";
+}
+
+/**
+ * Default Context7 configuration
+ */
+export const DEFAULT_CONTEXT7_CONFIG: Context7Config = {
+  apiKey: "",
+  mcpEndpoint: "https://mcp.context7.com/mcp",
+  apiVersion: "v1",
+  environment: "production",
+};
+
+// ============================================================================
+// HTTP TRANSPORT ERROR CATEGORIES
+// ============================================================================
+
+/**
+ * HTTP transport specific error categories
+ */
+export enum HTTPTransportErrorCategory {
+  /** HTTP connection errors */
+  HTTP_CONNECTION = "http_connection",
+  /** HTTP request errors */
+  HTTP_REQUEST = "http_request",
+  /** HTTP response errors */
+  HTTP_RESPONSE = "http_response",
+  /** HTTP authentication errors */
+  HTTP_AUTHENTICATION = "http_authentication",
+  /** HTTP rate limiting errors */
+  HTTP_RATE_LIMIT = "http_rate_limit",
+  /** HTTP timeout errors */
+  HTTP_TIMEOUT = "http_timeout",
+}
+
+// ============================================================================
+// VALIDATION FUNCTIONS
+// ============================================================================
+
+/**
+ * Validate HTTP transport configuration
+ */
+export function validateHTTPTransportConfig(config: MCPHTTPTransportConfig): {
+  valid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+
+  // Validate Context7 configuration if provided
+  if (config.context7) {
+    if (!config.context7.apiKey || typeof config.context7.apiKey !== "string") {
+      errors.push("Context7 API key is required and must be a string");
+    }
+
+    if (
+      config.context7.mcpEndpoint &&
+      typeof config.context7.mcpEndpoint !== "string"
+    ) {
+      errors.push("Context7 MCP endpoint must be a string");
+    }
+
+    if (
+      config.context7.apiVersion &&
+      typeof config.context7.apiVersion !== "string"
+    ) {
+      errors.push("Context7 API version must be a string");
+    }
+  }
+
+  // Validate request timeout
+  if (config.requestTimeout !== undefined) {
+    if (
+      typeof config.requestTimeout !== "number" ||
+      config.requestTimeout <= 0
+    ) {
+      errors.push("Request timeout must be a positive number");
+    }
+  }
+
+  // Validate retry configuration
+  if (config.maxRetries !== undefined) {
+    if (typeof config.maxRetries !== "number" || config.maxRetries < 0) {
+      errors.push("Max retries must be a non-negative number");
+    }
+  }
+
+  if (config.retryBaseDelay !== undefined) {
+    if (
+      typeof config.retryBaseDelay !== "number" ||
+      config.retryBaseDelay <= 0
+    ) {
+      errors.push("Retry base delay must be a positive number");
+    }
+  }
+
+  if (config.retryMaxDelay !== undefined) {
+    if (typeof config.retryMaxDelay !== "number" || config.retryMaxDelay <= 0) {
+      errors.push("Retry max delay must be a positive number");
+    }
+  }
+
+  // Validate rate limiting configuration
+  if (config.rateLimit) {
+    if (
+      typeof config.rateLimit.maxRequests !== "number" ||
+      config.rateLimit.maxRequests <= 0
+    ) {
+      errors.push("Rate limit max requests must be a positive number");
+    }
+
+    if (
+      typeof config.rateLimit.windowMs !== "number" ||
+      config.rateLimit.windowMs <= 0
+    ) {
+      errors.push("Rate limit window duration must be a positive number");
+    }
+
+    if (
+      typeof config.rateLimit.retryAfter !== "number" ||
+      config.rateLimit.retryAfter < 0
+    ) {
+      errors.push("Rate limit retry after must be a non-negative number");
+    }
+  }
+
+  // Validate cache configuration
+  if (config.cacheTTL !== undefined) {
+    if (typeof config.cacheTTL !== "number" || config.cacheTTL < 0) {
+      errors.push("Cache TTL must be a non-negative number");
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
+ * Create HTTP transport configuration from MCP client configuration
+ */
+export function createHTTPTransportConfig(
+  clientConfig: MCPHTTPClientConfig,
+): MCPHTTPTransportConfig {
+  const httpConfig: MCPHTTPTransportConfig = {
+    ...clientConfig.httpTransport,
+    baseUrl: clientConfig.serverUrl,
+    requestTimeout: clientConfig.connectionTimeout,
+  };
+
+  // Set Context7 defaults if not provided
+  if (!httpConfig.context7 && clientConfig.apiKey) {
+    httpConfig.context7 = {
+      apiKey: clientConfig.apiKey,
+      mcpEndpoint: DEFAULT_CONTEXT7_CONFIG.mcpEndpoint,
+      apiVersion: DEFAULT_CONTEXT7_CONFIG.apiVersion,
+    };
+  }
+
+  return httpConfig;
+}
+
+/**
+ * Merge Context7 configuration with defaults
+ */
+export function mergeContext7Config(
+  config: Partial<Context7Config>,
+): Context7Config {
+  return {
+    ...DEFAULT_CONTEXT7_CONFIG,
+    ...config,
+  };
 }
 
 // ============================================================================

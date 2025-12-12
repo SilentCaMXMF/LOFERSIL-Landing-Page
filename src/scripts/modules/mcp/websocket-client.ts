@@ -1045,9 +1045,9 @@ export class MCPWebSocketClient {
 
     if (wasConnected) {
       this.errorHandler.incrementCounter("websocket_disconnections", {
-        code: event.code,
+        code: String(event.code),
         reason: event.reason,
-        wasClean: event.wasClean,
+        wasClean: String(event.wasClean),
       });
     }
 
