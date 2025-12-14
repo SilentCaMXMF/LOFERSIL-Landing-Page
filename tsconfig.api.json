@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "declaration": false,
+    "sourceMap": true,
+    "removeComments": false,
+    "isolatedModules": true,
+    "incremental": true,
+    "resolveJsonModule": true
+  },
+  "include": ["api/**/*"],
+  "exclude": ["**/*.test.ts", "node_modules", "dist"]
+}

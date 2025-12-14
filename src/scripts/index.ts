@@ -53,7 +53,7 @@ class LOFERSILLandingPage {
     this.initializeApp();
   }
   /**
-   * Initialize the application
+   * Initialize application
    */
   async initializeApp() {
     try {
@@ -136,7 +136,7 @@ class LOFERSILLandingPage {
   setupLanguageToggle() {
     const langToggle = document.getElementById(
       "lang-toggle",
-    ) as HTMLButtonElement;
+    ) as unknown as HTMLButtonElement;
     if (langToggle) {
       // Set initial text
       const currentLang = this.translationManager.getCurrentLanguage();
@@ -147,7 +147,7 @@ class LOFERSILLandingPage {
         const currentLang = this.translationManager.getCurrentLanguage();
         const newLang = currentLang === "pt" ? "en" : "pt";
         this.translationManager.switchLanguage(newLang);
-        // The applyTranslations in switchLanguage will update the button
+        // The applyTranslations in switchLanguage will update button
       });
     }
   }
@@ -274,7 +274,7 @@ class LOFERSILLandingPage {
   }
 }
 
-// Initialize the application when DOM is ready
+// Initialize application when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     const app = new LOFERSILLandingPage();

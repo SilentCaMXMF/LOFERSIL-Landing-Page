@@ -164,7 +164,9 @@ export class SEOManager {
   private updateMetaTag(name: string, content: string): void {
     let meta =
       document.querySelector(`meta[name="${name}"]`) ||
-      (document.querySelector(`meta[property="${name}"]`) as HTMLMetaElement);
+      (document.querySelector(
+        `meta[property="${name}"]`,
+      ) as unknown as HTMLMetaElement);
 
     if (!meta) {
       meta = document.createElement("meta");
@@ -177,7 +179,7 @@ export class SEOManager {
       } else {
         meta.setAttribute("name", name);
       }
-      document.head.appendChild(meta);
+      document.head.appendChild(meta as unknown as Node);
     }
 
     meta.setAttribute("content", content);
@@ -189,12 +191,12 @@ export class SEOManager {
   private updateCanonicalLink(url?: string): void {
     let canonical = document.querySelector(
       'link[rel="canonical"]',
-    ) as HTMLLinkElement;
+    ) as unknown as HTMLLinkElement;
 
     if (!canonical) {
-      canonical = document.createElement("link");
+      canonical = document.createElement("link") as unknown as HTMLLinkElement;
       canonical.rel = "canonical";
-      document.head.appendChild(canonical);
+      document.head.appendChild(canonical as unknown as Node);
     }
 
     canonical.href = url || window.location.href;
@@ -250,11 +252,13 @@ export class SEOManager {
       existingScript.remove();
     }
 
-    const script = document.createElement("script");
+    const script = document.createElement(
+      "script",
+    ) as unknown as HTMLScriptElement;
     script.id = `jsonld-${id}`;
     script.type = "application/ld+json";
     script.textContent = JSON.stringify(data);
-    document.head.appendChild(script);
+    document.head.appendChild(script as unknown as Node);
   }
 
   /**

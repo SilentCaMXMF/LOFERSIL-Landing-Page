@@ -97,12 +97,12 @@ export class NavigationManager {
     const focusableElements = this.navMenu?.querySelectorAll(
       'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
-    if (!focusableElements) return;
+    if (!focusableElements || focusableElements.length === 0) return;
 
-    const firstElement = focusableElements[0] as HTMLElement;
+    const firstElement = focusableElements[0] as unknown as HTMLElement;
     const lastElement = focusableElements[
       focusableElements.length - 1
-    ] as HTMLElement;
+    ] as unknown as HTMLElement;
 
     if (e.shiftKey) {
       // Shift + Tab
@@ -151,7 +151,7 @@ export class NavigationManager {
    * Handle clicks outside the dropdown menu
    */
   private handleOutsideClick(e: Event): void {
-    const target = e.target as Element;
+    const target = e.target as unknown as Element;
     if (
       this.navMenu &&
       !this.navMenu.contains(target) &&

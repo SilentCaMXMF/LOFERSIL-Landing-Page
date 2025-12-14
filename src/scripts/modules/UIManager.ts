@@ -54,7 +54,7 @@ export class UIManager {
    */
   private setupDOMElements(): void {
     try {
-      this.navbar = document.getElementById("navbar") as HTMLElement;
+      this.navbar = document.getElementById("navbar") as unknown as HTMLElement;
       // Additional critical DOM elements can be added here
     } catch (error) {
       this.errorHandler.handleError(error, "Failed to setup DOM elements", {
@@ -84,7 +84,9 @@ export class UIManager {
       // Parallax effect for hero section
       const hero = document.getElementById("hero");
       if (hero) {
-        const heroImage = hero.querySelector(".hero-img") as HTMLElement;
+        const heroImage = hero.querySelector(
+          ".hero-img",
+        ) as unknown as HTMLElement;
         if (heroImage) {
           const parallaxOffset = scrollY * 0.5;
           heroImage.style.transform = `translateY(${parallaxOffset}px)`;
@@ -110,7 +112,7 @@ export class UIManager {
   private setupContactForm(): void {
     const contactForm = document.querySelector(
       this.config.contactFormSelector || 'form[action="/api/contact"]',
-    ) as HTMLFormElement;
+    ) as unknown as HTMLFormElement;
     if (contactForm) {
       contactForm.addEventListener("submit", (e) =>
         this.handleContactFormSubmit(e),
@@ -262,7 +264,7 @@ export class UIManager {
       </style>
     `;
 
-    element.appendChild(loadingOverlay);
+    element.appendChild(loadingOverlay as unknown as Node);
   }
 
   /**
@@ -290,7 +292,7 @@ export class UIManager {
    * Smooth scroll to element
    */
   public scrollToElement(selector: string, offset: number = 0): void {
-    const element = document.querySelector(selector) as HTMLElement;
+    const element = document.querySelector(selector) as unknown as HTMLElement;
     if (element) {
       const elementPosition =
         element.getBoundingClientRect().top + window.pageYOffset;
@@ -393,14 +395,16 @@ export class UIManager {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType === Node.ELEMENT_NODE) {
-            const element = node as Element;
+            const element = node as unknown as Element;
             // Check if it's an image with data-src
             if (element.tagName === "IMG" && element.hasAttribute("data-src")) {
-              observer.observe(element as HTMLImageElement);
+              observer.observe(element as unknown as HTMLImageElement);
             }
             // Also check child images
             const images = element.querySelectorAll("img[data-src]");
-            images.forEach((img) => observer.observe(img));
+            images.forEach((img) =>
+              observer.observe(img as unknown as HTMLImageElement),
+            );
           }
         });
       });

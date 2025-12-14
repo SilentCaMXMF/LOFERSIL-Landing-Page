@@ -53,6 +53,9 @@ Thumbs.db
 
 # OpenCode development files
 .opencode/
+# Node.js 22.x specific exclusions
+.node_repl_history
+.nyc_output
 
 # Development directories (keep essential ones)
 docs/
@@ -87,3 +90,10 @@ tools/build/build.js
 .vercelignore
 .gitignore
 README.md
+
+# Node.js 22.x build optimizations
+tsconfig.json
+tsconfig.prod.json
+postcss.config.js
+.vite/
+.vitest/

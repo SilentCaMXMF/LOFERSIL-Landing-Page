@@ -1,0 +1,11 @@
+{
+  "runtime": "nodejs22.x",
+  "handler": "contact.js",
+  "maxDuration": 10,
+  "memory": 512,
+  "launcherType": "Nodejs",
+  "shouldAddHelpers": true,
+  "shouldAddSourcemapSupport": false,
+  "environment": [],
+  "supportsResponseStreaming": false
+}

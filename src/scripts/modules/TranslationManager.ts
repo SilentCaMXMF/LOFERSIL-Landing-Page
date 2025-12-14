@@ -236,11 +236,11 @@ export class TranslationManager {
    * Add a single hreflang tag
    */
   private addHreflangTag(hreflang: string, url: string): void {
-    const link = document.createElement("link") as HTMLLinkElement;
+    const link = document.createElement("link") as unknown as HTMLLinkElement;
     link.rel = "alternate";
     link.hreflang = hreflang;
     link.href = url;
-    document.head.appendChild(link);
+    document.head.appendChild(link as unknown as Node);
   }
 
   /**
@@ -257,12 +257,12 @@ export class TranslationManager {
   updateCanonicalLink(): void {
     let canonical = document.querySelector(
       'link[rel="canonical"]',
-    ) as HTMLLinkElement;
+    ) as unknown as HTMLLinkElement;
     const baseUrl = window.location.origin;
     if (!canonical) {
-      canonical = document.createElement("link") as HTMLLinkElement;
+      canonical = document.createElement("link") as unknown as HTMLLinkElement;
       canonical.rel = "canonical";
-      document.head.appendChild(canonical);
+      document.head.appendChild(canonical as unknown as Node);
     }
     // Set canonical URL for Portuguese
     canonical.href = `${baseUrl}${window.location.pathname}`;

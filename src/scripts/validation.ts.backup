@@ -4,6 +4,12 @@
  */
 
 import { TranslationManager } from "./modules/TranslationManager.js";
+import {
+  asHTMLElement,
+  asHTMLFormElement,
+  asHTMLInputElement,
+  asNode,
+} from "./utils/dom-types.js";
 
 const DOMPurify = (
   globalThis as unknown as {
@@ -329,9 +335,7 @@ export class FormErrorDisplay {
   private errorContainer: HTMLElement | null = null;
 
   constructor(formSelector: string) {
-    this.formElement = document.querySelector(
-      formSelector,
-    ) as unknown as HTMLElement;
+    this.formElement = asHTMLElement(document.querySelector(formSelector));
     if (this.formElement) {
       this.createErrorContainer();
     }
@@ -420,9 +424,9 @@ export class FormErrorDisplay {
    * @param errorMessage - Error message to display
    */
   public displayFieldError(fieldName: string, errorMessage: string): void {
-    const fieldElement = this.formElement?.querySelector(
-      `[name="${fieldName}"]`,
-    ) as unknown as HTMLElement;
+    const fieldElement = asHTMLElement(
+      this.formElement?.querySelector(`[name="${fieldName}"]`),
+    );
     if (!fieldElement) return;
 
     // Create error element
@@ -441,10 +445,10 @@ export class FormErrorDisplay {
     fieldElement.classList.add("error");
 
     // Insert error after the field
-    const parentNode = fieldElement.parentNode;
-    if (parentNode) {
-      parentNode.insertBefore(errorElement, fieldElement.nextSibling);
-    }
+    fieldElement.parentNode?.insertBefore(
+      errorElement as unknown as Node,
+      fieldElement.nextSibling as unknown as Node,
+    );
   }
 
   /**
@@ -507,9 +511,7 @@ export class ContactFormValidator {
 
   constructor(formSelector: string, translationManager?: TranslationManager) {
     this.errorDisplay = new FormErrorDisplay(formSelector);
-    this.formElement = document.querySelector(
-      formSelector,
-    ) as unknown as HTMLFormElement;
+    this.formElement = asHTMLFormElement(document.querySelector(formSelector));
     this.translationManager = translationManager;
     this.setupFormValidation();
   }
@@ -523,9 +525,9 @@ export class ContactFormValidator {
     const fields = ["name", "email", "phone", "message"];
 
     fields.forEach((fieldName) => {
-      const field = this.formElement?.querySelector(
-        `[name="${fieldName}"]`,
-      ) as unknown as HTMLInputElement;
+      const field = asHTMLInputElement(
+        this.formElement?.querySelector(`[name="${fieldName}"]`),
+      );
       if (field) {
         field.addEventListener("blur", () => this.validateField(fieldName));
         field.addEventListener("input", () => this.clearFieldError(fieldName));
@@ -538,9 +540,9 @@ export class ContactFormValidator {
    * @param fieldName - Name of the field to validate
    */
   private validateField(fieldName: string): void {
-    const field = this.formElement?.querySelector(
-      `[name="${fieldName}"]`,
-    ) as unknown as HTMLInputElement;
+    const field = asHTMLInputElement(
+      this.formElement?.querySelector(`[name="${fieldName}"]`),
+    );
     if (!field) return;
 
     let result: ValidationResult;
@@ -572,16 +574,18 @@ export class ContactFormValidator {
    * @param fieldName - Name of the field
    */
   private clearFieldError(fieldName: string): void {
-    const field = this.formElement?.querySelector(
+    const field = asHTMLElement(this.formElement?.querySelector(
       `[name="${fieldName}"]`,
-    ) as unknown as HTMLElement;
+    ));
     if (field) {
       field.classList.remove("error");
-      const parentNode = field.parentNode;
-      const errorElement = parentNode?.querySelector(".field-error");
+      const parent = field.parentNode as unknown as HTMLElement;
+      const errorElement = parent?.querySelector(".field-error");
       if (errorElement) {
         errorElement.remove();
       }
+    }
+  }
     }
   }
 
@@ -600,25 +604,16 @@ export class ContactFormValidator {
 
     const formData: ContactRequest = {
       name: DOMPurify.sanitize(
-        (
-          this.formElement.querySelector(
-            '[name="name"]',
-          ) as unknown as HTMLInputElement
-        )?.value || "",
+        (asHTMLInputElement(this.formElement.querySelector('[name="name"]'))
+          ?.value || "",
       ),
       email: DOMPurify.sanitize(
-        (
-          this.formElement.querySelector(
-            '[name="email"]',
-          ) as unknown as HTMLInputElement
-        )?.value || "",
+        (asHTMLInputElement(this.formElement.querySelector('[name="email"]'))
+          ?.value || "",
       ),
       phone: DOMPurify.sanitize(
-        (
-          this.formElement.querySelector(
-            '[name="phone"]',
-          ) as unknown as HTMLInputElement
-        )?.value || "",
+        (asHTMLInputElement(this.formElement.querySelector('[name="phone"]'))
+          ?.value || "",
       ),
       message: DOMPurify.sanitize(
         (
@@ -651,30 +646,24 @@ export class ContactFormValidator {
     return {
       name: DOMPurify.sanitize(
         (
-          this.formElement.querySelector(
-            '[name="name"]',
-          ) as unknown as HTMLInputElement
+          this.formElement.querySelector('[name="name"]') as HTMLInputElement
         )?.value.trim() || "",
       ),
       email: DOMPurify.sanitize(
         (
-          this.formElement.querySelector(
-            '[name="email"]',
-          ) as unknown as HTMLInputElement
+          this.formElement.querySelector('[name="email"]') as HTMLInputElement
         )?.value.trim() || "",
       ),
       phone: DOMPurify.sanitize(
         (
-          this.formElement.querySelector(
-            '[name="phone"]',
-          ) as unknown as HTMLInputElement
+          this.formElement.querySelector('[name="phone"]') as HTMLInputElement
         )?.value.trim() || "",
       ),
       message: DOMPurify.sanitize(
         (
           this.formElement.querySelector(
             '[name="message"]',
-          ) as unknown as HTMLTextAreaElement
+          ) as HTMLTextAreaElement
         )?.value.trim() || "",
       ),
     };
