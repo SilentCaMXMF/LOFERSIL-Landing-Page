@@ -68,6 +68,9 @@ temp/
 .vercel
 .env*.local
 
+# OpenCode agents and configurations
+.opencode/
+
 # Kanban implementation
 data/kanban_payload.json*
 docs/kanban-*.md
@@ -77,3 +80,49 @@ tools/tests/test-kanban-sync.js
 tasks/subtasks/live-sync-local-tasks-kanban/
 docs/tasks/**/kanban*
 docs/tasks/**/update-kanban-payload/
+
+# Vite development server and cache
+.vite/
+dist-ssr/
+*.local
+
+# Test results and outputs
+test-results/
+test-results.json
+*.test-results.*
+
+# Coverage reports and badges
+coverage-badge.svg
+coverage-summary.json
+
+# PWA generated files
+icons/generated/
+pwa-icons/
+sw.js.map
+workbox-*.js
+workbox-*.js.map
+
+# Build artifacts and optimization
+*.min.js
+*.min.css
+*.bundle.js
+*.bundle.css
+*.generated.*
+*.cache.*
+
+# Lighthouse reports
+lighthouse-report.html
+*.lighthouse.*
+
+# Additional security files
+*.pem
+*.key
+*.crt
+*.p12
+.env.*.key
+.env.*.secret
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3

@@ -3,98 +3,102 @@
  * Provides comprehensive PWA functionality with advanced caching
  */
 
-const CACHE_NAME = 'lofersil-v1.0.2';
-const STATIC_CACHE = 'lofersil-static-v1.0.2';
-const DYNAMIC_CACHE = 'lofersil-dynamic-v1.0.2';
-const API_CACHE = 'lofersil-api-v1.0.2';
+const CACHE_NAME = "lofersil-v1.0.2";
+const STATIC_CACHE = "lofersil-static-v1.0.2";
+const DYNAMIC_CACHE = "lofersil-dynamic-v1.0.2";
+const API_CACHE = "lofersil-api-v1.0.2";
 
 // Static assets to cache immediately
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/main.css',
-  '/scripts/index.js',
-  '/scripts/modules/ErrorHandler.js',
-  '/scripts/modules/Router.js',
-  '/scripts/modules/UIManager.js',
-  '/scripts/modules/ContactFormManager.js',
-  '/scripts/modules/NavigationManager.js',
-  '/scripts/modules/SEOManager.js',
-  '/images/favicon-48x48-lettuce.png',
-  '/images/logo.jpg',
-  '/locales/pt.json',
-  '/offline.html',
+  "/",
+  "/index.html",
+  "/main.css",
+  "/scripts/index.js",
+  "/scripts/modules/ErrorHandler.js",
+  "/scripts/modules/Router.js",
+  "/scripts/modules/UIManager.js",
+  "/scripts/modules/ContactFormManager.js",
+  "/scripts/modules/NavigationManager.js",
+  "/scripts/modules/SEOManager.js",
+  "/images/favicon-48x48-lettuce.png",
+  "/images/logo.jpg",
+  "/locales/pt.json",
+  "/offline.html",
 ];
 
 // API endpoints to cache
-const API_ENDPOINTS = ['/api/contact', '/api/products'];
+const API_ENDPOINTS = ["/api/contact", "/api/products"];
 
 // Install event - cache static assets
-self.addEventListener('install', event => {
-  console.log('[SW] Installing service worker');
+self.addEventListener("install", (event) => {
+  console.log("[SW] Installing service worker");
 
   event.waitUntil(
     Promise.all([
-      caches.open(STATIC_CACHE).then(cache => {
-        console.log('[SW] Caching static assets');
+      caches.open(STATIC_CACHE).then((cache) => {
+        console.log("[SW] Caching static assets");
         return cache.addAll(STATIC_ASSETS);
       }),
       // Skip waiting to activate immediately
       self.skipWaiting(),
-    ])
+    ]),
   );
 });
 
 // Activate event - clean up old caches and claim clients
-self.addEventListener('activate', event => {
-  console.log('[SW] Activating service worker');
+self.addEventListener("activate", (event) => {
+  console.log("[SW] Activating service worker");
 
   event.waitUntil(
     Promise.all([
       // Clean up old caches
-      caches.keys().then(cacheNames => {
+      caches.keys().then((cacheNames) => {
         return Promise.all(
-          cacheNames.map(cacheName => {
+          cacheNames.map((cacheName) => {
             if (
               cacheName !== STATIC_CACHE &&
               cacheName !== DYNAMIC_CACHE &&
               cacheName !== API_CACHE
             ) {
-              console.log('[SW] Deleting old cache:', cacheName);
+              console.log("[SW] Deleting old cache:", cacheName);
               return caches.delete(cacheName);
             }
-          })
+          }),
         );
       }),
       // Take control of all clients immediately
       self.clients.claim(),
-    ])
+    ]),
   );
 });
 
 // Fetch event - implement caching strategies
-self.addEventListener('fetch', event => {
+self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
   // Skip non-GET requests
-  if (request.method !== 'GET') return;
+  if (request.method !== "GET") return;
 
   // Skip chrome-extension requests (causes cache errors)
-  if (url.protocol === 'chrome-extension:') return;
+  if (url.protocol === "chrome-extension:") return;
 
   // Skip GitHub Codespaces auth requests
-  if (url.hostname.includes('github.dev') && url.pathname.includes('/pf-signin')) return;
+  if (
+    url.hostname.includes("github.dev") &&
+    url.pathname.includes("/pf-signin")
+  )
+    return;
 
   // Handle different request types
-  if (url.pathname.startsWith('/api/')) {
+  if (url.pathname.startsWith("/api/")) {
     event.respondWith(handleApiRequest(request));
   } else if (
     STATIC_ASSETS.includes(url.pathname) ||
-    request.destination === 'style' ||
-    request.destination === 'script' ||
-    request.destination === 'image' ||
-    request.destination === 'font'
+    request.destination === "style" ||
+    request.destination === "script" ||
+    request.destination === "image" ||
+    request.destination === "font"
   ) {
     event.respondWith(handleStaticRequest(request));
   } else {
@@ -116,7 +120,7 @@ async function handleApiRequest(request) {
       return networkResponse;
     }
   } catch (error) {
-    console.log('[SW] Network failed for API request, trying cache');
+    console.log("[SW] Network failed for API request, trying cache");
   }
 
   // Fallback to cache
@@ -128,14 +132,14 @@ async function handleApiRequest(request) {
   // Return offline response for API calls
   return new Response(
     JSON.stringify({
-      error: 'Offline',
-      message: 'Conteúdo não disponível offline',
+      error: "Offline",
+      message: "Conteúdo não disponível offline",
     }),
     {
       status: 503,
-      statusText: 'Service Unavailable',
-      headers: { 'Content-Type': 'application/json' },
-    }
+      statusText: "Service Unavailable",
+      headers: { "Content-Type": "application/json" },
+    },
   );
 }
 
@@ -158,10 +162,10 @@ async function handleStaticRequest(request) {
     }
     return networkResponse;
   } catch (error) {
-    console.log('[SW] Failed to fetch static asset:', request.url);
+    console.log("[SW] Failed to fetch static asset:", request.url);
     // Return offline fallback for images
-    if (request.destination === 'image') {
-      return caches.match('/images/logo.jpg');
+    if (request.destination === "image") {
+      return caches.match("/images/logo.jpg");
     }
   }
 }
@@ -177,7 +181,7 @@ async function handlePageRequest(request) {
       return networkResponse;
     }
   } catch (error) {
-    console.log('[SW] Network failed for page request');
+    console.log("[SW] Network failed for page request");
   }
 
   // Fallback to cache
@@ -187,57 +191,150 @@ async function handlePageRequest(request) {
   }
 
   // Return offline page
-  return caches.match('/offline.html');
+  return caches.match("/offline.html");
 }
 
 // Background sync for contact forms
-self.addEventListener('sync', event => {
-  if (event.tag === 'contact-form-sync') {
+self.addEventListener("sync", (event) => {
+  if (event.tag === "contact-form-sync") {
     event.waitUntil(syncContactForms());
   }
 });
 
 async function syncContactForms() {
   try {
-    const cache = await caches.open('contact-forms');
-    const requests = await cache.keys();
+    // Get stored forms from IndexedDB
+    const forms = await getStoredFormsFromIndexedDB();
+    let successCount = 0;
+    let failureCount = 0;
 
-    for (const request of requests) {
+    for (const form of forms) {
       try {
-        await fetch(request);
-        await cache.delete(request);
+        const success = await submitFormToServer(form);
+        if (success) {
+          await removeStoredForm(form.id);
+          successCount++;
+        } else {
+          failureCount++;
+        }
       } catch (error) {
-        console.error('[SW] Failed to sync contact form:', error);
+        console.error("[SW] Failed to sync contact form:", error);
+        failureCount++;
       }
     }
+
+    // Notify clients about sync completion
+    const clients = await self.clients.matchAll();
+    clients.forEach((client) => {
+      client.postMessage({
+        type: "BACKGROUND_SYNC_COMPLETE",
+        successCount,
+        failureCount,
+        timestamp: Date.now(),
+      });
+    });
+
+    console.log(
+      `[SW] Background sync completed: ${successCount} success, ${failureCount} failures`,
+    );
   } catch (error) {
-    console.error('[SW] Background sync failed:', error);
+    console.error("[SW] Background sync failed:", error);
+  }
+}
+
+async function getStoredFormsFromIndexedDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("BackgroundSyncDB", 1);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction(["forms"], "readonly");
+      const store = transaction.objectStore("forms");
+      const getRequest = store.getAll();
+
+      getRequest.onerror = () => reject(getRequest.error);
+      getRequest.onsuccess = () => resolve(getRequest.result || []);
+    };
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains("forms")) {
+        db.createObjectStore("forms", { keyPath: "id" });
+      }
+    };
+  });
+}
+
+async function removeStoredForm(formId) {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("BackgroundSyncDB", 1);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction(["forms"], "readwrite");
+      const store = transaction.objectStore("forms");
+      const deleteRequest = store.delete(formId);
+
+      deleteRequest.onerror = () => reject(deleteRequest.error);
+      deleteRequest.onsuccess = () => resolve();
+    };
+  });
+}
+
+async function submitFormToServer(form) {
+  try {
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Background-Sync": "true",
+        "X-Form-ID": form.id,
+      },
+      body: JSON.stringify({
+        name: form.name,
+        email: form.email,
+        message: form.message,
+        phone: form.phone,
+      }),
+    });
+
+    if (response.ok) {
+      console.log(`[SW] Form successfully submitted: ${form.id}`);
+      return true;
+    } else {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error(`[SW] Failed to submit form ${form.id}:`, error);
+    return false;
   }
 }
 
 // Push notification handling
-self.addEventListener('push', event => {
+self.addEventListener("push", (event) => {
   if (!event.data) return;
 
   const data = event.data.json();
 
   const options = {
     body: data.body,
-    icon: '/images/favicon-48x48-lettuce.png',
-    badge: '/images/favicon-32x32-lettuce.png',
+    icon: "/images/favicon-48x48-lettuce.png",
+    badge: "/images/favicon-32x32-lettuce.png",
     vibrate: [100, 50, 100],
     data: {
-      url: data.url || '/',
+      url: data.url || "/",
     },
     actions: [
       {
-        action: 'view',
-        title: 'Ver',
-        icon: '/images/favicon-16x16-lettuce.png',
+        action: "view",
+        title: "Ver",
+        icon: "/images/favicon-16x16-lettuce.png",
       },
       {
-        action: 'dismiss',
-        title: 'Fechar',
+        action: "dismiss",
+        title: "Fechar",
       },
     ],
   };
@@ -246,10 +343,10 @@ self.addEventListener('push', event => {
 });
 
 // Handle notification clicks
-self.addEventListener('notificationclick', event => {
+self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  if (event.action === 'dismiss') return;
+  if (event.action === "dismiss") return;
 
   const url = event.notification.data.url;
 
@@ -257,8 +354,8 @@ self.addEventListener('notificationclick', event => {
 });
 
 // Periodic background sync for content updates
-self.addEventListener('periodicsync', event => {
-  if (event.tag === 'content-sync') {
+self.addEventListener("periodicsync", (event) => {
+  if (event.tag === "content-sync") {
     event.waitUntil(updateCachedContent());
   }
 });
@@ -267,15 +364,15 @@ async function updateCachedContent() {
   try {
     // Update product catalog, promotions, etc.
     const responses = await Promise.all([
-      fetch('/api/products?cache-bust=' + Date.now()),
-      fetch('/api/categories?cache-bust=' + Date.now()),
+      fetch("/api/products?cache-bust=" + Date.now()),
+      fetch("/api/categories?cache-bust=" + Date.now()),
     ]);
 
     const cache = await caches.open(DYNAMIC_CACHE);
-    await cache.addAll(['/api/products', '/api/categories']);
+    await cache.addAll(["/api/products", "/api/categories"]);
 
-    console.log('[SW] Content updated in background');
+    console.log("[SW] Content updated in background");
   } catch (error) {
-    console.error('[SW] Background content sync failed:', error);
+    console.error("[SW] Background content sync failed:", error);
   }
 }
