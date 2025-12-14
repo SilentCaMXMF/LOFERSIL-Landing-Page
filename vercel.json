@@ -4,7 +4,6 @@
   "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "nodeVersion": "22.x",
   "github": {
     "silent": true
   },
