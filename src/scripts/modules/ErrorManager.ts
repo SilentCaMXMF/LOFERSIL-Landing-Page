@@ -19,9 +19,55 @@
  * @version 1.0.0
  */
 
+// DOM type definitions for browser environment
+declare global {
+  interface Window {
+    location: {
+      hostname: string;
+      href: string;
+    };
+    addEventListener: (
+      type: string,
+      listener: EventListenerOrEventListenerObject,
+      options?: boolean | AddEventListenerOptions,
+    ) => void;
+    document: Document;
+  }
+
+  interface Document {
+    createElement: (tagName: string) => HTMLElement;
+    body: HTMLElement;
+  }
+
+  interface HTMLElement {
+    className: string;
+    textContent: string;
+    setAttribute: (name: string, value: string) => void;
+    appendChild: (node: Node) => void;
+    removeChild: (node: Node) => void;
+    parentNode: Node | null;
+  }
+
+  interface HTMLImageElement extends HTMLElement {
+    src: string;
+  }
+
+  interface HTMLScriptElement extends HTMLElement {
+    src: string;
+  }
+
+  interface HTMLLinkElement extends HTMLElement {
+    href: string;
+  }
+
+  function setTimeout(callback: () => void, delay: number): number;
+}
+
 const IS_DEVELOPMENT =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1";
+  typeof window !== "undefined" &&
+  window.location &&
+  (window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1");
 
 // ============================================================================
 // TYPE DEFINITIONS
