@@ -1,0 +1,124 @@
+{
+  "timestamp": "2025-11-25T01:30:17.981Z",
+  "baseUrl": "https://lofersil.vercel.app",
+  "status": {
+    "isHealthy": true,
+    "lastCheck": "2025-11-25T01:30:17.979Z",
+    "consecutiveFailures": 1,
+    "totalChecks": 1,
+    "totalFailures": 1,
+    "uptime": 0,
+    "averageResponseTime": 58.75,
+    "responseTimes": [
+      169,
+      66,
+      34,
+      42,
+      37,
+      40,
+      39,
+      43
+    ]
+  },
+  "recentAlerts": [],
+  "recentChecks": [
+    {
+      "timestamp": "2025-11-25T01:30:17.979Z",
+      "results": [
+        {
+          "endpoint": "/",
+          "url": "https://lofersil.vercel.app/",
+          "timestamp": "2025-11-25T01:30:13.655Z",
+          "statusCode": 404,
+          "responseTime": 169,
+          "success": false,
+          "error": null,
+          "name": "Homepage"
+        },
+        {
+          "endpoint": "/privacy.html",
+          "url": "https://lofersil.vercel.app/privacy.html",
+          "timestamp": "2025-11-25T01:30:14.225Z",
+          "statusCode": 404,
+          "responseTime": 66,
+          "success": false,
+          "error": null,
+          "name": "Privacy Page"
+        },
+        {
+          "endpoint": "/terms.html",
+          "url": "https://lofersil.vercel.app/terms.html",
+          "timestamp": "2025-11-25T01:30:14.761Z",
+          "statusCode": 404,
+          "responseTime": 34,
+          "success": false,
+          "error": null,
+          "name": "Terms Page"
+        },
+        {
+          "endpoint": "/robots.txt",
+          "url": "https://lofersil.vercel.app/robots.txt",
+          "timestamp": "2025-11-25T01:30:15.304Z",
+          "statusCode": 404,
+          "responseTime": 42,
+          "success": false,
+          "error": null,
+          "name": "Robots.txt"
+        },
+        {
+          "endpoint": "/sitemap.xml",
+          "url": "https://lofersil.vercel.app/sitemap.xml",
+          "timestamp": "2025-11-25T01:30:15.845Z",
+          "statusCode": 404,
+          "responseTime": 37,
+          "success": false,
+          "error": null,
+          "name": "Sitemap"
+        },
+        {
+          "endpoint": "/site.webmanifest",
+          "url": "https://lofersil.vercel.app/site.webmanifest",
+          "timestamp": "2025-11-25T01:30:16.390Z",
+          "statusCode": 404,
+          "responseTime": 40,
+          "success": false,
+          "error": null,
+          "name": "PWA Manifest"
+        },
+        {
+          "endpoint": "/main.css",
+          "url": "https://lofersil.vercel.app/main.css",
+          "timestamp": "2025-11-25T01:30:16.930Z",
+          "statusCode": 404,
+          "responseTime": 39,
+          "success": false,
+          "error": null,
+          "name": "Main CSS"
+        },
+        {
+          "endpoint": "/dompurify.min.js",
+          "url": "https://lofersil.vercel.app/dompurify.min.js",
+          "timestamp": "2025-11-25T01:30:17.476Z",
+          "statusCode": 404,
+          "responseTime": 43,
+          "success": false,
+          "error": null,
+          "name": "Security Library"
+        }
+      ],
+      "summary": {
+        "total": 8,
+        "successful": 0,
+        "failed": 8,
+        "uptime": 0
+      }
+    }
+  ],
+  "summary": {
+    "uptime": "0.00%",
+    "averageResponseTime": "59ms",
+    "totalChecks": 1,
+    "totalFailures": 1,
+    "activeAlerts": 0
+  }
+}

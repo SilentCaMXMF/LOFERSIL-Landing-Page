@@ -20,8 +20,10 @@
  */
 
 const IS_DEVELOPMENT =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1";
+  typeof window !== "undefined" &&
+  window.location &&
+  (window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1");
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -337,11 +339,13 @@ class ErrorHandlerSubsystem {
     // Auto-remove after specified duration
     setTimeout(() => {
       if (errorDiv.parentNode) {
-        errorDiv.parentNode.removeChild(errorDiv);
+        (errorDiv.parentNode as ParentNode).removeChild(
+          errorDiv as unknown as Node,
+        );
       }
     }, duration);
 
-    document.body.appendChild(errorDiv);
+    document.body.appendChild(errorDiv as unknown as Node);
   }
 
   /**
@@ -357,11 +361,13 @@ class ErrorHandlerSubsystem {
     // Auto-remove after specified duration
     setTimeout(() => {
       if (successDiv.parentNode) {
-        successDiv.parentNode.removeChild(successDiv);
+        (successDiv.parentNode as ParentNode).removeChild(
+          successDiv as unknown as Node,
+        );
       }
     }, duration);
 
-    document.body.appendChild(successDiv);
+    document.body.appendChild(successDiv as unknown as Node);
   }
 
   /**
@@ -377,11 +383,13 @@ class ErrorHandlerSubsystem {
     // Auto-remove after specified duration
     setTimeout(() => {
       if (infoDiv.parentNode) {
-        infoDiv.parentNode.removeChild(infoDiv);
+        (infoDiv.parentNode as ParentNode).removeChild(
+          infoDiv as unknown as Node,
+        );
       }
     }, duration);
 
-    document.body.appendChild(infoDiv);
+    document.body.appendChild(infoDiv as unknown as Node);
   }
 
   /**
@@ -598,7 +606,7 @@ class RecoveryManagerSubsystem {
       category,
       context,
       cause: error,
-      stack: error.stack,
+      stack: error.stack || "",
       recoverable,
       retryable,
       requiresHumanIntervention,
@@ -766,7 +774,7 @@ class RecoveryManagerSubsystem {
     return {
       state: this.circuitBreakers.get(component) || CircuitBreakerState.CLOSED,
       failureCount: this.failureCounts.get(component) || 0,
-      lastFailure: this.lastFailureTimes.get(component),
+      lastFailure: this.lastFailureTimes.get(component) || undefined,
     };
   }
 
@@ -1067,7 +1075,8 @@ class MetricsCollectorSubsystem {
     metrics: Record<string, any>,
   ): number {
     try {
-      const metricName = condition.split(/\s+/)[0];
+      const parts = condition.split(/\s+/);
+      const metricName = parts[0];
       return metrics[metricName]?.latest || 0;
     } catch {
       return 0;

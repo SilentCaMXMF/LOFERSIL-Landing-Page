@@ -24,6 +24,7 @@
     "test:coverage:integration": "vitest run --coverage tests/integration",
     "test:coverage:e2e": "vitest run --coverage tests/e2e",
     "test:coverage:github-issues": "vitest run --coverage tests/unit/modules/github",
+    "test:coverage:github-issues": "vitest run --coverage src/github-system/modules/github-issues",
     "test:coverage:threshold": "vitest run --coverage --run",
     "coverage:report": "vitest run --coverage --reporter=json --outputFile=coverage/coverage-summary.json",
     "coverage:badge": "node tools/scripts/generate-coverage-badge.js",
@@ -33,7 +34,11 @@
     "prebuild": "npm run format",
     "lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
     "tasks-progress": "node tools/utils/tasks-progress.js",
-    "health-check": "node tools/utils/health-check.js",
+    "health-check": "node tools/utils/deployment-health-check.js",
+    "monitor": "node tools/utils/production-monitor.js",
+    "monitor:start": "node tools/utils/production-monitor.js monitor",
+    "monitor:performance": "node tools/utils/production-monitor.js performance",
+    "monitor:report": "node tools/utils/production-monitor.js report",
     "vercel-deploy": "./tools/deploy/vercel-deploy.sh",
     "deploy:preview": "vercel",
     "deploy:prod": "vercel --prod",
@@ -59,7 +64,8 @@
     "@types/dompurify": "^3.2.0",
     "@types/express": "^5.0.5",
     "@types/jsdom": "^21.1.0",
-    "@types/node": "^20.0.0",
+    "@types/node": "^22.0.0",
+    "@types/nodemailer": "^7.0.4",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
@@ -81,7 +87,7 @@
     "vitest": "^4.0.10"
   },
   "engines": {
-    "node": "22.x"
+    "node": "22.17.1"
   },
   "packageManager": "npm@10.0.0",
   "dependencies": {

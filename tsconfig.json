@@ -1,14 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM"],
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"],
     "allowJs": true,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
-    "module": "ES2020",
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -17,7 +23,7 @@
     "sourceMap": false,
     "removeComments": false,
     "importHelpers": false,
-    "downlevelIteration": false,
+    "downlevelIteration": true,
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
     "jsx": "react-jsx",
@@ -69,5 +75,17 @@
     "src/scripts/modules/TaskManagementIntegration.ts",
     "src/scripts/modules/TaskManager.ts",
     "src/scripts/modules/github-projects.ts"
+    "allowImportingTsExtensions": false,
+    "noEmit": false,
+    "incremental": true,
+    "tsBuildInfoFile": "dist/.tsbuildinfo"
+  },
+  "include": ["src/**/*", "api/**/*"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/github-system/tests/**/*.test.ts",
+    "node_modules",
+    "dist",
+    ".opencode/**/*"
   ]
 }

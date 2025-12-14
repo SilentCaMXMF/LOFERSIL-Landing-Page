@@ -81,10 +81,12 @@ export class ContactFormManager {
    * Initialize the contact form
    */
   private initializeForm(): void {
-    this.formElement = document.querySelector(this.config.formSelector);
+    this.formElement = document.querySelector(
+      this.config.formSelector,
+    ) as unknown as HTMLFormElement;
     this.submitButton = document.querySelector(
       this.config.submitButtonSelector,
-    );
+    ) as unknown as HTMLButtonElement;
 
     if (!this.formElement) {
       console.warn("Contact form element not found");
@@ -97,10 +99,10 @@ export class ContactFormManager {
     // Ensure success and error messages are hidden on initialization
     const successElement = document.querySelector(
       this.config.successMessageSelector,
-    ) as HTMLElement;
+    ) as unknown as HTMLElement;
     const errorElement = document.querySelector(
       this.config.errorMessageSelector,
-    ) as HTMLElement;
+    ) as unknown as HTMLElement;
 
     if (successElement) {
       successElement.classList.add("hidden");
@@ -165,8 +167,10 @@ export class ContactFormManager {
     fields.forEach((fieldName) => {
       const field = this.formElement?.querySelector(
         `[name="${fieldName}"]`,
-      ) as HTMLInputElement;
-      const errorElement = document.getElementById(`${fieldName}-error`);
+      ) as unknown as HTMLInputElement;
+      const errorElement = document.getElementById(
+        `${fieldName}-error`,
+      ) as unknown as HTMLElement;
 
       if (field && errorElement) {
         // Track field focus
@@ -246,23 +250,23 @@ export class ContactFormManager {
     if (this.config.accessibility?.liveRegionSelector) {
       this.liveRegion = document.querySelector(
         this.config.accessibility.liveRegionSelector,
-      );
+      ) as unknown as HTMLElement;
     }
 
     if (!this.liveRegion) {
-      this.liveRegion = document.createElement("div");
+      this.liveRegion = document.createElement("div") as unknown as HTMLElement;
       this.liveRegion.setAttribute("aria-live", "polite");
       this.liveRegion.setAttribute("aria-atomic", "true");
       this.liveRegion.className = "sr-only accessibility-live-region";
       this.liveRegion.id = "contact-form-live-region";
-      this.formElement?.appendChild(this.liveRegion);
+      this.formElement?.appendChild(this.liveRegion as unknown as Node);
     }
 
     // Set up progress indicator
     if (this.config.accessibility?.progressIndicatorSelector) {
       this.progressIndicator = document.querySelector(
         this.config.accessibility.progressIndicatorSelector,
-      );
+      ) as unknown as HTMLElement;
     }
 
     // Ensure form has proper ARIA attributes
@@ -292,9 +296,10 @@ export class ContactFormManager {
     });
 
     // Enhanced tab order management
-    const focusableElements = this.formElement.querySelectorAll(
-      'input:not([type="hidden"]):not(.honeypot-field input), textarea, button',
-    );
+    const focusableElements =
+      this.formElement?.querySelectorAll(
+        'input:not([type="hidden"]):not(.honeypot-field input), textarea, button',
+      ) || [];
 
     // Ensure proper tab order and focus management
     focusableElements.forEach((element, index) => {
@@ -357,7 +362,7 @@ export class ContactFormManager {
     const token = this.generateCsrfToken();
     const tokenField = this.formElement.querySelector(
       '[name="csrf_token"]',
-    ) as HTMLInputElement;
+    ) as unknown as HTMLInputElement;
     if (tokenField) {
       tokenField.value = token;
     }
@@ -383,7 +388,7 @@ export class ContactFormManager {
   private validateField(fieldName: string, errorElement: HTMLElement): void {
     const field = this.formElement?.querySelector(
       `[name="${fieldName}"]`,
-    ) as HTMLInputElement;
+    ) as unknown as HTMLInputElement;
     if (!field) return;
 
     let result: { isValid: boolean; error?: string };
@@ -478,7 +483,7 @@ export class ContactFormManager {
 
     const honeypotField = this.formElement.querySelector(
       '[name="website"]',
-    ) as HTMLInputElement;
+    ) as unknown as HTMLInputElement;
     if (!honeypotField) return true; // If field doesn't exist, allow submission
 
     // If honeypot field has any value, it's likely a bot
@@ -493,7 +498,7 @@ export class ContactFormManager {
 
     const tokenField = this.formElement.querySelector(
       '[name="csrf_token"]',
-    ) as HTMLInputElement;
+    ) as unknown as HTMLInputElement;
     const storedToken = sessionStorage.getItem("csrf_token");
 
     if (!tokenField || !storedToken) return true; // If no token system, allow
@@ -823,7 +828,7 @@ export class ContactFormManager {
         const firstInvalidField = Object.keys(validationResult.errors)[0];
         const fieldElement = this.formElement?.querySelector(
           `[name="${firstInvalidField}"]`,
-        ) as HTMLElement;
+        ) as unknown as HTMLElement;
         this.manageFocus(fieldElement);
       }
       this.eventHandlers.onValidationFailed?.(validationResult.errors);
@@ -940,10 +945,10 @@ export class ContactFormManager {
     if (this.submitButton) {
       const buttonText = this.submitButton.querySelector(
         ".btn-text",
-      ) as HTMLElement;
+      ) as unknown as HTMLElement;
       const loadingText = this.submitButton.querySelector(
         ".btn-loading",
-      ) as HTMLElement;
+      ) as unknown as HTMLElement;
 
       if (isSubmitting) {
         this.submitButton.disabled = true;
@@ -980,10 +985,10 @@ export class ContactFormManager {
   private showSuccessMessage(message?: string): void {
     const successElement = document.querySelector(
       this.config.successMessageSelector,
-    ) as HTMLElement;
+    ) as unknown as HTMLElement;
     const errorElement = document.querySelector(
       this.config.errorMessageSelector,
-    ) as HTMLElement;
+    ) as unknown as HTMLElement;
 
     if (successElement) {
       if (message) {
@@ -995,7 +1000,7 @@ export class ContactFormManager {
       successElement.setAttribute("tabindex", "-1"); // Make focusable for screen readers
 
       // Manage focus to success message
-      this.manageFocus(successElement);
+      this.manageFocus(successElement as unknown as HTMLElement);
     }
 
     if (errorElement) {
@@ -1024,10 +1029,10 @@ export class ContactFormManager {
   private showErrorMessage(message: string): void {
     const errorElement = document.querySelector(
       this.config.errorMessageSelector,
-    ) as HTMLElement;
+    ) as unknown as HTMLElement;
     const successElement = document.querySelector(
       this.config.successMessageSelector,
-    ) as HTMLElement;
+    ) as unknown as HTMLElement;
 
     if (errorElement) {
       errorElement.textContent = message;
@@ -1037,12 +1042,12 @@ export class ContactFormManager {
       errorElement.setAttribute("tabindex", "-1"); // Make focusable for screen readers
 
       // Manage focus to error message
-      this.manageFocus(errorElement);
+      this.manageFocus(errorElement as unknown as HTMLElement);
     }
 
     if (successElement) {
       successElement.classList.add("hidden");
-      (successElement as HTMLElement).style.display = "none";
+      (successElement as unknown as HTMLElement).style.display = "none";
       successElement.setAttribute("aria-hidden", "true");
     }
   }

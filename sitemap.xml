@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Main page -->
+  <url>
+    <loc>https://lofersil.pt/</loc>
+    <lastmod>2025-11-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.pt/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.pt/en/" />
+  </url>
+  
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://lofersil.pt/privacy.html</loc>
+    <lastmod>2025-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.pt/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.pt/en/privacy.html" />
+  </url>
+  
+  <!-- Terms and Conditions -->
+  <url>
+    <loc>https://lofersil.pt/terms.html</loc>
+    <lastmod>2025-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.pt/terms.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.pt/en/terms.html" />
+  </url>
+  
+</urlset>

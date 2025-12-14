@@ -15,7 +15,9 @@
     "about": "Sobre Nós",
     "contact": "Contacto",
     "store": "Visitar Loja",
-    "langToggle": "PT"
+    "langToggle": "PT",
+    "toggle": "Abrir menu de navegação",
+    "toggleClose": "Fechar menu de navegação"
   },
   "skip": {
     "mainContent": "Ir para o conteúdo principal",

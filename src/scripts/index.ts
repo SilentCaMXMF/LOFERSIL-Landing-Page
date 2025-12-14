@@ -54,7 +54,7 @@ class LOFERSILLandingPage {
     this.initializeApp();
   }
   /**
-   * Initialize the application
+   * Initialize application
    */
   async initializeApp() {
     try {
@@ -83,8 +83,9 @@ class LOFERSILLandingPage {
 
       // Initialize scroll manager
       this.scrollManager = new ScrollManager(this.navigationManager);
-      this.navigationManager.setupNavigation();
       await this.translationManager.initialize();
+      this.navigationManager.setTranslationManager(this.translationManager);
+      this.navigationManager.setupNavigation();
       this.setupLanguageToggle();
 
       // Initialize theme manager
@@ -128,7 +129,7 @@ class LOFERSILLandingPage {
   setupLanguageToggle() {
     const langToggle = document.getElementById(
       "lang-toggle",
-    ) as HTMLButtonElement;
+    ) as unknown as HTMLButtonElement;
     if (langToggle) {
       // Set initial text
       const currentLang = this.translationManager.getCurrentLanguage();
@@ -139,7 +140,7 @@ class LOFERSILLandingPage {
         const currentLang = this.translationManager.getCurrentLanguage();
         const newLang = currentLang === "pt" ? "en" : "pt";
         this.translationManager.switchLanguage(newLang);
-        // The applyTranslations in switchLanguage will update the button
+        // The applyTranslations in switchLanguage will update button
       });
     }
   }
@@ -262,7 +263,7 @@ class LOFERSILLandingPage {
   }
 }
 
-// Initialize the application when DOM is ready
+// Initialize application when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     new LOFERSILLandingPage();

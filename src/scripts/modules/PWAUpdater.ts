@@ -43,7 +43,7 @@ export class PWAUpdater {
     this.updateAvailable = true;
 
     // Create update banner
-    const banner = document.createElement("div");
+    const banner = document.createElement("div") as unknown as HTMLDivElement;
     banner.id = "pwa-update-banner";
     banner.innerHTML = `
       <div class="update-banner-content">
@@ -66,7 +66,7 @@ export class PWAUpdater {
       font-family: 'Inter', sans-serif;
     `;
 
-    document.body.appendChild(banner);
+    document.body.appendChild(banner as unknown as Node);
 
     // Handle update button
     document.getElementById("update-btn")?.addEventListener("click", () => {

@@ -329,7 +329,9 @@ export class FormErrorDisplay {
   private errorContainer: HTMLElement | null = null;
 
   constructor(formSelector: string) {
-    this.formElement = document.querySelector(formSelector);
+    this.formElement = document.querySelector(
+      formSelector,
+    ) as unknown as HTMLElement;
     if (this.formElement) {
       this.createErrorContainer();
     }
@@ -357,8 +359,8 @@ export class FormErrorDisplay {
 
     // Insert at the beginning of the form
     this.formElement.insertBefore(
-      this.errorContainer,
-      this.formElement.firstChild,
+      this.errorContainer as unknown as Node,
+      this.formElement.firstChild as unknown as Node,
     );
   }
 
@@ -385,10 +387,10 @@ export class FormErrorDisplay {
     errorMessages.forEach((error) => {
       const listItem = document.createElement("li");
       listItem.textContent = error;
-      errorList.appendChild(listItem);
+      errorList.appendChild(listItem as unknown as Node);
     });
 
-    this.errorContainer.appendChild(errorList);
+    this.errorContainer.appendChild(errorList as unknown as Node);
     this.errorContainer.style.display = "block";
 
     // Focus the error container for accessibility
@@ -420,7 +422,7 @@ export class FormErrorDisplay {
   public displayFieldError(fieldName: string, errorMessage: string): void {
     const fieldElement = this.formElement?.querySelector(
       `[name="${fieldName}"]`,
-    ) as HTMLElement;
+    ) as unknown as HTMLElement;
     if (!fieldElement) return;
 
     // Create error element
@@ -439,10 +441,10 @@ export class FormErrorDisplay {
     fieldElement.classList.add("error");
 
     // Insert error after the field
-    fieldElement.parentNode?.insertBefore(
-      errorElement,
-      fieldElement.nextSibling,
-    );
+    const parentNode = fieldElement.parentNode;
+    if (parentNode) {
+      parentNode.insertBefore(errorElement, fieldElement.nextSibling);
+    }
   }
 
   /**
@@ -505,7 +507,9 @@ export class ContactFormValidator {
 
   constructor(formSelector: string, translationManager?: TranslationManager) {
     this.errorDisplay = new FormErrorDisplay(formSelector);
-    this.formElement = document.querySelector(formSelector);
+    this.formElement = document.querySelector(
+      formSelector,
+    ) as unknown as HTMLFormElement;
     this.translationManager = translationManager;
     this.setupFormValidation();
   }
@@ -521,7 +525,7 @@ export class ContactFormValidator {
     fields.forEach((fieldName) => {
       const field = this.formElement?.querySelector(
         `[name="${fieldName}"]`,
-      ) as HTMLInputElement;
+      ) as unknown as HTMLInputElement;
       if (field) {
         field.addEventListener("blur", () => this.validateField(fieldName));
         field.addEventListener("input", () => this.clearFieldError(fieldName));
@@ -536,7 +540,7 @@ export class ContactFormValidator {
   private validateField(fieldName: string): void {
     const field = this.formElement?.querySelector(
       `[name="${fieldName}"]`,
-    ) as HTMLInputElement;
+    ) as unknown as HTMLInputElement;
     if (!field) return;
 
     let result: ValidationResult;
@@ -570,10 +574,11 @@ export class ContactFormValidator {
   private clearFieldError(fieldName: string): void {
     const field = this.formElement?.querySelector(
       `[name="${fieldName}"]`,
-    ) as HTMLElement;
+    ) as unknown as HTMLElement;
     if (field) {
       field.classList.remove("error");
-      const errorElement = field.parentNode?.querySelector(".field-error");
+      const parentNode = field.parentNode;
+      const errorElement = parentNode?.querySelector(".field-error");
       if (errorElement) {
         errorElement.remove();
       }
@@ -595,22 +600,31 @@ export class ContactFormValidator {
 
     const formData: ContactRequest = {
       name: DOMPurify.sanitize(
-        (this.formElement.querySelector('[name="name"]') as HTMLInputElement)
-          ?.value || "",
+        (
+          this.formElement.querySelector(
+            '[name="name"]',
+          ) as unknown as HTMLInputElement
+        )?.value || "",
       ),
       email: DOMPurify.sanitize(
-        (this.formElement.querySelector('[name="email"]') as HTMLInputElement)
-          ?.value || "",
+        (
+          this.formElement.querySelector(
+            '[name="email"]',
+          ) as unknown as HTMLInputElement
+        )?.value || "",
       ),
       phone: DOMPurify.sanitize(
-        (this.formElement.querySelector('[name="phone"]') as HTMLInputElement)
-          ?.value || "",
+        (
+          this.formElement.querySelector(
+            '[name="phone"]',
+          ) as unknown as HTMLInputElement
+        )?.value || "",
       ),
       message: DOMPurify.sanitize(
         (
           this.formElement.querySelector(
             '[name="message"]',
-          ) as HTMLTextAreaElement
+          ) as unknown as HTMLTextAreaElement
         )?.value || "",
       ),
     };
@@ -637,24 +651,30 @@ export class ContactFormValidator {
     return {
       name: DOMPurify.sanitize(
         (
-          this.formElement.querySelector('[name="name"]') as HTMLInputElement
+          this.formElement.querySelector(
+            '[name="name"]',
+          ) as unknown as HTMLInputElement
         )?.value.trim() || "",
       ),
       email: DOMPurify.sanitize(
         (
-          this.formElement.querySelector('[name="email"]') as HTMLInputElement
+          this.formElement.querySelector(
+            '[name="email"]',
+          ) as unknown as HTMLInputElement
         )?.value.trim() || "",
       ),
       phone: DOMPurify.sanitize(
         (
-          this.formElement.querySelector('[name="phone"]') as HTMLInputElement
+          this.formElement.querySelector(
+            '[name="phone"]',
+          ) as unknown as HTMLInputElement
         )?.value.trim() || "",
       ),
       message: DOMPurify.sanitize(
         (
           this.formElement.querySelector(
             '[name="message"]',
-          ) as HTMLTextAreaElement
+          ) as unknown as HTMLTextAreaElement
         )?.value.trim() || "",
       ),
     };

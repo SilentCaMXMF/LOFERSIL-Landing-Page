@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://lofersil.pt/sitemap.xml
+
+# Block common non-content paths
+Disallow: /api/
+Disallow: /src/
+Disallow: /dist/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.github/
+Disallow: /tasks/
+Disallow: /tools/
+Disallow: /docs/
+
+# Allow specific assets
+Allow: /assets/
+Allow: /assets/images/
+
+# Crawl delay (optional, adjust as needed)
+Crawl-delay: 1

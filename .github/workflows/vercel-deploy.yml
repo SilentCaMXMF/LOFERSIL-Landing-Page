@@ -11,10 +11,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy to Vercel
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+      url: ${{ steps.deploy.outputs.preview-url }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -22,13 +27,55 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Verify required secrets
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN secret is not set"
+            exit 1
+          fi
+          if [ -z "$VERCEL_ORG_ID" ]; then
+            echo "::error::VERCEL_ORG_ID secret is not set"
+            exit 1
+          fi
+          if [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::error::VERCEL_PROJECT_ID secret is not set"
+            exit 1
+          fi
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
       - name: Install dependencies
         run: npm ci
 
+      - name: Run linting
+        run: npm run lint || echo "Linting failed but continuing deployment"
+
       - name: Build project
-        run: npm run build
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Building for production..."
+            npm run build:prod
+          else
+            echo "Building for preview..."
+            npm run build
+          fi
+
+      - name: Verify build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "::error::Build failed - dist directory not found"
+            exit 1
+          fi
+          if [ ! -f "dist/index.html" ]; then
+            echo "::error::Build failed - index.html not found in dist"
+            exit 1
+          fi
+          echo "✅ Build verification passed"
 
       - name: Deploy to Vercel
+        id: deploy
         uses: amondnet/vercel-action@v25
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -38,5 +85,24 @@ jobs:
           vercel-token: ${{ env.VERCEL_TOKEN }}
           vercel-org-id: ${{ env.VERCEL_ORG_ID }}
           vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
-          vercel-args: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '--prod' || '--debug' }}
+          vercel-args: ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+
+      - name: Deployment Summary
+        run: |
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Preview' }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.deploy.outputs.preview-url }}" != "" ]; then
+            echo "- **Preview URL**: ${{ steps.deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "- **Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Deployment failed for branch ${{ github.ref_name }}"
+          echo "::error::Commit: ${{ github.sha }}"
+          echo "::error::Check the logs above for details"

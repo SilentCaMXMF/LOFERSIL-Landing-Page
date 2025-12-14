@@ -692,6 +692,23 @@ export default async function handler(req, res) {
       }
     } else {
       console.log("SMTP not configured, skipping email send");
+      userMessage =
+        "Serviço de email não configurado. A sua mensagem foi registada.";
+    }
+
+    // Determine the appropriate response message
+    let responseMessage;
+    if (emailSent) {
+      responseMessage =
+        "Mensagem enviada com sucesso! Entraremos em contacto em breve.";
+    } else if (emailError) {
+      // Use the user-friendly error message if available
+      responseMessage =
+        userMessage ||
+        "Mensagem registada com sucesso! Entraremos em contacto em breve.";
+    } else {
+      responseMessage =
+        "Mensagem registada com sucesso! Entraremos em contacto em breve.";
     }
 
     metrics.endOperation(handlerOperation, true);
@@ -700,9 +717,7 @@ export default async function handler(req, res) {
 
     res.status(200).json({
       success: true,
-      message: emailSent
-        ? "Mensagem enviada com sucesso! Entraremos em contacto em breve."
-        : "Mensagem registada com sucesso! Entraremos em contacto em breve.",
+      message: responseMessage,
       emailSent,
       emailError: emailError
         ? {

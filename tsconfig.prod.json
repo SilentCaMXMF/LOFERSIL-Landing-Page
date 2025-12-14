@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": false,
+    "removeComments": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "outDir": "dist",
+    "incremental": false,
+    "tsBuildInfoFile": "dist/.tsbuildinfo.prod"
+  },
+  "include": ["src/**/*", "api/**/*"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/github-system/tests/**/*.test.ts",
+    "node_modules",
+    "dist",
+    ".opencode/**/*"
+  ]
+}

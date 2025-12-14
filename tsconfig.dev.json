@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": true,
+    "removeComments": false,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "outDir": "dist",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": false,
+    "incremental": true,
+    "tsBuildInfoFile": "dist/.tsbuildinfo.dev",
+    "preserveWatchOutput": true
+  },
+  "include": ["src/**/*", "api/**/*"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/github-system/tests/**/*.test.ts",
+    "node_modules",
+    "dist",
+    ".opencode/**/*"
+  ]
+}

@@ -26,7 +26,9 @@ export class ScrollManager {
   private setupDOMElements(): void {
     this.hero = document.getElementById("hero");
     if (this.hero) {
-      this.heroImage = this.hero.querySelector(".hero-img") as HTMLElement;
+      this.heroImage = this.hero.querySelector(
+        ".hero-img",
+      ) as unknown as HTMLElement;
     }
   }
 
@@ -70,11 +72,11 @@ export class ScrollManager {
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              const element = entry.target as HTMLElement;
+              const element = entry.target as unknown as HTMLElement;
               // Add visible class for animations
               element.classList.add("visible");
               // Stop observing once visible
-              lazyObserver.unobserve(element);
+              lazyObserver.unobserve(element as unknown as Element);
             }
           });
         },
@@ -97,7 +99,7 @@ export class ScrollManager {
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              const element = entry.target as HTMLElement;
+              const element = entry.target as unknown as HTMLElement;
               const animationType = element.getAttribute("data-animate");
 
               if (
@@ -109,7 +111,9 @@ export class ScrollManager {
                 Array.from(children).forEach((child, index) => {
                   const delay = index * 150; // 150ms stagger
                   setTimeout(() => {
-                    (child as HTMLElement).classList.add("animate-in");
+                    (child as unknown as HTMLElement).classList.add(
+                      "animate-in",
+                    );
                   }, delay);
                 });
               } else {
@@ -118,7 +122,7 @@ export class ScrollManager {
               }
 
               // Stop observing once animated
-              animateObserver.unobserve(element);
+              animateObserver.unobserve(element as unknown as Element);
             }
           });
         },
@@ -157,7 +161,7 @@ export class ScrollManager {
         },
       );
 
-      heroObserver.observe(this.hero);
+      heroObserver.observe(this.hero as unknown as Element);
       this.observers.push(heroObserver);
     }
   }
@@ -171,12 +175,12 @@ export class ScrollManager {
       const imageObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const img = entry.target as HTMLImageElement;
+            const img = entry.target as unknown as HTMLImageElement;
             const src = img.getAttribute("data-src");
             if (src) {
               img.src = src;
               img.classList.remove("lazy");
-              imageObserver.unobserve(img);
+              imageObserver.unobserve(img as unknown as Element);
             }
           }
         });
