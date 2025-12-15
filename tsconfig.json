@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ES2020",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "outDir": "dist",
+    "declaration": false,
+    "sourceMap": true,
+    "removeComments": false,
+    "importHelpers": false,
+    "downlevelIteration": false,
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src/scripts/index.ts",
+    "src/scripts/validation.ts",
+    "src/scripts/types.ts",
+    "src/scripts/modules/Config.ts",
+    "src/scripts/modules/ContactFormManager.ts",
+    "src/scripts/modules/EnvironmentLoader.ts",
+    "src/scripts/modules/ErrorManager.ts",
+    "src/scripts/modules/EventManager.ts",
+    "src/scripts/modules/NavigationManager.ts",
+    "src/scripts/modules/SEOManager.ts",
+    "src/scripts/modules/ThemeManager.ts",
+    "src/scripts/modules/TranslationManager.ts",
+    "src/scripts/modules/UIManager.ts",
+    "src/scripts/modules/Utils.ts",
+    "src/scripts/modules/logger.ts"
+  ],
+  "exclude": ["node_modules", "dist", ".opencode/**/*"]
+}
