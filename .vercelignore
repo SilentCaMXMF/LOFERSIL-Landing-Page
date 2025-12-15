@@ -12,9 +12,19 @@ tasks/
 
 # Tools and scripts
 tools/
-scripts/
 build.js
 server.js
+discover-mcp-tools*.js
+discover-mcp-tools*.mjs
+mcp-server*.js
+mcp-server*.cjs
+mcp-server*.mjs
+run-mcp-test*.mjs
+simulate-context7-tools.mjs
+test-*.js
+test-*.mjs
+validate-*.mjs
+verify-*.mjs
 
 # Environment files
 .env*
