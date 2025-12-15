@@ -8,8 +8,8 @@
     "build": "npm run build:clean && npm run build:ts && npm run build:css && npm run build:static && npm run build:assets && echo '✅ Build completed successfully'",
     "build:prod": "NODE_ENV=production npm run build:clean && npm run build:ts:prod && npm run build:css && npm run build:static && npm run build:assets && echo '✅ Production build completed successfully'",
     "build:clean": "rm -rf dist && mkdir -p dist",
-    "build:ts": "npx tsc",
-    "build:ts:prod": "npx tsc --project tsconfig.prod.json",
+    "build:ts": "./node_modules/.bin/tsc",
+    "build:ts:prod": "./node_modules/.bin/tsc --project tsconfig.prod.json",
     "build:ts:api": "tsc --project tsconfig.api.json",
     "build:css": "postcss src/styles/main.css -o dist/main.css",
     "build:static": "cp index.html privacy.html terms.html site.webmanifest robots.txt sitemap.xml dompurify.min.js favicon.svg dist/ 2>/dev/null || true",
@@ -86,7 +86,7 @@
     "vitest": "^4.0.10"
   },
   "engines": {
-    "node": "22.x"
+    "node": "20.x"
   },
   "packageManager": "npm@10.0.0",
   "dependencies": {
