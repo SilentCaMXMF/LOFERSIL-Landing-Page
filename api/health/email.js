@@ -4,7 +4,7 @@
  * Optimized for Vercel serverless environment
  */
 
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
 
 // Email health configuration
 const EMAIL_HEALTH_CONFIG = {

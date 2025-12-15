@@ -1,5 +1,5 @@
 // Vercel serverless function for contact form
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
 
 // Enhanced email retry logic and error handling
 class EmailService {
