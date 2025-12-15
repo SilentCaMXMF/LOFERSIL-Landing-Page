@@ -1,537 +1,360 @@
 # LOFERSIL Landing Page
 
-A modern, responsive landing page for LOFERSIL - Soluções de Embalagem, featuring a contact form with email functionality, multi-language support, and comprehensive monitoring.
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/lofersil/landing-page)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+[![Vercel](https://img.shields.io/badge/deployed%20on-Vercel-black.svg)](https://vercel.com/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-## 🚀 Features
+A sophisticated, production-ready landing page for LOFERSIL, a premium retail store in Lisbon, Portugal. Built with modern TypeScript, featuring comprehensive security, PWA capabilities, and advanced development tooling.
 
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **Multi-language Support**: Portuguese and English language options
-- **Contact Form**: Secure email delivery with advanced error handling
-- **Email Monitoring**: Real-time monitoring and alerting system
-- **Performance Optimized**: Fast loading times and SEO friendly
-- **Accessibility**: WCAG 2.1 compliant with full keyboard navigation
-- **Security**: XSS protection, CSRF protection, and input sanitization
+## 🏪 About LOFERSIL
 
-## 📧 Email System Overview
+LOFERSIL is a trusted family-owned business serving Lisbon for over 30 years, located at R. Gomes Freire 187 B. We specialize in premium products including:
 
-The LOFERSIL landing page includes a comprehensive email system for handling contact form submissions. The system features:
+- **Baby Products** - Hyper-realistic reborn dolls and baby essentials
+- **Jewelry Boxes** - Elegant storage solutions with premium finishes
+- **Office Supplies** - High-quality stationery and professional materials
+- **Promotional Items** - Custom pens and business accessories
+- **Backpacks & Bags** - Modern, durable designs for everyday use
+- **Printer Supplies** - Compatible ink cartridges with reliable performance
 
-- **SMTP Integration**: Support for Gmail, Outlook, and custom SMTP providers
-- **Advanced Error Handling**: Automatic retry logic with exponential backoff
-- **Real-time Monitoring**: Performance metrics and alerting
-- **Security Features**: Rate limiting, input sanitization, and spam protection
-- **Maintenance Tools**: Automated health checks and incident response
+## ✨ Key Features
 
-## 🛠️ Quick Start
+### 🎯 Core Functionality
+
+- **Responsive Design** - Optimized for all devices and screen sizes
+- **Multi-language Support** - Portuguese and English with easy switching
+- **Dark/Light Theme** - User preference detection and manual toggle
+- **Progressive Web App** - Installable with offline capabilities
+- **SEO Optimized** - Comprehensive meta tags, sitemaps, and structured data
+- **Accessibility First** - WCAG 2.1 AA compliant with screen reader support
+
+### 🔒 Security & Performance
+
+- **CSRF Protection** - Token-based form security
+- **Rate Limiting** - API endpoint protection against abuse
+- **XSS Prevention** - DOMPurify integration for content sanitization
+- **Input Validation** - Comprehensive form validation with Joi
+- **Performance Monitoring** - Web Vitals tracking and optimization
+- **Lazy Loading** - Images and components loaded on demand
+
+### 📧 Advanced Contact System
+
+- **Gmail SMTP Integration** - Reliable email delivery via Gmail
+- **Form Validation** - Real-time client and server-side validation
+- **Bot Protection** - Honeypot fields and CSRF tokens
+- **Error Handling** - Comprehensive error management and user feedback
+- **Background Sync** - Offline form submission with sync on reconnect
+
+### 🛠️ Development Excellence
+
+- **TypeScript Strict Mode** - Type-safe development with comprehensive interfaces
+- **Modular Architecture** - Clean separation of concerns with ES6 modules
+- **Comprehensive Testing** - Unit, integration, and E2E tests with Vitest
+- **Code Quality** - ESLint, Prettier, and automated code formatting
+- **CI/CD Pipeline** - Automated testing and deployment via GitHub Actions
+
+### 🚀 Advanced Features
+
+- **MCP Integration** - Model Context Protocol for AI tool integration
+- **GitHub Integration** - Automated code review and issue management
+- **Task Management** - Structured development workflow with task tracking
+- **Monitoring & Analytics** - Performance metrics and health checks
+- **Service Worker** - Advanced caching strategies and offline support
+
+## 🏗️ Technical Architecture
+
+### Frontend Stack
+
+- **Language**: TypeScript 5.0+ (strict mode)
+- **Styling**: PostCSS with modern CSS features
+- **Build System**: Custom build pipeline with optimization
+- **Testing**: Vitest with jsdom environment
+- **Bundling**: Optimized for production with tree shaking
+
+### Backend & API
+
+- **Runtime**: Node.js 22.x
+- **Framework**: Express.js for API endpoints
+- **Email**: Nodemailer with Gmail SMTP
+- **Security**: Helmet, CORS, rate limiting
+- **Validation**: Joi schema validation
+
+### Deployment & Infrastructure
+
+- **Platform**: Vercel (production-ready configuration)
+- **CDN**: Global content delivery network
+- **Environment**: Production, preview, and development branches
+- **Monitoring**: Built-in health checks and performance metrics
+
+## 📁 Project Structure
+
+```
+LOFERSIL-Landing-Page/
+├── src/                          # Source code
+│   ├── scripts/                  # TypeScript modules
+│   │   ├── modules/             # Feature modules
+│   │   │   ├── mcp/            # Model Context Protocol
+│   │   │   ├── github-issues/  # GitHub integration
+│   │   │   └── [40+ modules]   # Core functionality
+│   │   ├── index.ts            # Main application entry
+│   │   ├── types.ts            # TypeScript definitions
+│   │   └── validation.ts       # Form validation schemas
+│   ├── styles/                  # CSS stylesheets
+│   └── locales/                 # Internationalization
+├── api/                         # Backend API endpoints
+│   ├── contact.js              # Contact form handler
+│   ├── health/                 # Health check endpoints
+│   └── monitoring/             # Monitoring APIs
+├── tests/                       # Comprehensive test suite
+│   ├── unit/                   # Unit tests
+│   ├── integration/            # Integration tests
+│   ├── e2e/                    # End-to-end tests
+│   └── fixtures/               # Test data and mocks
+├── tasks/                       # Development task management
+├── docs/                        # Documentation
+├── scripts/                     # Build and utility scripts
+└── assets/                      # Static assets (images, icons)
+```
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ and npm installed
-- SMTP email service (Gmail, Outlook, or custom)
-- Vercel account for deployment
+- Node.js 22.x or higher
+- npm 10.x or higher
+- Git
 
 ### Installation
 
-1. **Clone the repository**
+```bash
+# Clone the repository
+git clone https://github.com/lofersil/landing-page.git
+cd landing-page
 
-   ```bash
-   git clone https://github.com/your-org/LOFERSIL-Landing-Page.git
-   cd LOFERSIL-Landing-Page
-   ```
+# Install dependencies
+npm install
 
-2. **Install dependencies**
+# Copy environment template
+cp .env.example .env
 
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables**
-
-   ```bash
-   cp .env.example .env.local
-   ```
-
-4. **Set up email configuration** (see [Email Configuration Guide](docs/email-configuration.md))
-
-5. **Start development server**
-
-   ```bash
-   npm run dev
-   ```
-
-6. **Open your browser**
-   ```bash
-   http://localhost:3000
-   ```
-
-## 📧 Email Setup Instructions
-
-### 1. Configure SMTP Provider
-
-Choose your SMTP provider and follow the setup instructions:
-
-#### Gmail/Google Workspace
-
-1. Enable 2-Factor Authentication
-2. Generate an App Password
-3. Configure environment variables:
-   ```env
-   SMTP_HOST=smtp.gmail.com
-   SMTP_PORT=587
-   SMTP_SECURE=false
-   SMTP_USER=your-email@gmail.com
-   SMTP_PASS=your-16-character-app-password
-   ```
-
-#### Microsoft 365/Outlook
-
-1. Enable 2-Factor Authentication
-2. Create App Password
-3. Configure environment variables:
-   ```env
-   SMTP_HOST=smtp.office365.com
-   SMTP_PORT=587
-   SMTP_SECURE=false
-   SMTP_USER=your-email@company.com
-   SMTP_PASS=your-app-password
-   ```
-
-#### Custom SMTP Provider
-
-1. Gather SMTP server details
-2. Configure environment variables:
-   ```env
-   SMTP_HOST=your-smtp-server.com
-   SMTP_PORT=587
-   SMTP_SECURE=false
-   SMTP_USER=your-username
-   SMTP_PASS=your-password
-   ```
-
-### 2. Environment Configuration
-
-Create a `.env.local` file with the following configuration:
-
-```env
-# Basic SMTP Configuration
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
-
-# Email Addresses
-FROM_EMAIL=noreply@lofersil.pt
-TO_EMAIL=admin@lofersil.pt
-CONTACT_EMAIL=contact@lofersil.pt
-
-# Advanced Configuration
-SMTP_TIMEOUT=30000
-SMTP_RETRY_ATTEMPTS=3
-EMAIL_TEST_MODE=true
-EMAIL_LOG_LEVEL=info
-
-# Website Configuration
-NODE_ENV=development
-WEBSITE_URL=https://lofersil.pt
+# Configure environment variables
+# Edit .env with your Gmail credentials and other settings
 ```
 
-### 3. Test Email Configuration
+### Development
 
-1. **Run the email test script**
+```bash
+# Start development server with hot reload
+npm run dev
 
-   ```bash
-   npm run test:email
-   ```
+# Run tests in watch mode
+npm test
 
-2. **Test the contact form**
-   - Open `http://localhost:3000`
-   - Fill out the contact form with test data
-   - Submit and check for email delivery
+# Build for development
+npm run build:dev
 
-3. **Check console logs** for email sending status
+# Start local server
+npm start
+```
 
-### 4. Production Deployment
-
-1. **Configure Vercel Environment Variables**
-   - Go to Vercel Dashboard → Project → Settings → Environment Variables
-   - Add all SMTP configuration variables
-   - Set environment to "Production"
-
-2. **Deploy to Vercel**
-
-   ```bash
-   git push origin main
-   ```
-
-3. **Verify production email functionality**
-   - Test contact form on production site
-   - Check email delivery
-   - Monitor error logs
-
-## 📊 Email Monitoring and Maintenance
-
-### Monitoring Dashboard
-
-Access the email monitoring dashboard at `/admin/email-monitoring` to view:
-
-- Real-time email metrics
-- Delivery success rates
-- Response time analytics
-- Error distribution
-- System health status
-
-### Health Checks
-
-The system includes automated health checks for:
-
-- SMTP connection status
-- Environment variable validation
-- DNS record verification
-- Performance metrics
-- Error rate monitoring
-
-### Alert System
-
-Configure alerts for:
-
-- Critical service failures
-- Performance degradation
-- High error rates
-- Security issues
-
-### Maintenance Procedures
-
-- **Daily**: Automated health checks and performance monitoring
-- **Weekly**: System health review and log cleanup
-- **Monthly**: Comprehensive performance analysis and security audit
-
-## 🛠️ Development
-
-### Build Commands
+### Production
 
 ```bash
 # Build for production
 npm run build
 
-# Run development server
-npm run dev
-
 # Run tests
-npm run test
+npm run test:run
 
-# Run specific test suites
+# Check code quality
+npm run lint
+
+# Deploy to Vercel preview
+npm run deploy:preview
+
+# Deploy to production
+npm run deploy:prod
+```
+
+## 🧪 Testing
+
+The project includes a comprehensive test suite:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests once
+npm run test:run
+
+# Generate coverage report
+npm run test:coverage
+
+# Run specific test types
 npm run test:unit
 npm run test:integration
 npm run test:e2e
 
-# Lint code
-npm run lint
-
-# Format code
-npm run format
+# Run tests with coverage thresholds
+npm run test:coverage:threshold
 ```
 
-### Project Structure
+### Test Structure
 
-```
-├── api/                    # API endpoints
-│   └── contact.js         # Contact form email handler
-├── docs/                  # Documentation
-│   ├── email-configuration.md
-│   ├── email-troubleshooting.md
-│   └── email-monitoring-guide.md
-├── src/                   # Source code
-│   ├── scripts/          # TypeScript modules
-│   ├── styles/           # CSS stylesheets
-│   └── locales/          # Translation files
-├── assets/               # Static assets
-└── tools/               # Utility scripts
-```
-
-### Email System Architecture
-
-```
-Contact Form → Frontend Validation → API Endpoint → Email Service → SMTP Provider
-     ↓              ↓                    ↓              ↓              ↓
-   Client Side   Input Sanitization   Rate Limiting   Retry Logic    Email Delivery
-     ↓              ↓                    ↓              ↓              ↓
-   User Input   Security Checks      Error Handling  Monitoring    Delivery Confirmation
-```
+- **Unit Tests**: Individual module and function testing
+- **Integration Tests**: API endpoint and module interaction testing
+- **E2E Tests**: Complete user flow testing
+- **Performance Tests**: Load time and optimization testing
+- **Security Tests**: CSRF, XSS, and vulnerability testing
 
 ## 🔧 Configuration
 
 ### Environment Variables
 
-| Variable              | Required | Description                  | Default   |
-| --------------------- | -------- | ---------------------------- | --------- |
-| `SMTP_HOST`           | Yes      | SMTP server hostname         | -         |
-| `SMTP_PORT`           | Yes      | SMTP server port             | 587       |
-| `SMTP_SECURE`         | Yes      | Use SSL/TLS connection       | false     |
-| `SMTP_USER`           | Yes      | SMTP authentication username | -         |
-| `SMTP_PASS`           | Yes      | SMTP authentication password | -         |
-| `FROM_EMAIL`          | No       | From email address           | SMTP_USER |
-| `TO_EMAIL`            | No       | Destination email address    | SMTP_USER |
-| `SMTP_TIMEOUT`        | No       | Connection timeout (ms)      | 30000     |
-| `SMTP_RETRY_ATTEMPTS` | No       | Number of retry attempts     | 3         |
-| `EMAIL_TEST_MODE`     | No       | Enable test mode             | false     |
-
-### Advanced Configuration
-
-#### Rate Limiting
+Create a `.env` file with the following variables:
 
 ```env
-RATE_LIMIT_WINDOW_MS=900000      # 15 minutes
-RATE_LIMIT_MAX_REQUESTS=100      # Max requests per window
+# Gmail Configuration
+GMAIL_USER=your-email@gmail.com
+GMAIL_PASS=your-app-password
+
+# Security
+CSRF_SECRET=your-csrf-secret-key
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Application
+NODE_ENV=production
+PORT=8000
+
+# MCP Integration (Optional)
+CONTEXT7_API_KEY=your-context7-api-key
 ```
 
-#### Security
+### Vercel Configuration
 
-```env
-CORS_ORIGIN=https://lofersil.pt  # Allowed origins
-ENABLE_CSRF_PROTECTION=true      # CSRF protection
-```
+The project is optimized for Vercel deployment with:
 
-#### Monitoring
+- Automatic builds on git push
+- Environment variable management
+- Custom headers for security and performance
+- Static asset optimization
+- Edge function support for API routes
 
-```env
-EMAIL_LOG_LEVEL=info             # Log level (debug, info, warn, error)
-ENABLE_METRICS=true              # Enable performance metrics
-```
+## 📊 Monitoring & Analytics
 
-## 🧪 Testing
+### Built-in Monitoring
 
-### Email Testing
+- **Performance Metrics**: Web Vitals tracking
+- **Error Tracking**: Comprehensive error logging
+- **Health Checks**: API endpoint monitoring
+- **Usage Analytics**: Form submission and user interaction tracking
 
-Run comprehensive email tests:
+### External Integrations
 
-```bash
-# Test SMTP connection
-npm run test:smtp
+- **GitHub**: Automated code review and issue management
+- **Context7**: AI-powered documentation and tool integration
+- **Vercel Analytics**: Performance and usage insights
 
-# Test email templates
-npm run test:templates
+## 🔒 Security Features
 
-# Test error handling
-npm run test:email-errors
+### Implemented Security Measures
 
-# Run all email tests
-npm run test:email-all
-```
-
-### Test Coverage
-
-The email system includes tests for:
-
-- SMTP connection testing
-- Email template validation
-- Error handling and retry logic
-- Security and input sanitization
-- Performance and load testing
-- End-to-end email delivery
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-#### Email Not Sending
-
-1. Check SMTP credentials in environment variables
-2. Verify network connectivity to SMTP server
-3. Check for rate limiting or provider restrictions
-4. Review error logs in browser console and server logs
-
-#### Authentication Errors
-
-1. Generate new app password for Gmail/Outlook
-2. Verify 2FA is enabled
-3. Check SMTP username and password
-
-#### Delivery Issues
-
-1. Check recipient email address
-2. Verify SPF/DKIM DNS records
-3. Check spam filters and email content
-
-### Debug Mode
-
-Enable debug logging:
-
-```env
-EMAIL_LOG_LEVEL=debug
-DEBUG=nodemailer
-```
-
-### Support Resources
-
-- [Email Configuration Guide](docs/email-configuration.md)
-- [Email Troubleshooting Guide](docs/email-troubleshooting.md)
-- [Email Monitoring Guide](docs/email-monitoring-guide.md)
-
-## 📈 Performance
-
-### Optimization Features
-
-- **Connection Pooling**: Reuse SMTP connections for better performance
-- **Email Queue**: Handle high volume with queuing system
-- **Caching**: Cache email templates and configurations
-- **Compression**: Optimize email content for faster delivery
-
-### Performance Metrics
-
-Target performance metrics:
-
-- **Email Response Time**: < 2 seconds
-- **Success Rate**: > 99%
-- **System Uptime**: > 99.9%
-- **Error Rate**: < 0.5%
-
-## 🔒 Security
-
-### Security Features
-
-- **Input Sanitization**: Prevent XSS and injection attacks
-- **Rate Limiting**: Prevent spam and abuse
-- **CSRF Protection**: Prevent cross-site request forgery
-- **Content Security Policy**: Restrict resource loading
-- **HTTPS Only**: Enforce secure connections
+- **CSRF Protection**: Token-based security for all forms
+- **Rate Limiting**: API endpoint protection with configurable limits
+- **XSS Prevention**: DOMPurify integration for content sanitization
+- **Input Validation**: Comprehensive server-side validation
+- **Security Headers**: Helmet.js for HTTP security headers
+- **Bot Protection**: Honeypot fields and behavioral analysis
 
 ### Security Best Practices
 
-1. **Use App Passwords**: Never use primary account passwords
-2. **Enable 2FA**: Require two-factor authentication
-3. **Regular Updates**: Keep dependencies updated
-4. **Monitor Logs**: Review security logs regularly
-5. **Access Control**: Limit access to email configuration
+- Regular dependency updates and vulnerability scanning
+- Secure password storage and authentication
+- HTTPS enforcement and secure cookie handling
+- Content Security Policy (CSP) implementation
+- Regular security audits and penetration testing
+
+## 🌐 PWA Features
+
+### Progressive Web App Capabilities
+
+- **Offline Support**: Service worker with intelligent caching
+- **App Installation**: Native app-like experience on mobile devices
+- **Push Notifications**: Optional notification system
+- **Background Sync**: Offline form submission
+- **Responsive Design**: Optimized for all screen sizes
+
+### PWA Configuration
+
+- Web App Manifest with custom icons
+- Service worker with cache-first strategy
+- Offline fallback pages
+- App installation prompts
+- Background synchronization
 
 ## 📚 Documentation
 
-### Email System Documentation
+### Comprehensive Documentation
 
-- **[Email Configuration Guide](docs/email-configuration.md)**: Complete setup and configuration instructions
-- **[Email Troubleshooting Guide](docs/email-troubleshooting.md)**: Common issues and solutions
-- **[Email Monitoring Guide](docs/email-monitoring-guide.md)**: Monitoring and maintenance procedures
+- **Development Guide**: Setup and development workflows
+- **API Documentation**: Complete API endpoint documentation
+- **Deployment Guide**: Production deployment instructions
+- **Security Guide**: Security implementation details
+- **Testing Guide**: Testing strategies and best practices
 
-### API Documentation
+### Task Management
 
-#### Contact Form Endpoint
-
-**POST** `/api/contact`
-
-Submit contact form data:
-
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "message": "Your message here"
-}
-```
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "message": "Message sent successfully!",
-  "emailSent": true,
-  "timestamp": "2025-12-13T10:30:00.000Z"
-}
-```
-
-## 🚀 Deployment
-
-### Vercel Deployment
-
-1. **Connect Repository**
-   - Link your GitHub repository to Vercel
-   - Configure build settings
-
-2. **Environment Variables**
-   - Add all required environment variables
-   - Set appropriate values for production
-
-3. **Deploy**
-   - Automatic deployment on git push
-   - Preview deployments for pull requests
-
-### Environment-Specific Configuration
-
-#### Development
-
-```env
-NODE_ENV=development
-EMAIL_TEST_MODE=true
-EMAIL_LOG_LEVEL=debug
-```
-
-#### Production
-
-```env
-NODE_ENV=production
-EMAIL_TEST_MODE=false
-EMAIL_LOG_LEVEL=info
-```
+- Structured task organization in `/tasks`
+- Implementation guides and summaries
+- Progress tracking and status updates
+- Step-by-step development instructions
 
 ## 🤝 Contributing
 
-### Development Workflow
+We welcome contributions! Please follow our guidelines:
 
 1. **Fork** the repository
-2. **Create** a feature branch
-3. **Make** your changes
-4. **Test** thoroughly
-5. **Submit** a pull request
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
 
-### Code Style
+### Development Guidelines
 
-- Use TypeScript for new code
-- Follow ESLint configuration
-- Write comprehensive tests
-- Update documentation
-
-## 📞 Support
-
-### Technical Support
-
-For email system issues:
-
-- **Email**: tech@lofersil.pt
-- **Documentation**: See guides in `/docs/` directory
-- **Issues**: Create GitHub issue for bugs
-
-### Emergency Contacts
-
-For critical email system failures:
-
-- **System Administrator**: admin@lofersil.pt
-- **On-call Support**: emergency@lofersil.pt
+- Follow TypeScript strict mode conventions
+- Write comprehensive tests for new features
+- Update documentation for API changes
+- Use conventional commit messages
+- Ensure code passes all linting and formatting checks
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔄 Version History
+## 📞 Contact
 
-### v2.0.0 (December 2025)
+### LOFERSIL Store
 
-- Added comprehensive email system
-- Implemented real-time monitoring
-- Added advanced error handling
-- Enhanced security features
-- Complete documentation overhaul
+- **Address**: R. Gomes Freire 187 B, 1150-178 Lisboa, Portugal
+- **Phone**: +351 21 353 1555
+- **Email**: info@lofersil.pt
+- **Website**: [https://lofersil.pt](https://lofersil.pt)
 
-### v1.0.0 (October 2025)
+### Project Support
 
-- Initial landing page release
-- Basic contact form functionality
-- Multi-language support
-- Responsive design
+- **GitHub Issues**: [Report bugs and request features](https://github.com/lofersil/landing-page/issues)
+- **Discussions**: [Community discussions and Q&A](https://github.com/lofersil/landing-page/discussions)
+
+## 🙏 Acknowledgments
+
+- **Vercel** for hosting and deployment platform
+- **OpenAI** for AI integration capabilities
+- **Context7** for MCP implementation and documentation tools
+- **GitHub** for version control and CI/CD
+- The open-source community for the amazing tools and libraries
 
 ---
 
-**Last Updated**: December 2025  
-**Version**: 2.0.0  
-**Next Review**: March 2026
-
-For detailed email system documentation, see the [docs/](docs/) directory.
+**Built with ❤️ for LOFERSIL - Serving Lisbon with premium products and exceptional service since 1990.**
