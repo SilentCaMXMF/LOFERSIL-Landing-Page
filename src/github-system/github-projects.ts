@@ -5,6 +5,54 @@
 
 import { logger } from "../scripts/modules/logger";
 
+// GraphQL response types
+interface GitHubFieldNode {
+  id: string;
+  name: string;
+  options?: Array<{
+    id: string;
+    name: string;
+  }>;
+}
+
+interface GitHubFieldValueNode {
+  field?: {
+    name: string;
+  };
+  name?: string;
+}
+
+interface GitHubAssigneeNode {
+  login: string;
+}
+
+interface GitHubLabelNode {
+  id: string;
+  name: string;
+}
+
+interface GitHubContentNode {
+  title: string;
+  body?: string;
+  number?: number;
+  assignees: {
+    nodes: GitHubAssigneeNode[];
+  };
+  labels: {
+    nodes: GitHubLabelNode[];
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface GitHubItemNode {
+  id: string;
+  content: GitHubContentNode;
+  fieldValues: {
+    nodes: GitHubFieldValueNode[];
+  };
+}
+
 export interface KanbanCard {
   id: string;
   title: string;
@@ -55,7 +103,7 @@ export class GitHubProjectsIntegration {
   private async makeGraphQLRequest(
     query: string,
     variables: Record<string, unknown> = {},
-  ): Promise<any> {
+  ): Promise<Record<string, unknown>> {
     try {
       const response = await fetch(this.baseUrl, {
         method: "POST",
@@ -113,20 +161,20 @@ export class GitHubProjectsIntegration {
       }
     `;
 
-    try {
+try {
       const data = await this.makeGraphQLRequest(query, {
         projectId: this.projectId,
       });
 
-      const statusField = data.node.fields.nodes.find(
-        (field: any) => field.name === "Status" || field.name === "status",
+      const statusField = (data.node as { fields: { nodes: GitHubFieldNode[] } }).fields.nodes.find(
+        (field: GitHubFieldNode) => field.name === "Status" || field.name === "status",
       );
 
       if (!statusField) {
         throw new Error("Status field not found in project");
       }
 
-      return statusField.options.map((option: any, index: number) => ({
+      return (statusField.options || []).map((option, index: number) => ({
         id: option.id,
         name: option.name,
         position: index,
@@ -275,9 +323,9 @@ export class GitHubProjectsIntegration {
         projectId: this.projectId,
       });
 
-      return data.node.items.nodes.map((item: any) => {
+      return (data.node as { items: { nodes: GitHubItemNode[] } }).items.nodes.map((item: GitHubItemNode) => {
         const statusField = item.fieldValues.nodes.find(
-          (field: any) =>
+          (field: GitHubFieldValueNode) =>
             field.field?.name === "Status" || field.field?.name === "status",
         );
 
@@ -287,9 +335,9 @@ export class GitHubProjectsIntegration {
           body: item.content.body || "",
           status: statusField?.name || "No Status",
           assignees: item.content.assignees.nodes.map(
-            (assignee: any) => assignee.login,
+            (assignee: GitHubAssigneeNode) => assignee.login,
           ),
-          labels: item.content.labels.nodes.map((label: any) => label.name),
+          labels: item.content.labels.nodes.map((label: GitHubLabelNode) => label.name),
           issueNumber: item.content.number,
           createdAt: new Date(item.content.createdAt),
           updatedAt: new Date(item.content.updatedAt),
@@ -324,7 +372,7 @@ export class GitHubProjectsIntegration {
         number: issueNumber,
       });
 
-      return data.repository.issue.id;
+      return (data.repository as { issue: { id: string } }).issue.id;
     } catch (error) {
       logger.error("Failed to get issue ID", {
         issueNumber,
@@ -371,7 +419,7 @@ export class GitHubProjectsIntegration {
         labelIds,
       });
 
-      return data.createIssue.issue.id;
+      return (data.createIssue as { issue: { id: string } }).issue.id;
     } catch (error) {
       logger.error("Failed to create issue", {
         title,
@@ -406,7 +454,7 @@ export class GitHubProjectsIntegration {
         contentId: issueId,
       });
 
-      return data.addProjectV2ItemById.item.id;
+      return (data.addProjectV2ItemById as { item: { id: string } }).item.id;
     } catch (error) {
       logger.error("Failed to add issue to project", {
         issueId,
@@ -434,7 +482,7 @@ export class GitHubProjectsIntegration {
         repo: this.repo,
       });
 
-      return data.repository.id;
+      return (data.repository as { id: string }).id;
     } catch (error) {
       logger.error("Failed to get repository ID", {
         owner: this.owner,
@@ -474,8 +522,8 @@ export class GitHubProjectsIntegration {
           labelNames: [labelName],
         });
 
-        const label = data.repository.labels.nodes.find(
-          (label: any) => label.name === labelName,
+        const label = (data.repository as { labels: { nodes: GitHubLabelNode[] } }).labels.nodes.find(
+          (label: GitHubLabelNode) => label.name === labelName,
         );
 
         if (label) {
@@ -496,9 +544,9 @@ export class GitHubProjectsIntegration {
   /**
    * Get status field ID
    */
-  private async getStatusFieldId(): Promise<string> {
+private async getStatusFieldId(): Promise<string> {
     const query = `
-      query($projectId: ID!) {
+      query getProjectStatusField($projectId: ID!) {
         node(id: $projectId) {
           ... on ProjectV2 {
             fields(first: 20) {
@@ -519,8 +567,8 @@ export class GitHubProjectsIntegration {
         projectId: this.projectId,
       });
 
-      const statusField = data.node.fields.nodes.find(
-        (field: any) => field.name === "Status" || field.name === "status",
+      const statusField = (data.node as { fields: { nodes: GitHubFieldNode[] } }).fields.nodes.find(
+        (field: GitHubFieldNode) => field.name === "Status" || field.name === "status",
       );
 
       if (!statusField) {
@@ -566,16 +614,16 @@ export class GitHubProjectsIntegration {
         projectId: this.projectId,
       });
 
-      const statusField = data.node.fields.nodes.find(
-        (field: any) => field.name === "Status" || field.name === "status",
+      const statusField = (data.node as { fields: { nodes: GitHubFieldNode[] } }).fields.nodes.find(
+        (field: GitHubFieldNode) => field.name === "Status" || field.name === "status",
       );
 
       if (!statusField) {
         throw new Error("Status field not found in project");
       }
 
-      const option = statusField.options.find(
-        (opt: any) => opt.name.toLowerCase() === statusName.toLowerCase(),
+      const option = statusField.options?.find(
+        (opt) => opt.name.toLowerCase() === statusName.toLowerCase(),
       );
 
       if (!option) {
@@ -732,31 +780,8 @@ export class GitHubProjectsIntegration {
           c.taskId === taskId,
       );
 
-      if (progressCard) {
+if (progressCard) {
         // Update existing card
-        const updatedBody = progressCard.body
-          .replace(/Progress: \d+%/, `Progress: ${progress}%`)
-          .replace(/Current Stage: .*/, `Current Stage: ${workflowStage}`);
-
-        // Update checkboxes based on progress
-        const updatedBodyWithCheckboxes = updatedBody
-          .replace(
-            /\[x\]\] Issue Analysis/,
-            `[${progress >= 25 ? "x" : " "}] Issue Analysis`,
-          )
-          .replace(
-            /\[x\]\] Code Generation/,
-            `[${progress >= 50 ? "x" : " "}] Code Generation`,
-          )
-          .replace(
-            /\[x\]\] Code Review/,
-            `[${progress >= 75 ? "x" : " "}] Code Review`,
-          )
-          .replace(
-            /\[x\]\] PR Creation/,
-            `[${progress >= 100 ? "x" : " "}] PR Creation`,
-          );
-
         // Note: GitHub Projects API doesn't easily support updating card content
         // This would require additional implementation
 
