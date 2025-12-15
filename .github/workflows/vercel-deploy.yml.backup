@@ -2,9 +2,9 @@ name: Deploy to Vercel
 
 on:
   push:
-    branches: [main, master, master-clean, preview-deployment]
+    branches: [main, master, preview-deployment]
   pull_request:
-    branches: [main, master, master-clean, preview-deployment]
+    branches: [main, master, preview-deployment]
   workflow_dispatch:
 
 jobs:
