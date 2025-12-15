@@ -1,79 +1,66 @@
 # Dependencies
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+package-lock.json
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Environment files (keep .env.example for reference)
+.env*
+!.env.example
 
-# Keep development environment files out of repo
-.env.development
-.env.production
-
-# Build outputs
+# Build outputs and development files
 dist/
 build/
-out/
 *.tsbuildinfo
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Development and testing files
+*.test.ts
+*.spec.ts
+vitest.config.ts
+coverage/
+.nyc_output
 
-# IDE files
+# Development tools and documentation
+docs/
+tasks/
+tools/
+scripts/
+build.js
+server.js
+
+# AI agent ecosystem
+opencode-agents/
+.opencode/
+AGENTS.md
+
+# GitHub integration (development only)
+src/github-system/
+
+# Environment files
+.env.development
+.env.production
+.env.test
+
+# Backup files
+index.html.backup
+src_backup_*
+*.backup
+
+# Development configurations
+tsconfig.dev.json
+tsconfig.api.json
+.browserslistrc
+
+# OS/IDE files
+.DS_Store
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
-# Logs
-logs
+# Logs and temporary files
 *.log
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-.nyc_output
-
-# Temporary folders
+npm-debug.log*
 tmp/
 temp/
 
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Bun
-.bun
-.bun.lockb
-.vercel
-.env*.local
-
-# Kanban implementation
-data/kanban_payload.json*
-docs/kanban-*.md
-.github/workflows/kanban-sync-classic.yml
-tools/utils/*kanban*.js
-tools/tests/test-kanban-sync.js
-tasks/subtasks/live-sync-local-tasks-kanban/
-docs/tasks/**/kanban*
-docs/tasks/**/update-kanban-payload/
+# Vercel
+.vercel/

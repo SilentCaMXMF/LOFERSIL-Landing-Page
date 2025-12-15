@@ -1,99 +1,51 @@
-# Dependencies
-node_modules
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+# Development and testing files
+src/scripts/test/
+*.test.ts
+*.spec.ts
+vitest.config.ts
+.browserslistrc
 
-# Environment files (keep .env.example for reference)
+# Documentation
+docs/
+tasks/
+*.md
+
+# Tools and scripts
+tools/
+scripts/
+build.js
+server.js
+
+# Environment files
 .env*
 !.env.example
 
-# Development configuration
+# Development configurations
 .eslintrc*
 .prettierrc*
-.vscode
-.idea
 
-# Build artifacts (Vercel handles this)
-build
-out
-
-# Source maps (exclude from production)
-*.map
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage
-.nyc_output
-
-# Temporary folders
-tmp
-temp
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# OpenCode development files
+# AI agent ecosystem
+opencode-agents/
 .opencode/
-# Node.js 22.x specific exclusions
-.node_repl_history
-.nyc_output
+AGENTS.md
 
-# Development directories (keep essential ones)
-docs/
-tools/
-k8s/
-tasks/subtasks/
-config/
-data/
+# GitHub integration (development only)
+src/github-system/
 
-# Development and test files
-*.test.*
-*.spec.*
-eslint.config.js
-vitest.config.ts
-.browserslistrc
-make_executable.sh
-test-*.sh
-cloudflare-troubleshoot.js
-extract_tasks.js
-optimize-images.js
-update-task-statuses.cjs
-accessibility-report.json
-axe-report.json
-axe-report-fixed.json
-pa11y-report.json
+# Backup files
+index.html.backup
+src_backup_*
+*.backup
 
-# Development scripts
-build.js
-tools/build/build.js
+# Development configurations
+tsconfig.dev.json
+tsconfig.api.json
 
-# Configuration files (keep essential ones)
-.vercelignore
-.gitignore
-README.md
+# OS/IDE files
+.vscode/
+.idea/
 
-# Node.js 22.x build optimizations
-tsconfig.json
-tsconfig.prod.json
-postcss.config.js
-.vite/
-.vitest/
+# Logs and temporary files
+*.log
+coverage/
+.nyc_output/
