@@ -196,6 +196,9 @@ export type {
   TransportStats,
   TransportEventData,
   TransportError,
+};
+
+export {
   TransportErrorType,
 };
 

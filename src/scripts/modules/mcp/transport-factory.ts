@@ -25,6 +25,7 @@ import {
   MCPErrorCategory,
   MCPErrorContext,
   MCPErrorSeverity,
+  MCPOperationResult,
   createMCPErrorContext,
   generateMCPErrorId,
   sanitizeMCPErrorMessage,
@@ -759,12 +760,13 @@ class WebSocketTransportWrapper implements MCPTransport {
       // Handle both MCPOperationResult and direct Record<string, unknown>
       if (result && typeof result === "object" && "success" in result) {
         // It's an MCPOperationResult
-        return result.success && result.data
-          ? result.data
+        const operationResult = result as MCPOperationResult<Record<string, unknown>>;
+        return operationResult.success && operationResult.data
+          ? operationResult.data
           : { error: "Diagnostics failed" };
       }
       // It's already a Record<string, unknown>
-      return result as Record<string, unknown>;
+      return result as unknown as Record<string, unknown>;
     } catch (error) {
       return {
         error: (error as Error).message,
