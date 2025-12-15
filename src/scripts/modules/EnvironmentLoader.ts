@@ -9,7 +9,6 @@
 interface EnvironmentConfig {
   NODE_ENV?: string;
   OPENAI_API_KEY?: string;
-  GEMINI_API_KEY?: string;
   GOOGLE_ANALYTICS_ID?: string;
   MCP_API_KEY?: string;
   MCP_SERVER_URL?: string;
@@ -19,15 +18,13 @@ interface EnvironmentConfig {
   EMAILJS_SERVICE_ID?: string;
   EMAILJS_TEMPLATE_ID?: string;
   EMAILJS_PUBLIC_KEY?: string;
-  CONTACT_API_ENDPOINT?: string;
   [key: string]: string | undefined;
 }
 
 /**
  * Required environment variables
- * Note: API keys are optional for basic site functionality
  */
-const REQUIRED_ENV_VARS: readonly string[] = [];
+const REQUIRED_ENV_VARS = ["OPENAI_API_KEY", "GEMINI_API_KEY"] as const;
 
 /**
  * Default environment values
@@ -63,13 +60,9 @@ export class EnvironmentLoader {
       Object.assign(config, (window as any).ENV);
     }
 
-    // Browser-safe environment detection
-    // Check for import.meta.env (Vite) or fallback to development
-    if (typeof import.meta !== "undefined" && import.meta.env) {
-      Object.assign(config, {
-        NODE_ENV: import.meta.env.MODE || "development",
-        // Add any other env vars that might be available at build time
-      });
+    // For Node.js environment (build time)
+    if (typeof process !== "undefined" && process.env) {
+      Object.assign(config, process.env as Partial<EnvironmentConfig>);
     }
 
     return config;
@@ -166,16 +159,6 @@ Available variables: ${
    */
   getAll(): EnvironmentConfig {
     return { ...this.config };
-  }
-
-  /**
-   * Check if optional API keys are available
-   */
-  hasApiKeys(): { openai: boolean; gemini: boolean } {
-    return {
-      openai: !!this.config.OPENAI_API_KEY,
-      gemini: !!this.config.GEMINI_API_KEY,
-    };
   }
 
   /**

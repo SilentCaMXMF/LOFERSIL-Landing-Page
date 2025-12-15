@@ -1,7 +1,10 @@
 /**
- * Browser-Safe Logging Configuration
- * Structured logging for LOFERSIL Landing Page
+ * Production Logging Configuration
+ * Structured logging for the AI-powered GitHub Issues Reviewer System
  */
+
+import fs from "fs";
+import path from "path";
 
 interface LogEntry {
   timestamp: string;
@@ -16,14 +19,11 @@ class Logger {
   private version: string;
 
   constructor() {
-    // Browser-safe environment detection
-    const isProduction =
-      import.meta.env?.MODE === "production" ||
-      (!import.meta.env?.DEV && window.location.hostname !== "localhost");
-
-    this.logLevel = isProduction ? "info" : "debug";
-    this.service = "lofersil-landing-page";
-    this.version = "1.0.0";
+    this.logLevel =
+      process.env.LOG_LEVEL ||
+      (process.env.NODE_ENV === "production" ? "info" : "debug");
+    this.service = "ai-github-issues-reviewer";
+    this.version = process.env.npm_package_version || "1.0.0";
   }
 
   private shouldLog(level: string): boolean {
@@ -44,25 +44,21 @@ class Logger {
       ...meta,
     };
 
-    // Check if we're in production
-    const isProduction =
-      import.meta.env?.MODE === "production" ||
-      (!import.meta.env?.DEV && window.location.hostname !== "localhost");
-
-    if (isProduction) {
+    if (process.env.NODE_ENV === "production") {
       return JSON.stringify(entry);
     } else {
-      // Development format with colors (browser-safe)
+      // Development format with colors
       const colors = {
-        ERROR: "color: #ff4444", // Red
-        WARN: "color: #ffaa00", // Yellow/Orange
-        INFO: "color: #00aaff", // Cyan/Blue
-        DEBUG: "color: #aa00ff", // Purple/Magenta
+        ERROR: "\x1b[31m", // Red
+        WARN: "\x1b[33m", // Yellow
+        INFO: "\x1b[36m", // Cyan
+        DEBUG: "\x1b[35m", // Magenta
       };
       const color = colors[level.toUpperCase() as keyof typeof colors] || "";
+      const reset = "\x1b[0m";
       const time = entry.timestamp.split("T")[1].split(".")[0]; // HH:MM:SS
 
-      let log = `[${time}] ${level.toUpperCase()}: ${message}`;
+      let log = `${color}${time} ${level.toUpperCase()}${reset}: ${message}`;
 
       const metaKeys = Object.keys(meta).filter(
         (key) => !["service", "version"].includes(key),
@@ -79,69 +75,24 @@ class Logger {
     if (!this.shouldLog(level)) return;
 
     const logMessage = this.formatLog(level, message, meta);
+    console.log(logMessage);
 
-    // Browser-safe logging
-    const isProduction =
-      import.meta.env?.MODE === "production" ||
-      (!import.meta.env?.DEV && window.location.hostname !== "localhost");
+    // Write to file in production
+    if (process.env.NODE_ENV === "production") {
+      try {
+        const logDir = path.join(process.cwd(), "logs");
+        if (!fs.existsSync(logDir)) {
+          fs.mkdirSync(logDir, { recursive: true });
+        }
 
-    if (isProduction) {
-      // In production, use appropriate console methods
-      switch (level) {
-        case "error":
-          console.error(logMessage);
-          break;
-        case "warn":
-          console.warn(logMessage);
-          break;
-        case "info":
-          console.info(logMessage);
-          break;
-        case "debug":
-          console.debug(logMessage);
-          break;
-        default:
-          console.log(logMessage);
+        const logFile = level === "error" ? "error.log" : "combined.log";
+        const logPath = path.join(logDir, logFile);
+
+        fs.appendFileSync(logPath, logMessage + "\n");
+      } catch (error) {
+        // Fallback to console if file writing fails
+        console.error("Failed to write to log file:", error);
       }
-    } else {
-      // In development, use styled console logs
-      const colors = {
-        ERROR: "color: #ff4444; font-weight: bold",
-        WARN: "color: #ffaa00; font-weight: bold",
-        INFO: "color: #00aaff",
-        DEBUG: "color: #aa00ff",
-      };
-      const color = colors[level.toUpperCase() as keyof typeof colors] || "";
-
-      if (color) {
-        console.log(`%c${logMessage}`, color);
-      } else {
-        console.log(logMessage);
-      }
-    }
-
-    // Optional: Send logs to external service in production
-    if (isProduction && level === "error") {
-      this.sendToExternalService(level, message, meta);
-    }
-  }
-
-  private sendToExternalService(
-    level: string,
-    message: string,
-    meta: any,
-  ): void {
-    // Browser-safe error reporting (optional)
-    try {
-      // You could integrate with services like Sentry, LogRocket, etc.
-      // For now, just log to console
-      console.warn("Error reporting service not configured:", {
-        level,
-        message,
-        meta,
-      });
-    } catch (error) {
-      console.error("Failed to send error to external service:", error);
     }
   }
 
@@ -165,54 +116,76 @@ class Logger {
 // Create logger instance
 export const logger = new Logger();
 
-// Browser-safe event logging
-export function logUserAction(action: string, details: any = {}): void {
-  logger.info("User action", {
-    action,
-    ...details,
+// Request logging middleware
+export function requestLogger(req: any, res: any, next: any): void {
+  const start = Date.now();
+
+  // Log request
+  logger.info("Request received", {
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    userAgent: req.get("User-Agent"),
   });
+
+  // Log response
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    const logLevel = res.statusCode >= 400 ? "warn" : "info";
+
+    if (logLevel === "warn") {
+      logger.warn("Request completed", {
+        method: req.method,
+        url: req.url,
+        status: res.statusCode,
+        duration: `${duration}ms`,
+        ip: req.ip,
+      });
+    } else {
+      logger.info("Request completed", {
+        method: req.method,
+        url: req.url,
+        status: res.statusCode,
+        duration: `${duration}ms`,
+        ip: req.ip,
+      });
+    }
+  });
+
+  next();
 }
 
-// Browser-safe error logging
-export function logError(error: Error, context: any = {}): void {
-  logger.error("Application error", {
-    message: error.message,
+// Error logging middleware
+export function errorLogger(error: any, req: any, res: any, next: any): void {
+  logger.error("Request error", {
+    error: error.message,
     stack: error.stack,
-    ...context,
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
   });
+
+  next(error);
 }
 
-// Browser-safe application logging helpers
+// Application logging helpers
 export const log = {
   info: (message: string, meta: any = {}) => logger.info(message, meta),
   warn: (message: string, meta: any = {}) => logger.warn(message, meta),
   error: (message: string, meta: any = {}) => logger.error(message, meta),
   debug: (message: string, meta: any = {}) => logger.debug(message, meta),
 
-  // Browser-specific logging methods
-  user: (action: string, data: any = {}) =>
-    logger.info("User action", {
-      action,
+  // Specialized logging methods
+  webhook: (event: string, deliveryId: string, data: any = {}) =>
+    logger.info("Webhook received", {
+      event,
+      deliveryId,
       ...data,
     }),
 
-  performance: (metric: string, value: number, data: any = {}) =>
-    logger.info("Performance metric", {
-      metric,
-      value,
-      ...data,
-    }),
-
-  navigation: (page: string, data: any = {}) =>
-    logger.info("Navigation", {
-      page,
-      ...data,
-    }),
-
-  form: (formName: string, action: string, data: any = {}) =>
-    logger.info("Form action", {
-      form: formName,
-      action,
+  task: (action: string, taskId: string, data: any = {}) =>
+    logger.info(`Task ${action}`, {
+      taskId,
       ...data,
     }),
 
@@ -223,40 +196,28 @@ export const log = {
       duration: `${duration}ms`,
       ...data,
     }),
+
+  ai: (action: string, model: string, tokens: number, data: any = {}) =>
+    logger.info(`AI ${action}`, {
+      model,
+      tokens,
+      ...data,
+    }),
+
+  github: (action: string, resource: string, data: any = {}) =>
+    logger.info(`GitHub ${action}`, {
+      resource,
+      ...data,
+    }),
 };
 
-// Browser-safe page lifecycle logging
-if (typeof window !== "undefined") {
-  // Log page visibility changes
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      logger.debug("Page hidden");
-    } else {
-      logger.debug("Page visible");
-    }
-  });
+// Graceful shutdown
+process.on("SIGTERM", () => {
+  logger.info("SIGTERM received, shutting down gracefully");
+});
 
-  // Log page unload
-  window.addEventListener("beforeunload", () => {
-    logger.info("Page unloading");
-  });
-
-  // Log errors
-  window.addEventListener("error", (event) => {
-    logger.error("Unhandled error", {
-      message: event.message,
-      filename: event.filename,
-      lineno: event.lineno,
-      colno: event.colno,
-    });
-  });
-
-  // Log unhandled promise rejections
-  window.addEventListener("unhandledrejection", (event) => {
-    logger.error("Unhandled promise rejection", {
-      reason: event.reason,
-    });
-  });
-}
+process.on("SIGINT", () => {
+  logger.info("SIGINT received, shutting down gracefully");
+});
 
 export default logger;

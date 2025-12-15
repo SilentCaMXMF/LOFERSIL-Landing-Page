@@ -14,10 +14,9 @@ import {
   validateMessage,
   validateContactForm,
 } from "../validation.js";
-
+import { BackgroundSync } from "./BackgroundSync.js";
 import { envLoader } from "./EnvironmentLoader.js";
 import { TranslationManager } from "./TranslationManager.js";
-import { BackgroundSync } from "./BackgroundSync.js";
 
 // Contact form configuration
 interface ContactFormConfig {
@@ -894,35 +893,21 @@ export class ContactFormManager {
         });
       }
 
-      // Check if we're offline and use background sync if available
+      // Check if we're offline
       if (!navigator.onLine) {
-        if (BackgroundSync.isSupported()) {
-          try {
-            await BackgroundSync.registerContactForm(sanitizedData);
-            this.showSuccessMessage(
-              "Sem ligação à internet. A sua mensagem será enviada quando a ligação for restabelecida.",
-            );
-            this.announceToScreenReader(
-              "Form submitted for background sync",
-              "polite",
-            );
-            this.trackSubmissionAttempt(true, "offline_background_sync");
-            this.eventHandlers.onSuccess?.(sanitizedData);
-            return;
-          } catch (syncError) {
-            console.error("Background sync registration failed:", syncError);
-            this.showErrorMessage(
-              "Sem ligação à internet e não foi possível agendar o envio. Por favor, tente novamente quando estiver online.",
-            );
-            this.eventHandlers.onError?.(new Error("Offline and sync failed"));
-            return;
-          }
-        } else {
-          this.showErrorMessage(
-            "Sem ligação à internet. Verifique a sua ligação e tente novamente.",
+        // Try to register for background sync
+        try {
+          await BackgroundSync.registerContactForm(sanitizedData);
+          this.showSuccessMessage(
+            "Mensagem registada para envio quando a ligação for restaurada.",
           );
-          this.eventHandlers.onError?.(new Error("Offline"));
+          this.resetForm();
+          this.eventHandlers.onSuccess?.(sanitizedData);
           return;
+        } catch (syncError) {
+          console.warn("Background sync not available:", syncError);
+          errorMessage =
+            "Está offline. A mensagem será enviada quando a ligação for restaurada.";
         }
       }
 
