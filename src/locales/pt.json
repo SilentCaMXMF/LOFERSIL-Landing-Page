@@ -108,22 +108,30 @@
     "secondaryButton": "Ver Catálogo Online"
   },
   "contact": {
-    "title": "Fale Conosco",
-    "subtitle": "Estamos aqui para ajudar. Entre em contato e nossa equipe responderá rapidamente com todo o cuidado que você merece.",
-    "nameLabel": "Nome *",
-    "emailLabel": "Email *",
-    "phoneLabel": "Telefone",
-    "messageLabel": "Mensagem *",
-    "submitButton": "Enviar Mensagem",
-    "submitButtonLoading": "A enviar...",
+    "title": "Contacte-nos",
+    "subtitle": "Estamos aqui para ajudar. Entre em contacto connosco e a nossa equipa responderá rapidamente com todo o cuidado que merece.",
+    "name": "Nome *",
+    "email": "Email *",
+    "phone": "Telefone",
+    "subject": "Assunto *",
+    "message": "Mensagem *",
+    "submit": "Enviar Mensagem",
+    "submitLoading": "A enviar...",
     "successMessage": "Mensagem enviada com sucesso! Entraremos em contacto brevemente.",
     "errorMessage": "Ocorreu um erro ao enviar a mensagem. Por favor, tente novamente.",
+    "subjectPlaceholder": "Selecionar assunto",
+    "subjectGeneral": "Informações gerais",
+    "subjectProducts": "Produtos",
+    "subjectServices": "Serviços",
+    "subjectCustom": "Encomenda personalizada",
+    "subjectOther": "Outro",
+    "privacy": "Li e aceito a <a href=\"privacy.html\" target=\"_blank\" rel=\"noopener noreferrer\">Política de Privacidade</a> e os <a href=\"terms.html\" target=\"_blank\" rel=\"noopener noreferrer\">Termos de Serviço</a>.",
     "validation": {
       "name": {
         "required": "Nome é obrigatório",
         "tooShort": "Nome deve ter pelo menos 2 caracteres",
         "tooLong": "Nome deve ter menos de 100 caracteres",
-        "invalidChars": "Nome contém caracteres inválidos"
+        "invalid": "Nome contém caracteres inválidos. Apenas letras, espaços, hífens e apóstrofos são permitidos"
       },
       "email": {
         "required": "Email é obrigatório",
@@ -134,11 +142,32 @@
         "invalid": "Por favor, introduza um número de telefone válido",
         "tooLong": "Número de telefone é demasiado longo"
       },
+      "subject": {
+        "required": "Por favor, selecione um assunto",
+        "invalid": "Por favor, selecione um assunto válido"
+      },
       "message": {
         "required": "Mensagem é obrigatória",
         "tooShort": "Mensagem deve ter pelo menos 10 caracteres",
         "tooLong": "Mensagem deve ter menos de 2000 caracteres"
-      }
+      },
+      "privacy": {
+        "required": "É necessário aceitar a política de privacidade"
+      },
+      "network": "Erro de conexão. Por favor, verifique a sua ligação e tente novamente.",
+      "server": "Erro do servidor. Por favor, tente novamente mais tarde.",
+      "unknown": "Ocorreu um erro inesperado. Por favor, tente novamente."
+    },
+    "autoSave": {
+      "saved": "Dados guardados automaticamente.",
+      "restored": "Dados anteriores recuperados."
+    },
+    "accessibility": {
+      "formComplete": "Formulário {percentage}% completo",
+      "fieldValid": "Campo {fieldName} válido",
+      "fieldInvalid": "Campo {fieldName} inválido: {error}",
+      "formSubmitted": "Formulário enviado com sucesso",
+      "formError": "Erro no formulário: {error}"
     }
   },
   "footer": {

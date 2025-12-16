@@ -5,6 +5,9 @@
 
 import { TranslationManager } from "./TranslationManager.js";
 
+// Import the mobile navigation enhancer
+import { MobileNavigationEnhancer } from "../mobile-navigation.js";
+
 export class NavigationManager {
   private navToggle: HTMLElement | null;
   private navMenu: HTMLElement | null;
@@ -12,6 +15,7 @@ export class NavigationManager {
   private isMenuOpen: boolean;
   private isDesktop: boolean;
   private translationManager: TranslationManager | null = null;
+  private mobileEnhancer: MobileNavigationEnhancer | null = null;
 
   constructor() {
     this.navToggle = null;
@@ -21,6 +25,7 @@ export class NavigationManager {
     this.isDesktop = this.checkIsDesktop();
     this.setupDOMElements();
     this.setupEventListeners();
+    this.initializeMobileEnhancements();
   }
 
   /**
@@ -40,11 +45,28 @@ export class NavigationManager {
   }
 
   /**
+   * Initialize mobile navigation enhancements
+   */
+  private initializeMobileEnhancements(): void {
+    // Only initialize on mobile devices
+    if (!this.isDesktop) {
+      this.mobileEnhancer = new MobileNavigationEnhancer();
+    }
+  }
+
+  /**
    * Setup event listeners for navigation
    */
   private setupEventListeners(): void {
-    // Navigation toggle
-    this.navToggle?.addEventListener("click", () => this.toggleMobileMenu());
+    // Navigation toggle - use enhanced version if available
+    this.navToggle?.addEventListener("click", () => {
+      if (this.mobileEnhancer) {
+        this.mobileEnhancer.toggleMenu();
+      } else {
+        this.toggleMobileMenu();
+      }
+    });
+    
     // Close menu when clicking outside
     document.addEventListener("click", (e) => this.handleOutsideClick(e));
     // Close menu on escape key and handle focus trap
@@ -63,17 +85,24 @@ export class NavigationManager {
     // Only allow toggling on mobile devices
     if (this.isDesktop) return;
 
-    this.isMenuOpen = !this.isMenuOpen;
-    if (this.navToggle) {
-      this.navToggle.classList.toggle("active", this.isMenuOpen);
+    // Use enhanced mobile navigation if available
+    if (this.mobileEnhancer) {
+      this.mobileEnhancer.toggleMenu();
+      this.isMenuOpen = this.mobileEnhancer.getMenuState();
+    } else {
+      // Fallback to basic toggle
+      this.isMenuOpen = !this.isMenuOpen;
+      if (this.navToggle) {
+        this.navToggle.classList.toggle("active", this.isMenuOpen);
+      }
+      if (this.navMenu) {
+        this.navMenu.classList.toggle("active", this.isMenuOpen);
+      }
+      // Prevent body scroll when menu is open
+      document.body.classList.toggle("menu-open", this.isMenuOpen);
+      // Update ARIA attributes
+      this.navToggle?.setAttribute("aria-expanded", this.isMenuOpen.toString());
     }
-    if (this.navMenu) {
-      this.navMenu.classList.toggle("active", this.isMenuOpen);
-    }
-    // Prevent body scroll when menu is open
-    document.body.classList.toggle("menu-open", this.isMenuOpen);
-    // Update ARIA attributes
-    this.navToggle?.setAttribute("aria-expanded", this.isMenuOpen.toString());
 
     // Update aria-label based on menu state
     this.updateToggleAriaLabel();
@@ -126,6 +155,14 @@ export class NavigationManager {
     const wasDesktop = this.isDesktop;
     this.isDesktop = this.checkIsDesktop();
 
+    // Initialize or destroy mobile enhancer based on viewport
+    if (!this.isDesktop && !this.mobileEnhancer) {
+      this.mobileEnhancer = new MobileNavigationEnhancer();
+    } else if (this.isDesktop && this.mobileEnhancer) {
+      this.mobileEnhancer.destroy();
+      this.mobileEnhancer = null;
+    }
+
     // If switching from mobile to desktop, close the menu
     if (!wasDesktop && this.isDesktop && this.isMenuOpen) {
       this.closeMobileMenu();
@@ -137,14 +174,21 @@ export class NavigationManager {
    */
   private closeMobileMenu(): void {
     this.isMenuOpen = false;
-    if (this.navToggle) {
-      this.navToggle.classList.remove("active");
+    
+    // Use enhanced mobile navigation if available
+    if (this.mobileEnhancer) {
+      this.mobileEnhancer.closeMenu();
+    } else {
+      // Fallback to basic close
+      if (this.navToggle) {
+        this.navToggle.classList.remove("active");
+      }
+      if (this.navMenu) {
+        this.navMenu.classList.remove("active");
+      }
+      document.body.classList.remove("menu-open");
+      this.navToggle?.setAttribute("aria-expanded", "false");
     }
-    if (this.navMenu) {
-      this.navMenu.classList.remove("active");
-    }
-    document.body.classList.remove("menu-open");
-    this.navToggle?.setAttribute("aria-expanded", "false");
   }
 
   /**

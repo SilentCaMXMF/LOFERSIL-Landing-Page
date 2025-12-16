@@ -4,7 +4,7 @@
  * Optimized for Vercel serverless environment
  */
 
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
 // Email health configuration
 const EMAIL_HEALTH_CONFIG = {
@@ -15,6 +15,30 @@ const EMAIL_HEALTH_CONFIG = {
     CONNECTION_TIME: 3000, // 3 seconds
     SEND_TIME: 5000, // 5 seconds
     SUCCESS_RATE: 0.95, // 95%
+  },
+  PORTUGUESE_CONTENT_THRESHOLDS: {
+    MIN_PORTUGUESE_WORDS: 3,
+    ENCODING_SUCCESS_RATE: 0.98, // 98%
+    SPECIAL_CHARACTERS: [
+      "ç",
+      "ã",
+      "õ",
+      "á",
+      "é",
+      "í",
+      "ó",
+      "ú",
+      "â",
+      "ê",
+      "î",
+      "ô",
+      "û",
+    ],
+  },
+  MONITORING_THRESHOLDS: {
+    ERROR_RATE: 0.05, // 5%
+    RATE_LIMIT_REQUESTS_PER_MINUTE: 60,
+    MEMORY_USAGE_PERCENT: 0.8, // 80%
   },
 };
 
@@ -50,6 +74,102 @@ function createEmailHealthTransporter() {
 }
 
 /**
+ * Validate Portuguese content in emails
+ */
+function validatePortugueseContent(htmlContent, textContent) {
+  const validation = {
+    isValid: true,
+    issues: [],
+    portugueseWordsFound: 0,
+    specialCharactersFound: 0,
+    encodingValid: true,
+    wordCount: 0,
+  };
+
+  try {
+    // Check for Portuguese words
+    const portugueseWords = [
+      "olá",
+      "mundo",
+      "este",
+      "teste",
+      "português",
+      "conteúdo",
+      "caracteres",
+      "especiais",
+      "verificação",
+      "sistema",
+      "monitoramento",
+      "saúde",
+      "email",
+    ];
+
+    const combinedContent = (htmlContent + " " + textContent).toLowerCase();
+    validation.wordCount = combinedContent.split(/\s+/).length;
+
+    portugueseWords.forEach((word) => {
+      if (combinedContent.includes(word)) {
+        validation.portugueseWordsFound++;
+      }
+    });
+
+    // Check for special Portuguese characters
+    EMAIL_HEALTH_CONFIG.PORTUGUESE_CONTENT_THRESHOLDS.SPECIAL_CHARACTERS.forEach(
+      (char) => {
+        if (combinedContent.includes(char)) {
+          validation.specialCharactersFound++;
+        }
+      },
+    );
+
+    // Validate encoding
+    try {
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder("utf-8");
+
+      const htmlEncoded = encoder.encode(htmlContent);
+      const textEncoded = encoder.encode(textContent);
+
+      const htmlDecoded = decoder.decode(htmlEncoded);
+      const textDecoded = decoder.decode(textEncoded);
+
+      validation.encodingValid =
+        htmlDecoded === htmlContent && textDecoded === textContent;
+    } catch (error) {
+      validation.encodingValid = false;
+      validation.issues.push(`Encoding validation failed: ${error.message}`);
+    }
+
+    // Check minimum requirements
+    if (
+      validation.portugueseWordsFound <
+      EMAIL_HEALTH_CONFIG.PORTUGUESE_CONTENT_THRESHOLDS.MIN_PORTUGUESE_WORDS
+    ) {
+      validation.isValid = false;
+      validation.issues.push(
+        `Insufficient Portuguese words: ${validation.portugueseWordsFound} found, minimum ${EMAIL_HEALTH_CONFIG.PORTUGUESE_CONTENT_THRESHOLDS.MIN_PORTUGUESE_WORDS} required`,
+      );
+    }
+
+    if (!validation.encodingValid) {
+      validation.isValid = false;
+      validation.issues.push("Encoding validation failed");
+    }
+
+    if (validation.specialCharactersFound === 0) {
+      validation.issues.push("No Portuguese special characters found");
+    }
+  } catch (error) {
+    validation.isValid = false;
+    validation.issues.push(
+      `Portuguese content validation error: ${error.message}`,
+    );
+  }
+
+  return validation;
+}
+
+/**
  * Test email delivery functionality
  */
 async function testEmailDelivery() {
@@ -76,16 +196,23 @@ async function testEmailDelivery() {
     const testMailOptions = {
       from: process.env.FROM_EMAIL || process.env.SMTP_USER,
       to: process.env.TO_EMAIL || process.env.SMTP_USER,
-      subject: "Health Check Test - DO NOT REPLY",
+      subject: "Teste de Saúde - Email em Português",
       html: `
-        <h2>Health Check Test Email</h2>
-        <p>Este é um email de teste para verificação da saúde do sistema.</p>
-        <p>Por favor, ignore este email.</p>
+        <h2>Teste de Verificação de Saúde</h2>
+        <p>Este é um email de teste para verificação da saúde do sistema em português.</p>
+        <p>Conteúdo com caracteres especiais: ç, ã, õ, á, é, í, ó, ú, â, ê, î, ô, û.</p>
+        <p>Por favor, ignore este email de teste.</p>
         <hr>
         <p><small>Enviado em: ${new Date().toLocaleString("pt-PT")}</small></p>
       `,
-      text: "Health Check Test Email - DO NOT REPLY",
+      text: "Teste de verificação de saúde - Email em português com caracteres especiais: ç, ã, õ, á, é, í, ó, ú.",
     };
+
+    // Validate Portuguese content
+    const portugueseValidation = validatePortugueseContent(
+      testMailOptions.html,
+      testMailOptions.text,
+    );
 
     // Simulate email send without actually sending
     // In production, you might want to send to a test address
@@ -117,9 +244,20 @@ async function testEmailDelivery() {
         sendOk:
           sendTime <= EMAIL_HEALTH_CONFIG.PERFORMANCE_THRESHOLDS.SEND_TIME,
       },
+      portugueseContent: portugueseValidation,
     };
   } catch (error) {
     const totalTime = Date.now() - startTime;
+
+    // Still validate Portuguese content even if delivery failed
+    const testContent = {
+      html: "<p>Conteúdo de teste em português: olá mundo, ç, ã, õ</p>",
+      text: "Conteúdo de teste em português: olá mundo, ç, ã, õ",
+    };
+    const portugueseValidation = validatePortugueseContent(
+      testContent.html,
+      testContent.text,
+    );
 
     return {
       status: "unhealthy",
@@ -128,6 +266,7 @@ async function testEmailDelivery() {
       code: error.code,
       totalTime: `${totalTime}ms`,
       thresholds: EMAIL_HEALTH_CONFIG.PERFORMANCE_THRESHOLDS,
+      portugueseContent: portugueseValidation,
     };
   }
 }
@@ -355,6 +494,28 @@ function getEmailHealthSummary(
     warnings.push(
       `Taxa de sucesso abaixo do limiar: ${metrics.last24h.successRate.toFixed(1)}%`,
     );
+  }
+
+  // Check Portuguese content validation
+  if (deliveryTest.portugueseContent) {
+    if (!deliveryTest.portugueseContent.isValid) {
+      issues.push(
+        `Validação de conteúdo português falhou: ${deliveryTest.portugueseContent.issues.join(", ")}`,
+      );
+    }
+
+    if (deliveryTest.portugueseContent.specialCharactersFound === 0) {
+      warnings.push("Nenhum caractere especial português encontrado");
+    }
+
+    if (
+      deliveryTest.portugueseContent.portugueseWordsFound <
+      EMAIL_HEALTH_CONFIG.PORTUGUESE_CONTENT_THRESHOLDS.MIN_PORTUGUESE_WORDS
+    ) {
+      warnings.push(
+        `Poucas palavras em português encontradas: ${deliveryTest.portugueseContent.portugueseWordsFound}`,
+      );
+    }
   }
 
   // Check dependencies

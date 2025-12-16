@@ -2,6 +2,7 @@
 <!-- Deployment trigger -->
 <html lang="pt">
   <head>
+    <!-- Critical meta tags (render-blocking) -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
@@ -43,16 +44,48 @@
       LOFERSIL - Produtos Premium & Serviços em Lisboa | Loja de Confiança
     </title>
 
-    <!-- Google Fonts -->
+    <!-- Performance optimizations: Resource hints -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="//www.google-analytics.com" />
+
+    <!-- Critical CSS (inline for faster rendering) -->
+    <style>
+      /* Critical CSS for above-the-fold content */
+      body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+      .skip-link{position:absolute;top:-40px;left:6px;background:#228b22;color:#fff;padding:8px 16px;text-decoration:none;border-radius:4px;z-index:1000;font-weight:500;transition:top .3s ease}
+      .skip-link:focus{top:6px;outline:2px solid #fff;outline-offset:2px}
+      .header{position:fixed;top:0;left:0;right:0;background:#fff;backdrop-filter:blur(10px);border-bottom:1px solid #e5e7eb;z-index:1030;transition:.25s ease-in-out}
+      .hero{padding:calc(4rem + 5rem) 0 5rem;background:linear-gradient(135deg,#f9fafb 0%,#fff 100%);position:relative;overflow:hidden}
+      .hero-container{max-width:1200px;margin:0 auto;padding:0 1rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+      .hero-title{font-family:"Playfair Display",Georgia,"Times New Roman",Times,serif;font-size:clamp(1.875rem,8vw,3rem);font-weight:700;color:#111827;margin-bottom:1rem;line-height:1.25;letter-spacing:-.02em}
+      .hero-subtitle{font-size:clamp(1.125rem,6vw,1.5rem);font-weight:600;color:#228b22;margin-bottom:1.5rem;letter-spacing:-.01em}
+      .hero-actions{display:flex;gap:1rem;flex-wrap:wrap}
+      .btn{display:inline-flex;align-items:center;justify-content:center;padding:.75rem 1.5rem;font-size:1rem;font-weight:600;text-decoration:none;border-radius:.25rem;border:none;cursor:pointer;transition:.15s ease-in-out;white-space:nowrap;min-height:44px}
+      .btn-primary{background-color:#228b22;color:#fff}
+      .btn-primary:hover{background-color:#1e6b1e;transform:translateY(-2px);box-shadow:0 4px 6px -1px rgb(0 0 0 / .1),0 2px 4px -2px rgb(0 0 0 / .1)}
+      .btn-secondary{background-color:#fff;color:#228b22;border:2px solid #228b22}
+      .btn-secondary:hover{background-color:#228b22;color:#fff;transform:translateY(-2px);box-shadow:0 4px 6px -1px rgb(0 0 0 / .1),0 2px 4px -2px rgb(0 0 0 / .1)}
+      .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+      .loading{opacity:.6;pointer-events:none}
+      .loading::after{content:"";position:absolute;top:50%;left:50%;width:1rem;height:1rem;margin:-.5rem 0 0 -.5rem;border:2px solid #d1d5db;border-top-color:#228b22;border-radius:50%;animation:spin 1s linear infinite}
+      @keyframes spin{to{transform:rotate(360deg)}}
+    </style>
+
+    <!-- Optimized font loading with font-display: swap -->
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
 
     <!-- Favicon -->
@@ -78,16 +111,16 @@
     <!-- Web App Manifest -->
     <link rel="manifest" href="site.webmanifest" />
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="main.css" />
-
     <!-- Preload critical resources -->
+    <link rel="preload" href="main.css" as="style" />
     <link rel="preload" href="assets/images/logo.jpg" as="image" />
     <link rel="preload" href="assets/images/Frente_loja_100.webp" as="image" />
+    <link rel="preload" href="src/scripts/hero-controller.js" as="script" />
+    <link rel="preload" href="src/scripts/mobile-navigation.js" as="script" />
+    <link rel="preload" href="src/scripts/performance-optimizer.js" as="script" />
 
-    <!-- DNS prefetch for external resources -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <!-- Non-critical CSS (loaded asynchronously) -->
+    <link rel="stylesheet" href="main.css" media="print" onload="this.media='all'" />
   </head>
   <body>
     <!-- Skip to main content -->
@@ -125,57 +158,61 @@
             aria-label="Open navigation menu"
             data-translate="nav.toggle"
             data-translate-aria="nav.toggle"
+            type="button"
           >
             <span class="nav-toggle-line"></span>
             <span class="nav-toggle-line"></span>
             <span class="nav-toggle-line"></span>
           </button>
 
-          <div class="nav-menu" id="nav-menu">
-            <ul class="nav-list">
-              <li class="nav-item">
-                <a href="#home" class="nav-link" data-translate="nav.home"
+          <div class="nav-menu" id="nav-menu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+            <ul class="nav-list" role="menu">
+              <li class="nav-item" role="none">
+                <a href="#home" class="nav-link" data-translate="nav.home" role="menuitem"
                   >Início</a
                 >
               </li>
-              <li class="nav-item">
-                <a href="#about" class="nav-link" data-translate="nav.about"
+              <li class="nav-item" role="none">
+                <a href="#about" class="nav-link" data-translate="nav.about" role="menuitem"
                   >Sobre Nós</a
                 >
               </li>
-              <li class="nav-item">
+              <li class="nav-item" role="none">
                 <a
                   href="#products"
                   class="nav-link"
                   data-translate="nav.products"
+                  role="menuitem"
                   >Produtos</a
                 >
               </li>
-              <li class="nav-item">
+              <li class="nav-item" role="none">
                 <a
                   href="#services"
                   class="nav-link"
                   data-translate="nav.services"
+                  role="menuitem"
                   >Serviços</a
                 >
               </li>
-              <li class="nav-item">
-                <a href="#contact" class="nav-link" data-translate="nav.contact"
+              <li class="nav-item" role="none">
+                <a href="#contact" class="nav-link" data-translate="nav.contact" role="menuitem"
                   >Contacto</a
                 >
               </li>
             </ul>
 
             <!-- Language Switcher -->
-            <div class="nav-language">
+            <div class="nav-language" role="group" aria-label="Language selection">
               <button
                 class="lang-btn active"
                 data-lang="pt"
                 aria-label="Português"
+                type="button"
               >
                 PT
               </button>
-              <button class="lang-btn" data-lang="en" aria-label="English">
+              <button class="lang-btn" data-lang="en" aria-label="English" type="button">
                 EN
               </button>
             </div>
@@ -213,13 +250,34 @@
             </div>
           </div>
           <div class="hero-image">
-            <img
-              src="assets/images/Frente_loja_100.webp"
-              alt="Fachada da LOFERSIL em Lisboa"
-              width="600"
-              height="400"
-              loading="eager"
-            />
+            <picture>
+              <!-- Modern formats for performance -->
+              <source
+                srcset="assets/images/Frente_loja_100.webp"
+                type="image/webp"
+                width="600"
+                height="400"
+              />
+              <source
+                srcset="assets/images/Frente loja.jpg"
+                type="image/jpeg"
+                width="600"
+                height="400"
+              />
+              <!-- Fallback image with loading optimization -->
+              <img
+                class="hero-img"
+                src="assets/images/Frente_loja_100.webp"
+                alt="Fachada da LOFERSIL em Lisboa - Loja de produtos premium em Lisboa"
+                width="600"
+                height="400"
+                loading="eager"
+                decoding="async"
+                importance="high"
+                fetchpriority="high"
+                style="aspect-ratio: 3/2; object-fit: cover;"
+              />
+            </picture>
           </div>
         </div>
       </section>
@@ -277,7 +335,7 @@
       </section>
 
       <!-- Products Section -->
-      <section id="products" class="products">
+      <section id="products" class="products-showcase">
         <div class="container">
           <div class="section-header">
             <h2 class="section-title" data-translate="products.title">
@@ -288,59 +346,35 @@
             </p>
           </div>
 
-          <div class="products-grid">
-            <!-- Product 1: Papelaria -->
-            <div class="product-card">
-              <div class="product-image">
-                <img
-                  src="assets/images/Dossiers.jpg"
-                  alt="Dossiers e material de escritório"
-                  width="300"
-                  height="200"
-                  loading="lazy"
-                />
-              </div>
-              <div class="product-content">
-                <h3
-                  class="product-title"
-                  data-translate="products.stationery.title"
-                >
-                  Papelaria & Material de Escritório
-                </h3>
-                <p
-                  class="product-description"
-                  data-translate="products.stationery.description"
-                >
-                  Uma seleção completa de material de escritório, dossiers,
-                  agendas e acessórios de qualidade premium.
-                </p>
-              </div>
-            </div>
+          <!-- Category Filters -->
+          <div class="category-filters" role="group" aria-label="Filtrar produtos por categoria">
+            <button class="category-filter active" data-category="all" aria-pressed="true">
+              Todos
+            </button>
+            <button class="category-filter" data-category="papelaria" aria-pressed="false">
+              Papelaria
+            </button>
+            <button class="category-filter" data-category="bebe" aria-pressed="false">
+              Artigos para Bebé
+            </button>
+            <button class="category-filter" data-category="joias" aria-pressed="false">
+              Joias
+            </button>
+            <button class="category-filter" data-category="canetas" aria-pressed="false">
+              Canetas Promocionais
+            </button>
+            <button class="category-filter" data-category="mochilas" aria-pressed="false">
+              Mochilas
+            </button>
+            <button class="category-filter" data-category="tinteiros" aria-pressed="false">
+              Cartuchos de Tinta
+            </button>
+          </div>
 
-            <!-- Product 2: Artigos para Bebé -->
-            <div class="product-card">
-              <div class="product-image">
-                <img
-                  src="assets/images/Bebés_nenucos.jpg"
-                  alt="Artigos para bebé - Nenucos e acessórios"
-                  width="300"
-                  height="200"
-                  loading="lazy"
-                />
-              </div>
-              <div class="product-content">
-                <h3 class="product-title" data-translate="products.baby.title">
-                  Artigos para Bebé
-                </h3>
-                <p
-                  class="product-description"
-                  data-translate="products.baby.description"
-                >
-                  Nenucos, chupetas, brinquedos e acessórios para bebé de marcas
-                  reconhecidas e qualidade superior.
-                </p>
-              </div>
-            </div>
+          <!-- Products Grid -->
+          <div class="products-grid">
+            <!-- Products will be dynamically inserted here by JavaScript -->
+          </div>
             <div class="about-gallery">
               <div class="about-gallery-item">
                 <picture>
@@ -804,49 +838,79 @@
       </section>
 
             <div class="contact-form">
-              <form id="contactForm" action="/api/contact" method="POST">
+              <form id="contactForm" action="/api/contact" method="POST" novalidate>
                 <div class="form-group">
-                  <label for="name" data-translate="contact.form.name"
-                    >Nome *</label
-                  >
+                  <label for="name" id="name-label" data-translate="contact.form.name">
+                    Nome *
+                  </label>
                   <input
                     type="text"
                     id="name"
                     name="name"
                     required
                     aria-required="true"
+                    aria-labelledby="name-label"
+                    aria-describedby="name-error"
+                    autocomplete="name"
+                    maxlength="100"
+                    placeholder="O seu nome completo"
                   />
+                  <div class="field-helper" id="name-helper">
+                    Introduza o seu nome completo (2-100 caracteres)
+                  </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="email" data-translate="contact.form.email"
-                    >Email *</label
-                  >
+                  <label for="email" id="email-label" data-translate="contact.form.email">
+                    Email *
+                  </label>
                   <input
                     type="email"
                     id="email"
                     name="email"
                     required
                     aria-required="true"
+                    aria-labelledby="email-label"
+                    aria-describedby="email-error"
+                    autocomplete="email"
+                    maxlength="254"
+                    placeholder="o.seu.email@exemplo.com"
                   />
+                  <div class="field-helper" id="email-helper">
+                    Introduza um endereço de email válido
+                  </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="phone" data-translate="contact.form.phone"
-                    >Telefone</label
-                  >
-                  <input type="tel" id="phone" name="phone" />
+                  <label for="phone" id="phone-label" data-translate="contact.form.phone">
+                    Telefone
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    aria-labelledby="phone-label"
+                    aria-describedby="phone-error"
+                    autocomplete="tel"
+                    maxlength="20"
+                    placeholder="+351 123 456 789 (opcional)"
+                  />
+                  <div class="field-helper" id="phone-helper">
+                    Número de telefone para contacto (opcional)
+                  </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="subject" data-translate="contact.form.subject"
-                    >Assunto *</label
-                  >
+                  <label for="subject" id="subject-label" data-translate="contact.form.subject">
+                    Assunto *
+                  </label>
                   <select
                     id="subject"
                     name="subject"
                     required
                     aria-required="true"
+                    aria-labelledby="subject-label"
+                    aria-describedby="subject-error"
                   >
                     <option
                       value=""
@@ -885,28 +949,40 @@
                       Outro
                     </option>
                   </select>
+                  <div class="field-helper" id="subject-helper">
+                    Selecione o motivo do seu contacto
+                  </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="message" data-translate="contact.form.message"
-                    >Mensagem *</label
-                  >
+                  <label for="message" id="message-label" data-translate="contact.form.message">
+                    Mensagem *
+                  </label>
                   <textarea
                     id="message"
                     name="message"
                     rows="5"
                     required
                     aria-required="true"
+                    aria-labelledby="message-label"
+                    aria-describedby="message-error"
+                    maxlength="2000"
+                    placeholder="Descreva detalhadamente a sua mensagem ou dúvida..."
                   ></textarea>
+                  <div class="field-helper" id="message-helper">
+                    Descreva a sua mensagem (10-2000 caracteres)
+                  </div>
                 </div>
 
                 <div class="form-group checkbox-group">
-                  <label class="checkbox-label">
+                  <label class="checkbox-label" for="privacy">
                     <input
                       type="checkbox"
+                      id="privacy"
                       name="privacy"
                       required
                       aria-required="true"
+                      aria-describedby="privacy-error"
                     />
                     <span class="checkmark"></span>
                     <span data-translate="contact.form.privacy">
@@ -926,14 +1002,18 @@
                       >.
                     </span>
                   </label>
+                  <div class="field-helper" id="privacy-helper">
+                    É necessário aceitar os termos para enviar a mensagem
+                  </div>
                 </div>
 
                 <button
                   type="submit"
-                  class="btn btn-primary"
+                  class="btn btn-primary btn-large"
                   data-translate="contact.form.submit"
+                  aria-describedby="form-message"
                 >
-                  Enviar Mensagem
+                  <span class="btn-text">Enviar Mensagem</span>
                 </button>
               </form>
             </div>
@@ -1018,11 +1098,36 @@
       </div>
     </footer>
 
-    <!-- Scripts -->
-    <script type="module" src="scripts/index.js"></script>
-    <script type="module" src="scripts/types.js"></script>
-    <script type="module" src="scripts/validation.js"></script>
-    <script type="module" src="scripts/modules/ContactFormManager.js"></script>
-    <script type="module" src="scripts/modules/BackgroundSync.js"></script>
+    <!-- Performance Optimized Scripts -->
+    <!-- Critical scripts (synchronous for above-the-fold) -->
+    <script src="src/scripts/performance-optimizer.js"></script>
+    
+    <!-- Non-critical scripts (deferred) -->
+    <script src="src/scripts/hero-controller.js" defer></script>
+    <script src="src/scripts/mobile-navigation.js" defer></script>
+    <script src="src/scripts/product-showcase.js" defer></script>
+    <script src="src/scripts/contact-form-enhancer.js" defer></script>
+    
+    <!-- Module scripts (deferred) -->
+    <script type="module" defer src="scripts/index.js"></script>
+    <script type="module" defer src="scripts/validation.js"></script>
+    <script type="module" defer src="scripts/modules/ContactFormManager.js"></script>
+    <script type="module" defer src="scripts/modules/BackgroundSync.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      // Register service worker for offline support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

@@ -4,7 +4,7 @@
  * Verifies environment variables and provides detailed status
  */
 
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
 // Vercel-specific configuration
 const VERCEL_CONFIG = {

@@ -95,7 +95,7 @@ describe("Email Delivery Integration Tests", () => {
     };
 
     // Importar handler com configuração real
-    const contactModule = await import("../../../api/contact.js");
+    const contactModule = await import("../../api/contact.js");
     handler = contactModule.default;
   });
 
@@ -482,7 +482,7 @@ describe("Email Delivery Integration Tests", () => {
   describe("Testes de Integração - Health Check", () => {
     it("deve passar health check com SMTP real", async () => {
       // Arrange
-      const { healthEndpoint } = await import("../../../api/contact.js");
+      const { healthEndpoint } = await import("../../api/contact.js");
       const healthReq = { method: "GET" };
       const healthRes = {
         status: vi.fn().mockReturnThis(),

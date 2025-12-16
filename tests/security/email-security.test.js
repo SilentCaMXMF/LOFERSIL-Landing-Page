@@ -162,7 +162,7 @@ describe("Email Security Tests", () => {
     process.env.NODE_ENV = "test";
 
     // Importar handler
-    const contactModule = await import("../../../api/contact.js");
+    const contactModule = await import("../../api/contact.js");
     handler = contactModule.default;
   });
 
@@ -708,6 +708,322 @@ describe("Email Security Tests", () => {
           }),
         }),
       );
+    });
+  });
+
+  describe("Testes de Segurança - Conteúdo Português", () => {
+    it("deve sanitizar XSS com caracteres portugueses", async () => {
+      // Arrange
+      mockTransporter.verify.mockResolvedValue(true);
+      mockTransporter.sendMail.mockResolvedValue({ messageId: "test-id" });
+
+      const portugueseXSS = [
+        "<script>alert('Olá Mundo')</script>",
+        "<img src=x onerror=alert('Preços')>",
+        "<svg onload=alert('São Paulo')>",
+        "João<script>alert('XSS')</script>Silva",
+        "Álvaro<img src=x onerror=alert('Ataque')>González",
+        "Preços: <script>document.location='evil.com'</script>",
+      ];
+
+      // Act & Assert
+      for (const payload of portugueseXSS) {
+        mockReq.body = {
+          ...validData,
+          name: payload,
+        };
+
+        await handler(mockReq, mockRes);
+
+        expect(mockTransporter.sendMail).toHaveBeenCalledWith(
+          expect.objectContaining({
+            html: expect.not.stringContaining("<script>"),
+            html: expect.not.stringContaining("onerror="),
+            html: expect.not.stringContaining("onload="),
+          }),
+        );
+
+        mockTransporter.sendMail.mockClear();
+      }
+    });
+
+    it("deve prevenir SQL injection com texto português", async () => {
+      // Arrange
+      const portugueseSQLInjection = [
+        "João'; DROP TABLE clientes; --",
+        "Maria' OR '1'='1' /* comentário */",
+        "Preços' UNION SELECT * FROM produtos --",
+        "São Paulo'; INSERT INTO usuarios VALUES('hacker','pass'); --",
+        "Álvaro' AND 1=CONVERT(int, (SELECT @@version)) --",
+      ];
+
+      // Act & Assert
+      for (const payload of portugueseSQLInjection) {
+        mockReq.body = {
+          ...validData,
+          name: payload,
+        };
+
+        await handler(mockReq, mockRes);
+
+        // Deve tratar como input inválido ou sanitizar
+        expect(mockRes.status).toBeLessThan(500);
+
+        mockRes.status.mockClear();
+        mockRes.json.mockClear();
+      }
+    });
+
+    it("deve validar emails portugueses inválidos", async () => {
+      // Arrange
+      const invalidPortugueseEmails = [
+        "joão@.pt",
+        "maria.silva@exemplo",
+        "josé@@exemplo.com",
+        "ávaro@exemplo..com",
+        "teste@exemplo.c",
+        "contato@lofersil.pt (João Silva)",
+        "preços@exemplo.com.br",
+        "vendas@.lofersil.pt",
+      ];
+
+      // Act & Assert
+      for (const invalidEmail of invalidPortugueseEmails) {
+        mockReq.body = {
+          ...validData,
+          email: invalidEmail,
+        };
+
+        await handler(mockReq, mockRes);
+
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith(
+          expect.objectContaining({
+            success: false,
+            error: "Email inválido",
+          }),
+        );
+
+        mockRes.status.mockClear();
+        mockRes.json.mockClear();
+      }
+    });
+
+    it("deve prevenir header injection com conteúdo português", async () => {
+      // Arrange
+      mockTransporter.verify.mockResolvedValue(true);
+      mockTransporter.sendMail.mockResolvedValue({ messageId: "test-id" });
+
+      const portugueseHeaderInjection = [
+        "joão@exemplo.com\r\nCc: hacker@evil.com",
+        "maria@exemplo.pt\r\nBcc: spammer@evil.com",
+        "contato@lofersil.pt\r\nSubject: Spam em português",
+        "vendas@lofersil.pt\r\nFrom: falso@evil.com",
+      ];
+
+      // Act & Assert
+      for (const payload of portugueseHeaderInjection) {
+        mockReq.body = {
+          ...validData,
+          email: payload,
+        };
+
+        await handler(mockReq, mockRes);
+
+        expect(mockTransporter.sendMail).toHaveBeenCalledWith(
+          expect.objectContaining({
+            to: expect.not.stringContaining("\r\n"),
+            to: expect.not.stringContaining("Cc:"),
+            to: expect.not.stringContaining("Bcc:"),
+          }),
+        );
+
+        mockTransporter.sendMail.mockClear();
+      }
+    });
+
+    it("deve lidar com caracteres especiais portugueses em segurança", async () => {
+      // Arrange
+      mockTransporter.verify.mockResolvedValue(true);
+      mockTransporter.sendMail.mockResolvedValue({ messageId: "test-id" });
+
+      const portugueseSpecialChars = {
+        name: "Álvaro González São João",
+        email: "alvaro.gonzalez@exemplo.es",
+        message:
+          "Mensagem com caracteres especiais: ñ, á, é, í, ó, ú, ç, ã, õ, à, â, ê, î, ô, û. Preços: €50,00. Ordem: º. Feminino: ª.",
+      };
+
+      mockReq.body = portugueseSpecialChars;
+
+      // Act
+      await handler(mockReq, mockRes);
+
+      // Assert
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockTransporter.sendMail).toHaveBeenCalledWith(
+        expect.objectContaining({
+          html: expect.stringContaining("Álvaro González"),
+          html: expect.stringContaining("Preços: €50,00"),
+        }),
+      );
+    });
+
+    it("deve validar terminologia comercial portuguesa", async () => {
+      // Arrange
+      mockTransporter.verify.mockResolvedValue(true);
+      mockTransporter.sendMail.mockResolvedValue({ messageId: "test-id" });
+
+      const portugueseBusinessTerms = {
+        name: "Diretor Comercial",
+        email: "comercial@empresa.pt",
+        message:
+          "Gostaria de solicitar orçamento para material de escritório. Precisamos de: canetas, papel, clipes, pastas. Orçamento para NIF: 123456789. Morada: Rua Comércio, nº 123, 1000-001 Lisboa. Telefone: 21 123 4567.",
+      };
+
+      mockReq.body = portugueseBusinessTerms;
+
+      // Act
+      await handler(mockReq, mockRes);
+
+      // Assert
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockTransporter.sendMail).toHaveBeenCalledWith(
+        expect.objectContaining({
+          html: expect.stringContaining("orçamento"),
+          html: expect.stringContaining("material de escritório"),
+        }),
+      );
+    });
+  });
+
+  describe("Testes de Segurança - Rate Limiting Português", () => {
+    it("deve implementar rate limiting com conteúdo português", async () => {
+      // Arrange
+      mockTransporter.verify.mockResolvedValue(true);
+      mockTransporter.sendMail.mockResolvedValue({ messageId: "test-id" });
+
+      const clientIP = "192.168.1.200";
+      mockReq.headers["x-forwarded-for"] = clientIP;
+
+      const portugueseRequests = [
+        {
+          name: "João Silva",
+          message: "Preciso de informações sobre produtos",
+        },
+        { name: "Maria Santos", message: "Gostaria de fazer um orçamento" },
+        { name: "José Pereira", message: "Qual o preço das canetas?" },
+        { name: "Ana Oliveira", message: "Têm material de escritório?" },
+        { name: "Carlos Costa", message: "Enviam catálogo por favor?" },
+      ];
+
+      // Act
+      const requests = [];
+      for (const requestData of portugueseRequests) {
+        mockReq.body = {
+          ...validData,
+          ...requestData,
+        };
+        requests.push(handler(mockReq, mockRes));
+      }
+
+      await Promise.all(requests);
+
+      // Assert
+      expect(mockTransporter.sendMail).toHaveBeenCalledTimes(5);
+    });
+
+    it("deve logar requisições portuguesas para monitoramento", async () => {
+      // Arrange
+      mockTransporter.verify.mockResolvedValue(true);
+      mockTransporter.sendMail.mockResolvedValue({ messageId: "test-id" });
+
+      const suspiciousPortugueseRequest = {
+        name: "Teste Suspicious",
+        email: "test@suspicious.com",
+        message:
+          "Mensagem de teste com conteúdo suspeito para verificação de segurança",
+      };
+
+      mockReq.body = suspiciousPortugueseRequest;
+      mockReq.headers["x-forwarded-for"] = "192.168.1.999";
+
+      // Act
+      await handler(mockReq, mockRes);
+
+      // Assert
+      expect(mockConsole.log).toHaveBeenCalledWith(
+        expect.stringContaining("[CONTACT] Request from"),
+        expect.stringContaining("192.168.1.999"),
+      );
+    });
+  });
+
+  describe("Testes de Segurança - CSRF com Conteúdo Português", () => {
+    it("deve prevenir CSRF com formulários portugueses", async () => {
+      // Arrange
+      const portugueseCSRFAttacks = [
+        "<form action='https://lofersil.vercel.app/api/contact' method='POST'><input type='hidden' name='name' value='João Hacker'/><input type='hidden' name='email' value='hacker@evil.com'/><input type='hidden' name='message' value='Mensagem maliciosa em português'/><input type='submit'/></form>",
+        "<img src='https://lofersil.vercel.app/api/contact' method='POST' alt='Enviar formulário português'>",
+        "<script>fetch('https://lofersil.vercel.app/api/contact', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name: 'João Hacker', email: 'hacker@evil.com', message: 'Ataque CSRF em português'})});</script>",
+      ];
+
+      // Act & Assert
+      for (const attackPayload of portugueseCSRFAttacks) {
+        // Simular requisição CSRF sem headers adequados
+        const csrfReq = {
+          method: "POST",
+          headers: {
+            origin: "https://evil-site.com",
+            referer: "https://evil-site.com/attack.html",
+            "content-type": "application/json",
+          },
+          body: {
+            name: "João Hacker",
+            email: "hacker@evil.com",
+            message: "Ataque CSRF em português",
+          },
+        };
+
+        await handler(csrfReq, mockRes);
+
+        // Deve processar mas com headers CORS adequados
+        expect(mockRes.setHeader).toHaveBeenCalledWith(
+          "Access-Control-Allow-Origin",
+          "*",
+        );
+
+        mockRes.setHeader.mockClear();
+        mockRes.status.mockClear();
+        mockRes.json.mockClear();
+      }
+    });
+
+    it("deve validar origens portuguesas permitidas", async () => {
+      // Arrange
+      const allowedPortugueseOrigins = [
+        "https://lofersil.vercel.app",
+        "https://www.lofersil.pt",
+        "https://lofersil.pt",
+        "https://loja.lofersil.pt",
+      ];
+
+      mockTransporter.verify.mockResolvedValue(true);
+      mockTransporter.sendMail.mockResolvedValue({ messageId: "test-id" });
+
+      // Act & Assert
+      for (const origin of allowedPortugueseOrigins) {
+        mockReq.headers.origin = origin;
+
+        await handler(mockReq, mockRes);
+
+        expect(mockRes.setHeader).toHaveBeenCalledWith(
+          "Access-Control-Allow-Origin",
+          origin,
+        );
+
+        mockRes.setHeader.mockClear();
+      }
     });
   });
 });

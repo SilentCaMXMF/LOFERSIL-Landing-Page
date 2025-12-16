@@ -1,5 +1,5 @@
 // Vercel serverless function for CSRF token generation
-const { createHash } = require("crypto");
+import { createHash } from "crypto";
 
 /**
  * CSRF token configuration

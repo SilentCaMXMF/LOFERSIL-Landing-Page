@@ -12,7 +12,7 @@
     "build:ts:prod": "./node_modules/.bin/tsc --project tsconfig.prod.json",
     "build:ts:api": "tsc --project tsconfig.api.json",
     "build:css": "postcss src/styles/main.css -o dist/main.css",
-    "build:static": "cp index.html privacy.html terms.html site.webmanifest robots.txt sitemap.xml dompurify.min.js favicon.svg dist/ 2>/dev/null || true",
+    "build:static": "cp index.html privacy.html terms.html site.webmanifest robots.txt sitemap.xml dompurify.min.js favicon.svg dist/ 2>/dev/null || true && cp -r api dist/ 2>/dev/null || true",
     "build:assets": "cp -r assets dist/ 2>/dev/null || true",
     "build:dev": "npm run build",
     "dev": "tsc --watch",

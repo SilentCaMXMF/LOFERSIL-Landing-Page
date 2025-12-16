@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard de Monitoramento - LOFERSIL</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+    <style>
+      .dashboard {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .dashboard-title {
+        font-size: 2.5rem;
+        margin: 0 0 10px 0;
+        font-weight: 700;
+      }
+
+      .dashboard-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .metric-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #667eea;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .metric-card.healthy {
+        border-left-color: #10b981;
+      }
+
+      .metric-card.warning {
+        border-left-color: #f59e0b;
+      }
+
+      .metric-card.critical {
+        border-left-color: #ef4444;
+      }
+
+      .metric-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .metric-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      .metric-status {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .status-healthy {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .status-warning {
+        background: #fed7aa;
+        color: #92400e;
+      }
+
+      .status-critical {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+      }
+
+      .metric-description {
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+
+      .alerts-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .alert-item {
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border-left: 4px solid;
+        background: #f9fafb;
+      }
+
+      .alert-item.critical {
+        border-left-color: #ef4444;
+        background: #fef2f2;
+      }
+
+      .alert-item.warning {
+        border-left-color: #f59e0b;
+        background: #fffbeb;
+      }
+
+      .alert-item.high {
+        border-left-color: #8b5cf6;
+        background: #faf5ff;
+      }
+
+      .alert-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .alert-title {
+        font-weight: 600;
+        color: #1f2937;
+      }
+
+      .alert-time {
+        font-size: 0.85rem;
+        color: #6b7280;
+      }
+
+      .alert-message {
+        color: #4b5563;
+        font-size: 0.9rem;
+      }
+
+      .refresh-button {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        margin-bottom: 20px;
+      }
+
+      .refresh-button:hover {
+        background: #5a67d8;
+      }
+
+      .refresh-button:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+      }
+
+      .loading {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-left: 8px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .charts-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .chart-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .chart-placeholder {
+        height: 200px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
+        font-style: italic;
+      }
+
+      .last-updated {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-top: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .dashboard {
+          padding: 10px;
+        }
+
+        .dashboard-title {
+          font-size: 2rem;
+        }
+
+        .metrics-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .charts-section {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <header class="dashboard-header">
+        <h1 class="dashboard-title">📊 Dashboard de Monitoramento</h1>
+        <p class="dashboard-subtitle">
+          Monitoramento em tempo real do serviço de email LOFERSIL
+        </p>
+      </header>
+
+      <button class="refresh-button" onclick="refreshDashboard()">
+        🔄 Atualizar Dados
+        <span id="loadingSpinner" class="loading" style="display: none"></span>
+      </button>
+
+      <div class="metrics-grid" id="metricsGrid">
+        <!-- Metrics will be populated here -->
+      </div>
+
+      <div class="charts-section">
+        <div class="chart-card">
+          <h3 class="section-title">📈 Taxa de Sucesso de Entrega</h3>
+          <div class="chart-placeholder">
+            Gráfico de taxa de sucesso (próxima implementação)
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3 class="section-title">⏱️ Tempo de Resposta</h3>
+          <div class="chart-placeholder">
+            Gráfico de tempo de resposta (próxima implementação)
+          </div>
+        </div>
+      </div>
+
+      <section class="alerts-section">
+        <h2 class="section-title">
+          🚨 Alertas Ativos
+          <span
+            id="alertCount"
+            style="
+              background: #ef4444;
+              color: white;
+              padding: 2px 8px;
+              border-radius: 12px;
+              font-size: 0.8rem;
+            "
+            >0</span
+          >
+        </h2>
+        <div id="alertsList">
+          <!-- Alerts will be populated here -->
+        </div>
+      </section>
+
+      <div class="last-updated" id="lastUpdated">
+        Última atualização: Carregando...
+      </div>
+    </div>
+
+    <script>
+      let refreshInterval;
+      let isLoading = false;
+
+      // Initialize dashboard
+      document.addEventListener("DOMContentLoaded", function () {
+        refreshDashboard();
+        // Auto-refresh every 30 seconds
+        refreshInterval = setInterval(refreshDashboard, 30000);
+      });
+
+      // Refresh dashboard data
+      async function refreshDashboard() {
+        if (isLoading) return;
+
+        isLoading = true;
+        document.getElementById("loadingSpinner").style.display =
+          "inline-block";
+
+        try {
+          // Fetch metrics
+          const metricsResponse = await fetch(
+            "/api/monitoring/email-metrics?health=true&alerts=true",
+          );
+          const metricsData = await metricsResponse.json();
+
+          // Fetch health status
+          const healthResponse = await fetch("/api/health/email");
+          const healthData = await healthResponse.json();
+
+          // Update UI
+          updateMetrics(metricsData, healthData);
+          updateAlerts(metricsData.alerts || {});
+          updateLastUpdated();
+        } catch (error) {
+          console.error("Error refreshing dashboard:", error);
+          showError("Erro ao carregar dados do dashboard");
+        } finally {
+          isLoading = false;
+          document.getElementById("loadingSpinner").style.display = "none";
+        }
+      }
+
+      // Update metrics display
+      function updateMetrics(metricsData, healthData) {
+        const metricsGrid = document.getElementById("metricsGrid");
+
+        const metrics = [
+          {
+            title: "Status do Serviço",
+            value: healthData.status || "Desconhecido",
+            description: "Status geral do serviço de email",
+            status:
+              healthData.status === "healthy"
+                ? "healthy"
+                : healthData.status === "degraded"
+                  ? "warning"
+                  : "critical",
+          },
+          {
+            title: "Taxa de Sucesso",
+            value: `${(metricsData.emailMetrics?.delivery?.successRate || 0).toFixed(1)}%`,
+            description: "Taxa de entrega de emails bem-sucedidos",
+            status:
+              (metricsData.emailMetrics?.delivery?.successRate || 0) >= 95
+                ? "healthy"
+                : (metricsData.emailMetrics?.delivery?.successRate || 0) >= 90
+                  ? "warning"
+                  : "critical",
+          },
+          {
+            title: "Tempo de Conexão",
+            value: `${Math.round(metricsData.emailMetrics?.connection?.avgConnectionTime || 0)}ms`,
+            description: "Tempo médio de conexão SMTP",
+            status:
+              (metricsData.emailMetrics?.connection?.avgConnectionTime || 0) <=
+              3000
+                ? "healthy"
+                : (metricsData.emailMetrics?.connection?.avgConnectionTime ||
+                      0) <= 5000
+                  ? "warning"
+                  : "critical",
+          },
+          {
+            title: "Validação Português",
+            value: `${metricsData.emailMetrics?.portugueseContent?.validated || 0}`,
+            description: "Validações de conteúdo português",
+            status: "healthy", // Always healthy for now
+          },
+          {
+            title: "Taxa de Erros",
+            value: `${metricsData.emailMetrics?.errors?.total || 0}`,
+            description: "Total de erros registrados",
+            status:
+              (metricsData.emailMetrics?.errors?.total || 0) === 0
+                ? "healthy"
+                : (metricsData.emailMetrics?.errors?.total || 0) <= 5
+                  ? "warning"
+                  : "critical",
+          },
+          {
+            title: "Uso de Memória",
+            value: `${Math.round(((metricsData.systemHealth?.memoryUsage?.heapUsed || 0) / (metricsData.systemHealth?.memoryUsage?.heapTotal || 1)) * 100)}%`,
+            description: "Uso de memória do servidor",
+            status:
+              (metricsData.systemHealth?.memoryUsage?.heapUsed || 0) /
+                (metricsData.systemHealth?.memoryUsage?.heapTotal || 1) <=
+              0.8
+                ? "healthy"
+                : "warning",
+          },
+        ];
+
+        metricsGrid.innerHTML = metrics
+          .map(
+            (metric) => `
+                <div class="metric-card ${metric.status}">
+                    <div class="metric-header">
+                        <h3 class="metric-title">${metric.title}</h3>
+                        <span class="metric-status status-${metric.status}">${metric.status}</span>
+                    </div>
+                    <div class="metric-value">${metric.value}</div>
+                    <div class="metric-description">${metric.description}</div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // Update alerts display
+      function updateAlerts(alertsData) {
+        const alertsList = document.getElementById("alertsList");
+        const alertCount = document.getElementById("alertCount");
+
+        const activeAlerts =
+          alertsData.recent?.filter(
+            (alert) =>
+              alert.status === "ACTIVE" || alert.status === "ACKNOWLEDGED",
+          ) || [];
+
+        alertCount.textContent = activeAlerts.length;
+        alertCount.style.display =
+          activeAlerts.length > 0 ? "inline-block" : "none";
+
+        if (activeAlerts.length === 0) {
+          alertsList.innerHTML =
+            '<p style="color: #6b7280; text-align: center; padding: 20px;">✅ Nenhum alerta ativo no momento</p>';
+          return;
+        }
+
+        alertsList.innerHTML = activeAlerts
+          .map(
+            (alert) => `
+                <div class="alert-item ${alert.severity.toLowerCase()}">
+                    <div class="alert-header">
+                        <div class="alert-title">${alert.message}</div>
+                        <div class="alert-time">${formatTime(alert.timestamp)}</div>
+                    </div>
+                    <div class="alert-message">
+                        Severidade: ${alert.severity} | Contagem: ${alert.count}
+                        ${alert.metadata?.currentValue ? ` | Valor atual: ${alert.metadata.currentValue}` : ""}
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // Format timestamp
+      function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+
+        if (diffMins < 1) return "Agora";
+        if (diffMins < 60) return `Há ${diffMins} min`;
+
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `Há ${diffHours}h`;
+
+        return date.toLocaleString("pt-PT");
+      }
+
+      // Update last updated time
+      function updateLastUpdated() {
+        const lastUpdated = document.getElementById("lastUpdated");
+        lastUpdated.textContent = `Última atualização: ${new Date().toLocaleString("pt-PT")}`;
+      }
+
+      // Show error message
+      function showError(message) {
+        const metricsGrid = document.getElementById("metricsGrid");
+        metricsGrid.innerHTML = `
+                <div class="metric-card critical" style="grid-column: 1 / -1;">
+                    <div class="metric-value">❌ Erro</div>
+                    <div class="metric-description">${message}</div>
+                </div>
+            `;
+      }
+
+      // Cleanup on page unload
+      window.addEventListener("beforeunload", function () {
+        if (refreshInterval) {
+          clearInterval(refreshInterval);
+        }
+      });
+    </script>
+  </body>
+</html>
