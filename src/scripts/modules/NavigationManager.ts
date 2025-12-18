@@ -3,10 +3,10 @@
  * Handles dropdown menu, navigation state, and UI interactions
  */
 
-import { TranslationManager } from "./TranslationManager";
+import { TranslationManager } from "./TranslationManager.js";
 
 // Import the mobile navigation enhancer
-import { MobileNavigationEnhancer } from "../mobile-navigation";
+import { MobileNavigationEnhancer } from "../mobile-navigation.js";
 
 export class NavigationManager {
   private navToggle: HTMLElement | null;
