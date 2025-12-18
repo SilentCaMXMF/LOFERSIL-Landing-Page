@@ -5,32 +5,41 @@ This file contains essential information for agentic coding assistants working o
 ## Build Commands
 
 ### Full Build
+
 ```bash
 npm run build
 ```
+
 Compiles TypeScript, processes CSS with PostCSS, copies static assets, and outputs to `dist/` directory.
 
 ### Production Build
+
 ```bash
 npm run build:prod
 ```
+
 Production build with optimizations and minification.
 
 ### Development Build
+
 ```bash
 npm run build:dev
 ```
+
 Quick development build.
 
 ### Watch Mode
+
 ```bash
 npm run dev
 ```
+
 Watches TypeScript files for changes and recompiles automatically.
 
 ## Test Commands
 
 ### Run All Tests
+
 ```bash
 npm test
 # or
@@ -38,6 +47,7 @@ npm run test:run
 ```
 
 ### Run Specific Test Suites
+
 ```bash
 # Unit tests only
 npm run test:unit
@@ -50,6 +60,7 @@ npm run test:e2e
 ```
 
 ### Run Single Test File
+
 ```bash
 # Run a specific test file
 npx vitest run path/to/test-file.test.ts
@@ -59,6 +70,7 @@ npx vitest run tests/unit/mobile-navigation.test.js
 ```
 
 ### Coverage Reports
+
 ```bash
 # Generate coverage report
 npm run test:coverage
@@ -76,20 +88,25 @@ npm run test:coverage:e2e
 ## Lint Commands
 
 ### Lint TypeScript Files
+
 ```bash
 npm run lint
 ```
+
 Lints all TypeScript files in `src/` directory (excludes test files).
 
 ### Format Code
+
 ```bash
 npm run format
 ```
+
 Formats TypeScript and CSS files using Prettier.
 
 ## Code Style Guidelines
 
 ### TypeScript Configuration
+
 - Target: ES2022
 - Module system: ES modules
 - Strict mode: Disabled (allows implicit any, no implicit returns/this)
@@ -98,6 +115,7 @@ Formats TypeScript and CSS files using Prettier.
 - JSX: React (automatic runtime)
 
 ### ESLint Rules
+
 - **Unused variables**: Warn (TypeScript handles this)
 - **Explicit any**: Warn
 - **Console statements**: Warn
@@ -107,6 +125,7 @@ Formats TypeScript and CSS files using Prettier.
 - **Unused vars from TS**: Off (let TS handle)
 
 ### Naming Conventions
+
 - **Files**: kebab-case (e.g., `mobile-navigation.js`, `contact-form-enhancer.js`)
 - **Classes**: PascalCase (e.g., `MobileNavigationEnhancer`)
 - **Functions/Methods**: camelCase
@@ -114,17 +133,20 @@ Formats TypeScript and CSS files using Prettier.
 - **Variables**: camelCase
 
 ### Import/Export Style
+
 - Use ES6 imports/exports
 - Group imports: standard library, third-party, local modules
 - Use absolute paths with aliases when available (@/, @scripts/, @modules/, etc.)
 
 ### Error Handling
+
 - Use try/catch blocks for async operations
 - Throw descriptive error messages
 - Handle promise rejections properly
 - Log errors appropriately (not in production)
 
 ### Code Organization
+
 - One class/function per file when possible
 - Group related functionality
 - Use clear, descriptive names
@@ -132,12 +154,14 @@ Formats TypeScript and CSS files using Prettier.
 - Keep functions small and focused
 
 ### CSS/PostCSS
+
 - Use PostCSS with Autoprefixer for vendor prefixes
 - CSS Nano for production minification
 - Follow BEM methodology for class naming
 - Use CSS custom properties (variables) for theming
 
 ### Testing
+
 - Use Vitest as test runner
 - JSDOM environment for DOM testing
 - Global test functions enabled
@@ -146,6 +170,7 @@ Formats TypeScript and CSS files using Prettier.
 - Mock external dependencies appropriately
 
 ### API Endpoints
+
 - Node.js/Express based
 - Use ES modules
 - Include proper error handling and validation
@@ -153,6 +178,7 @@ Formats TypeScript and CSS files using Prettier.
 - CORS configuration
 
 ### Performance
+
 - Lazy load images with intersection observer
 - Service worker for offline support
 - Critical CSS inlining
@@ -160,6 +186,7 @@ Formats TypeScript and CSS files using Prettier.
 - Bundle optimization for production
 
 ### Security
+
 - Input validation and sanitization
 - CSRF protection
 - Rate limiting
@@ -168,6 +195,7 @@ Formats TypeScript and CSS files using Prettier.
 - XSS protection with DOMPurify
 
 ### Accessibility
+
 - Semantic HTML elements
 - ARIA labels and roles
 - Keyboard navigation support
@@ -176,12 +204,14 @@ Formats TypeScript and CSS files using Prettier.
 - Focus management
 
 ### Internationalization
+
 - Portuguese (pt) and English (en) locales
 - Data attributes for translation keys
 - Client-side language switching
 - RTL support preparation
 
 ### Git Workflow
+
 - Feature branches from main
 - Pull request reviews required
 - Automated CI/CD with GitHub Actions
@@ -198,6 +228,41 @@ Formats TypeScript and CSS files using Prettier.
 6. **Build**: `npm run build` for production-ready artifacts
 7. **Deploy**: Automated via GitHub Actions to Vercel
 
+## Git Submodule Policy
+
+**IMPORTANT: Do NOT use git submodules in this project**
+
+### Why No Submodules?
+
+- Git submodules cause deployment failures in CI/CD pipelines
+- They complicate dependency management and version control
+- Vercel and other deployment platforms have inconsistent submodule support
+- Submodule issues are difficult to debug and resolve in automated environments
+
+### What to Use Instead
+
+- **Regular directories**: Copy dependencies directly into the project
+- **npm packages**: Convert standalone tools to npm packages when possible
+- **Git subtrees**: Use `git subtree` if you need to include external code (rare)
+
+### Prevention Measures
+
+- Run `./test-submodule-fix.sh` before major deployments
+- Never add `.gitmodules` file to the repository
+- Convert any existing submodules to regular directories immediately
+
+### If You Accidentally Create a Submodule
+
+```bash
+# Remove the submodule properly
+git submodule deinit -f path/to/submodule
+rm -rf .git/modules/path/to/submodule
+git rm -f path/to/submodule
+
+# Then add the files directly if needed
+cp -r /path/to/original/files path/to/directory
+```
+
 ## Environment Variables
 
 - `NODE_ENV`: Set to "production" for production builds
@@ -205,7 +270,8 @@ Formats TypeScript and CSS files using Prettier.
 - API keys and secrets in `.env` files (not committed)
 
 ## File Structure
-```
+
+````
 ├── src/
 │   ├── locales/          # Translation files
 │   └── styles/           # CSS files (processed by PostCSS)
@@ -217,3 +283,4 @@ Formats TypeScript and CSS files using Prettier.
 └── package.json         # Dependencies and scripts
 ```</content>
 <parameter name="filePath">AGENTS.md
+````

@@ -18,11 +18,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-      "@scripts/*": ["src/scripts/*"],
-      "@modules/*": ["src/scripts/modules/*"]
-    },
+    "rootDir": "src",
+
     "resolveJsonModule": true,
     "isolatedModules": true,
     "outDir": "dist",
@@ -40,5 +37,11 @@
     "tsBuildInfoFile": "dist/.tsbuildinfo"
   },
   "include": ["src/**/*"],
-  "exclude": ["api/**/*", "node_modules", "dist", ".opencode/**/*"]
+  "exclude": [
+    "api/**/*",
+    "node_modules",
+    "dist",
+    ".opencode/**/*",
+    "src/github-system/**/*"
+  ]
 }
