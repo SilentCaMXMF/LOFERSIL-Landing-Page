@@ -17,7 +17,7 @@ import {
   CodeChanges,
   ReviewResult,
   WorkflowOrchestratorConfig
-} from './types.js';
+} from './types';
 
 export class WorkflowOrchestrator {
   private config: WorkflowOrchestratorConfig;

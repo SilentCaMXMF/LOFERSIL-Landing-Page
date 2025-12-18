@@ -16,7 +16,7 @@
     "noImplicitReturns": false,
     "noImplicitThis": false,
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "outDir": "dist",
