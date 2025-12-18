@@ -2,9 +2,11 @@
  * Enhanced Health Check Endpoint for Production Monitoring
  * Provides comprehensive health status for SMTP services with monitoring
  * Optimized for Vercel serverless environment
+ * Requires authentication for security
  */
 
 import nodemailer from "nodemailer";
+import { requireAuth } from "./auth.js";
 
 // Enhanced health check configuration
 const HEALTH_CONFIG = {
@@ -334,6 +336,11 @@ export default async function handler(req, res) {
   // Set appropriate headers
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+
+  // Require authentication
+  if (!requireAuth(req, res)) {
+    return;
+  }
 
   // Only allow GET requests
   if (req.method !== "GET") {

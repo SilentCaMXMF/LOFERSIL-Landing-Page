@@ -2,7 +2,10 @@
  * Alert Management System Endpoint
  * Provides comprehensive alert management for production monitoring
  * Optimized for Vercel serverless environment
+ * Requires authentication for security
  */
+
+import { requireAuth } from "../auth.js";
 
 // Alert configuration
 const ALERT_CONFIG = {
@@ -425,6 +428,11 @@ export default async function handler(req, res) {
   // Set appropriate headers
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+
+  // Require authentication
+  if (!requireAuth(req, res)) {
+    return;
+  }
 
   const { method } = req;
 

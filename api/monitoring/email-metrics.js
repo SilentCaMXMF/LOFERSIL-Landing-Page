@@ -6,8 +6,9 @@
 
 // Note: In a real implementation, you would import the monitoring modules
 // For now, we'll create mock implementations that work with the existing structure
-import { emailMonitor } from "../../scripts/monitoring/email-monitor.js";
-import { AlertManager } from "../../scripts/monitoring/alerting.js";
+import { emailMonitor } from "../../scripts/monitoring/email-monitor.ts";
+import { AlertManager } from "../../scripts/monitoring/alerting.ts";
+import { requireAuth } from "../auth.js";
 
 // Metrics configuration
 const METRICS_CONFIG = {
@@ -303,6 +304,11 @@ export default async function handler(req, res) {
   // Set appropriate headers
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+
+  // Require authentication
+  if (!requireAuth(req, res)) {
+    return;
+  }
 
   const { method } = req;
 

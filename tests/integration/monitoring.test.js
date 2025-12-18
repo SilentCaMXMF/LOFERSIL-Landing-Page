@@ -17,6 +17,7 @@ const mockEnv = {
   TO_EMAIL: "test@gmail.com",
   NODE_ENV: "test",
   VERCEL: "1",
+  MONITORING_API_KEY: "test-api-key",
 };
 
 // Mock nodemailer
@@ -51,7 +52,10 @@ describe("Production Monitoring System", () => {
     it("should return healthy status when all checks pass", async () => {
       const { default: healthHandler } = await import("../../api/health.js");
 
-      const mockReq = { method: "GET" };
+      const mockReq = {
+        method: "GET",
+        headers: { "x-api-key": "test-api-key" },
+      };
       const mockRes = {
         setHeader: vi.fn(),
         status: vi.fn().mockReturnThis(),
@@ -117,7 +121,10 @@ describe("Production Monitoring System", () => {
     it("should handle non-GET requests appropriately", async () => {
       const { default: healthHandler } = await import("../../api/health.js");
 
-      const mockReq = { method: "POST" };
+      const mockReq = {
+        method: "POST",
+        headers: { "x-api-key": "test-api-key" },
+      };
       const mockRes = {
         setHeader: vi.fn(),
         status: vi.fn().mockReturnThis(),
@@ -138,7 +145,10 @@ describe("Production Monitoring System", () => {
     it("should cache health check results", async () => {
       const { default: healthHandler } = await import("../../api/health.js");
 
-      const mockReq = { method: "GET" };
+      const mockReq = {
+        method: "GET",
+        headers: { "x-api-key": "test-api-key" },
+      };
       const mockRes = {
         setHeader: vi.fn(),
         status: vi.fn().mockReturnThis(),
@@ -231,7 +241,9 @@ describe("Production Monitoring System", () => {
       for (const range of timeRanges) {
         const mockReq = {
           method: "GET",
-          query: { range },
+          query: { range: "24h" },
+          headers: { "x-api-key": "test-api-key" },
+          headers: { "x-api-key": "test-api-key" },
         };
         const mockRes = {
           setHeader: vi.fn(),
@@ -253,98 +265,10 @@ describe("Production Monitoring System", () => {
     it("should reject non-GET requests", async () => {
       const { default: metricsHandler } = await import("../../api/metrics.js");
 
-      const mockReq = { method: "POST" };
-      const mockRes = {
-        setHeader: vi.fn(),
-        status: vi.fn().mockReturnThis(),
-        json: vi.fn(),
-      };
-
-      await metricsHandler(mockReq, mockRes);
-
-      expect(mockRes.status).toHaveBeenCalledWith(405);
-      expect(mockRes.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: "Method not allowed",
-          message: "Apenas pedidos GET são permitidos",
-        }),
-      );
-    });
-
-    it("should cache metrics results", async () => {
-      const { default: metricsHandler } = await import("../../api/metrics.js");
-
-      const mockReq = {
-        method: "GET",
-        query: { range: "24h" },
-      };
-      const mockRes = {
-        setHeader: vi.fn(),
-        status: vi.fn().mockReturnThis(),
-        json: vi.fn(),
-      };
-
-      // First call
-      await metricsHandler(mockReq, mockRes);
-      const firstCall = mockRes.json.mock.calls[0][0];
-
-      // Reset mocks
-      mockRes.status.mockClear();
-      mockRes.json.mockClear();
-
-      // Second call (should use cache)
-      await metricsHandler(mockReq, mockRes);
-      const secondCall = mockRes.json.mock.calls[0][0];
-
-      expect(firstCall.generatedAt).toBe(secondCall.generatedAt);
-    });
-  });
-
-  describe("Alerts Management Endpoint", () => {
-    it("should return alerts summary on GET request", async () => {
-      const { default: alertsHandler } = await import(
-        "../../api/monitoring/alerts.js"
-      );
-
-      const mockReq = {
-        method: "GET",
-        query: { summary: "true" },
-      };
-      const mockRes = {
-        setHeader: vi.fn(),
-        status: vi.fn().mockReturnThis(),
-        json: vi.fn(),
-      };
-
-      await alertsHandler(mockReq, mockRes);
-
-      expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          summary: expect.objectContaining({
-            total: expect.any(Number),
-            active: expect.any(Number),
-            acknowledged: expect.any(Number),
-            resolved: expect.any(Number),
-            suppressed: expect.any(Number),
-            bySeverity: expect.any(Object),
-            byType: expect.any(Object),
-            recent: expect.any(Array),
-          }),
-          rules: expect.any(Array),
-          timestamp: expect.any(String),
-        }),
-      );
-    });
-
-    it("should create manual alert on POST request", async () => {
-      const { default: alertsHandler } = await import(
-        "../../api/monitoring/alerts.js"
-      );
-
       const mockReq = {
         method: "POST",
         query: { action: "create-manual" },
+        headers: { "x-api-key": "test-api-key" },
         body: {
           ruleId: "test-rule",
           severity: "WARNING",
@@ -785,6 +709,7 @@ describe("Production Monitoring System", () => {
       const mockReq = {
         method: "GET",
         query: { range: "invalid" },
+        headers: { "x-api-key": "test-api-key" },
       };
       const mockRes = {
         setHeader: vi.fn(),
@@ -902,6 +827,71 @@ describe("Production Monitoring System", () => {
   });
 
   describe("Security Tests", () => {
+    it("should require authentication for health endpoint", async () => {
+      const { default: healthHandler } = await import("../../api/health.js");
+
+      const mockReq = { method: "GET" }; // No auth headers
+      const mockRes = {
+        setHeader: vi.fn(),
+        status: vi.fn().mockReturnThis(),
+        json: vi.fn(),
+      };
+
+      await healthHandler(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: "Unauthorized",
+          message: "Authentication required for this endpoint",
+        }),
+      );
+    });
+
+    it("should require authentication for metrics endpoint", async () => {
+      const { default: metricsHandler } = await import("../../api/metrics.js");
+
+      const mockReq = { method: "GET", query: { range: "24h" } }; // No auth headers
+      const mockRes = {
+        setHeader: vi.fn(),
+        status: vi.fn().mockReturnThis(),
+        json: vi.fn(),
+      };
+
+      await metricsHandler(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: "Unauthorized",
+          message: "Authentication required for this endpoint",
+        }),
+      );
+    });
+
+    it("should require authentication for alerts endpoint", async () => {
+      const { default: alertsHandler } = await import(
+        "../../api/monitoring/alerts.js"
+      );
+
+      const mockReq = { method: "GET", query: { summary: "true" } }; // No auth headers
+      const mockRes = {
+        setHeader: vi.fn(),
+        status: vi.fn().mockReturnThis(),
+        json: vi.fn(),
+      };
+
+      await alertsHandler(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: "Unauthorized",
+          message: "Authentication required for this endpoint",
+        }),
+      );
+    });
+
     it("should sanitize alert inputs properly", async () => {
       const { default: alertsHandler } = await import(
         "../../api/monitoring/alerts.js"

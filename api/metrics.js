@@ -2,7 +2,10 @@
  * Production Metrics Dashboard Endpoint
  * Provides comprehensive production metrics and monitoring data
  * Optimized for Vercel serverless environment
+ * Requires authentication for security
  */
+
+import { requireAuth } from "./auth.js";
 
 // Metrics configuration
 const METRICS_CONFIG = {
@@ -376,6 +379,11 @@ export default async function handler(req, res) {
   // Set appropriate headers
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "public, max-age=60"); // 1 minute cache
+
+  // Require authentication
+  if (!requireAuth(req, res)) {
+    return;
+  }
 
   // Only allow GET requests
   if (req.method !== "GET") {
