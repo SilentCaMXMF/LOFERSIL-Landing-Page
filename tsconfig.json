@@ -19,7 +19,6 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "rootDir": "src",
-
     "resolveJsonModule": true,
     "isolatedModules": true,
     "outDir": "dist",
@@ -27,7 +26,6 @@
     "sourceMap": true,
     "removeComments": false,
     "importHelpers": false,
-    "downlevelIteration": true,
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
     "jsx": "react-jsx",

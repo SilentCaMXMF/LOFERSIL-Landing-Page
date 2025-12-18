@@ -10,6 +10,6 @@
     "incremental": false,
     "tsBuildInfoFile": "dist/.tsbuildinfo.prod"
   },
-  "include": ["src/**/*", "api/**/*"],
-  "exclude": ["node_modules", "dist", ".opencode/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", ".opencode/**/*", "api/**/*"]
 }

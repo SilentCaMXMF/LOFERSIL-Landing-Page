@@ -15,20 +15,20 @@ export default defineConfig({
     // Test environment
     environment: "jsdom",
 
-    // Setup files
-    setupFiles: [
-      "./tests/setup/test-setup.ts",
-      "./tests/setup/test-dom-setup.ts",
-    ],
+    // Setup files (commented out until tests directory exists)
+    // setupFiles: [
+    //   "./tests/setup/test-setup.ts",
+    //   "./tests/setup/test-dom-setup.ts",
+    // ],
 
-    // Global setup files (run once before all tests)
-    globalSetup: ["./tests/setup/test-global-setup.ts"],
+    // Global setup files (run once before all tests) (commented out until tests directory exists)
+    // globalSetup: ["./tests/setup/test-global-setup.ts"],
 
-    // Test file patterns
+    // Test file patterns (no tests exist yet, keeping default patterns for future use)
     include: [
-      "tests/**/*.test.ts",
-      "tests/**/*.test.tsx",
-      "tests/**/*.test.js",
+      "**/*.test.ts",
+      "**/*.test.tsx", 
+      "**/*.test.js",
     ],
 
     // Exclude patterns
@@ -72,9 +72,7 @@ export default defineConfig({
         "node_modules/**",
         "dist/**",
         "coverage/**",
-        "tests/setup/test-setup.ts",
-        "tests/setup/test-dom-setup.ts",
-        "tests/setup/test-global-setup.ts",
+        // Test setup files (removed as tests directory doesn't exist)
         "**/*.config.{js,ts}",
         "**/*.stories.{ts,tsx}",
       ],
@@ -137,6 +135,7 @@ export default defineConfig({
   // Resolve configuration
   resolve: {
     alias: {
+      // Keep only essential aliases that exist and are used
       "@": resolve(__dirname, "./src"),
       "@scripts": resolve(__dirname, "./src/scripts"),
       "@modules": resolve(__dirname, "./src/scripts/modules"),
@@ -144,8 +143,8 @@ export default defineConfig({
       "@assets": resolve(__dirname, "./assets"),
       "@styles": resolve(__dirname, "./src/styles"),
       "@locales": resolve(__dirname, "./src/locales"),
-      "@test": resolve(__dirname, "./test"),
-      "@utils": resolve(__dirname, "./src/scripts/modules"),
+      // Note: @test alias removed as test directory doesn't exist
+      // @utils points to same location as @modules, redundant
     },
 
     // Extensions to resolve
