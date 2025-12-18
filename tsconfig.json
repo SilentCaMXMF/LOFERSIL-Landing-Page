@@ -34,12 +34,5 @@
     "tsBuildInfoFile": "dist/.tsbuildinfo"
   },
   "include": ["src/**/*"],
-  "exclude": [
-    "src/**/*.test.ts",
-    "src/github-system/tests/**/*.test.ts",
-    "api/**/*",
-    "node_modules",
-    "dist",
-    ".opencode/**/*"
-  ]
+  "exclude": ["api/**/*", "node_modules", "dist", ".opencode/**/*"]
 }

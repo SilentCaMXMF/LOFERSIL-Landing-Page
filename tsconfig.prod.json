@@ -11,11 +11,5 @@
     "tsBuildInfoFile": "dist/.tsbuildinfo.prod"
   },
   "include": ["src/**/*", "api/**/*"],
-  "exclude": [
-    "src/**/*.test.ts",
-    "src/github-system/tests/**/*.test.ts",
-    "node_modules",
-    "dist",
-    ".opencode/**/*"
-  ]
+  "exclude": ["node_modules", "dist", ".opencode/**/*"]
 }
