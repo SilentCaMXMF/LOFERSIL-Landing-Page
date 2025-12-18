@@ -1,467 +1,767 @@
-# Production Deployment Guide
+# Production Deployment Guide for GitHub Issues Reviewer MCP Server
 
-This guide provides comprehensive instructions for deploying the LOFERSIL Landing Page to production environments, including security hardening, performance monitoring, and troubleshooting procedures.
+## Overview
 
-## Table of Contents
-
-- [Prerequisites](#prerequisites)
-- [Environment Setup](#environment-setup)
-- [Deployment Methods](#deployment-methods)
-- [Security Hardening](#security-hardening)
-- [Performance Monitoring](#performance-monitoring)
-- [Troubleshooting](#troubleshooting)
-- [Maintenance Procedures](#maintenance-procedures)
+This guide provides comprehensive step-by-step instructions for deploying the GitHub Issues Reviewer MCP Server in production environments. The server provides AI-powered code analysis and issue classification capabilities through the Model Context Protocol (MCP).
 
 ## Prerequisites
 
-### System Requirements
+Before deploying, ensure you have:
 
-- **Node.js**: Version 20.x (matches Vercel runtime)
-- **npm**: Version 10.0.0 or higher
-- **Git**: For version control and deployment
-- **Vercel Account**: For hosting and deployment
-
-### Required Accounts and Services
-
-1. **Vercel Account**
-   - Sign up at [vercel.com](https://vercel.com)
-   - Create a new project for the landing page
-
-2. **GitHub Repository**
-   - Repository must contain the project code
-   - GitHub Actions enabled for CI/CD
-
-3. **Environment Variables**
-   - `VERCEL_TOKEN`: Personal access token from Vercel
-   - `VERCEL_ORG_ID`: Organization ID from Vercel dashboard
-   - `VERCEL_PROJECT_ID`: Project ID from Vercel dashboard
-
-### Email Service Configuration (Optional)
-
-For contact form functionality:
-- SMTP server credentials
-- Email service provider (Gmail, SendGrid, etc.)
-- Rate limiting configuration
+- **Node.js 18.x or higher** (exact version specified in package.json)
+- **SSL/TLS certificates** for secure WebSocket connections (WSS)
+- **Reverse proxy** (nginx recommended) for load balancing and SSL termination
+- **Process manager** (PM2 recommended) for production process management
+- **Monitoring stack** (Prometheus/Grafana or similar)
+- **Docker** (optional, for containerized deployment)
+- **Git** for version control
 
 ## Environment Setup
 
-### 1. Local Development Environment
+### 1. Clone and Prepare Repository
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/lofersil-landing-page.git
-cd lofersil-landing-page
-
-# Install dependencies
-npm ci
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
-
-# Verify setup
-npm run build
-npm run test
+git clone <repository-url>
+cd github-issues-reviewer-mcp-server
+npm ci --only=production
 ```
 
-### 2. Vercel Project Configuration
+### 2. Environment Variables
+
+Create a production `.env` file:
 
 ```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Login to Vercel
-vercel login
-
-# Link project to Vercel
-vercel link
-```
-
-### 3. Environment Variables in Vercel
-
-Set the following environment variables in your Vercel dashboard:
-
-```
+# Server Configuration
+MCP_SERVER_PORT=3001
 NODE_ENV=production
-VERCEL_ENV=production
-# Email configuration (if using contact forms)
-SMTP_HOST=your-smtp-host
-SMTP_PORT=587
-SMTP_USER=your-email@domain.com
-SMTP_PASS=your-smtp-password
-# Rate limiting
-RATE_LIMIT_WINDOW=15
-RATE_LIMIT_MAX=5
+HOST=0.0.0.0
+
+# Security
+SSL_KEY_PATH=/path/to/ssl/private.key
+SSL_CERT_PATH=/path/to/ssl/certificate.crt
+ENABLE_WSS=true
+JWT_SECRET=your-secure-jwt-secret-here
+API_KEY=your-api-key-for-authentication
+
+# Performance
+MAX_CONNECTIONS=1000
+CONNECTION_TIMEOUT=30000
+RATE_LIMIT_REQUESTS=100
+RATE_LIMIT_WINDOW=900000
+
+# Monitoring
+LOG_LEVEL=info
+METRICS_ENABLED=true
+HEALTH_CHECK_INTERVAL=30000
+
+# External Services
+GITHUB_TOKEN=your-github-token-if-needed
+DATABASE_URL=postgresql://user:pass@host:port/db
+```
+
+### 3. Directory Structure for Production
+
+```
+production-deployment/
+├── config/
+│   ├── nginx.conf
+│   ├── pm2.config.js
+│   └── docker-compose.yml
+├── ssl/
+│   ├── certificate.crt
+│   └── private.key
+├── logs/
+├── data/
+└── backups/
+```
+
+## Security Configuration
+
+### 1. SSL/TLS Setup
+
+```bash
+# Generate self-signed certificate (for testing only)
+openssl req -x509 -newkey rsa:4096 -keyout private.key -out certificate.crt -days 365 -nodes
+
+# For production, use certificates from Let's Encrypt or your CA
+certbot certonly --standalone -d yourdomain.com
+```
+
+### 2. Nginx Reverse Proxy Configuration
+
+Create `/etc/nginx/sites-available/mcp-server`:
+
+```nginx
+upstream mcp_backend {
+    ip_hash;
+    server 127.0.0.1:3001;
+    server 127.0.0.1:3002;
+    server 127.0.0.1:3003;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name yourdomain.com;
+
+    ssl_certificate /path/to/ssl/certificate.crt;
+    ssl_certificate_key /path/to/ssl/private.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+
+    # Security headers
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
+
+    # Rate limiting
+    limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+    limit_req zone=api burst=20 nodelay;
+
+    location /mcp {
+        proxy_pass http://mcp_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket timeout settings
+        proxy_connect_timeout 7d;
+        proxy_send_timeout 7d;
+        proxy_read_timeout 7d;
+    }
+
+    location /health {
+        proxy_pass http://mcp_backend/health;
+        access_log off;
+    }
+
+    location /metrics {
+        proxy_pass http://mcp_backend/metrics;
+        allow 10.0.0.0/8;
+        allow 172.16.0.0/12;
+        allow 192.168.0.0/16;
+        deny all;
+    }
+}
+
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name yourdomain.com;
+    return 301 https://$server_name$request_uri;
+}
+```
+
+### 3. Firewall Configuration
+
+```bash
+# UFW example
+ufw enable
+ufw allow ssh
+ufw allow 80
+ufw allow 443
+
+# Or iptables
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -P INPUT DROP
+```
+
+### 4. Authentication Setup
+
+Implement API key authentication in your MCP client:
+
+```javascript
+class SecureMCPClient {
+    constructor(config) {
+        this.apiKey = config.apiKey;
+        this.serverUrl = config.serverUrl;
+    }
+
+    async connect() {
+        const ws = new WebSocket(this.serverUrl, {
+            headers: {
+                'Authorization': `Bearer ${this.apiKey}`
+            }
+        });
+
+        return new Promise((resolve, reject) => {
+            ws.onopen = () => resolve(ws);
+            ws.onerror = reject;
+        });
+    }
+}
+```
+
+## Performance Optimization
+
+### 1. PM2 Configuration
+
+Create `ecosystem.config.js`:
+
+```javascript
+module.exports = {
+  apps: [{
+    name: 'mcp-server',
+    script: 'simple-server.ts',
+    instances: 'max',
+    exec_mode: 'cluster',
+    env: {
+      NODE_ENV: 'production',
+      MCP_SERVER_PORT: 3001
+    },
+    env_production: {
+      NODE_ENV: 'production',
+      MCP_SERVER_PORT: 3001,
+      MAX_CONNECTIONS: 1000
+    },
+    max_memory_restart: '1G',
+    restart_delay: 4000,
+    max_restarts: 5,
+    min_uptime: '10s',
+    watch: false,
+    log_file: '/var/log/pm2/mcp-server.log',
+    out_file: '/var/log/pm2/mcp-server-out.log',
+    error_file: '/var/log/pm2/mcp-server-error.log',
+    time: true
+  }]
+};
+```
+
+### 2. Node.js Performance Tuning
+
+```javascript
+// Performance optimizations in server code
+process.env.UV_THREADPOOL_SIZE = 128;
+process.setMaxListeners(0);
+
+// Memory management
+const v8 = require('v8');
+v8.setFlagsFromString('--max_old_space_size=4096');
+
+// Garbage collection tuning
+if (global.gc) {
+  setInterval(() => {
+    global.gc();
+  }, 60000); // Run GC every minute
+}
+```
+
+### 3. Connection Pooling and Caching
+
+```typescript
+// Implement connection pooling for external services
+import { Pool } from 'pg'; // For PostgreSQL
+
+const pool = new Pool({
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+// Redis caching for frequent queries
+import { createClient } from 'redis';
+
+const redisClient = createClient({
+  url: 'redis://localhost:6379'
+});
+
+redisClient.on('error', (err) => console.log('Redis Client Error', err));
+```
+
+### 4. Load Balancing
+
+Deploy multiple instances behind a load balancer:
+
+```bash
+# Start multiple instances on different ports
+pm2 start ecosystem.config.js --env production
+
+# Or use Docker Compose
+version: '3.8'
+services:
+  mcp-server-1:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - MCP_SERVER_PORT=3001
+  mcp-server-2:
+    build: .
+    ports:
+      - "3002:3001"
+    environment:
+      - MCP_SERVER_PORT=3001
+  mcp-server-3:
+    build: .
+    ports:
+      - "3003:3001"
+    environment:
+      - MCP_SERVER_PORT=3001
+```
+
+## Monitoring Configuration
+
+### 1. Application Metrics
+
+The server includes built-in metrics collection:
+
+```typescript
+// Enable metrics in server configuration
+const server = new MCPServer({
+  metrics: {
+    enabled: true,
+    collectDefaultMetrics: true,
+    prefix: 'mcp_server_',
+    labels: { service: 'github-issues-reviewer' }
+  }
+});
+```
+
+### 2. Prometheus Configuration
+
+Create `prometheus.yml`:
+
+```yaml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'mcp-server'
+    static_configs:
+      - targets: ['localhost:3001']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['localhost:9113']
+```
+
+### 3. Grafana Dashboard
+
+Import the MCP Server dashboard with these key metrics:
+
+- **Connection Metrics**: Active connections, connection duration
+- **Performance Metrics**: Request latency, throughput
+- **Error Metrics**: Error rates, error types
+- **Resource Metrics**: CPU usage, memory usage, GC stats
+- **Tool Metrics**: Tool execution time, success rates
+
+### 4. Logging Setup
+
+```bash
+# Install and configure rsyslog
+sudo apt install rsyslog
+
+# Create logrotate configuration
+cat > /etc/logrotate.d/mcp-server << EOF
+/var/log/mcp-server/*.log {
+    daily
+    missingok
+    rotate 52
+    compress
+    delaycompress
+    notifempty
+    create 644 www-data www-data
+    postrotate
+        pm2 reloadLogs
+    endscript
+}
+EOF
+```
+
+### 5. Health Checks
+
+Configure health checks in your monitoring system:
+
+```bash
+# Health check script
+#!/bin/bash
+response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/health)
+if [ "$response" -eq 200 ]; then
+    echo "MCP Server is healthy"
+    exit 0
+else
+    echo "MCP Server is unhealthy"
+    exit 1
+fi
+```
+
+### 6. Alerting Rules
+
+Example Prometheus alerting rules:
+
+```yaml
+groups:
+- name: mcp-server
+  rules:
+  - alert: MCPServerDown
+    expr: up{job="mcp-server"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "MCP Server is down"
+      description: "MCP Server has been down for more than 5 minutes."
+
+  - alert: HighErrorRate
+    expr: rate(mcp_server_errors_total[5m]) > 0.1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High error rate on MCP Server"
+      description: "Error rate is {{ $value }} errors per second."
+
+  - alert: HighMemoryUsage
+    expr: process_resident_memory_bytes{job="mcp-server"} / process_virtual_memory_max_bytes > 0.9
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage on MCP Server"
+      description: "Memory usage is above 90%."
 ```
 
 ## Deployment Methods
 
-### Method 1: Automated CI/CD (Recommended)
+### Method 1: Docker Deployment
 
-The project includes GitHub Actions for automated deployment:
+```dockerfile
+FROM node:18-alpine
 
-#### GitHub Secrets Setup
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
 
-In your GitHub repository settings, add these secrets:
+# Create app directory
+WORKDIR /app
 
-- `VERCEL_TOKEN`: Your Vercel personal access token
-- `VERCEL_ORG_ID`: Your Vercel organization ID
-- `VERCEL_PROJECT_ID`: Your Vercel project ID
-- `GITHUB_TOKEN`: Automatically provided by GitHub
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
 
-#### Deployment Triggers
+# Copy source
+COPY . .
 
-- **Production Deployment**: Push to `main` or `master` branch
-- **Preview Deployment**: Push to any other branch or create a pull request
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S mcp -u 1001
 
-#### Monitoring Deployment
+# Change ownership
+RUN chown -R mcp:nodejs /app
+USER mcp
 
-Check deployment status in:
-- GitHub Actions tab in your repository
-- Vercel dashboard
-- Deployment logs for detailed output
+EXPOSE 3001
 
-### Method 2: Manual Deployment via Vercel CLI
-
-```bash
-# Deploy to production
-npm run deploy:prod
-
-# Deploy to preview environment
-npm run deploy:preview
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["npm", "start"]
 ```
 
-### Method 3: Direct Vercel Deployment
+Build and run:
 
 ```bash
-# Build the project
-npm run build:prod
-
-# Deploy using Vercel CLI
-vercel --prod
+docker build -t mcp-server .
+docker run -p 3001:3001 --env-file .env mcp-server
 ```
 
-## Security Hardening
+### Method 2: PM2 Deployment
 
-The application includes multiple security layers configured in `vercel.json`:
+```bash
+# Install PM2 globally
+npm install -g pm2
 
-### Content Security Policy (CSP)
+# Start with PM2
+pm2 start ecosystem.config.js --env production
 
-```json
-{
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.lofersil.pt; frame-ancestors 'none';"
-        }
-      ]
-    }
-  ]
+# Save PM2 configuration
+pm2 save
+
+# Setup PM2 startup script
+pm2 startup
+pm2 save
+```
+
+### Method 3: Cloud Deployment (AWS)
+
+#### ECS/Fargate
+
+```yaml
+# docker-compose.yml for ECS
+version: '3.8'
+services:
+  mcp-server:
+    image: your-registry/mcp-server:latest
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    secrets:
+      - ssl_certificate
+      - ssl_private_key
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+```
+
+#### Elastic Beanstalk
+
+Create `.ebextensions/nginx/conf.d/mcp-server.conf`:
+
+```nginx
+location /mcp {
+    proxy_pass http://127.0.0.1:3001;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_read_timeout 86400;
 }
 ```
 
-### HTTP Security Headers
+### Method 4: Kubernetes Deployment
 
-- **X-Content-Type-Options**: `nosniff`
-- **X-Frame-Options**: `DENY`
-- **X-XSS-Protection**: `1; mode=block`
-- **Referrer-Policy**: `strict-origin-when-cross-origin`
-- **Strict-Transport-Security**: `max-age=31536000; includeSubDomains; preload`
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mcp-server
+  template:
+    metadata:
+      labels:
+        app: mcp-server
+    spec:
+      containers:
+      - name: mcp-server
+        image: your-registry/mcp-server:latest
+        ports:
+        - containerPort: 3001
+        env:
+        - name: NODE_ENV
+          value: "production"
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-server-service
+spec:
+  selector:
+    app: mcp-server
+  ports:
+  - port: 3001
+    targetPort: 3001
+  type: LoadBalancer
+```
 
-### API Security
+## Step-by-Step Deployment Checklist
 
-- **CORS Configuration**: Restricted to allowed origins
-- **Rate Limiting**: Configured via environment variables
-- **CSRF Protection**: Token-based validation for forms
-- **Input Validation**: Joi schema validation for API endpoints
+### Pre-Deployment
 
-### Additional Security Measures
+- [ ] Review security requirements and obtain SSL certificates
+- [ ] Configure environment variables
+- [ ] Set up monitoring infrastructure
+- [ ] Prepare reverse proxy configuration
+- [ ] Test deployment in staging environment
 
-1. **Dependency Security**
+### Deployment Steps
+
+1. **Prepare Infrastructure**
    ```bash
-   # Audit dependencies
-   npm audit
+   # Update system packages
+   sudo apt update && sudo apt upgrade -y
 
-   # Update dependencies
-   npm update
+   # Install required software
+   sudo apt install -y nginx certbot nodejs npm
 
-   # Check for security vulnerabilities
-   npm audit fix
+   # Configure firewall
+   sudo ufw allow 22/tcp
+   sudo ufw allow 80/tcp
+   sudo ufw allow 443/tcp
+   sudo ufw --force enable
    ```
 
-2. **Environment Variable Security**
-   - Never commit secrets to version control
-   - Use Vercel's encrypted environment variables
-   - Rotate credentials regularly
+2. **Deploy Application**
+   ```bash
+   # Clone repository
+   git clone <repository-url>
+   cd github-issues-reviewer-mcp-server
 
-3. **Access Control**
-   - Restrict Vercel project access to authorized team members
-   - Use GitHub branch protection rules
-   - Enable two-factor authentication for all accounts
+   # Install dependencies
+   npm ci --only=production
 
-## Performance Monitoring
+   # Configure environment
+   cp .env.example .env
+   # Edit .env with production values
 
-The application includes comprehensive monitoring capabilities:
+   # Build if necessary
+   npm run build
+   ```
 
-### Built-in Monitoring Endpoints
+3. **Configure Services**
+   ```bash
+   # Configure nginx
+   sudo cp config/nginx.conf /etc/nginx/sites-available/mcp-server
+   sudo ln -s /etc/nginx/sites-available/mcp-server /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl reload nginx
 
-#### Health Check
-```bash
-curl https://your-domain.com/api/health
-```
+   # Start application with PM2
+   pm2 start ecosystem.config.js --env production
+   pm2 save
+   pm2 startup
+   ```
 
-#### Metrics Collection
-```bash
-curl https://your-domain.com/api/metrics
-```
+4. **Setup Monitoring**
+   ```bash
+   # Install Prometheus and Grafana
+   # Configure monitoring as described above
 
-#### Email Metrics
-```bash
-curl https://your-domain.com/api/monitoring/email-metrics
-```
+   # Setup log rotation
+   sudo cp config/logrotate.conf /etc/logrotate.d/mcp-server
+   ```
 
-#### Alerts Management
-```bash
-curl https://your-domain.com/api/monitoring/alerts
-```
+5. **Configure SSL**
+   ```bash
+   # Obtain SSL certificate
+   sudo certbot --nginx -d yourdomain.com
 
-### Performance Metrics Tracked
+   # Verify SSL configuration
+   openssl s_client -connect yourdomain.com:443 -servername yourdomain.com
+   ```
 
-- **Response Times**: API endpoint performance
-- **Error Rates**: Application error tracking
-- **Memory Usage**: Server resource monitoring
-- **Email Delivery**: SMTP success/failure rates
-- **Security Events**: Intrusion detection alerts
+### Post-Deployment Verification
 
-### Monitoring Dashboard
-
-Access monitoring data via:
-```bash
-# Get comprehensive metrics
-curl "https://your-domain.com/api/monitoring/email-metrics?aggregate=true&trends=true&health=true&alerts=true"
-```
-
-### Alert Configuration
-
-Default alert rules include:
-- High error rate (>10% in 1 hour)
-- Slow response time (>3 seconds average)
-- SMTP connection failures
-- Email delivery failure (>10% failure rate)
-- High memory usage (>80%)
-- Security events detected
-
-### External Monitoring Integration
-
-Consider integrating with:
-- **Google Analytics**: User behavior tracking
-- **Vercel Analytics**: Platform-specific metrics
-- **Uptime monitoring services**: External health checks
-- **Log aggregation services**: Centralized logging
+- [ ] Verify WebSocket connection: `wscat -c wss://yourdomain.com/mcp`
+- [ ] Check health endpoint: `curl https://yourdomain.com/health`
+- [ ] Test tool execution through MCP client
+- [ ] Verify monitoring dashboards show data
+- [ ] Check log files for errors
+- [ ] Perform load testing
 
 ## Troubleshooting
 
-### Common Deployment Issues
+### Common Issues
 
-#### Build Failures
+1. **WebSocket Connection Failed**
+   - Check SSL certificate validity
+   - Verify nginx configuration for WebSocket proxy
+   - Ensure firewall allows port 443
 
-**Symptom**: Build fails during CI/CD
+2. **High Memory Usage**
+   - Check for memory leaks in application code
+   - Adjust PM2 cluster configuration
+   - Implement connection limits
+
+3. **Slow Response Times**
+   - Check system resources (CPU, memory)
+   - Review nginx configuration for timeouts
+   - Implement caching for frequent operations
+
+4. **Tool Execution Errors**
+   - Verify tool input validation
+   - Check error logs for detailed error messages
+   - Ensure external service dependencies are available
+
+### Debug Commands
+
 ```bash
-# Check build logs in GitHub Actions
-# Or run locally for debugging
-npm run build:prod
+# Check application status
+pm2 status
+
+# View logs
+pm2 logs mcp-server
+
+# Restart application
+pm2 restart mcp-server
+
+# Check nginx status
+sudo systemctl status nginx
+
+# Test WebSocket connection
+wscat -c wss://yourdomain.com/mcp
+
+# Check SSL certificate
+openssl s_client -connect yourdomain.com:443 -servername yourdomain.com
 ```
 
-**Solutions**:
-- Verify Node.js version matches Vercel runtime (20.x)
-- Check for missing dependencies
-- Validate TypeScript compilation
-- Ensure all required environment variables are set
+## Maintenance
 
-#### Environment Variable Issues
+### Regular Tasks
 
-**Symptom**: Application fails to start or features don't work
-```bash
-# Check Vercel environment variables
-vercel env ls
+- **Daily**: Monitor logs and metrics
+- **Weekly**: Review error rates and performance metrics
+- **Monthly**: Update dependencies and security patches
+- **Quarterly**: Review and optimize configurations
 
-# Validate environment setup
-npm run test:env
-```
-
-#### API Endpoint Failures
-
-**Symptom**: 500 errors on API calls
-```bash
-# Check API health
-curl https://your-domain.com/api/health
-
-# Check error logs in Vercel dashboard
-```
-
-### Performance Issues
-
-#### Slow Page Loads
-
-**Diagnosis**:
-```bash
-# Check Lighthouse scores
-npm run lighthouse
-
-# Monitor Core Web Vitals
-curl https://your-domain.com/api/metrics
-```
-
-**Solutions**:
-- Optimize images using `npm run optimize-images`
-- Enable Vercel Edge Network
-- Review and optimize CSS/JS bundles
-- Implement proper caching headers
-
-#### High Memory Usage
-
-**Diagnosis**:
-```bash
-# Check memory metrics
-curl "https://your-domain.com/api/monitoring/email-metrics?health=true"
-```
-
-**Solutions**:
-- Review serverless function memory allocation
-- Optimize code for serverless environment
-- Implement proper error handling
-- Monitor for memory leaks
-
-### Email Delivery Issues
-
-#### SMTP Connection Failures
-
-**Diagnosis**:
-```bash
-# Check SMTP health
-curl "https://your-domain.com/api/monitoring/email-metrics?health=true"
-
-# Test SMTP connection
-npm run test:smtp
-```
-
-**Solutions**:
-- Verify SMTP credentials
-- Check firewall/network restrictions
-- Implement retry logic
-- Use alternative SMTP providers
-
-#### High Bounce Rates
-
-**Diagnosis**:
-```bash
-# Check delivery metrics
-curl https://your-domain.com/api/monitoring/email-metrics
-```
-
-**Solutions**:
-- Validate email addresses
-- Check sender reputation
-- Implement email validation
-- Monitor for spam complaints
-
-### Security Incidents
-
-#### Detecting Security Issues
+### Backup Strategy
 
 ```bash
-# Check security alerts
-curl "https://your-domain.com/api/monitoring/alerts?type=SECURITY"
-```
+# Database backup (if applicable)
+pg_dump mcp_database > backup_$(date +%Y%m%d).sql
 
-**Response Procedures**:
-1. Isolate affected systems
-2. Review access logs
-3. Update security configurations
-4. Notify relevant stakeholders
-5. Implement fixes and patches
+# Configuration backup
+tar -czf config_backup_$(date +%Y%m%d).tar.gz /etc/nginx/sites-available/mcp-server ecosystem.config.js .env
 
-## Maintenance Procedures
-
-### Regular Maintenance Tasks
-
-#### Weekly Tasks
-```bash
-# Update dependencies
-npm audit
-npm update
-
-# Run security audit
-npm audit fix
-
-# Check monitoring alerts
-curl "https://your-domain.com/api/monitoring/alerts?summary=true"
-```
-
-#### Monthly Tasks
-```bash
-# Review performance metrics
-npm run monitor:report
-
-# Update SSL certificates (handled by Vercel)
-# Review access logs
-# Update documentation
-```
-
-#### Quarterly Tasks
-```bash
-# Major dependency updates
-npm outdated
-npm update --save
-
-# Security assessment
-# Performance optimization review
-# Backup verification
-```
-
-### Backup and Recovery
-
-#### Configuration Backup
-- Environment variables are managed by Vercel
-- Code is version controlled in Git
-- Database backups (if applicable)
-
-#### Emergency Rollback
-```bash
-# Rollback via Git
-git revert <commit-hash>
-git push origin main
-
-# Or rollback via Vercel dashboard
-# Navigate to Deployments > Rollback
+# Log archival
+tar -czf logs_$(date +%Y%m%d).tar.gz /var/log/pm2/
 ```
 
 ### Scaling Considerations
 
-#### Traffic Increase Handling
-- Vercel automatically scales serverless functions
-- Monitor resource usage
-- Implement caching strategies
-- Consider CDN optimization
+- **Vertical Scaling**: Increase server resources (CPU, memory)
+- **Horizontal Scaling**: Add more server instances behind load balancer
+- **Caching Layer**: Implement Redis for session and data caching
+- **CDN**: Use CDN for static assets if applicable
 
-#### Database Scaling (Future)
-- Implement connection pooling
-- Use read replicas for high traffic
-- Implement data partitioning if needed
+## Security Best Practices
 
-## Contact and Support
+- Keep dependencies updated
+- Use strong encryption for data at rest
+- Implement proper authentication and authorization
+- Regular security audits and penetration testing
+- Monitor for security vulnerabilities
+- Use principle of least privilege for service accounts
 
-For deployment issues or questions:
-- Check this documentation first
-- Review Vercel documentation
-- Check GitHub Issues for known problems
-- Contact the development team
+---
 
-## Version History
-
-- **v1.0.0**: Initial deployment guide
-- Includes security hardening and monitoring setup
-- Comprehensive troubleshooting procedures
+This deployment guide ensures your GitHub Issues Reviewer MCP Server runs securely, efficiently, and reliably in production environments. Regular monitoring and maintenance are crucial for long-term stability.
