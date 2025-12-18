@@ -35,6 +35,12 @@ export default [
         HTMLTextAreaElement: "readonly",
         Node: "readonly",
         event: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
+        setInterval: "readonly",
+        clearInterval: "readonly",
+        requestAnimationFrame: "readonly",
+        cancelAnimationFrame: "readonly",
       },
     },
     plugins: {
