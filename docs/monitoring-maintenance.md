@@ -1,380 +1,291 @@
 # Monitoring Setup and Maintenance Procedures
 
+This document provides comprehensive monitoring setup and maintenance procedures for the GitHub Issues Reviewer MCP system. It covers health checks, performance monitoring, error tracking, alerting, maintenance schedules, backup procedures, and troubleshooting.
+
 ## Overview
 
-LOFERSIL Landing Page implements a comprehensive production monitoring system optimized for Vercel serverless environments. The monitoring stack includes health checks, metrics collection, alerting, and performance tracking for email delivery services.
+The MCP system includes built-in monitoring capabilities through the `api/monitoring/` directory, which contains:
+- `alerts.js`: Alert configuration and handling
+- `email-metrics.js`: Email delivery metrics collection
+- `monitoring-report.json`: Current monitoring status report
 
-## Architecture
+For production deployments, integrate with Prometheus and Grafana for advanced monitoring and visualization.
 
-The monitoring system consists of several API endpoints and scripts:
+## Health Checks
 
-- **Health Checks**: `/api/health` - Comprehensive health status
-- **Metrics Dashboard**: `/api/metrics` - Performance and operational metrics
-- **Alert Management**: `/api/monitoring/alerts` - Alert creation and management
-- **Email Metrics**: `/api/monitoring/email-metrics` - Email service monitoring
+### Basic Health Endpoints
 
-## Initial Setup
+The system provides health check endpoints in `api/health/`:
+- `/api/health`: Basic system health check
+- `/api/health/email`: Email service health check
+- `/api/health/smtp`: SMTP connectivity check
 
-### 1. Environment Configuration
+### Automated Health Monitoring
 
-Ensure all required environment variables are configured in Vercel:
+- **Frequency**: Check health endpoints every 30 seconds
+- **Alerts**: Trigger alert if any endpoint returns non-200 status for 3 consecutive checks
+- **Recovery**: Auto-resolve when health returns to normal
 
-```bash
-# Required SMTP configuration
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
+### Manual Health Verification
 
-# Email configuration
-FROM_EMAIL=noreply@lofersil.com
-TO_EMAIL=contact@lofersil.com
-
-# Vercel environment
-VERCEL=1
-NODE_ENV=production
-```
-
-### 2. Deploy to Vercel
-
-Deploy the application with monitoring endpoints:
+Run the following command to check system health:
 
 ```bash
-npm run deploy:prod
+curl -f http://localhost:3000/api/health
+curl -f http://localhost:3000/api/health/email
+curl -f http://localhost:3000/api/health/smtp
 ```
 
-### 3. Verify Deployment
+## Performance Monitoring
 
-Run the health check script to verify everything is working:
+### Metrics Collection
+
+Performance metrics are collected via `api/monitoring/email-metrics.js`:
+- Email delivery latency
+- SMTP connection pool usage
+- Memory and CPU usage
+- Request throughput
+
+### Key Metrics to Monitor
+
+- **Response Time**: P95 response time < 500ms
+- **Error Rate**: Error rate < 1%
+- **Throughput**: Requests per minute
+- **Resource Usage**: CPU < 80%, Memory < 85%
+
+### Performance Baselines
+
+- Normal load: < 100 req/min
+- Peak load: < 500 req/min
+- Memory usage: < 512MB
+- CPU usage: < 2 cores
+
+## Error Tracking
+
+### Error Categories
+
+1. **SMTP Errors**: Connection failures, authentication issues
+2. **API Errors**: Invalid requests, rate limiting
+3. **System Errors**: Memory leaks, crashes
+4. **GitHub API Errors**: Rate limits, authentication failures
+
+### Error Logging
+
+All errors are logged with the following format:
+```
+[ERROR] timestamp - component - error_message - stack_trace
+```
+
+### Error Alerting
+
+- **Critical**: System crashes, data loss
+- **Warning**: SMTP failures, high error rates
+- **Info**: Temporary connectivity issues
+
+## Alerting
+
+### Alert Configuration
+
+Alerts are configured in `api/monitoring/alerts.js`:
+- Email alerts for critical issues
+- Slack/webhook notifications
+- Escalation policies
+
+### Alert Rules
+
+1. **Health Check Failures**: 3 consecutive failures
+2. **Performance Degradation**: P95 > 1s for 5 minutes
+3. **Error Rate Spike**: > 5% errors for 10 minutes
+4. **Resource Exhaustion**: Memory > 90% or CPU > 95%
+
+### Alert Channels
+
+- **Email**: Primary contact
+- **PagerDuty**: Critical alerts
+- **Slack**: Team notifications
+
+## Prometheus/Grafana Setup
+
+### Prometheus Configuration
+
+1. Install Prometheus:
 
 ```bash
-npm run health-check
+# Using Docker
+docker run -d -p 9090:9090 -v /path/to/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
 ```
 
-## Routine Maintenance
+2. Configure scraping in `prometheus.yml`:
 
-### Daily Monitoring
+```yaml
+global:
+  scrape_interval: 15s
 
-#### 1. Health Status Check
+scrape_configs:
+  - job_name: 'mcp-server'
+    static_configs:
+      - targets: ['localhost:3000']
+    metrics_path: '/api/metrics'
+```
 
-Check the overall health of the system:
+### Grafana Setup
+
+1. Install Grafana:
 
 ```bash
-curl https://lofersil.vercel.app/api/health
+# Using Docker
+docker run -d -p 3000:3000 grafana/grafana
 ```
 
-Expected response for healthy system:
-```json
-{
-  "status": "healthy",
-  "timestamp": "2025-12-18T10:00:00.000Z",
-  "checks": {
-    "environment": { "status": "healthy" },
-    "smtp": { "status": "healthy" },
-    "memory": { "status": "healthy" }
-  }
-}
-```
+2. Add Prometheus data source in Grafana UI
 
-#### 2. Alert Review
+3. Import dashboards for:
+   - System metrics
+   - Application metrics
+   - Alert status
 
-Check for active alerts:
+### Custom Dashboards
 
-```bash
-curl "https://lofersil.vercel.app/api/monitoring/alerts?summary=true"
-```
-
-Review alert summary for:
-- Active alerts requiring attention
-- Critical and warning alerts
-- Recent alert activity
-
-#### 3. Performance Metrics
-
-Review key performance indicators:
-
-```bash
-curl "https://lofersil.vercel.app/api/metrics?range=24h"
-```
-
-Monitor:
-- Email delivery success rate (>95%)
-- Average response time (<3 seconds)
-- Error rates (<5%)
-- Memory usage (<80%)
-
-### Weekly Maintenance
-
-#### 1. Alert Rule Validation
-
-Test alert rules against current metrics:
-
-```bash
-curl -X POST "https://lofersil.vercel.app/api/monitoring/alerts?action=test-rules"
-```
-
-#### 2. Metrics Report Generation
-
-Generate comprehensive monitoring report:
-
-```bash
-npm run monitor:report
-```
-
-This creates `monitoring-report.json` with detailed system status.
-
-#### 3. Performance Analysis
-
-Run performance monitoring:
-
-```bash
-npm run monitor:performance
-```
-
-Analyze:
-- Response time percentiles (P95, P99)
-- Error rate trends
+Create dashboards for:
+- MCP server performance
+- Email delivery metrics
+- Error rates and trends
 - Resource utilization
 
-### Monthly Maintenance
+## Maintenance Schedules
 
-#### 1. Metrics Cleanup
+### Daily Tasks
 
-The system automatically cleans up old metrics, but verify retention settings:
+- **00:00 UTC**: Automated health checks
+- **06:00 UTC**: Log rotation
+- **12:00 UTC**: Backup verification
+- **18:00 UTC**: Performance report generation
 
-- Metrics retained: 30 days
-- Alerts retained: 7 days
-- Historical data: 24 hours rolling window
+### Weekly Tasks
 
-#### 2. Alert Threshold Review
+- **Monday 02:00 UTC**: Full system backup
+- **Wednesday 02:00 UTC**: Security updates
+- **Friday 18:00 UTC**: Performance optimization review
 
-Review and adjust alert thresholds based on baseline performance:
+### Monthly Tasks
 
-```javascript
-// Current alert thresholds in api/monitoring/alerts.js
-const ALERT_CONFIG = {
-  RESPONSE_TIME: 3000,     // 3 seconds
-  ERROR_RATE: 0.1,         // 10%
-  MEMORY_USAGE: 0.8,       // 80%
-  EMAIL_SUCCESS_RATE: 0.9  // 90%
-};
-```
+- **1st of month**: Capacity planning review
+- **15th of month**: Log archive cleanup
+- **Last day of month**: Compliance audit
 
-#### 3. SMTP Health Verification
+### Quarterly Tasks
 
-Perform comprehensive SMTP testing:
+- System upgrades
+- Security assessments
+- Performance benchmarking
+- Disaster recovery testing
 
+## Backup Procedures
+
+### Automated Backups
+
+- **Database**: Daily snapshots, retained 30 days
+- **Logs**: Hourly rotation, retained 7 days
+- **Configuration**: Version controlled, backed up daily
+
+### Manual Backup Process
+
+1. Stop the MCP server
+2. Create database snapshot
+3. Archive logs and metrics
+4. Verify backup integrity
+5. Restart services
+
+### Backup Verification
+
+Run weekly backup restoration tests:
 ```bash
-npm run monitor:start
+# Test backup restoration
+./scripts/restore-backup.sh --test
 ```
 
-This starts continuous monitoring of SMTP connectivity.
+### Retention Policy
 
-## Alert Management
-
-### Alert Types
-
-The system monitors for these alert conditions:
-
-1. **High Error Rate**: >10% error rate per hour
-2. **Slow Response Time**: >3 seconds average response time
-3. **SMTP Connection Failure**: SMTP connectivity issues
-4. **Email Delivery Failure**: <90% email success rate
-5. **Memory Usage High**: >80% memory utilization
-6. **Security Events**: Detected security incidents
-
-### Alert Lifecycle
-
-#### Acknowledge Alert
-```bash
-curl -X PUT "https://lofersil.vercel.app/api/monitoring/alerts?action=acknowledge&alertId=alert-123" \
-  -H "Content-Type: application/json" \
-  -d '{"acknowledgedBy": "admin"}'
-```
-
-#### Resolve Alert
-```bash
-curl -X PUT "https://lofersil.vercel.app/api/monitoring/alerts?action=resolve&alertId=alert-123" \
-  -H "Content-Type: application/json" \
-  -d '{"resolvedBy": "admin"}'
-```
-
-#### Suppress Alert (Temporary)
-```bash
-curl -X PUT "https://lofersil.vercel.app/api/monitoring/alerts?action=suppress&alertId=alert-123" \
-  -H "Content-Type: application/json" \
-  -d '{"duration": 3600000}'
-```
+- Daily backups: 30 days
+- Weekly backups: 12 weeks
+- Monthly backups: 12 months
+- Yearly backups: 7 years
 
 ## Troubleshooting
 
 ### Common Issues
 
-#### 1. SMTP Connection Failures
+#### High Memory Usage
+- **Cause**: Memory leaks in email processing
+- **Solution**: Restart service, monitor heap usage
+- **Prevention**: Implement memory limits, garbage collection tuning
 
-**Symptoms**: Alerts for SMTP health, email delivery failures
+#### SMTP Connection Failures
+- **Cause**: Network issues, credential problems
+- **Solution**: Check SMTP configuration, test connectivity
+- **Prevention**: Implement connection pooling, retry logic
 
-**Diagnosis**:
-```bash
-curl https://lofersil.vercel.app/api/health
-```
+#### Slow Response Times
+- **Cause**: High load, inefficient queries
+- **Solution**: Scale horizontally, optimize database queries
+- **Prevention**: Implement caching, load balancing
 
-**Resolution**:
-- Verify SMTP credentials in environment variables
-- Check SMTP server status
-- Review firewall/network connectivity
-- Test SMTP configuration manually
+#### GitHub API Rate Limits
+- **Cause**: Excessive API calls
+- **Solution**: Implement rate limiting, caching
+- **Prevention**: Monitor API usage, implement quotas
 
-#### 2. High Error Rates
+### Debugging Steps
 
-**Symptoms**: >10% error rate, failing requests
+1. Check logs in `api/monitoring/monitoring-report.json`
+2. Run health checks
+3. Review recent metrics
+4. Check system resources
+5. Test with minimal load
+6. Enable debug logging if needed
 
-**Diagnosis**:
-```bash
-curl "https://lofersil.vercel.app/api/metrics?range=1h"
-```
+### Escalation Procedures
 
-**Resolution**:
-- Check application logs in Vercel dashboard
-- Review recent code deployments
-- Verify external service dependencies
-- Check rate limiting status
+1. **Level 1**: On-call engineer investigates
+2. **Level 2**: Senior engineer reviews, 30 minutes
+3. **Level 3**: Full team response, 2 hours
+4. **Level 4**: Vendor support, 4 hours
 
-#### 3. Slow Response Times
+## Emergency Procedures
 
-**Symptoms**: Response times >3 seconds
+### System Outage
 
-**Diagnosis**:
-```bash
-curl "https://lofersil.vercel.app/api/metrics?range=1h&aggregate=true&interval=15m"
-```
+1. Assess impact and notify stakeholders
+2. Attempt quick restart
+3. Switch to backup systems if available
+4. Communicate status updates every 30 minutes
+5. Perform root cause analysis post-recovery
 
-**Resolution**:
-- Check Vercel function cold starts
-- Review database query performance
-- Optimize image loading and assets
-- Consider function region proximity
+### Data Loss
 
-#### 4. Memory Issues
+1. Stop all writes immediately
+2. Restore from latest backup
+3. Verify data integrity
+4. Notify affected users
+5. Implement preventive measures
 
-**Symptoms**: Memory usage >80%, potential crashes
+## Configuration Reference
 
-**Diagnosis**:
-```bash
-curl https://lofersil.vercel.app/api/health
-```
+### Environment Variables
 
-**Resolution**:
-- Review memory-intensive operations
-- Check for memory leaks in long-running processes
-- Optimize image processing
-- Consider memory limits in Vercel plan
+- `MONITORING_ENABLED`: Enable/disable monitoring (default: true)
+- `ALERT_EMAIL`: Alert recipient email
+- `PROMETHEUS_URL`: Prometheus server URL
+- `GRAFANA_URL`: Grafana dashboard URL
 
-### Emergency Procedures
+### Monitoring Endpoints
 
-#### 1. Service Degradation
+- `/api/metrics`: Prometheus metrics
+- `/api/health`: System health
+- `/api/monitoring/report`: Detailed status report
 
-1. Acknowledge active alerts
-2. Check Vercel dashboard for function status
-3. Review recent deployments
-4. Roll back if necessary
-5. Contact support if external services affected
+## Related Documentation
 
-#### 2. Complete Outage
-
-1. Check Vercel status page
-2. Verify domain DNS settings
-3. Review build/deployment logs
-4. Redeploy if build issues detected
-5. Contact Vercel support if platform issues
-
-## Automation
-
-### Scheduled Monitoring
-
-Set up automated health checks using Vercel's cron jobs or external monitoring services:
-
-```javascript
-// Example cron job configuration
-{
-  "crons": [
-    {
-      "path": "/api/health",
-      "schedule": "0 * * * *"  // Every hour
-    }
-  ]
-}
-```
-
-### Alert Notifications
-
-Configure external notification channels:
-
-1. **Email Alerts**: Set up email forwarding for critical alerts
-2. **Slack Integration**: Webhook notifications for team alerts
-3. **PagerDuty**: Escalation for production incidents
-
-## Monitoring Scripts
-
-Available npm scripts for maintenance:
-
-```bash
-# Health check
-npm run health-check
-
-# Production monitoring
-npm run monitor
-npm run monitor:start
-npm run monitor:performance
-npm run monitor:report
-
-# Deployment verification
-npm run vercel-deploy
-```
-
-## Metrics Retention
-
-The system maintains different retention periods:
-
-- **Real-time metrics**: 30 seconds cache
-- **Hourly metrics**: 24 hours rolling window
-- **Daily metrics**: 30 days retention
-- **Alert history**: 7 days retention
-- **Error logs**: 30 days retention
-
-## Security Considerations
-
-- All monitoring endpoints require proper authentication in production
-- Sensitive SMTP credentials are environment-protected
-- Alert data may contain system information - review access controls
-- Rate limiting is implemented to prevent monitoring abuse
-
-## Performance Optimization
-
-### Caching Strategy
-
-- Health checks: 30 seconds cache
-- Metrics: 60 seconds cache
-- Alerts: Real-time (no cache)
-
-### Resource Limits
-
-Monitor and adjust Vercel function limits:
-
-- Function timeout: 30 seconds
-- Memory limit: 1024 MB
-- Request limit: Based on plan
-
-## Contact Information
-
-For monitoring system issues:
-
-- **Technical Support**: development@lofersil.com
-- **Infrastructure**: infra@lofersil.com
-- **Security**: security@lofersil.com
-
----
-
-*This document is maintained as part of the LOFERSIL Landing Page project. Last updated: December 2025*</content>
-<filePath>docs/monitoring-maintenance.md
+- [API Documentation](./api.md)
+- [Deployment Guide](./deployment.md)
+- [Security Guidelines](./security.md)
