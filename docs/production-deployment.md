@@ -22,7 +22,8 @@ Before deploying, ensure you have:
 
 ```bash
 git clone <repository-url>
-cd github-issues-reviewer-mcp-server
+cd LOFERSIL-Landing-Page
+cd mcp-server
 npm ci --only=production
 ```
 
@@ -590,8 +591,84 @@ spec:
   ports:
   - port: 3001
     targetPort: 3001
-  type: LoadBalancer
+   type: LoadBalancer
 ```
+
+### Method 5: Vercel Serverless Deployment
+
+The MCP server can be deployed as a serverless function on Vercel, leveraging the platform's WebSocket support for MCP protocol communication.
+
+#### Prerequisites
+
+- Vercel account and CLI installed
+- Project configured for serverless functions
+- WebSocket support enabled in Vercel configuration
+
+#### Configuration
+
+Create `vercel.json` in the project root:
+
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "mcp-server/simple-server.ts",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/mcp",
+      "dest": "mcp-server/simple-server.ts"
+    }
+  ],
+  "functions": {
+    "mcp-server/simple-server.ts": {
+      "maxDuration": 300
+    }
+  }
+}
+```
+
+#### Deployment Steps
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login to Vercel
+vercel login
+
+# Deploy
+cd LOFERSIL-Landing-Page
+vercel --prod
+
+# Set environment variables
+vercel env add MCP_SERVER_PORT
+vercel env add NODE_ENV
+```
+
+#### Environment Variables for Vercel
+
+```bash
+vercel env add NODE_ENV production
+vercel env add MCP_SERVER_PORT 3001
+vercel env add API_KEY your-api-key
+```
+
+#### WebSocket Configuration
+
+Vercel supports WebSockets in serverless functions. Ensure your MCP server handles the serverless environment properly by checking for `req.headers.upgrade` and managing connections accordingly.
+
+#### Monitoring on Vercel
+
+- Use Vercel's built-in function logs and metrics
+- Monitor function execution time and cold starts
+- Set up alerts for function failures
 
 ## Step-by-Step Deployment Checklist
 
@@ -621,21 +698,19 @@ spec:
    ```
 
 2. **Deploy Application**
-   ```bash
-   # Clone repository
-   git clone <repository-url>
-   cd github-issues-reviewer-mcp-server
+    ```bash
+    # Clone repository
+    git clone <repository-url>
+    cd LOFERSIL-Landing-Page
+    cd mcp-server
 
-   # Install dependencies
-   npm ci --only=production
+    # Install dependencies
+    npm ci --only=production
 
-   # Configure environment
-   cp .env.example .env
-   # Edit .env with production values
-
-   # Build if necessary
-   npm run build
-   ```
+    # Configure environment
+    cp .env.example .env
+    # Edit .env with production values
+    ```
 
 3. **Configure Services**
    ```bash
