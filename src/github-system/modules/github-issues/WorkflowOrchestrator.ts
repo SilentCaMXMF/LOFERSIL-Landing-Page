@@ -5,10 +5,10 @@
  * Manages state transitions, component interactions, and error handling.
  */
 
-import { IssueAnalyzer, GitHubIssue, IssueAnalysis } from "./IssueAnalyzer";
-import { AutonomousResolver, ResolutionResult } from "./AutonomousResolver";
-import { CodeReviewer, ReviewResult } from "./CodeReviewer";
-import { PRGenerator, PullRequest } from "./PRGenerator";
+import { IssueAnalyzer, GitHubIssue, IssueAnalysis } from "./IssueAnalyzer.js";
+import { AutonomousResolver, ResolutionResult } from "./AutonomousResolver.js";
+import { CodeReviewer, ReviewResult } from "./CodeReviewer.js";
+import { PRGenerator, PullRequest } from "./PRGenerator.js";
 
 export enum WorkflowState {
   INITIALIZING = "initializing",
