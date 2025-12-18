@@ -12,9 +12,9 @@ import {
   MessagePartUpdatedEvent,
   EventHandler,
   EventListeners,
-} from "../types.js";
-import { logger } from "./logger.js";
-import { ErrorManager } from "./ErrorManager.js";
+} from "../types";
+import { logger } from "./logger";
+import { ErrorManager } from "./ErrorManager";
 
 export class EventManager {
   private listeners: EventListeners = {};

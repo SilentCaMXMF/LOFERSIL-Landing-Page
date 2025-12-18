@@ -5,13 +5,13 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { JSDOM } from "jsdom";
-import { ContactRequest } from "../validation.js";
+import { ContactRequest } from "../validation";
 import {
   TestEmailRecipient,
   TestEmailResult,
   TrappedEmail,
-} from "../utils/test-email-recipient.js";
-import { EmailFlowValidator } from "../utils/email-flow-validator.js";
+} from "../utils/test-email-recipient";
+import { EmailFlowValidator } from "../utils/email-flow-validator";
 
 // Mock fetch for API calls
 const mockFetch = vi.fn();

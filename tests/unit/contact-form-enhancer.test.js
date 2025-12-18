@@ -95,8 +95,7 @@ global.localStorage = {
 global.fetch = vi.fn();
 
 // Import the class (adjust path as needed)
-const ContactFormEnhancer =
-  require("/workspaces/LOFERSIL-Landing-Page/src/scripts/contact-form-enhancer.js").default;
+import ContactFormEnhancer from "../../src/scripts/contact-form-enhancer.js";
 
 describe("ContactFormEnhancer", () => {
   let formEnhancer;
@@ -294,13 +293,13 @@ describe("ContactFormEnhancer", () => {
       inputs.email.value = "ana@example.com";
       inputs.name.dispatchEvent(new Event("input"));
 
-      // Wait for debounce
+      // Wait for auto-save
       setTimeout(() => {
         expect(localStorage.setItem).toHaveBeenCalledWith(
           "contactFormDraft",
           expect.stringContaining("Ana Silva"),
         );
-      }, 350);
+      }, 2100);
     });
 
     it("should load saved data on initialization", () => {

@@ -3,7 +3,7 @@
  * Comprehensive input validation system for contact forms
  */
 
-import { TranslationManager } from "./modules/TranslationManager.js";
+import { TranslationManager } from "./modules/TranslationManager";
 
 const DOMPurify = (
   globalThis as unknown as {

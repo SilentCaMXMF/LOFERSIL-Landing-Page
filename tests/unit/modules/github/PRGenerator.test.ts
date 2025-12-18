@@ -3,10 +3,10 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { PRGenerator, PullRequest } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/PRGenerator";
+import { PRGenerator, PullRequest } from "../../../../src/github-system/modules/github-issues/PRGenerator";
 import { OpenCodeAgent } from "../../../../src/scripts/modules/OpenCodeAgent";
-import { ResolutionResult } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/AutonomousResolver";
-import { ReviewResult } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/CodeReviewer";
+import { ResolutionResult } from "../../../../src/github-system/modules/github-issues/AutonomousResolver";
+import { ReviewResult } from "../../../../src/github-system/modules/github-issues/CodeReviewer";
 
 // Mock dependencies
 vi.mock("../OpenCodeAgent");

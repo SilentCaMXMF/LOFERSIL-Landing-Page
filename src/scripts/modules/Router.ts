@@ -3,10 +3,10 @@
  * Handles client-side routing, URL parsing, and page rendering
  */
 import DOMPurify from "dompurify";
-import { routes } from "./Routes.js";
-import { TranslationManager } from "./TranslationManager.js";
-import { NavigationManager } from "./NavigationManager.js";
-import { ErrorManager } from "./ErrorManager.js";
+import { routes } from "./Routes";
+import { TranslationManager } from "./TranslationManager";
+import { NavigationManager } from "./NavigationManager";
+import { ErrorManager } from "./ErrorManager";
 
 export class Router {
   private mainContent: HTMLElement | null;

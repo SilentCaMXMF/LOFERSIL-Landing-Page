@@ -1,7 +1,7 @@
 /**
  * Background Sync Manager for offline form submissions
  */
-import { envLoader } from "./EnvironmentLoader.js";
+import { envLoader } from "./EnvironmentLoader";
 export class BackgroundSync {
   private static readonly CONTACT_FORM_TAG = "contact-form-sync";
 

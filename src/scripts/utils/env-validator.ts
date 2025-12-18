@@ -3,9 +3,9 @@
  * Comprehensive environment variable validation for email configuration
  */
 
-import type { SMTPConfig, ValidationResult } from "./email-config.js";
-import { envLoader } from "../modules/EnvironmentLoader.js";
-import { ErrorManager } from "../modules/ErrorManager.js";
+import type { SMTPConfig, ValidationResult } from "./email-config";
+import { envLoader } from "../modules/EnvironmentLoader";
+import { ErrorManager } from "../modules/ErrorManager";
 
 /**
  * Environment validation result interface

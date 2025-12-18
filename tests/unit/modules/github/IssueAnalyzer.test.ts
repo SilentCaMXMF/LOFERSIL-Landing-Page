@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { IssueAnalyzer, GitHubIssue, IssueAnalysis } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/IssueAnalyzer";
+import { IssueAnalyzer, GitHubIssue, IssueAnalysis } from "../../../../src/github-system/modules/github-issues/IssueAnalyzer";
 import { OpenCodeAgent } from "../../../../src/scripts/modules/OpenCodeAgent";
 
 // Mock OpenCodeAgent

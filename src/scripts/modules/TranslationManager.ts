@@ -3,8 +3,8 @@
  * Handles loading and applying translations for multiple languages
  */
 
-import { Translations } from "../types.js";
-import { ErrorManager } from "./ErrorManager.js";
+import { Translations } from "../types";
+import { ErrorManager } from "./ErrorManager";
 
 export class TranslationManager {
   private translations: Record<string, Translations>;

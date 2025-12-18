@@ -29,7 +29,7 @@ server.js
 # AI agent ecosystem
 opencode-agents/
 .opencode/
-AGENTS.md
+
 
 # GitHub integration (development only)
 src/github-system/

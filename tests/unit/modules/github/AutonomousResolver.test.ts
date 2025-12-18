@@ -7,10 +7,10 @@ import {
   AutonomousResolver,
   CodeChanges,
   ResolutionResult,
-} from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/AutonomousResolver";
+} from "../../../../src/github-system/modules/github-issues/AutonomousResolver";
 import { OpenCodeAgent } from "../../../../src/scripts/modules/../../../src/scripts/modules/OpenCodeAgent";
-import { WorktreeManager } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/WorktreeManager";
-import { IssueAnalysis } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/IssueAnalyzer";
+import { WorktreeManager } from "../../../../src/github-system/modules/github-issues/WorktreeManager";
+import { IssueAnalysis } from "../../../../src/github-system/modules/github-issues/IssueAnalyzer";
 
 // Mock dependencies
 vi.mock("../OpenCodeAgent");

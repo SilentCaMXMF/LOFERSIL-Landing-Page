@@ -18,11 +18,11 @@ import {
   generateEmailTemplate,
   EmailTemplateData,
   TemplateType,
-} from "../utils/email-templates.js";
+} from "../utils/email-templates";
 import {
   TemplateValidator,
   validateEmailTemplate,
-} from "../utils/template-validator.js";
+} from "../utils/template-validator";
 
 // Mock ErrorManager to avoid DOM issues in test environment
 vi.mock("../modules/ErrorManager.js", () => ({

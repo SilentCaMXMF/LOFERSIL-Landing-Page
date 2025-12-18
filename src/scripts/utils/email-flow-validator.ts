@@ -3,8 +3,8 @@
  * Validates complete email sending pipeline and content
  */
 
-import { ContactRequest } from "../validation.js";
-import { TestEmailRecipient } from "./test-email-recipient.js";
+import { ContactRequest } from "../validation";
+import { TestEmailRecipient } from "./test-email-recipient";
 
 // Email flow validation result
 export interface EmailFlowResult {

@@ -12,9 +12,9 @@ import {
   validateEmailFormat,
   checkRequiredEmailVars,
   envValidator,
-} from "../utils/env-validator.js";
-import { envLoader } from "../modules/EnvironmentLoader.js";
-import { ErrorManager } from "../modules/ErrorManager.js";
+} from "../utils/env-validator";
+import { envLoader } from "../modules/EnvironmentLoader";
+import { ErrorManager } from "../modules/ErrorManager";
 
 // Mock the EnvironmentLoader
 vi.mock("../modules/EnvironmentLoader.js", () => ({

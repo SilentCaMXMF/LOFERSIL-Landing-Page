@@ -12,13 +12,13 @@ import type {
   EmailTestConfig,
   MockSMTPResponse,
   EmailProvider,
-} from "./email-config.js";
-import { SMTPProviders, EMAIL_PROVIDERS } from "./email-config.js";
+} from "./email-config";
+import { SMTPProviders, EMAIL_PROVIDERS } from "./email-config";
 import {
   getSmtpConfig,
   getEmailEnvironmentConfig,
   validateEmailEnvironment,
-} from "./env-validator.js";
+} from "./env-validator";
 
 export class EmailTester {
   private mockMode: boolean = false;

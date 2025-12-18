@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { UIManager } from "./UIManager.js";
+import { UIManager } from "./UIManager";
 import { ErrorHandler } from "./ErrorManager";
 
 describe("UIManager", () => {

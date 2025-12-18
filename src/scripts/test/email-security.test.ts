@@ -49,13 +49,13 @@ import {
   RateLimiterFactory,
   RateLimitStrategy,
   RateLimitType,
-} from "../utils/rate-limiter.js";
+} from "../utils/rate-limiter";
 import {
   EmailSecurityManager,
   SecurityManagerFactory,
   SecurityIncidentType,
   SecurityThreatLevel,
-} from "../utils/email-security.js";
+} from "../utils/email-security";
 
 describe("Rate Limiter Tests", () => {
   let rateLimiter: RateLimiter;

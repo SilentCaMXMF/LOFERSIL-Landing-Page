@@ -34,6 +34,8 @@ describe("UIManager", () => {
         classList: { add: vi.fn() },
         setAttribute: vi.fn(),
       }),
+      body: { innerHTML: "" },
+      head: { innerHTML: "" },
     } as any;
 
     uiManager = new UIManager({ scrollThreshold: 100 }, mockErrorHandler);

@@ -4,11 +4,11 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { EnvironmentValidator } from "../utils/env-validator.js";
-import { EmailTester } from "../utils/email-tester.js";
-import { SMTPProviders, EMAIL_PROVIDERS } from "../utils/email-config.js";
-import { envLoader } from "../modules/EnvironmentLoader.js";
-import { ErrorManager } from "../modules/ErrorManager.js";
+import { EnvironmentValidator } from "../utils/env-validator";
+import { EmailTester } from "../utils/email-tester";
+import { SMTPProviders, EMAIL_PROVIDERS } from "../utils/email-config";
+import { envLoader } from "../modules/EnvironmentLoader";
+import { ErrorManager } from "../modules/ErrorManager";
 
 // Mock the EnvironmentLoader
 vi.mock("../modules/EnvironmentLoader.js", () => ({

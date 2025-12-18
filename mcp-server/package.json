@@ -1,0 +1,35 @@
+{
+  "name": "github-issues-reviewer-mcp-server",
+  "version": "1.0.0",
+  "description": "Enhanced MCP server for GitHub Issues Reviewer with AI-powered code analysis and issue classification",
+  "main": "simple-server.js",
+  "type": "module",
+  "scripts": {
+    "start": "npx tsx simple-server.ts",
+    "dev": "npx tsx --watch simple-server.ts",
+    "build": "tsc",
+    "test": "node test-client.js"
+  },
+  "keywords": [
+    "mcp",
+    "github",
+    "code-analysis",
+    "issue-classification",
+    "ai",
+    "model-context-protocol"
+  ],
+  "author": "LOFERSIL",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.14.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

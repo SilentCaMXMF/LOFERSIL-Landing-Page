@@ -3,8 +3,8 @@
  * Uses Intersection Observer for efficient scroll handling
  */
 
-import { config } from "./Config.js";
-import { NavigationManager } from "./NavigationManager.js";
+import { config } from "./Config";
+import { NavigationManager } from "./NavigationManager";
 
 export class ScrollManager {
   private hero: HTMLElement | null = null;

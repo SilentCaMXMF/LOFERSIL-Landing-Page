@@ -3,9 +3,9 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { CodeReviewer, ReviewResult, ReviewIssue } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/CodeReviewer";
+import { CodeReviewer, ReviewResult, ReviewIssue } from "../../../../src/github-system/modules/github-issues/CodeReviewer";
 import { OpenCodeAgent } from "../../../../src/scripts/modules/OpenCodeAgent";
-import { CodeChanges } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/AutonomousResolver";
+import { CodeChanges } from "../../../../src/github-system/modules/github-issues/AutonomousResolver";
 
 // Mock OpenCodeAgent
 vi.mock("../OpenCodeAgent");

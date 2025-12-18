@@ -11,7 +11,7 @@ import {
   defaultRetryConfig,
   type EmailJob,
   type RetryResult,
-} from "../utils/email-retry-logic.js";
+} from "../utils/email-retry-logic";
 
 describe("SMTP Failure Testing", () => {
   let retryManager: EmailRetryManager;

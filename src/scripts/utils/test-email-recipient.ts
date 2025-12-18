@@ -3,7 +3,7 @@
  * Mock email service for testing email functionality
  */
 
-import { ContactRequest } from "../validation.js";
+import { ContactRequest } from "../validation";
 
 // Ethereal email configuration
 interface EtherealConfig {

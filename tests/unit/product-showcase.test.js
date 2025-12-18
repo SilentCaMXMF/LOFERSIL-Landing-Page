@@ -298,6 +298,7 @@ describe("ProductShowcase", () => {
     });
 
     it("should debounce filter operations", () => {
+      vi.useFakeTimers();
       const renderSpy = vi.spyOn(productShowcase, "renderProducts");
 
       // Multiple rapid filter calls
@@ -305,10 +306,12 @@ describe("ProductShowcase", () => {
       productShowcase.filterProducts("bebe");
       productShowcase.filterProducts("all");
 
-      // Should only render once after debounce
-      setTimeout(() => {
-        expect(renderSpy).toHaveBeenCalledTimes(1);
-      }, 100);
+      // Advance time to trigger debounced call
+      vi.advanceTimersByTime(100);
+
+      expect(renderSpy).toHaveBeenCalledTimes(1);
+
+      vi.useRealTimers();
     });
   });
 });

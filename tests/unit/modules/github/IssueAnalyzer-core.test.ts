@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { IssueAnalysis } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/IssueAnalyzer";
+import { IssueAnalysis } from "../../../../src/github-system/modules/github-issues/IssueAnalyzer";
 
 describe("IssueAnalyzer Core Logic", () => {
   // Mock GitHub issue for testing

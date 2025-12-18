@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { debounce, throttle, isInViewport } from "./Utils.js";
+import { debounce, throttle, isInViewport } from "./Utils";
 
 describe("Utils", () => {
   beforeEach(() => {

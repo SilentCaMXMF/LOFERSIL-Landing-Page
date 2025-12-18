@@ -3,9 +3,9 @@
  * Manages UI state, scroll effects, and user interactions
  */
 
-import { ErrorManager } from "./ErrorManager.js";
-import { validateContactForm, ContactFormValidator } from "../validation.js";
-import { envLoader } from "./EnvironmentLoader.js";
+import { ErrorManager } from "./ErrorManager";
+import { validateContactForm, ContactFormValidator } from "../validation";
+import { envLoader } from "./EnvironmentLoader";
 
 // API Types
 interface ContactRequest {

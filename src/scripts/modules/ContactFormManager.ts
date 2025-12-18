@@ -13,10 +13,10 @@ import {
   validatePhone,
   validateMessage,
   validateContactForm,
-} from "../validation.js";
-import { BackgroundSync } from "./BackgroundSync.js";
-import { envLoader } from "./EnvironmentLoader.js";
-import { TranslationManager } from "./TranslationManager.js";
+} from "../validation";
+import { BackgroundSync } from "./BackgroundSync";
+import { envLoader } from "./EnvironmentLoader";
+import { TranslationManager } from "./TranslationManager";
 
 // Contact form configuration
 interface ContactFormConfig {

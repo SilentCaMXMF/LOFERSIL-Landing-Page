@@ -3,7 +3,7 @@
  * Contains all configuration constants and data structures
  */
 
-import { Config, Language, Metrics } from "../types.js";
+import { Config, Language, Metrics } from "../types";
 
 // Application configuration
 export const config: Config = {

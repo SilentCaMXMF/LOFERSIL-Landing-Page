@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { EnvironmentLoader } from "./EnvironmentLoader.js";
+import { EnvironmentLoader } from "./EnvironmentLoader";
 
 // Mock window.ENV
 const mockEnv = {

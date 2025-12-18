@@ -2,23 +2,23 @@
  * LOFERSIL Landing Page - Main TypeScript Entry Point
  * Handles navigation, interactions, and dynamic content loading
  */
-import { ContactRequest, ContactResponse } from "./types.js";
-import { TranslationManager } from "./modules/TranslationManager.js";
-import { NavigationManager } from "./modules/NavigationManager.js";
-import { ContactFormManager } from "./modules/ContactFormManager.js";
-import { envLoader } from "./modules/EnvironmentLoader.js";
+import { ContactRequest, ContactResponse } from "./types";
+import { TranslationManager } from "./modules/TranslationManager";
+import { NavigationManager } from "./modules/NavigationManager";
+import { ContactFormManager } from "./modules/ContactFormManager";
+import { envLoader } from "./modules/EnvironmentLoader";
 
-import { PerformanceTracker } from "./modules/PerformanceTracker.js";
-import { ErrorManager } from "./modules/ErrorManager.js";
-import { SEOManager } from "./modules/SEOManager.js";
-import { ScrollManager } from "./modules/ScrollManager.js";
-import { logger } from "./modules/logger.js";
+import { PerformanceTracker } from "./modules/PerformanceTracker";
+import { ErrorManager } from "./modules/ErrorManager";
+import { SEOManager } from "./modules/SEOManager";
+import { ScrollManager } from "./modules/ScrollManager";
+import { logger } from "./modules/logger";
 
-import { EventManager } from "./modules/EventManager.js";
-import { PWAInstaller } from "./modules/PWAInstaller.js";
-import { PushNotificationManager } from "./modules/PushNotificationManager.js";
-import { PWAUpdater } from "./modules/PWAUpdater.js";
-import { ThemeManager } from "./modules/ThemeManager.js";
+import { EventManager } from "./modules/EventManager";
+import { PWAInstaller } from "./modules/PWAInstaller";
+import { PushNotificationManager } from "./modules/PushNotificationManager";
+import { PWAUpdater } from "./modules/PWAUpdater";
+import { ThemeManager } from "./modules/ThemeManager";
 
 // Extend Window interface for global properties
 declare global {

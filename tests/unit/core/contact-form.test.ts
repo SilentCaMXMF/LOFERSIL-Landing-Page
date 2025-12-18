@@ -75,6 +75,10 @@ beforeEach(() => {
     value: mockDocument,
     writable: true,
   });
+
+  // Add body and head for test cleanup
+  (mockDocument as any).body = { innerHTML: "" };
+  (mockDocument as any).head = { innerHTML: "" };
 });
 
 describe("Contact Form Tests", () => {

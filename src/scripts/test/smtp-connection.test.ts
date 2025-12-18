@@ -4,13 +4,13 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { EmailTester } from "../utils/email-tester.js";
+import { EmailTester } from "../utils/email-tester";
 import {
   SMTPConfig,
   EmailConfig,
   SMTPProviders,
   EMAIL_PROVIDERS,
-} from "../utils/email-config.js";
+} from "../utils/email-config";
 
 // Mock the EnvironmentLoader
 vi.mock("../modules/EnvironmentLoader.js", () => ({

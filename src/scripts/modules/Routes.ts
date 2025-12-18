@@ -3,7 +3,7 @@
  * Contains all route definitions and content
  */
 
-import { Route } from "../types.js";
+import { Route } from "../types";
 
 // Routes configuration
 export const routes: Record<string, Route> = {

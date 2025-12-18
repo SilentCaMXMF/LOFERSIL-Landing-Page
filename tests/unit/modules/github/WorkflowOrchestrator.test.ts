@@ -7,11 +7,11 @@ import {
   WorkflowOrchestrator,
   WorkflowState,
   WorkflowResult,
-} from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/WorkflowOrchestrator";
-import { IssueAnalyzer } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/IssueAnalyzer";
-import { AutonomousResolver } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/AutonomousResolver";
-import { CodeReviewer } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/CodeReviewer";
-import { PRGenerator } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/PRGenerator";
+} from "../../../../src/github-system/modules/github-issues/WorkflowOrchestrator";
+import { IssueAnalyzer } from "../../../../src/github-system/modules/github-issues/IssueAnalyzer";
+import { AutonomousResolver } from "../../../../src/github-system/modules/github-issues/AutonomousResolver";
+import { CodeReviewer } from "../../../../src/github-system/modules/github-issues/CodeReviewer";
+import { PRGenerator } from "../../../../src/github-system/modules/github-issues/PRGenerator";
 
 // Mock all dependencies
 vi.mock("./IssueAnalyzer");

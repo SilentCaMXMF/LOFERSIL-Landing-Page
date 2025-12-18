@@ -40,7 +40,7 @@ import { execSync } from "child_process";
 import { existsSync, mkdirSync, rmSync } from "fs";
 import { join, resolve } from "path";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { WorktreeManager, WorktreeInfo } from "../../../../src/scripts/modules/../../../src/scripts/modules/github-issues/WorktreeManager";
+import { WorktreeManager, WorktreeInfo } from "../../../../src/github-system/modules/github-issues/WorktreeManager";
 
 // Setup mocks in beforeEach
 

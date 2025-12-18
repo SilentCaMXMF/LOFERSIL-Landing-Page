@@ -3,7 +3,7 @@
  * Manages SEO-related functionality including meta tags and structured data
  */
 
-import { ErrorManager } from "./ErrorManager.js";
+import { ErrorManager } from "./ErrorManager";
 
 /**
  * SEO configuration interface

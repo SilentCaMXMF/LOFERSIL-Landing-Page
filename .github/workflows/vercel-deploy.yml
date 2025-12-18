@@ -49,11 +49,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run linting
-        run: npm run lint || echo "Linting failed but continuing deployment"
+       - name: Run linting
+         run: npm run lint || echo "Linting failed but continuing deployment"
 
-      - name: Build project
-        run: |
+       - name: Run tests
+         run: npm run test:run
+
+       - name: Build project
+         run: |
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo "Building for production..."
             npm run build:prod
