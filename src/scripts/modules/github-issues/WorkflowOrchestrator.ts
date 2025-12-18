@@ -17,7 +17,7 @@ import {
   CodeChanges,
   ReviewResult,
   WorkflowOrchestratorConfig
-} from './types';
+} from '@modules/github-issues/types';
 
 export class WorkflowOrchestrator {
   private config: WorkflowOrchestratorConfig;

@@ -6,7 +6,7 @@
 import { TranslationManager } from "./TranslationManager";
 
 // Import the mobile navigation enhancer
-import { MobileNavigationEnhancer } from "../mobile-navigation";
+import { MobileNavigationEnhancer } from "@scripts/mobile-navigation";
 
 export class NavigationManager {
   private navToggle: HTMLElement | null;

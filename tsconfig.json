@@ -16,7 +16,13 @@
     "noImplicitReturns": false,
     "noImplicitThis": false,
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@scripts/*": ["src/scripts/*"],
+      "@modules/*": ["src/scripts/modules/*"]
+    },
     "resolveJsonModule": true,
     "isolatedModules": true,
     "outDir": "dist",
