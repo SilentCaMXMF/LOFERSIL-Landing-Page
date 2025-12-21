@@ -40,7 +40,7 @@ import {
   TEST_ANALYSES,
   TEST_SOLUTIONS,
   TEST_REVIEWS,
-} from "./mocks/test-fixtures";
+} from "../../../../tests/fixtures/mocks/test-fixtures";
 
 // Test Context Interface
 export interface E2ETestContext {

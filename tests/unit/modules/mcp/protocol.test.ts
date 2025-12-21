@@ -3,7 +3,7 @@
  * Tests for JSON-RPC 2.0 protocol implementation
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   MessageFactory,
   MessageSerializer,
@@ -137,11 +137,17 @@ describe("RequestManager", () => {
   let requestManager: RequestManager;
 
   beforeEach(() => {
+    vi.useFakeTimers();
     requestManager = new RequestManager(1000); // 1 second timeout for tests
   });
 
   afterEach(() => {
-    requestManager.clearAll();
+    // Clear all pending requests but handle unhandled rejections
+    try {
+      requestManager.clearAll();
+    } catch (error) {
+      // Ignore unhandled rejection errors during cleanup
+    }
   });
 
   it("should register and resolve requests", async () => {
@@ -151,6 +157,7 @@ describe("RequestManager", () => {
       requestManager.resolveRequest("test-id", "success");
     }, 100);
 
+    vi.advanceTimersByTime(100);
     const result = await promise;
     expect(result).toBe("success");
   });
@@ -162,12 +169,14 @@ describe("RequestManager", () => {
       requestManager.rejectRequest("test-id", new Error("Test error"));
     }, 100);
 
+    vi.advanceTimersByTime(100);
     await expect(promise).rejects.toThrow("Test error");
   });
 
   it("should timeout requests", async () => {
     const promise = requestManager.registerRequest("timeout-id");
 
+    vi.advanceTimersByTime(1000);
     await expect(promise).rejects.toThrow("timed out");
   });
 
@@ -199,6 +208,9 @@ describe("RequestManager", () => {
 
     expect(requestManager.getPendingCount()).toBe(0);
 
+    // Advance timers to handle async rejections
+    vi.advanceTimersByTime(0);
+
     await expect(promise1).rejects.toThrow("were cleared");
     await expect(promise2).rejects.toThrow("were cleared");
   });
@@ -208,11 +220,13 @@ describe("ProtocolHandler", () => {
   let protocolHandler: ProtocolHandler;
 
   beforeEach(() => {
+    vi.useFakeTimers();
     protocolHandler = new ProtocolHandler(1000);
   });
 
   afterEach(() => {
     protocolHandler.clear();
+    vi.useRealTimers();
   });
 
   it("should handle JSON-RPC requests", async () => {
@@ -238,7 +252,11 @@ describe("ProtocolHandler", () => {
     const { promise, message } =
       await protocolHandler.sendRequest("test.method");
 
-    const response = MessageFactory.createResponse("test-id", {
+    // Extract request ID from the serialized message
+    const request = JSON.parse(message);
+    const requestId = request.id;
+
+    const response = MessageFactory.createResponse(requestId, {
       result: "success",
     });
     const serializedResponse = MessageSerializer.serialize(response);

@@ -549,6 +549,22 @@ describe("WorkflowOrchestrator", () => {
         updated_at: new Date().toISOString(),
       });
 
+      // Mock the analyzer to add a small delay to ensure we can check the state
+      mockAnalyzer.analyzeIssue.mockImplementation(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50)); // Add delay
+        return {
+          feasible: true,
+          complexity: "medium",
+          estimatedTime: 30,
+          requiredSkills: ["testing"],
+          approach: "test approach",
+          files: [],
+          risks: [],
+          reasoning: "test reasoning",
+          alternatives: [],
+        };
+      });
+
       // Start the workflow
       const workflowPromise = orchestrator.processIssue(
         123,
@@ -556,8 +572,7 @@ describe("WorkflowOrchestrator", () => {
         "Test body",
       );
 
-      // Check state during execution
-      await new Promise((resolve) => setTimeout(resolve, 10)); // Small delay
+      // Check state during execution (the mock has 50ms delay so state should be set)
       const state = orchestrator.getCurrentState(123);
       expect(state).toBeDefined();
       expect(typeof state).toBe("string");

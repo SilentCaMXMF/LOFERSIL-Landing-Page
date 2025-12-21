@@ -8,3 +8,6 @@ export * from "./mocks/github-api";
 export * from "./mocks/opencode-agent";
 export * from "./mocks/test-fixtures";
 export * from "./mocks/worktree-manager";
+
+// Test utilities
+export * from "./test-utilities";

@@ -3,13 +3,22 @@
  * Comprehensive input validation system for contact forms
  */
 
-import { TranslationManager } from "./modules/TranslationManager.js";
+import type { TranslationManager } from "./modules/TranslationManager.js";
+
+// Validation constants
+const MIN_NAME_LENGTH = 2;
+const MAX_NAME_LENGTH = 100;
+const MAX_EMAIL_LENGTH = 254;
+const MIN_PHONE_LENGTH = 7;
+const MAX_PHONE_LENGTH = 20;
+const MIN_MESSAGE_LENGTH = 10;
+const MAX_MESSAGE_LENGTH = 2000;
 
 const DOMPurify = (
   globalThis as unknown as {
     DOMPurify: { sanitize: (input: string) => string };
   }
-).DOMPurify!;
+).DOMPurify;
 
 // Validation messages for testing purposes
 export const VALIDATION_MESSAGES = {
@@ -99,7 +108,7 @@ export function validateName(
 
   const trimmedName = name.trim();
 
-  if (trimmedName.length < 2) {
+  if (trimmedName.length < MIN_NAME_LENGTH) {
     return {
       isValid: false,
       error: translationManager
@@ -108,7 +117,7 @@ export function validateName(
     };
   }
 
-  if (trimmedName.length > 100) {
+  if (trimmedName.length > MAX_NAME_LENGTH) {
     return {
       isValid: false,
       error: translationManager
@@ -118,7 +127,8 @@ export function validateName(
   }
 
   // Check for valid characters (letters, spaces, hyphens, apostrophes)
-  const nameRegex = /^[\p{L}\s\-']+$/u;
+  // Using compatible regex for ES2020
+  const nameRegex = /^[a-zA-Zà-žÀ-Ž\s\-']+$/u;
   if (!nameRegex.test(trimmedName)) {
     return {
       isValid: false,
@@ -152,7 +162,7 @@ export function validateEmail(
 
   const trimmedEmail = email.trim();
 
-  if (trimmedEmail.length > 254) {
+  if (trimmedEmail.length > MAX_EMAIL_LENGTH) {
     return {
       isValid: false,
       error: translationManager
@@ -194,7 +204,7 @@ export function validatePhone(
 
   const trimmedPhone = phone.trim();
 
-  if (trimmedPhone.length > 20) {
+  if (trimmedPhone.length > MAX_PHONE_LENGTH) {
     return {
       isValid: false,
       error: translationManager
@@ -218,7 +228,7 @@ export function validatePhone(
 
   // Check for minimum reasonable length (after removing formatting)
   const digitsOnly = trimmedPhone.replace(/[\s\-()+]/g, "");
-  if (digitsOnly.length < 7) {
+  if (digitsOnly.length < MIN_PHONE_LENGTH) {
     return {
       isValid: false,
       error: translationManager
@@ -251,7 +261,7 @@ export function validateMessage(
 
   const trimmedMessage = message.trim();
 
-  if (trimmedMessage.length < 10) {
+  if (trimmedMessage.length < MIN_MESSAGE_LENGTH) {
     return {
       isValid: false,
       error: translationManager
@@ -260,7 +270,7 @@ export function validateMessage(
     };
   }
 
-  if (trimmedMessage.length > 2000) {
+  if (trimmedMessage.length > MAX_MESSAGE_LENGTH) {
     return {
       isValid: false,
       error: translationManager
@@ -339,7 +349,9 @@ export class FormErrorDisplay {
    * Creates a container for displaying form errors
    */
   private createErrorContainer(): void {
-    if (!this.formElement) return;
+    if (!this.formElement) {
+      return;
+    }
 
     this.errorContainer = document.createElement("div");
     this.errorContainer.className = "form-errors";
@@ -367,7 +379,9 @@ export class FormErrorDisplay {
    * @param errors - Object containing field errors
    */
   public displayErrors(errors: Record<string, string>): void {
-    if (!this.errorContainer) return;
+    if (!this.errorContainer) {
+      return;
+    }
 
     // Clear previous errors
     this.clearErrors();
@@ -421,7 +435,9 @@ export class FormErrorDisplay {
     const fieldElement = this.formElement?.querySelector(
       `[name="${fieldName}"]`,
     ) as HTMLElement;
-    if (!fieldElement) return;
+    if (!fieldElement) {
+      return;
+    }
 
     // Create error element
     const errorElement = document.createElement("div");
@@ -477,7 +493,9 @@ export class FormErrorDisplay {
    * @param message - Success message to display
    */
   public displaySuccess(message: string): void {
-    if (!this.errorContainer) return;
+    if (!this.errorContainer) {
+      return;
+    }
 
     this.clearErrors();
 
@@ -514,7 +532,9 @@ export class ContactFormValidator {
    * Sets up real-time validation on form fields
    */
   private setupFormValidation(): void {
-    if (!this.formElement) return;
+    if (!this.formElement) {
+      return;
+    }
 
     const fields = ["name", "email", "phone", "message"];
 
@@ -537,7 +557,9 @@ export class ContactFormValidator {
     const field = this.formElement?.querySelector(
       `[name="${fieldName}"]`,
     ) as HTMLInputElement;
-    if (!field) return;
+    if (!field) {
+      return;
+    }
 
     let result: ValidationResult;
 
@@ -632,7 +654,9 @@ export class ContactFormValidator {
    * @returns ContactRequest or null if form not found
    */
   public getFormData(): ContactRequest | null {
-    if (!this.formElement) return null;
+    if (!this.formElement) {
+      return null;
+    }
 
     return {
       name: DOMPurify.sanitize(

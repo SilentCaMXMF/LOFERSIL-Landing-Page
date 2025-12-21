@@ -38,7 +38,8 @@
     "deploy:preview": "vercel",
     "deploy:prod": "vercel --prod",
     "build-and-serve-8000": "npm run build && serve dist --single -l 8000",
-    "test:context7-docs": "tsx .opencode/tool/mcp/test-context7-docs.ts"
+    "test:context7-docs": "tsx .opencode/tool/mcp/test-context7-docs.ts",
+    "update-mcp-progress": "node scripts/update-mcp-progress.js"
   },
   "keywords": [
     "landing-page",
@@ -55,7 +56,7 @@
     "@types/dompurify": "^3.2.0",
     "@types/express": "^5.0.5",
     "@types/jsdom": "^21.1.0",
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.19.27",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
@@ -81,6 +82,9 @@
   },
   "packageManager": "npm@10.0.0",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@octokit/graphql": "^9.0.3",
+    "@octokit/rest": "^22.0.1",
     "@opencode-ai/plugin": "^1.0.72",
     "cors": "^2.8.5",
     "dompurify": "^3.3.0",
@@ -89,6 +93,7 @@
     "express-rate-limit": "^7.0.0",
     "helmet": "^7.0.0",
     "joi": "^17.9.0",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.10",
     "openai": "^6.0.0",
     "sharp": "^0.33.0",

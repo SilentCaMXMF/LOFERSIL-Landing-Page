@@ -1860,7 +1860,7 @@ export class MCPClient {
     // Connection state changes
     this.wsClient.addEventListener(
       MCPClientEventType.CONNECTION_STATE_CHANGED,
-      (event) => {
+      (event: any) => {
         this.handleConnectionStateChange(event.data.newState);
       },
     );
@@ -1868,7 +1868,7 @@ export class MCPClient {
     // Message events
     this.wsClient.addEventListener(
       MCPClientEventType.MESSAGE_RECEIVED,
-      (event) => {
+      (event: any) => {
         // Forward to protocol handler
         if (event.data.message) {
           this.protocolHandler.handleMessage(
@@ -1881,7 +1881,7 @@ export class MCPClient {
     // Error events
     this.wsClient.addEventListener(
       MCPClientEventType.ERROR_OCCURRED,
-      (event) => {
+      (event: any) => {
         this.handleWebSocketError(event.data.error);
       },
     );

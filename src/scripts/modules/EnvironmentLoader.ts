@@ -14,6 +14,9 @@ interface EnvironmentConfig {
   MCP_API_KEY?: string;
   MCP_SERVER_URL?: string;
   ENABLE_MCP_INTEGRATION?: string;
+  CONTEXT7_API_KEY?: string;
+  GITHUB_CLIENT_ID?: string;
+  GITHUB_CLIENT_SECRET?: string;
   CLOUDFLARE_API_TOKEN?: string;
   CLOUDFLARE_ACCOUNT_ID?: string;
   EMAILJS_SERVICE_ID?: string;
@@ -25,9 +28,8 @@ interface EnvironmentConfig {
 
 /**
  * Required environment variables
- * Note: API keys are optional for basic site functionality
  */
-const REQUIRED_ENV_VARS: readonly string[] = [];
+const REQUIRED_ENV_VARS: readonly string[] = ["GEMINI_API_KEY"];
 
 /**
  * Default environment values
@@ -36,6 +38,9 @@ const DEFAULT_ENV_VALUES: Partial<EnvironmentConfig> = {
   NODE_ENV: "development",
   ENABLE_MCP_INTEGRATION: "false",
   MCP_SERVER_URL: "ws://localhost:3000",
+  CONTEXT7_API_KEY: "ctx7sk-a1d42d0e-9a2a-4c54-9e41-0e85e1b7de44",
+  GITHUB_CLIENT_ID: "Iv23liOPSKEJmnRXgybp",
+  GITHUB_CLIENT_SECRET: "4e46cae8d7b4872ddc2df1b11f155b5b0cc56e69",
 };
 
 /**

@@ -777,8 +777,14 @@ export class MCPErrorHandler {
       action: RecoveryAction.SKIP,
     });
 
-    // Authentication errors - manual intervention required
+    // Authentication errors - escalation required
     this.recoveryConfig.strategies.set(MCPErrorType.AUTHENTICATION_FAILED, {
+      action: RecoveryAction.ESCALATE,
+      requiresApproval: true,
+    });
+
+    // SSL certificate errors - manual intervention required
+    this.recoveryConfig.strategies.set(MCPErrorType.SSL_CERTIFICATE_ERROR, {
       action: RecoveryAction.MANUAL,
       requiresApproval: true,
     });
@@ -858,6 +864,12 @@ export class MCPErrorHandler {
       requiresHumanIntervention,
     } = this.determineErrorClassification(errorMessage, error);
 
+    // Ensure context has at least a component
+    const errorContext: MCPErrorContext = context || {
+      component: "MCPErrorHandler",
+      timestamp: new Date(),
+    };
+
     const mcpError: MCPError = {
       name: "MCPError",
       message: errorMessage,
@@ -867,7 +879,7 @@ export class MCPErrorHandler {
       recoverable,
       retryable,
       requiresHumanIntervention,
-      context,
+      context: errorContext,
       cause: error instanceof Error ? error : undefined,
       stack: errorStack,
       metadata: {
@@ -1137,6 +1149,7 @@ export class MCPErrorHandler {
         this.circuitBreakerConfig.failureThreshold
       ) {
         circuitBreaker.state = CircuitBreakerState.OPEN;
+        circuitBreaker.halfOpenCalls = 0;
         this.errorManager.incrementCounter("mcp_circuit_breaker_opened", {
           component,
           errorType: error.type,
@@ -1155,17 +1168,35 @@ export class MCPErrorHandler {
       return;
     }
 
-    const circuitBreaker = this.circuitBreakers.get(component);
+    let circuitBreaker = this.circuitBreakers.get(component);
     if (!circuitBreaker) {
-      return;
+      circuitBreaker = {
+        state: CircuitBreakerState.CLOSED,
+        failureCount: 0,
+        successCount: 0,
+        lastFailureTime: undefined,
+        lastSuccessTime: new Date(),
+        halfOpenCalls: 0,
+      };
+      this.circuitBreakers.set(component, circuitBreaker);
     }
 
     circuitBreaker.successCount++;
     circuitBreaker.lastSuccessTime = new Date();
 
+    // Check if circuit should transition to HALF_OPEN from OPEN
+    if (
+      circuitBreaker.state === CircuitBreakerState.OPEN &&
+      circuitBreaker.successCount >= 1
+    ) {
+      circuitBreaker.state = CircuitBreakerState.HALF_OPEN;
+      circuitBreaker.halfOpenCalls = 0;
+    }
+
     // Check if circuit should close
     if (
-      circuitBreaker.state === CircuitBreakerState.HALF_OPEN &&
+      (circuitBreaker.state === CircuitBreakerState.HALF_OPEN ||
+        circuitBreaker.state === CircuitBreakerState.OPEN) &&
       circuitBreaker.successCount >= this.circuitBreakerConfig.successThreshold
     ) {
       circuitBreaker.state = CircuitBreakerState.CLOSED;
@@ -1547,7 +1578,7 @@ export class MCPErrorHandler {
       error,
       metadata: {
         escalated: true,
-        requiresApproval: strategy.requiresApproval,
+        requiresApproval: strategy.requiresApproval || true,
       },
     };
   }

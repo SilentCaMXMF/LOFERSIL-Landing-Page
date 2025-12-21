@@ -4,56 +4,41 @@
  */
 
 import { vi } from "vitest";
+import { mockEnv, setupGlobalMocks } from "../fixtures/test-utilities";
 
 export async function setup() {
   // Set up global test environment
   console.log("🧪 Setting up test environment...");
 
-  // Mock global APIs that might not be available in test environment
-  if (typeof global !== "undefined") {
-    // Mock fetch if not available
-    if (!(global as any).fetch) {
-      (global as any).fetch = vi.fn();
-    }
+  // Set up global API mocks
+  setupGlobalMocks();
 
-    // Mock ResizeObserver
-    if (!(global as any).ResizeObserver) {
-      (global as any).ResizeObserver = vi.fn().mockImplementation(() => ({
-        observe: vi.fn(),
-        unobserve: vi.fn(),
-        disconnect: vi.fn(),
-      }));
-    }
-
-    // Mock IntersectionObserver
-    if (!(global as any).IntersectionObserver) {
-      (global as any).IntersectionObserver = vi.fn().mockImplementation(() => ({
-        observe: vi.fn(),
-        unobserve: vi.fn(),
-        disconnect: vi.fn(),
-      }));
-    }
-
-    // Mock requestAnimationFrame
-    if (!(global as any).requestAnimationFrame) {
-      (global as any).requestAnimationFrame = vi.fn(
-        (cb: FrameRequestCallback) => {
-          return setTimeout(cb, 16) as unknown as number;
-        },
-      );
-    }
-
-    // Mock cancelAnimationFrame
-    if (!(global as any).cancelAnimationFrame) {
-      (global as any).cancelAnimationFrame = vi.fn((id: number) =>
-        clearTimeout(id),
-      );
-    }
+  // Mock fetch if not available
+  if (typeof global !== "undefined" && !(global as any).fetch) {
+    (global as any).fetch = vi.fn();
   }
 
   // Set up test environment variables
   process.env.NODE_ENV = "test";
   process.env.CI = process.env.CI || "false";
 
+  // Set up mock environment variables
+  if (typeof process !== "undefined" && process.env) {
+    Object.assign(process.env, mockEnv);
+  }
+
   console.log("✅ Test environment setup complete");
+}
+
+export async function teardown() {
+  // Global cleanup after all tests
+  console.log("🧹 Cleaning up test environment...");
+
+  // Clean up any global state
+  if (typeof global !== "undefined") {
+    // Reset global mocks that might persist
+    vi.restoreAllMocks();
+  }
+
+  console.log("✅ Global cleanup complete");
 }

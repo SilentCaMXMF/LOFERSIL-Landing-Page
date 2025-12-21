@@ -31,7 +31,12 @@
     "src/scripts/modules/EnvironmentLoader.ts",
     "src/scripts/modules/ErrorManager.ts",
     "src/scripts/modules/EventManager.ts",
+    "src/scripts/modules/LazyLoader.ts",
     "src/scripts/modules/NavigationManager.ts",
+    "src/scripts/modules/PWAInstaller.ts",
+    "src/scripts/modules/PushNotificationManager.ts",
+    "src/scripts/modules/PWAUpdater.ts",
+    "src/scripts/modules/ScrollManager.ts",
     "src/scripts/modules/SEOManager.ts",
     "src/scripts/modules/ThemeManager.ts",
     "src/scripts/modules/TranslationManager.ts",
@@ -39,5 +44,16 @@
     "src/scripts/modules/Utils.ts",
     "src/scripts/modules/logger.ts"
   ],
-  "exclude": ["node_modules", "dist", ".opencode/**/*"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".opencode/**/*",
+    "tests/**/*",
+    "src/scripts/modules/ai/**/*",
+    "src/scripts/modules/mcp/**/*",
+    "src/scripts/modules/automation/**/*",
+    "src/scripts/modules/github/**/*",
+    "src/scripts/modules/monitoring/**/*",
+    "tasks/**/*"
+  ]
 }

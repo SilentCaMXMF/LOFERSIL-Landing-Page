@@ -29,6 +29,7 @@ export default defineConfig({
       "tests/**/*.test.ts",
       "tests/**/*.test.tsx",
       "tests/**/*.test.js",
+      "src/scripts/modules/**/*.test.ts",
     ],
 
     // Exclude patterns

@@ -1,291 +1,142 @@
 /**
- * DOM Test Setup
- * Sets up DOM environment for browser-based tests
+ * Initialize basic DOM structure for tests
  */
-
-import { JSDOM } from "jsdom";
-
-// Set up JSDOM environment
-const dom = new JSDOM(
-  "<!DOCTYPE html><html><head></head><body></body></html>",
-  {
-    url: "http://localhost:3000",
-    pretendToBeVisual: true,
-    resources: "usable",
-    runScripts: "dangerously",
-  },
-);
-
-// Make DOM globals available
-global.window = dom.window as any;
-global.document = dom.window.document;
-global.navigator = dom.window.navigator;
-global.HTMLElement = dom.window.HTMLElement;
-global.Element = dom.window.Element;
-global.Node = dom.window.Node;
-global.NodeList = dom.window.NodeList;
-global.HTMLCollection = dom.window.HTMLCollection;
-global.Event = dom.window.Event;
-global.CustomEvent = dom.window.CustomEvent;
-global.MouseEvent = dom.window.MouseEvent;
-global.KeyboardEvent = dom.window.KeyboardEvent;
-global.FocusEvent = dom.window.FocusEvent;
-global.FormEvent = dom.window.FormEvent;
-global.Storage = dom.window.Storage;
-global.localStorage = dom.window.localStorage;
-global.sessionStorage = dom.window.sessionStorage;
-global.URL = dom.window.URL;
-global.URLSearchParams = dom.window.URLSearchParams;
-global.Blob = dom.window.Blob;
-global.File = dom.window.File;
-global.FileReader = dom.window.FileReader;
-global.FormData = dom.window.FormData;
-global.Headers = dom.window.Headers;
-global.Request = dom.window.Request;
-global.Response = dom.window.Response;
-global.fetch = dom.window.fetch;
-global.WebSocket = dom.window.WebSocket;
-global.Worker = dom.window.Worker;
-global.Image = dom.window.Image;
-global.CanvasRenderingContext2D = dom.window.CanvasRenderingContext2D;
-global.HTMLCanvasElement = dom.window.HTMLCanvasElement;
-global.HTMLImageElement = dom.window.HTMLImageElement;
-global.HTMLInputElement = dom.window.HTMLInputElement;
-global.HTMLTextAreaElement = dom.window.HTMLTextAreaElement;
-global.HTMLSelectElement = dom.window.HTMLSelectElement;
-global.HTMLButtonElement = dom.window.HTMLButtonElement;
-global.HTMLFormElement = dom.window.HTMLFormElement;
-global.HTMLAnchorElement = dom.window.HTMLAnchorElement;
-global.HTMLDivElement = dom.window.HTMLDivElement;
-global.HTMLSpanElement = dom.window.HTMLSpanElement;
-global.HTMLHeadingElement = dom.window.HTMLHeadingElement;
-global.HTMLParagraphElement = dom.window.HTMLParagraphElement;
-global.HTMLUListElement = dom.window.HTMLUListElement;
-global.HTMLOListElement = dom.window.HTMLOListElement;
-global.HTMLLIElement = dom.window.HTMLLIElement;
-
-// Mock browser APIs that aren't available in JSDOM
-global.getComputedStyle = dom.window.getComputedStyle;
-global.requestAnimationFrame = dom.window.requestAnimationFrame;
-global.cancelAnimationFrame = dom.window.cancelAnimationFrame;
-global.scrollTo = dom.window.scrollTo;
-global.scrollBy = dom.window.scrollBy;
-global.scrollIntoView = dom.window.Element.prototype.scrollIntoView;
-
-// Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
-  constructor(private callback: ResizeObserverCallback) {}
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-} as any;
-
-// Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  constructor(private callback: IntersectionObserverCallback) {}
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-  root = null;
-  rootMargin = "";
-  thresholds = [];
-} as any;
-
-// Mock MutationObserver
-global.MutationObserver = class MutationObserver {
-  constructor(private callback: MutationCallback) {}
-  observe() {}
-  disconnect() {}
-  takeRecords() {
-    return [];
+const initializeDOM = () => {
+  // Check if DOM environment is properly initialized
+  if (typeof document === "undefined" || !document.createElement) {
+    throw new Error(
+      "DOM environment not properly initialized. Make sure jsdom environment is active.",
+    );
   }
-} as any;
 
-// Mock Performance API
-global.performance = {
-  now: () => Date.now(),
-  mark: () => {},
-  measure: () => {},
-  getEntriesByName: () => [],
-  getEntriesByType: () => [],
-  clearMarks: () => {},
-  clearMeasures: () => {},
-} as any;
+  // Ensure document body exists before setting innerHTML
+  if (!document.body) {
+    // Create body element if it doesn't exist
+    const body = document.createElement("body");
+    document.appendChild(body);
+  }
 
-// Mock Screen API
-global.screen = {
-  width: 1920,
-  height: 1080,
-  availWidth: 1920,
-  availHeight: 1040,
-  colorDepth: 24,
-  pixelDepth: 24,
-} as any;
+  // Set up the basic HTML structure required by tests
+  document.body.innerHTML = `
+    <div id="app">
+      <header>
+        <nav>
+          <a href="#contact-form">Contacto</a>
+        </nav>
+      </header>
+      <main>
+        <section id="contact-form">
+          <h2>Contact Form</h2>
+          <form id="contact-form-element" name="contactForm" novalidate>
+            <div class="form-group">
+              <label for="name">Nome *</label>
+              <input type="text" id="name" name="name" required aria-required="true" />
+              <div id="name-error" role="alert" class="error-message" aria-live="polite"></div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input type="email" id="email" name="email" required aria-required="true" />
+              <div id="email-error" role="alert" class="error-message" aria-live="polite"></div>
+            </div>
+            <div class="form-group">
+              <label for="message">Mensagem *</label>
+              <textarea id="message" name="message" required aria-required="true" rows="4"></textarea>
+              <div id="message-error" role="alert" class="error-message" aria-live="polite"></div>
+            </div>
+            <button type="submit" aria-label="Enviar formulário de contacto">Enviar</button>
+          </form>
+        </section>
+      </main>
+      <footer>
+        <div id="notification-container" class="notification-container" aria-live="polite"></div>
+        <div id="modal-container" class="modal-container" role="dialog" aria-hidden="true"></div>
+      </footer>
+    </div>
+  `;
 
-// Mock Visual Viewport API
-(global as any).visualViewport = {
-  width: 1920,
-  height: 1080,
-  offsetLeft: 0,
-  offsetTop: 0,
-  pageLeft: 0,
-  pageTop: 0,
-  scale: 1,
+  // Add required CSS classes for testing
+  document.body.classList.add("test-environment");
+  document.documentElement.classList.add("test-mode");
+
+  // Add some basic styles for layout calculations
+  const style = document.createElement("style");
+  style.setAttribute("data-test", "true");
+  style.textContent = `
+    .test-environment {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+    }
+    .hidden { display: none !important; }
+    .visible { display: block !important; }
+    .loading { opacity: 0.5; }
+    .error-message { 
+      color: #d32f2f; 
+      font-size: 0.8em; 
+      margin-top: 0.25rem;
+      min-height: 1.2em;
+    }
+    .notification-container { 
+      position: fixed; 
+      top: 20px; 
+      right: 20px; 
+      z-index: 1000;
+    }
+    .modal-container { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%;
+      z-index: 999;
+      background: rgba(0,0,0,0.5);
+    }
+    .form-group { 
+      margin-bottom: 1rem; 
+    }
+    label { 
+      display: block; 
+      margin-bottom: 0.5rem; 
+      font-weight: 500;
+    }
+    input, textarea { 
+      width: 100%; 
+      padding: 0.5rem; 
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus {
+      outline: 2px solid #007bff;
+      outline-offset: 2px;
+    }
+    button[type="submit"] {
+      padding: 0.75rem 1.5rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    button[type="submit"]:hover {
+      background: #0056b3;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Add meta tags for better test environment
+  const metaCharset = document.createElement("meta");
+  metaCharset.setAttribute("charset", "UTF-8");
+  document.head.appendChild(metaCharset);
+
+  const metaViewport = document.createElement("meta");
+  metaViewport.setAttribute("name", "viewport");
+  metaViewport.setAttribute("content", "width=device-width, initial-scale=1");
+  document.head.appendChild(metaViewport);
 };
 
-// Mock Clipboard API
-Object.defineProperty(global.navigator, "clipboard", {
-  value: {
-    writeText: () => Promise.resolve(),
-    readText: () => Promise.resolve(""),
-    write: () => Promise.resolve(),
-    read: () => Promise.resolve([]),
-  },
-  writable: true,
-});
-
-// Mock Geolocation API
-if (!global.navigator.geolocation) {
-  Object.defineProperty(global.navigator, "geolocation", {
-    value: {
-      getCurrentPosition: (success: Function) => {
-        setTimeout(
-          () =>
-            success({
-              coords: { latitude: 0, longitude: 0, accuracy: 100 },
-              timestamp: Date.now(),
-            }),
-          0,
-        );
-      },
-      watchPosition: () => 1,
-      clearWatch: () => {},
-    },
-    writable: true,
-  });
-}
-
-// Mock MediaDevices API
-Object.defineProperty(global.navigator, "mediaDevices", {
-  value: {
-    getUserMedia: () =>
-      Promise.resolve({
-        getTracks: () => [],
-        getAudioTracks: () => [],
-        getVideoTracks: () => [],
-      }),
-    enumerateDevices: () => Promise.resolve([]),
-  },
-  writable: true,
-});
-
-// Mock Notification API
-global.Notification = class Notification {
-  static permission = "default";
-  static requestPermission = () => Promise.resolve("default");
-  title: string;
-  options: any;
-
-  constructor(title: string, options?: any) {
-    this.title = title;
-    this.options = options;
-  }
-
-  close() {}
-} as any;
-
-// Mock Service Worker API
-Object.defineProperty(global.navigator, "serviceWorker", {
-  value: {
-    register: () =>
-      Promise.resolve({
-        installing: null,
-        waiting: null,
-        active: null,
-        scope: "/",
-        update: () => Promise.resolve(),
-        unregister: () => Promise.resolve(true),
-      }),
-    controller: null,
-    ready: Promise.resolve({
-      active: null,
-    }),
-  },
-  writable: true,
-});
-
-// Mock Geolocation API
-if (!(global.navigator as any).geolocation) {
-  Object.defineProperty(global.navigator, "geolocation", {
-    value: {
-      getCurrentPosition: (success: Function) => {
-        setTimeout(
-          () =>
-            success({
-              coords: { latitude: 0, longitude: 0, accuracy: 100 },
-              timestamp: Date.now(),
-            }),
-          0,
-        );
-      },
-      watchPosition: () => 1,
-      clearWatch: () => {},
-    },
-    writable: true,
-    configurable: true,
-  });
-}
-
-// Mock MediaDevices API
-Object.defineProperty(global.navigator, "mediaDevices", {
-  value: {
-    getUserMedia: () =>
-      Promise.resolve({
-        getTracks: () => [],
-        getAudioTracks: () => [],
-        getVideoTracks: () => [],
-      }),
-    enumerateDevices: () => Promise.resolve([]),
-  },
-  writable: true,
-  configurable: true,
-});
-
-// Mock Notification API
-global.Notification = class Notification {
-  static permission = "default";
-  static requestPermission = () => Promise.resolve("default");
-  title: string;
-  options: any;
-
-  constructor(title: string, options?: any) {
-    this.title = title;
-    this.options = options;
-  }
-
-  close() {}
-} as any;
-
-// Mock Service Worker API
-Object.defineProperty(global.navigator, "serviceWorker", {
-  value: {
-    register: () =>
-      Promise.resolve({
-        installing: null,
-        waiting: null,
-        active: null,
-        scope: "/",
-        update: () => Promise.resolve(),
-        unregister: () => Promise.resolve(true),
-      }),
-    controller: null,
-    ready: Promise.resolve({
-      active: null,
-    }),
-  },
-  writable: true,
-  configurable: true,
-});
+// Initialize DOM immediately after setup
+initializeDOM();
 
 // Export DOM utilities for tests
 export const domUtils = {
@@ -326,7 +177,60 @@ export const domUtils = {
   },
 
   clearDOM: () => {
-    document.body.innerHTML = "";
-    document.head.innerHTML = "";
+    // Ensure we don't clear if document.body doesn't exist
+    if (document && document.body) {
+      document.body.innerHTML = "";
+    }
+    if (document && document.head) {
+      // Keep styles that we've added
+      document.head.querySelectorAll("style").forEach((style) => {
+        if (!style.textContent?.includes(".test-environment")) {
+          style.remove();
+        }
+      });
+    }
+  },
+
+  // Re-initialize DOM structure (useful between tests)
+  resetDOM: () => {
+    // Check if DOM environment is ready before proceeding
+    if (typeof document === "undefined" || !document.createElement) {
+      console.warn("DOM environment not ready, skipping reset");
+      return;
+    }
+
+    domUtils.clearDOM();
+    initializeDOM();
+  },
+
+  // Wait for elements to be available
+  waitForElement: (
+    selector: string,
+    timeout: number = 1000,
+  ): Promise<Element | null> => {
+    return new Promise((resolve) => {
+      const element = document.querySelector(selector);
+      if (element) {
+        return resolve(element);
+      }
+
+      const observer = new MutationObserver(() => {
+        const element = document.querySelector(selector);
+        if (element) {
+          observer.disconnect();
+          resolve(element);
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+
+      setTimeout(() => {
+        observer.disconnect();
+        resolve(null);
+      }, timeout);
+    });
   },
 };

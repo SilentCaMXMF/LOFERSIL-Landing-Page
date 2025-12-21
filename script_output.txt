@@ -1,0 +1,6 @@
+[0;34m📋 Weekly Review Automation[0m
+==========================
+
+[1;33m🔍 Scanning Task Status Consistency[0m
+==================================
+[0;34mChecking:[0m tasks/configuration/README.md

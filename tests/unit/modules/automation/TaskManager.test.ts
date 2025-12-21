@@ -5,11 +5,7 @@ import {
 } from "../../../../src/scripts/modules/TaskManager";
 
 describe("TaskManager", () => {
-  let taskManager: TaskManager;
-
-  beforeEach(() => {
-    taskManager = new TaskManager();
-  });
+  // Each test creates its own TaskManager instance to ensure isolation
 
   describe("task operations", () => {
     const mockTask: TaskInfo = {
@@ -26,6 +22,7 @@ describe("TaskManager", () => {
     };
 
     it("should save and retrieve a task", async () => {
+      const taskManager = new TaskManager(); // Fresh instance
       await taskManager.saveTask(mockTask);
 
       const retrieved = await taskManager.getTask("test-task-1");
@@ -33,11 +30,13 @@ describe("TaskManager", () => {
     });
 
     it("should return null for non-existent task", async () => {
+      const taskManager = new TaskManager(); // Fresh instance
       const retrieved = await taskManager.getTask("non-existent");
       expect(retrieved).toBeNull();
     });
 
     it("should update a task", async () => {
+      const taskManager = new TaskManager(); // Fresh instance
       await taskManager.saveTask(mockTask);
 
       const updatedTask = {
@@ -52,6 +51,7 @@ describe("TaskManager", () => {
     });
 
     it("should delete a task", async () => {
+      const taskManager = new TaskManager(); // Fresh instance
       await taskManager.saveTask(mockTask);
       await taskManager.deleteTask("test-task-1");
 
@@ -60,6 +60,7 @@ describe("TaskManager", () => {
     });
 
     it("should get all tasks", async () => {
+      const taskManager = new TaskManager(); // Fresh instance
       const task2 = { ...mockTask, id: "test-task-2" };
       await taskManager.saveTask(mockTask);
       await taskManager.saveTask(task2);
@@ -72,7 +73,9 @@ describe("TaskManager", () => {
   });
 
   describe("task filtering", () => {
-    beforeEach(async () => {
+    it("should filter tasks by status", async () => {
+      const taskManager = new TaskManager(); // Fresh instance
+      // Setup test data
       const tasks: TaskInfo[] = [
         {
           id: "task-1",
@@ -112,9 +115,8 @@ describe("TaskManager", () => {
       for (const task of tasks) {
         await taskManager.saveTask(task);
       }
-    });
 
-    it("should filter tasks by status", async () => {
+      // Test filtering
       const pendingTasks = await taskManager.getTasksByStatus("pending");
       expect(pendingTasks).toHaveLength(1);
       expect(pendingTasks[0].id).toBe("task-1");
@@ -125,6 +127,49 @@ describe("TaskManager", () => {
     });
 
     it("should filter tasks by priority", async () => {
+      const taskManager = new TaskManager(); // Fresh instance
+      // Setup test data
+      const tasks: TaskInfo[] = [
+        {
+          id: "task-1",
+          title: "High Priority Task",
+          description: "High priority task",
+          priority: "high",
+          status: "pending",
+          labels: ["urgent"],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: {},
+        },
+        {
+          id: "task-2",
+          title: "Completed Task",
+          description: "Completed task",
+          priority: "medium",
+          status: "completed",
+          labels: ["done"],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: {},
+        },
+        {
+          id: "task-3",
+          title: "Low Priority Task",
+          description: "Low priority task",
+          priority: "low",
+          status: "in_progress",
+          labels: ["backlog"],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: {},
+        },
+      ];
+
+      for (const task of tasks) {
+        await taskManager.saveTask(task);
+      }
+
+      // Test filtering
       const highPriorityTasks = await taskManager.getTasksByPriority("high");
       expect(highPriorityTasks).toHaveLength(1);
       expect(highPriorityTasks[0].id).toBe("task-1");
@@ -135,6 +180,9 @@ describe("TaskManager", () => {
     });
 
     it("should return empty array for non-matching filters", async () => {
+      const taskManager = new TaskManager(); // Fresh instance
+      // No setup needed - test with empty task manager
+
       const criticalTasks = await taskManager.getTasksByPriority("critical");
       expect(criticalTasks).toHaveLength(0);
 
@@ -145,14 +193,19 @@ describe("TaskManager", () => {
 
   describe("edge cases", () => {
     it("should handle empty task list", async () => {
+      const taskManager = new TaskManager(); // Fresh instance
       const allTasks = await taskManager.getAllTasks();
       expect(allTasks).toHaveLength(0);
 
       const pendingTasks = await taskManager.getTasksByStatus("pending");
       expect(pendingTasks).toHaveLength(0);
+
+      const highPriorityTasks = await taskManager.getTasksByPriority("high");
+      expect(highPriorityTasks).toHaveLength(0);
     });
 
     it("should handle task updates with same id", async () => {
+      const taskManager = new TaskManager(); // Fresh instance
       const task1: TaskInfo = {
         id: "same-id",
         title: "Original Task",

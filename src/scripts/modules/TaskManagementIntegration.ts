@@ -15,6 +15,12 @@ import { PRGenerator } from "./github-issues/PRGenerator";
 import { WorktreeManager } from "./github-issues/WorktreeManager";
 import { TaskManager, TaskInfo } from "./TaskManager";
 import {
+  GitHubConfig,
+  AIConfig,
+  AnalysisConfig,
+  IssueAnalysis,
+} from "./github-issues/types";
+import {
   AutomationTriggersManager,
   AutomationEvent,
 } from "./AutomationTriggers";
@@ -29,6 +35,9 @@ export interface TaskManagementConfig {
   progressTracking: boolean;
   reportingEnabled: boolean;
   webhookEndpoints: string[];
+  github: GitHubConfig;
+  ai: AIConfig;
+  analysis: AnalysisConfig;
 }
 
 // Re-export TaskInfo from TaskManager
@@ -56,7 +65,11 @@ export class TaskManagementIntegration {
 
   constructor(config: TaskManagementConfig) {
     this.config = config;
-    this.reviewer = new GitHubIssuesReviewer();
+    this.reviewer = new GitHubIssuesReviewer(
+      config.github,
+      config.ai,
+      config.analysis,
+    );
 
     // Initialize OpenCode agent for AI components
     const openCodeAgent = new OpenCodeAgent();
@@ -217,24 +230,28 @@ export class TaskManagementIntegration {
    */
   async createTaskFromIssue(issueNumber: number): Promise<TaskInfo> {
     try {
+      // Get the issue data first
+      const issue = await this.reviewer.getIssue(issueNumber);
+
       // Analyze the issue
       const analysis = await this.reviewer.analyzeIssue(issueNumber);
 
       // Create task object
       const task: TaskInfo = {
         id: `task-${issueNumber}-${Date.now()}`,
-        title: analysis.title,
-        description: analysis.description,
-        priority: this.mapPriority(analysis.priority),
+        title: `Issue #${issueNumber}: ${issue.title}`,
+        description: issue.body || "",
+        priority: this.mapPriority(analysis.classification.priority),
         status: "pending",
-        labels: analysis.labels,
+        labels: analysis.classification.labels,
         createdAt: new Date(),
         updatedAt: new Date(),
         metadata: {
           issueNumber,
-          analysis: analysis.analysis,
-          estimatedComplexity: analysis.complexity,
-          suggestedApproach: analysis.suggestedApproach,
+          analysis: analysis.reasoning,
+          estimatedComplexity: analysis.estimatedEffort.complexity,
+          suggestedApproach: analysis.reasoning,
+          category: analysis.category,
         },
       };
 

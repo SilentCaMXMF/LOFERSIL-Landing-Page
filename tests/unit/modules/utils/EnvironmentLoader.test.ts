@@ -15,6 +15,9 @@ const mockEnv = {
   MCP_API_KEY: "test-mcp-key",
   MCP_SERVER_URL: "ws://test-server:3000",
   ENABLE_MCP_INTEGRATION: "true",
+  CONTEXT7_API_KEY: "ctx7sk-a1d42d0e-9a2a-4c54-9e41-0e85e1b7de44",
+  GITHUB_CLIENT_ID: "Iv23liOPSKEJmnRXgybp",
+  GITHUB_CLIENT_SECRET: "4e46cae8d7b4872ddc2df1b11f155b5b0cc56e69",
   CLOUDFLARE_API_TOKEN: "test-cloudflare-token",
   CLOUDFLARE_ACCOUNT_ID: "test-cloudflare-account-id",
   EMAILJS_SERVICE_ID: "test-service-id",
@@ -159,6 +162,18 @@ describe("EnvironmentLoader", () => {
         "ws://test-server:3000",
       );
       expect(allConfig).toHaveProperty("ENABLE_MCP_INTEGRATION", "true");
+      expect(allConfig).toHaveProperty(
+        "CONTEXT7_API_KEY",
+        "ctx7sk-a1d42d0e-9a2a-4c54-9e41-0e85e1b7de44",
+      );
+      expect(allConfig).toHaveProperty(
+        "GITHUB_CLIENT_ID",
+        "Iv23liOPSKEJmnRXgybp",
+      );
+      expect(allConfig).toHaveProperty(
+        "GITHUB_CLIENT_SECRET",
+        "4e46cae8d7b4872ddc2df1b11f155b5b0cc56e69",
+      );
       expect(allConfig).toHaveProperty(
         "CLOUDFLARE_API_TOKEN",
         "test-cloudflare-token",

@@ -35,10 +35,22 @@ Each task category follows a consistent structure:
 
 ## Status Overview
 
-✅ **Security Implementation** - CSRF protection and rate limiting complete  
-✅ **Feature Implementation** - PWA configuration and code quality complete  
-✅ **Configuration** - Test framework setup complete  
+✅ **Security Implementation** - CSRF protection and rate limiting complete
+✅ **Feature Implementation** - PWA configuration and code quality complete
+✅ **Configuration** - Test framework setup complete
 🔄 **Subtasks** - Various completion states (see individual README files)
+
+## Weekly Review Process
+
+The project maintains task accuracy and organization through a structured [weekly review process](weekly-review-process.md). This process ensures:
+
+- Regular validation of task status and progress
+- Identification and resolution of discrepancies
+- Automated progress tracking and reporting
+- Consistent documentation standards
+
+**Review Schedule**: Every Friday at 4:00 PM WET
+**Automation**: `./scripts/weekly-review-automation.sh`
 
 ## Usage
 
