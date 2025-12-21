@@ -96,7 +96,6 @@ accessibility-report.json
 axe-report.json
 axe-report-fixed.json
 pa11y-report.json
-.vercelignore
 .gitignore
 README.md
 .env.example
