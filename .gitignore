@@ -22,7 +22,6 @@ coverage/
 docs/
 tasks/
 tools/
-scripts/
 build.js
 server.js
 
