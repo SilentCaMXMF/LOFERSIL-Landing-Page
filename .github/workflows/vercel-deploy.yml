@@ -2,17 +2,32 @@ name: Deploy to Vercel
 
 on:
   push:
-    branches: [main, master, master-clean, preview-deployment]
+    branches: [preview-deployment] # Only auto-deploy preview for staging
   pull_request:
-    branches: [main, master, master-clean, preview-deployment]
+    branches: [preview-deployment] # PRs to preview-deployment for review
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deploy to environment"
+        required: true
+        default: "preview"
+        type: choice
+        options:
+          - preview
+          - production
+      branch:
+        description: "Source branch (default: preview-deployment)"
+        required: false
+        default: "preview-deployment"
+        type: string
 
 jobs:
-  deploy:
+  deploy-preview:
+    if: github.ref == 'refs/heads/preview-deployment' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'preview'))
     runs-on: ubuntu-latest
-    name: Deploy to Vercel
+    name: Deploy to Staging
     environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+      name: staging
       url: ${{ steps.deploy.outputs.preview-url }}
 
     steps:
@@ -54,13 +69,8 @@ jobs:
 
       - name: Build project
         run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "Building for production..."
-            npm run build:prod
-          else
-            echo "Building for preview..."
-            npm run build
-          fi
+          echo "Building for staging/preview..."
+          npm run build
 
       - name: Verify build output
         run: |
@@ -72,9 +82,9 @@ jobs:
             echo "::error::Build failed - index.html not found in dist"
             exit 1
           fi
-          echo "✅ Build verification passed"
+          echo "✅ Staging build verification passed"
 
-      - name: Deploy to Vercel
+      - name: Deploy to Vercel (Staging)
         id: deploy
         uses: amondnet/vercel-action@v25
         env:
@@ -85,24 +95,121 @@ jobs:
           vercel-token: ${{ env.VERCEL_TOKEN }}
           vercel-org-id: ${{ env.VERCEL_ORG_ID }}
           vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
-          vercel-args: ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+          vercel-args: "--debug"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           scope: ${{ secrets.VERCEL_ORG_ID }}
 
       - name: Deployment Summary
         run: |
-          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## 🚀 Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Environment**: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Preview' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: Staging" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.deploy.outputs.preview-url }}" != "" ]; then
-            echo "- **Preview URL**: ${{ steps.deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
+            echo "- **Staging URL**: ${{ steps.deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
           fi
           echo "- **Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
 
       - name: Notify on failure
         if: failure()
         run: |
-          echo "::error::Deployment failed for branch ${{ github.ref_name }}"
+          echo "::error::Staging deployment failed for branch ${{ github.ref_name }}"
           echo "::error::Commit: ${{ github.sha }}"
-          echo "::error::Check the logs above for details"
+          echo "::error::Check logs above for details"
+
+  deploy-production:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    name: Deploy to Production
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.preview-url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'preview-deployment' }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Verify required secrets
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN secret is not set"
+            exit 1
+          fi
+          if [ -z "$VERCEL_ORG_ID" ]; then
+            echo "::error::VERCEL_ORG_ID secret is not set"
+            exit 1
+          fi
+          if [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::error::VERCEL_PROJECT_ID secret is not set"
+            exit 1
+          fi
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint || echo "Linting failed but continuing deployment"
+
+      - name: Build project
+        run: |
+          echo "Building for production..."
+          npm run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "::error::Build failed - dist directory not found"
+            exit 1
+          fi
+          if [ ! -f "dist/index.html" ]; then
+            echo "::error::Build failed - index.html not found in dist"
+            exit 1
+          fi
+          echo "✅ Production build verification passed"
+
+      - name: Deploy to Vercel (Production)
+        id: deploy
+        uses: amondnet/vercel-action@v25
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        with:
+          vercel-token: ${{ env.VERCEL_TOKEN }}
+          vercel-org-id: ${{ env.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
+          vercel-args: "--prod"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+
+      - name: Deployment Summary
+        run: |
+          echo "## 🚀 Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.event.inputs.branch || 'preview-deployment' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.deploy.outputs.preview-url }}" != "" ]; then
+            echo "- **Production URL**: ${{ steps.deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "- **Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Production deployment failed"
+          echo "::error::Source branch: ${{ github.event.inputs.branch || 'preview-deployment' }}"
+          echo "::error::Commit: ${{ github.sha }}"
+          echo "::error::Check logs above for details"
