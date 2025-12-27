@@ -4,11 +4,10 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# Environment files (keep .env.example for reference)
+# Development files
 .env*
 !.env.example
-
-# Development configuration
+.gitignore
 .eslintrc*
 .prettierrc*
 .vscode
@@ -39,8 +38,8 @@ coverage
 .nyc_output
 
 # Temporary folders
-tmp
-temp
+tmp/
+temp/
 
 # OS generated files
 .DS_Store
@@ -53,37 +52,32 @@ Thumbs.db
 
 # OpenCode development files
 .opencode/
+.opencode/plugin/node_modules
+.opencode/tool/node_modules
 
-# Development directories (keep essential ones)
-docs/
-tools/
-k8s/
-tasks/subtasks/
-config/
-data/
-
-# Development and test files
-*.test.*
-*.spec.*
+# Development and test files (exclude specific ones only)
+*.test.ts
+*.spec.ts
+*.test.js
+*.spec.js
 eslint.config.js
 vitest.config.ts
-.browserslistrc
-make_executable.sh
-test-*.sh
-cloudflare-troubleshoot.js
+
+# Build and utility scripts
+build.js
+tools/build/build.js
 extract_tasks.js
 optimize-images.js
 update-task-statuses.cjs
+make_executable.sh
+test-*.sh
+
+# Report files
 accessibility-report.json
 axe-report.json
 axe-report-fixed.json
 pa11y-report.json
 
-# Development scripts
-build.js
-tools/build/build.js
-
-# Configuration files (keep essential ones)
-.vercelignore
-.gitignore
-README.md
+# Development only directories
+tools/
+k8s/

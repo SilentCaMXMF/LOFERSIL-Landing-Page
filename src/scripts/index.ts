@@ -2,28 +2,21 @@
  * LOFERSIL Landing Page - Main TypeScript Entry Point
  * Handles navigation, interactions, and dynamic content loading
  */
-import { ContactRequest, ContactResponse } from "./types.js";
+import type { ContactRequest, ContactResponse } from "./types.js";
 import { TranslationManager } from "./modules/TranslationManager.js";
 import { NavigationManager } from "./modules/NavigationManager.js";
-import { ContactFormManager } from "./modules/ContactFormManager.js";
+import type { ContactFormManager } from "./modules/ContactFormManager.js";
 import { envLoader } from "./modules/EnvironmentLoader.js";
 
-import { PerformanceTracker } from "./modules/PerformanceTracker.js";
 import { ErrorManager } from "./modules/ErrorManager.js";
-import { SEOManager } from "./modules/SEOManager.js";
 import { ScrollManager } from "./modules/ScrollManager.js";
-import { logger } from "./modules/logger.js";
-
-import { EventManager } from "./modules/EventManager.js";
-import { PWAInstaller } from "./modules/PWAInstaller.js";
-import { PushNotificationManager } from "./modules/PushNotificationManager.js";
-import { PWAUpdater } from "./modules/PWAUpdater.js";
+import { simpleLogger } from "./modules/simpleLogger.js";
 import { ThemeManager } from "./modules/ThemeManager.js";
 
 // Extend Window interface for global properties
 declare global {
   interface Window {
-    gtag?: (...args: unknown[]) => void;
+    gtag?: (..._args: unknown[]) => void;
     getWebVitals?: () => void;
   }
 }
@@ -35,22 +28,18 @@ class LOFERSILLandingPage {
   private mainContent: HTMLElement | null;
   private translationManager!: TranslationManager;
   private navigationManager!: NavigationManager;
-  private performanceTracker!: PerformanceTracker;
+
   private errorHandler!: ErrorManager;
-  private seoManager!: SEOManager;
   private scrollManager!: ScrollManager;
-  private logger = logger;
+  private logger = simpleLogger;
 
   private contactFormManager: ContactFormManager | null = null;
-  private eventManager!: EventManager;
-  private pwaInstaller!: PWAInstaller;
-  private pushManager!: PushNotificationManager;
-  private pwaUpdater!: PWAUpdater;
   private themeManager!: ThemeManager;
 
   constructor() {
     this.mainContent = null;
-    this.initializeApp();
+    // Initialize app asynchronously but don't wait in constructor
+    void this.initializeApp();
   }
   /**
    * Initialize the application
@@ -60,34 +49,12 @@ class LOFERSILLandingPage {
       this.setupDOMElements();
       // Initialize error handler
       this.errorHandler = new ErrorManager();
-      // Logger is already initialized
-      // Initialize event manager
-      this.eventManager = new EventManager(this.logger, this.errorHandler);
 
       // Initialize translation manager
       this.translationManager = new TranslationManager(this.errorHandler);
       // Initialize navigation manager
       this.navigationManager = new NavigationManager();
-      // Initialize SEO manager
-      this.seoManager = new SEOManager(
-        {
-          siteName: "LOFERSIL",
-          defaultTitle: "LOFERSIL - Premium Products and Services",
-          defaultDescription:
-            "Premium products and services for discerning customers",
-          siteUrl: window.location.origin,
-        },
-        this.errorHandler,
-      );
-      // Initialize performance tracker
-      this.performanceTracker = new PerformanceTracker(
-        {
-          enableWebVitals: true,
-          enableAnalytics: typeof window.gtag !== "undefined",
-          analyticsId: "GA_MEASUREMENT_ID", // Should be configured from environment
-        },
-        this.errorHandler,
-      );
+
       // Initialize scroll manager
       this.scrollManager = new ScrollManager(this.navigationManager);
       this.navigationManager.setupNavigation();
@@ -97,19 +64,10 @@ class LOFERSILLandingPage {
       // Initialize theme manager
       this.themeManager = new ThemeManager();
 
-      // Initialize PWA installer
-      this.pwaInstaller = new PWAInstaller();
-
-      // Initialize push notification manager
-      this.pushManager = new PushNotificationManager("YOUR_VAPID_PUBLIC_KEY"); // TODO: Configure VAPID key
-
-      // Initialize PWA updater
-      this.pwaUpdater = new PWAUpdater();
-
       // Register service worker
-      this.registerServiceWorker();
+      void this.registerServiceWorker();
       // Initialize contact form manager lazily
-      this.initializeContactFormLazily();
+      void this.initializeContactFormLazily();
     } catch (error) {
       this.errorHandler.handleError(
         error,
@@ -140,7 +98,7 @@ class LOFERSILLandingPage {
       // Set initial text
       const currentLang = this.translationManager.getCurrentLanguage();
       langToggle.textContent = currentLang.toUpperCase();
-      langToggle.setAttribute("data-translate", `nav.langToggle`);
+      langToggle.setAttribute("data-translate", "nav.langToggle");
 
       langToggle.addEventListener("click", () => {
         const currentLang = this.translationManager.getCurrentLanguage();
@@ -157,7 +115,7 @@ class LOFERSILLandingPage {
   async submitContact(request: ContactRequest): Promise<ContactResponse> {
     try {
       const response = await fetch(
-        envLoader.get("CONTACT_API_ENDPOINT") || "/api/contact",
+        envLoader.get("CONTACT_API_ENDPOINT") ?? "/api/contact",
         {
           method: "POST",
           headers: {
@@ -264,26 +222,15 @@ class LOFERSILLandingPage {
       }
     }
   }
-
-  /**
-   * Get web vitals metrics (public API)
-   */
-  getWebVitalsMetrics() {
-    return this.performanceTracker.getWebVitalsMetrics();
-  }
 }
 
 // Initialize the application when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
-    const app = new LOFERSILLandingPage();
-    // Expose metrics globally for debugging
-    window.getWebVitals = () => app.getWebVitalsMetrics();
+    new LOFERSILLandingPage();
   });
 } else {
-  const app = new LOFERSILLandingPage();
-  // Expose metrics globally for debugging
-  window.getWebVitals = () => app.getWebVitalsMetrics();
+  new LOFERSILLandingPage();
 }
 // Export for potential module usage
 export { LOFERSILLandingPage };

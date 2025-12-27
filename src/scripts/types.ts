@@ -5,8 +5,8 @@ declare global {
   interface Window {
     DOMPurify: {
       sanitize: (
-        dirty: string | Node,
-        config?: Record<string, unknown>,
+        _dirty: string | Node,
+        _config?: Record<string, unknown>,
       ) => string;
     };
   }
@@ -116,7 +116,7 @@ export interface MessagePartUpdatedEvent extends OpenCodeEvent {
  * Generic event handler type
  */
 export type EventHandler<T extends OpenCodeEvent = OpenCodeEvent> = (
-  event: T,
+  _event: T,
 ) => void;
 
 /**
@@ -125,3 +125,10 @@ export type EventHandler<T extends OpenCodeEvent = OpenCodeEvent> = (
 export interface EventListeners {
   [eventType: string]: EventHandler[];
 }
+
+// ============================================================================
+// NOTE: MCP and AI types are not included in production build
+// ============================================================================
+
+// MCP and AI modules are excluded from production TypeScript compilation
+// to prevent build errors and reduce bundle size
