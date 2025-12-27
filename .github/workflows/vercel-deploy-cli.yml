@@ -1,0 +1,61 @@
+name: Deploy to Vercel (CLI Direct)
+
+on:
+  push:
+    branches: [preview-deployment]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Staging
+    environment: staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Setup Vercel CLI
+        run: |
+          echo "=== SETTING UP VERCEL ==="
+          npm install -g vercel@latest
+
+          # Create Vercel configuration
+          echo '{"projectId":"${{ secrets.VERCEL_PROJECT_ID }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > ~/.vercel/project.json
+
+          # Login using token
+          echo "${{ secrets.VERCEL_TOKEN }}" | vercel login --token
+
+          # Link project
+          vercel link --confirm --yes
+
+      - name: Deploy using Vercel CLI
+        run: |
+          echo "=== DEPLOYING ==="
+          vercel --prod --prebuilt --confirm
+
+          # Get deployment URL
+          DEPLOY_URL=$(vercel ls --scope=personal --limit=1 | grep -o 'https://[^[:space:]]*' | head -1)
+          echo "deployment-url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+        id: deploy
+
+      - name: Output Results
+        run: |
+          echo "=== DEPLOYMENT RESULTS ==="
+          echo "URL: ${{ steps.deploy.outputs.deployment-url }}"
+
+          if [ -n "${{ steps.deploy.outputs.deployment-url }}" ]; then
+            echo "✅ Deployment successful"
+          else
+            echo "❌ Deployment failed - no URL"
+            exit 1
+          fi
