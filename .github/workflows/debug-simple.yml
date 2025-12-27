@@ -1,0 +1,66 @@
+name: Debug Deployment Issues
+
+on:
+  push:
+    branches: [preview-deployment]
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    name: Debug Environment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Debug Environment
+        run: |
+          echo "=== ENVIRONMENT DEBUG ==="
+          echo "Node Version: $(node --version)"
+          echo "NPM Version: $(npm --version)"
+          echo "Working Directory: $(pwd)"
+          echo "Files in directory:"
+          ls -la
+          echo ""
+
+      - name: Verify Secrets
+        run: |
+          echo "=== SECRETS DEBUG ==="
+          echo "VERCEL_TOKEN set: ${{ secrets.VERCEL_TOKEN != '' }}"
+          echo "VERCEL_ORG_ID set: ${{ secrets.VERCEL_ORG_ID != '' }}"
+          echo "VERCEL_PROJECT_ID set: ${{ secrets.VERCEL_PROJECT_ID != '' }}"
+          echo ""
+
+      - name: Install Dependencies
+        run: |
+          echo "=== INSTALLING DEPENDENCIES ==="
+          npm ci
+          echo ""
+
+      - name: Build Project
+        run: |
+          echo "=== BUILDING PROJECT ==="
+          npm run build
+          echo ""
+
+      - name: Verify Build Output
+        run: |
+          echo "=== VERIFYING BUILD ==="
+          if [ -d "dist" ]; then
+            echo "✅ Build successful - dist directory exists"
+            ls -la dist/
+          else
+            echo "❌ Build failed - no dist directory"
+            exit 1
+          fi
+
+      - name: Test Vercel CLI
+        run: |
+          echo "=== TESTING VERCEL CLI ==="
+          npm install -g vercel
+          vercel --version
+          echo "Vercel CLI installed successfully"
