@@ -26,10 +26,7 @@ jobs:
     if: github.ref == 'refs/heads/preview-deployment' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'preview'))
     runs-on: ubuntu-latest
     name: Deploy to Staging
-    environment:
-      name: staging
-      url: ${{ steps.deploy.outputs.preview-url }}
-
+    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,8 +58,8 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-       - name: Debug Environment
-         run: |
+      - name: Debug Environment
+        run: |
            echo "=== ENVIRONMENT DEBUG ==="
            echo "Node Version: $(node --version)"
            echo "NPM Version: $(npm --version)"
@@ -75,8 +72,8 @@ jobs:
            echo "Git Branch: $(git branch --show-current)"
            echo "Git Commit: $(git rev-parse HEAD)"
 
-       - name: Verify Package Lock Sync
-         run: |
+      - name: Verify Package Lock Sync
+        run: |
            echo "=== PACKAGE LOCK VERIFICATION ==="
            if ! npm ls --depth=0 >/dev/null 2>&1; then
              echo "Package lock out of sync, regenerating..."
@@ -86,8 +83,8 @@ jobs:
              echo "Package lock appears synchronized"
            fi
 
-       - name: Install dependencies (Robust)
-         run: |
+      - name: Install dependencies (Robust)
+        run: |
            echo "=== DEPENDENCY INSTALLATION ==="
            if [ -f package-lock.json ]; then
              echo "Attempting npm ci..."
@@ -100,11 +97,11 @@ jobs:
              npm install --verbose
            fi
 
-       - name: Run linting
-         run: npm run lint || echo "Linting failed but continuing deployment"
+      - name: Run linting
+        run: npm run lint || echo "Linting failed but continuing deployment"
 
-       - name: Build project (Enhanced)
-         run: |
+      - name: Build project (Enhanced)
+        run: |
            echo "=== BUILD PROCESS START ==="
            echo "Building for environment: ${{ github.ref_name }}"
            echo "Build command: npm run build"
@@ -216,8 +213,8 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-       - name: Debug Environment
-         run: |
+      - name: Debug Environment
+        run: |
            echo "=== ENVIRONMENT DEBUG ==="
            echo "Node Version: $(node --version)"
            echo "NPM Version: $(npm --version)"
@@ -230,8 +227,8 @@ jobs:
            echo "Git Branch: $(git branch --show-current)"
            echo "Git Commit: $(git rev-parse HEAD)"
 
-       - name: Verify Package Lock Sync
-         run: |
+      - name: Verify Package Lock Sync
+        run: |
            echo "=== PACKAGE LOCK VERIFICATION ==="
            if ! npm ls --depth=0 >/dev/null 2>&1; then
              echo "Package lock out of sync, regenerating..."
@@ -241,8 +238,8 @@ jobs:
              echo "Package lock appears synchronized"
            fi
 
-       - name: Install dependencies (Robust)
-         run: |
+      - name: Install dependencies (Robust)
+        run: |
            echo "=== DEPENDENCY INSTALLATION ==="
            if [ -f package-lock.json ]; then
              echo "Attempting npm ci..."
@@ -255,11 +252,11 @@ jobs:
              npm install --verbose
            fi
 
-       - name: Run linting
-         run: npm run lint || echo "Linting failed but continuing deployment"
+      - name: Run linting
+        run: npm run lint || echo "Linting failed but continuing deployment"
 
-       - name: Build project (Enhanced)
-         run: |
+      - name: Build project (Enhanced)
+        run: |
            echo "=== BUILD PROCESS START ==="
            echo "Building for environment: ${{ github.ref_name }}"
            echo "Build command: npm run build"
