@@ -1,5 +1,3 @@
-/// <reference types="vite/client" />
-
 /**
  * LOFERSIL Landing Page - Contact Form Module
  * Handles contact form submission, validation, and email service integration

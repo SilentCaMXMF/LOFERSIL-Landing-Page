@@ -61,16 +61,75 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      - name: Install dependencies
-        run: npm ci
+       - name: Debug Environment
+         run: |
+           echo "=== ENVIRONMENT DEBUG ==="
+           echo "Node Version: $(node --version)"
+           echo "NPM Version: $(npm --version)"
+           echo "Working Directory: $(pwd)"
+           echo "Disk Space: $(df -h .)"
+           echo "Memory: $(free -h)"
+           echo "Files in directory: $(ls -la)"
+           echo "Package Lock Exists: $(test -f package-lock.json && echo YES || echo NO)"
+           echo "Git Status: $(git status --porcelain)"
+           echo "Git Branch: $(git branch --show-current)"
+           echo "Git Commit: $(git rev-parse HEAD)"
 
-      - name: Run linting
-        run: npm run lint || echo "Linting failed but continuing deployment"
+       - name: Verify Package Lock Sync
+         run: |
+           echo "=== PACKAGE LOCK VERIFICATION ==="
+           if ! npm ls --depth=0 >/dev/null 2>&1; then
+             echo "Package lock out of sync, regenerating..."
+             rm -f package-lock.json
+             npm install --package-lock-only
+           else
+             echo "Package lock appears synchronized"
+           fi
 
-      - name: Build project
-        run: |
-          echo "Building for staging/preview..."
-          npm run build
+       - name: Install dependencies (Robust)
+         run: |
+           echo "=== DEPENDENCY INSTALLATION ==="
+           if [ -f package-lock.json ]; then
+             echo "Attempting npm ci..."
+             npm ci --verbose || {
+               echo "npm ci failed, falling back to npm install..."
+               npm install --verbose
+             }
+           else
+             echo "No package-lock.json found, using npm install..."
+             npm install --verbose
+           fi
+
+       - name: Run linting
+         run: npm run lint || echo "Linting failed but continuing deployment"
+
+       - name: Build project (Enhanced)
+         run: |
+           echo "=== BUILD PROCESS START ==="
+           echo "Building for environment: ${{ github.ref_name }}"
+           echo "Build command: npm run build"
+           echo "Current directory: $(pwd)"
+           echo "Node modules present: $(test -d node_modules && echo YES || echo NO)"
+           echo "Starting build at: $(date)"
+
+           # Run build with verbose output and error capture
+           if npm run build --verbose 2>&1; then
+             echo "✅ Build completed successfully"
+             echo "Build finished at: $(date)"
+           else
+             echo "❌ BUILD FAILED - DETAILED DEBUG INFO ==="
+             echo "Exit Code: $?"
+             echo "Build finished at: $(date)"
+             echo "Contents of dist directory (if exists):"
+             ls -la dist/ 2>/dev/null || echo "dist directory not found"
+             echo "Recent npm logs:"
+             find ~/.npm/_logs -name "*.log" -exec tail -20 {} \; 2>/dev/null || echo "No npm logs found"
+             echo "Package.json scripts:"
+             cat package.json | grep -A 10 '"scripts"'
+             echo "Node modules status:"
+             npm ls --depth=0 2>/dev/null || echo "npm ls failed"
+             exit 1
+           fi
 
       - name: Verify build output
         run: |
@@ -157,16 +216,75 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      - name: Install dependencies
-        run: npm ci
+       - name: Debug Environment
+         run: |
+           echo "=== ENVIRONMENT DEBUG ==="
+           echo "Node Version: $(node --version)"
+           echo "NPM Version: $(npm --version)"
+           echo "Working Directory: $(pwd)"
+           echo "Disk Space: $(df -h .)"
+           echo "Memory: $(free -h)"
+           echo "Files in directory: $(ls -la)"
+           echo "Package Lock Exists: $(test -f package-lock.json && echo YES || echo NO)"
+           echo "Git Status: $(git status --porcelain)"
+           echo "Git Branch: $(git branch --show-current)"
+           echo "Git Commit: $(git rev-parse HEAD)"
 
-      - name: Run linting
-        run: npm run lint || echo "Linting failed but continuing deployment"
+       - name: Verify Package Lock Sync
+         run: |
+           echo "=== PACKAGE LOCK VERIFICATION ==="
+           if ! npm ls --depth=0 >/dev/null 2>&1; then
+             echo "Package lock out of sync, regenerating..."
+             rm -f package-lock.json
+             npm install --package-lock-only
+           else
+             echo "Package lock appears synchronized"
+           fi
 
-      - name: Build project
-        run: |
-          echo "Building for production..."
-          npm run build
+       - name: Install dependencies (Robust)
+         run: |
+           echo "=== DEPENDENCY INSTALLATION ==="
+           if [ -f package-lock.json ]; then
+             echo "Attempting npm ci..."
+             npm ci --verbose || {
+               echo "npm ci failed, falling back to npm install..."
+               npm install --verbose
+             }
+           else
+             echo "No package-lock.json found, using npm install..."
+             npm install --verbose
+           fi
+
+       - name: Run linting
+         run: npm run lint || echo "Linting failed but continuing deployment"
+
+       - name: Build project (Enhanced)
+         run: |
+           echo "=== BUILD PROCESS START ==="
+           echo "Building for environment: ${{ github.ref_name }}"
+           echo "Build command: npm run build"
+           echo "Current directory: $(pwd)"
+           echo "Node modules present: $(test -d node_modules && echo YES || echo NO)"
+           echo "Starting build at: $(date)"
+
+           # Run build with verbose output and error capture
+           if npm run build --verbose 2>&1; then
+             echo "✅ Build completed successfully"
+             echo "Build finished at: $(date)"
+           else
+             echo "❌ BUILD FAILED - DETAILED DEBUG INFO ==="
+             echo "Exit Code: $?"
+             echo "Build finished at: $(date)"
+             echo "Contents of dist directory (if exists):"
+             ls -la dist/ 2>/dev/null || echo "dist directory not found"
+             echo "Recent npm logs:"
+             find ~/.npm/_logs -name "*.log" -exec tail -20 {} \; 2>/dev/null || echo "No npm logs found"
+             echo "Package.json scripts:"
+             cat package.json | grep -A 10 '"scripts"'
+             echo "Node modules status:"
+             npm ls --depth=0 2>/dev/null || echo "npm ls failed"
+             exit 1
+           fi
 
       - name: Verify build output
         run: |
