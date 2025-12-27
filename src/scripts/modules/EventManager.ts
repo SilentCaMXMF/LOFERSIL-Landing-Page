@@ -13,7 +13,7 @@ import {
   EventHandler,
   EventListeners,
 } from "../types.js";
-import { logger } from "./logger.js";
+import { simpleLogger } from "./simpleLogger.js";
 import { ErrorManager } from "./ErrorManager.js";
 
 export class EventManager {

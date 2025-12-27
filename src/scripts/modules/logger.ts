@@ -1,10 +1,9 @@
 /**
  * Production Logging Configuration
- * Structured logging for the AI-powered GitHub Issues Reviewer System
+ * Browser-compatible logging for the LOFERSIL Landing Page
  */
 
-import fs from "fs";
-import path from "path";
+// Browser-compatible logger - no Node.js dependencies
 
 interface LogEntry {
   timestamp: string;
