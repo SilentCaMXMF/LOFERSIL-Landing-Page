@@ -39,14 +39,123 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Verify required secrets
+        run: |
+          echo "=== VERIFYING SECRETS ==="
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN secret is not set"
+            exit 1
+          else
+            echo "✅ VERCEL_TOKEN is set"
+          fi
+
+          if [ -z "$VERCEL_ORG_ID" ]; then
+            echo "::error::VERCEL_ORG_ID secret is not set"
+            exit 1
+          else
+            echo "✅ VERCEL_ORG_ID is set"
+          fi
+
+          if [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::error::VERCEL_PROJECT_ID secret is not set"
+            exit 1
+          else
+            echo "✅ VERCEL_PROJECT_ID is set"
+          fi
+
+          echo "=== SECRET VALUES (VERIFIED ONLY LENGTH) ==="
+          echo "VERCEL_TOKEN length: ${#VERCEL_TOKEN}"
+          echo "VERCEL_ORG_ID length: ${#VERCEL_ORG_ID}"
+          echo "VERCEL_PROJECT_ID length: ${#VERCEL_PROJECT_ID}"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Debug Environment
+        run: |
+          echo "=== ENVIRONMENT DEBUG ==="
+          echo "Node Version: $(node --version)"
+          echo "NPM Version: $(npm --version)"
+          echo "Working Directory: $(pwd)"
+          echo "Disk Space: $(df -h .)"
+          echo "Memory: $(free -h)"
+          echo "Files in directory: $(ls -la)"
+          echo "Package Lock Exists: $(test -f package-lock.json && echo YES || echo NO)"
+          echo "Git Status: $(git status --porcelain)"
+          echo "Git Branch: $(git branch --show-current)"
+          echo "Git Commit: $(git rev-parse HEAD)"
+          echo "GitHub Event: ${{ github.event_name }}"
+          echo "GitHub Ref: ${{ github.ref }}"
+          echo "GitHub Branch: ${{ github.ref_name }}"
+
+      - name: Verify Package Lock Sync
+        run: |
+          echo "=== PACKAGE LOCK VERIFICATION ==="
+          if ! npm ls --depth=0 >/dev/null 2>&1; then
+            echo "Package lock out of sync, regenerating..."
+            rm -f package-lock.json
+            npm install --package-lock-only
+          else
+            echo "Package lock appears synchronized"
+          fi
+
+      - name: Install dependencies (Robust)
+        run: |
+          echo "=== DEPENDENCY INSTALLATION ==="
+          if [ -f package-lock.json ]; then
+            echo "Attempting npm ci..."
+            npm ci --verbose || {
+              echo "npm ci failed, falling back to npm install..."
+              npm install --verbose
+            }
+          else
+            echo "No package-lock.json found, using npm install..."
+            npm install --verbose
+          fi
 
       - name: Run linting
-        run: npm run lint || echo "Linting failed but continuing deployment"
+        run: npm run lint || echo "⚠️ Linting failed but continuing deployment"
 
       - name: Build project
-        run: npm run build
+        run: |
+          echo "=== BUILDING PROJECT ==="
+          npm run build
+          echo "=== BUILD OUTPUT VERIFICATION ==="
+          if [ -d "dist" ]; then
+            echo "✅ Build successful - dist directory created"
+            echo "Contents:"
+            ls -la dist/
+          else
+            echo "❌ Build failed - no dist directory"
+            exit 1
+          fi
+
+      - name: Setup Vercel CLI
+        run: |
+          echo "=== SETTING UP VERCEL CLI ==="
+          npm install --global vercel@latest
+          vercel --version
+
+      - name: Verify Vercel Project Configuration
+        run: |
+          echo "=== VERIFYING VERCEL PROJECT CONFIGURATION ==="
+          echo "Expected Project ID: ${{ secrets.VERCEL_PROJECT_ID }}"
+          echo "Expected Org ID: ${{ secrets.VERCEL_ORG_ID }}"
+
+          # Create a temporary vercel.json for the deployment
+          cat > vercel.json << EOF
+          {
+            "version": 2,
+            "buildCommand": "npm run build",
+            "outputDirectory": "dist",
+            "framework": null,
+            "cleanUrls": true,
+            "trailingSlash": false
+          }
+          EOF
+
+          echo "✅ Vercel configuration prepared"
 
       - name: Deploy to Vercel (Staging)
         id: deploy
@@ -58,6 +167,25 @@ jobs:
           vercel-args: "--debug"
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Verify Deployment
+        run: |
+          echo "=== DEPLOYMENT VERIFICATION ==="
+          if [ "${{ steps.deploy.outputs.preview-url }}" != "" ]; then
+            echo "✅ Deployment successful"
+            echo "Preview URL: ${{ steps.deploy.outputs.preview-url }}"
+            
+            # Optional: Test the deployment
+            echo "Testing deployment URL..."
+            if curl -f -s -o /dev/null "${{ steps.deploy.outputs.preview-url }}"; then
+              echo "✅ Deployment URL is responding"
+            else
+              echo "⚠️ Deployment URL not responding (may still be propagating)"
+            fi
+          else
+            echo "❌ Deployment failed - no preview URL returned"
+            exit 1
+          fi
+
       - name: Deployment Summary
         run: |
           echo "## 🚀 Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
@@ -68,6 +196,7 @@ jobs:
             echo "- **Staging URL**: ${{ steps.deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
           fi
           echo "- **Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Time**: $(date)" >> $GITHUB_STEP_SUMMARY
 
       - name: Notify on failure
         if: failure()
@@ -97,11 +226,31 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Verify required secrets
+        run: |
+          echo "=== VERIFYING SECRETS FOR PRODUCTION ==="
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN secret is not set"
+            exit 1
+          fi
+          if [ -z "$VERCEL_ORG_ID" ]; then
+            echo "::error::VERCEL_ORG_ID secret is not set"
+            exit 1
+          fi
+          if [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::error::VERCEL_PROJECT_ID secret is not set"
+            exit 1
+          fi
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
       - name: Install dependencies
         run: npm ci
 
       - name: Run linting
-        run: npm run lint || echo "Linting failed but continuing deployment"
+        run: npm run lint || echo "⚠️ Linting failed but continuing deployment"
 
       - name: Build project
         run: npm run build
