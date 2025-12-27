@@ -1,10 +1,22 @@
 #!/bin/bash
 
-# LOFERSIL Landing Page - Vercel Environment Variables Setup & Verification
+# LOFERSIL Landing Page - Enhanced Vercel Environment Setup & Verification
+# Version: 2.0.0
 # This script helps verify and set up required environment variables for production deployment
 
-echo "🔍 LOFERSIL Landing Page - Vercel Environment Variables Verification"
-echo "=================================================================="
+set -euo pipefail
+
+# Configuration
+DEFAULT_ENVIRONMENT="production"
+ENVIRONMENT="${1:-$DEFAULT_ENVIRONMENT}"
+PROJECT_ID="${VERCEL_PROJECT_ID:-}"
+ORG_ID="${VERCEL_ORG_ID:-}"
+
+echo "🔍 LOFERSIL Landing Page - Enhanced Vercel Environment Variables Verification"
+echo "=============================================================================="
+echo "Environment: $ENVIRONMENT"
+echo "Timestamp: $(date)"
+echo ""
 
 # Colors for output
 RED='\033[0;31m'
