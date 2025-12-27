@@ -2,16 +2,16 @@
  * LOFERSIL Landing Page - Main TypeScript Entry Point
  * Handles navigation, interactions, and dynamic content loading
  */
-import type { ContactRequest, ContactResponse } from './types.js';
-import { TranslationManager } from './modules/TranslationManager.js';
-import { NavigationManager } from './modules/NavigationManager.js';
-import type { ContactFormManager } from './modules/ContactFormManager.js';
-import { envLoader } from './modules/EnvironmentLoader.js';
+import type { ContactRequest, ContactResponse } from "./types.js";
+import { TranslationManager } from "./modules/TranslationManager.js";
+import { NavigationManager } from "./modules/NavigationManager.js";
+import type { ContactFormManager } from "./modules/ContactFormManager.js";
+import { envLoader } from "./modules/EnvironmentLoader.js";
 
-import { ErrorManager } from './modules/ErrorManager.js';
-import { ScrollManager } from './modules/ScrollManager.js';
-import { simpleLogger } from './modules/simpleLogger.js';
-import { ThemeManager } from './modules/ThemeManager.js';
+import { ErrorManager } from "./modules/ErrorManager.js";
+import { ScrollManager } from "./modules/ScrollManager.js";
+import { simpleLogger } from "./modules/simpleLogger.js";
+import { ThemeManager } from "./modules/ThemeManager.js";
 
 // Extend Window interface for global properties
 declare global {
@@ -71,12 +71,12 @@ class LOFERSILLandingPage {
     } catch (error) {
       this.errorHandler.handleError(
         error,
-        'Application initialization failed',
+        "Application initialization failed",
         {
-          component: 'LOFERSILLandingPage',
-          operation: 'initializeApp',
-          timestamp: new Date()
-        }
+          component: "LOFERSILLandingPage",
+          operation: "initializeApp",
+          timestamp: new Date(),
+        },
       );
     }
   }
@@ -84,7 +84,7 @@ class LOFERSILLandingPage {
    * Setup DOM element references
    */
   setupDOMElements() {
-    this.mainContent = document.getElementById('main-content');
+    this.mainContent = document.getElementById("main-content");
   }
 
   /**
@@ -92,17 +92,17 @@ class LOFERSILLandingPage {
    */
   setupLanguageToggle() {
     const langToggle = document.getElementById(
-      'lang-toggle'
+      "lang-toggle",
     ) as HTMLButtonElement;
     if (langToggle) {
       // Set initial text
       const currentLang = this.translationManager.getCurrentLanguage();
       langToggle.textContent = currentLang.toUpperCase();
-      langToggle.setAttribute('data-translate', 'nav.langToggle');
+      langToggle.setAttribute("data-translate", "nav.langToggle");
 
-      langToggle.addEventListener('click', () => {
+      langToggle.addEventListener("click", () => {
         const currentLang = this.translationManager.getCurrentLanguage();
-        const newLang = currentLang === 'pt' ? 'en' : 'pt';
+        const newLang = currentLang === "pt" ? "en" : "pt";
         this.translationManager.switchLanguage(newLang);
         // The applyTranslations in switchLanguage will update the button
       });
@@ -115,32 +115,32 @@ class LOFERSILLandingPage {
   async submitContact(request: ContactRequest): Promise<ContactResponse> {
     try {
       const response = await fetch(
-        envLoader.get('CONTACT_API_ENDPOINT') ?? '/api/contact',
+        envLoader.get("CONTACT_API_ENDPOINT") ?? "/api/contact",
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(request)
-        }
+          body: JSON.stringify(request),
+        },
       );
       if (!response.ok) {
         throw new Error(
-          `Failed to submit contact form: ${response.status} ${response.statusText}`
+          `Failed to submit contact form: ${response.status} ${response.statusText}`,
         );
       }
       return await response.json();
     } catch (error) {
-      this.errorHandler.handleError(error, 'Contact form submission failed', {
-        component: 'LOFERSILLandingPage',
-        operation: 'submitContact',
-        timestamp: new Date()
+      this.errorHandler.handleError(error, "Contact form submission failed", {
+        component: "LOFERSILLandingPage",
+        operation: "submitContact",
+        timestamp: new Date(),
       });
       return {
         success: false,
-        data: { id: '' },
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        data: { id: "" },
+        error: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString(),
       };
     }
   }
@@ -149,7 +149,7 @@ class LOFERSILLandingPage {
    */
   private async initializeContactFormLazily(): Promise<void> {
     // Wait for user interaction or scroll to contact section
-    const contactSection = document.getElementById('contact-form');
+    const contactSection = document.getElementById("contact-form");
     if (contactSection) {
       // Use Intersection Observer to load when contact section is visible
       const observer = new IntersectionObserver(
@@ -158,43 +158,43 @@ class LOFERSILLandingPage {
             observer.disconnect();
             try {
               const { createContactForm } = await import(
-                './modules/ContactFormManager.js'
+                "./modules/ContactFormManager.js"
               );
               this.contactFormManager = createContactForm(
-                this.translationManager
+                this.translationManager,
               );
             } catch (error) {
               this.errorHandler.handleError(
                 error,
-                'Failed to load contact form manager',
+                "Failed to load contact form manager",
                 {
-                  component: 'LOFERSILLandingPage',
-                  operation: 'initializeContactFormLazily',
-                  timestamp: new Date()
-                }
+                  component: "LOFERSILLandingPage",
+                  operation: "initializeContactFormLazily",
+                  timestamp: new Date(),
+                },
               );
             }
           }
         },
-        { threshold: 0.1 }
+        { threshold: 0.1 },
       );
       observer.observe(contactSection);
     } else {
       // Fallback: load immediately if section not found
       try {
         const { createContactForm } = await import(
-          './modules/ContactFormManager.js'
+          "./modules/ContactFormManager.js"
         );
         this.contactFormManager = createContactForm(this.translationManager);
       } catch (error) {
         this.errorHandler.handleError(
           error,
-          'Failed to load contact form manager',
+          "Failed to load contact form manager",
           {
-            component: 'LOFERSILLandingPage',
-            operation: 'initializeContactFormLazily',
-            timestamp: new Date()
-          }
+            component: "LOFERSILLandingPage",
+            operation: "initializeContactFormLazily",
+            timestamp: new Date(),
+          },
         );
       }
     }
@@ -204,20 +204,20 @@ class LOFERSILLandingPage {
    * Register service worker for PWA functionality
    */
   private async registerServiceWorker(): Promise<void> {
-    if ('serviceWorker' in navigator) {
+    if ("serviceWorker" in navigator) {
       try {
-        await navigator.serviceWorker.register('/sw.js', {
-          scope: '/'
+        await navigator.serviceWorker.register("/sw.js", {
+          scope: "/",
         });
       } catch (error) {
         this.errorHandler.handleError(
           error,
-          'Service worker registration failed',
+          "Service worker registration failed",
           {
-            component: 'LOFERSILLandingPage',
-            operation: 'registerServiceWorker',
-            timestamp: new Date()
-          }
+            component: "LOFERSILLandingPage",
+            operation: "registerServiceWorker",
+            timestamp: new Date(),
+          },
         );
       }
     }
@@ -225,8 +225,8 @@ class LOFERSILLandingPage {
 }
 
 // Initialize the application when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
     new LOFERSILLandingPage();
   });
 } else {

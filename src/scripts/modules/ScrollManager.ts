@@ -3,8 +3,9 @@
  * Uses Intersection Observer for efficient scroll handling
  */
 
-import { config } from "./Config.js";
 import { NavigationManager } from "./NavigationManager.js";
+
+const SCROLL_THRESHOLD = 100;
 
 export class ScrollManager {
   private hero: HTMLElement | null = null;
@@ -38,7 +39,7 @@ export class ScrollManager {
       const scrollY = window.scrollY;
 
       // Update navbar scroll state
-      this.navigationManager.updateNavbarOnScroll(config.scrollThreshold);
+      this.navigationManager.updateNavbarOnScroll(SCROLL_THRESHOLD);
 
       // Parallax effect for hero section (only if elements exist)
       if (this.heroImage) {

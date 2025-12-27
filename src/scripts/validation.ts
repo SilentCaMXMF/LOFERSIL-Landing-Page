@@ -3,7 +3,7 @@
  * Comprehensive input validation system for contact forms
  */
 
-import type { TranslationManager } from './modules/TranslationManager.js';
+import type { TranslationManager } from "./modules/TranslationManager.js";
 
 // Validation constants
 const MIN_NAME_LENGTH = 2;
@@ -23,25 +23,25 @@ const DOMPurify = (
 // Validation messages for testing purposes
 export const VALIDATION_MESSAGES = {
   name: {
-    required: 'Name is required',
-    tooShort: 'Name must be at least 2 characters long',
-    tooLong: 'Name must be less than 100 characters',
-    invalidChars: 'Name contains invalid characters'
+    required: "Name is required",
+    tooShort: "Name must be at least 2 characters long",
+    tooLong: "Name must be less than 100 characters",
+    invalidChars: "Name contains invalid characters",
   },
   email: {
-    required: 'Email is required',
-    invalid: 'Please enter a valid email address',
-    tooLong: 'Email address is too long'
+    required: "Email is required",
+    invalid: "Please enter a valid email address",
+    tooLong: "Email address is too long",
   },
   phone: {
-    invalid: 'Please enter a valid phone number',
-    tooLong: 'Phone number is too long'
+    invalid: "Please enter a valid phone number",
+    tooLong: "Phone number is too long",
   },
   message: {
-    required: 'Message is required',
-    tooShort: 'Message must be at least 10 characters long',
-    tooLong: 'Message must be less than 2000 characters'
-  }
+    required: "Message is required",
+    tooShort: "Message must be at least 10 characters long",
+    tooLong: "Message must be less than 2000 characters",
+  },
 };
 
 // Extended contact request interface with phone field
@@ -74,7 +74,7 @@ export interface FormValidationResult {
 function getValidationMessage(
   translationManager: TranslationManager,
   field: string,
-  error: string
+  error: string,
 ): string {
   const translations = translationManager.getTranslations();
   const contactTranslations = translations?.contact as Record<string, unknown>;
@@ -95,14 +95,14 @@ function getValidationMessage(
  */
 export function validateName(
   name: string,
-  translationManager?: TranslationManager
+  translationManager?: TranslationManager,
 ): ValidationResult {
   if (!name || name.trim().length === 0) {
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'name', 'required')
-        : 'Name is required'
+        ? getValidationMessage(translationManager, "name", "required")
+        : "Name is required",
     };
   }
 
@@ -112,8 +112,8 @@ export function validateName(
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'name', 'tooShort')
-        : 'Name must be at least 2 characters long'
+        ? getValidationMessage(translationManager, "name", "tooShort")
+        : "Name must be at least 2 characters long",
     };
   }
 
@@ -121,8 +121,8 @@ export function validateName(
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'name', 'tooLong')
-        : 'Name must be less than 100 characters'
+        ? getValidationMessage(translationManager, "name", "tooLong")
+        : "Name must be less than 100 characters",
     };
   }
 
@@ -133,8 +133,8 @@ export function validateName(
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'name', 'invalidChars')
-        : 'Name contains invalid characters'
+        ? getValidationMessage(translationManager, "name", "invalidChars")
+        : "Name contains invalid characters",
     };
   }
 
@@ -149,14 +149,14 @@ export function validateName(
  */
 export function validateEmail(
   email: string,
-  translationManager?: TranslationManager
+  translationManager?: TranslationManager,
 ): ValidationResult {
   if (!email || email.trim().length === 0) {
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'email', 'required')
-        : 'Email is required'
+        ? getValidationMessage(translationManager, "email", "required")
+        : "Email is required",
     };
   }
 
@@ -166,8 +166,8 @@ export function validateEmail(
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'email', 'tooLong')
-        : 'Email address is too long'
+        ? getValidationMessage(translationManager, "email", "tooLong")
+        : "Email address is too long",
     };
   }
 
@@ -179,8 +179,8 @@ export function validateEmail(
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'email', 'invalid')
-        : 'Please enter a valid email address'
+        ? getValidationMessage(translationManager, "email", "invalid")
+        : "Please enter a valid email address",
     };
   }
 
@@ -195,7 +195,7 @@ export function validateEmail(
  */
 export function validatePhone(
   phone: string,
-  translationManager?: TranslationManager
+  translationManager?: TranslationManager,
 ): ValidationResult {
   // Phone is optional, so empty is valid
   if (!phone || phone.trim().length === 0) {
@@ -208,8 +208,8 @@ export function validatePhone(
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'phone', 'tooLong')
-        : 'Phone number is too long'
+        ? getValidationMessage(translationManager, "phone", "tooLong")
+        : "Phone number is too long",
     };
   }
 
@@ -221,19 +221,19 @@ export function validatePhone(
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'phone', 'invalid')
-        : 'Please enter a valid phone number'
+        ? getValidationMessage(translationManager, "phone", "invalid")
+        : "Please enter a valid phone number",
     };
   }
 
   // Check for minimum reasonable length (after removing formatting)
-  const digitsOnly = trimmedPhone.replace(/[\s\-()+]/g, '');
+  const digitsOnly = trimmedPhone.replace(/[\s\-()+]/g, "");
   if (digitsOnly.length < MIN_PHONE_LENGTH) {
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'phone', 'invalid')
-        : 'Please enter a valid phone number'
+        ? getValidationMessage(translationManager, "phone", "invalid")
+        : "Please enter a valid phone number",
     };
   }
 
@@ -248,14 +248,14 @@ export function validatePhone(
  */
 export function validateMessage(
   message: string,
-  translationManager?: TranslationManager
+  translationManager?: TranslationManager,
 ): ValidationResult {
   if (!message || message.trim().length === 0) {
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'message', 'required')
-        : 'Message is required'
+        ? getValidationMessage(translationManager, "message", "required")
+        : "Message is required",
     };
   }
 
@@ -265,8 +265,8 @@ export function validateMessage(
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'message', 'tooShort')
-        : 'Message must be at least 10 characters long'
+        ? getValidationMessage(translationManager, "message", "tooShort")
+        : "Message must be at least 10 characters long",
     };
   }
 
@@ -274,8 +274,8 @@ export function validateMessage(
     return {
       isValid: false,
       error: translationManager
-        ? getValidationMessage(translationManager, 'message', 'tooLong')
-        : 'Message must be less than 2000 characters'
+        ? getValidationMessage(translationManager, "message", "tooLong")
+        : "Message must be less than 2000 characters",
     };
   }
 
@@ -290,34 +290,34 @@ export function validateMessage(
  */
 export function validateContactForm(
   formData: ContactRequest,
-  translationManager?: TranslationManager
+  translationManager?: TranslationManager,
 ): FormValidationResult {
   const fieldResults: Record<string, FieldValidationResult> = {};
   const errors: Record<string, string> = {};
 
   // Validate each field
   const nameResult = validateName(formData.name, translationManager);
-  fieldResults.name = { ...nameResult, field: 'name' };
+  fieldResults.name = { ...nameResult, field: "name" };
   if (!nameResult.isValid && nameResult.error) {
     errors.name = nameResult.error;
   }
 
   const emailResult = validateEmail(formData.email, translationManager);
-  fieldResults.email = { ...emailResult, field: 'email' };
+  fieldResults.email = { ...emailResult, field: "email" };
   if (!emailResult.isValid && emailResult.error) {
     errors.email = emailResult.error;
   }
 
   if (formData.phone !== undefined) {
     const phoneResult = validatePhone(formData.phone, translationManager);
-    fieldResults.phone = { ...phoneResult, field: 'phone' };
+    fieldResults.phone = { ...phoneResult, field: "phone" };
     if (!phoneResult.isValid && phoneResult.error) {
       errors.phone = phoneResult.error;
     }
   }
 
   const messageResult = validateMessage(formData.message, translationManager);
-  fieldResults.message = { ...messageResult, field: 'message' };
+  fieldResults.message = { ...messageResult, field: "message" };
   if (!messageResult.isValid && messageResult.error) {
     errors.message = messageResult.error;
   }
@@ -327,7 +327,7 @@ export function validateContactForm(
   return {
     isValid,
     errors,
-    fieldResults
+    fieldResults,
   };
 }
 
@@ -353,10 +353,10 @@ export class FormErrorDisplay {
       return;
     }
 
-    this.errorContainer = document.createElement('div');
-    this.errorContainer.className = 'form-errors';
-    this.errorContainer.setAttribute('role', 'alert');
-    this.errorContainer.setAttribute('aria-live', 'polite');
+    this.errorContainer = document.createElement("div");
+    this.errorContainer.className = "form-errors";
+    this.errorContainer.setAttribute("role", "alert");
+    this.errorContainer.setAttribute("aria-live", "polite");
     this.errorContainer.style.cssText = `
       display: none;
       background-color: #fee;
@@ -370,7 +370,7 @@ export class FormErrorDisplay {
     // Insert at the beginning of the form
     this.formElement.insertBefore(
       this.errorContainer,
-      this.formElement.firstChild
+      this.formElement.firstChild,
     );
   }
 
@@ -388,22 +388,22 @@ export class FormErrorDisplay {
 
     const errorMessages = Object.values(errors);
     if (errorMessages.length === 0) {
-      this.errorContainer.style.display = 'none';
+      this.errorContainer.style.display = "none";
       return;
     }
 
     // Create error list
-    const errorList = document.createElement('ul');
-    errorList.style.cssText = 'margin: 0; padding-left: 20px;';
+    const errorList = document.createElement("ul");
+    errorList.style.cssText = "margin: 0; padding-left: 20px;";
 
     errorMessages.forEach((error) => {
-      const listItem = document.createElement('li');
+      const listItem = document.createElement("li");
       listItem.textContent = error;
       errorList.appendChild(listItem);
     });
 
     this.errorContainer.appendChild(errorList);
-    this.errorContainer.style.display = 'block';
+    this.errorContainer.style.display = "block";
 
     // Focus the error container for accessibility
     this.errorContainer.focus();
@@ -414,7 +414,7 @@ export class FormErrorDisplay {
    * @param fieldResults - Field validation results
    */
   public displayFieldErrors(
-    fieldResults: Record<string, FieldValidationResult>
+    fieldResults: Record<string, FieldValidationResult>,
   ): void {
     // Clear previous field errors
     this.clearFieldErrors();
@@ -433,17 +433,17 @@ export class FormErrorDisplay {
    */
   public displayFieldError(fieldName: string, errorMessage: string): void {
     const fieldElement = this.formElement?.querySelector(
-      `[name="${fieldName}"]`
+      `[name="${fieldName}"]`,
     ) as HTMLElement;
     if (!fieldElement) {
       return;
     }
 
     // Create error element
-    const errorElement = document.createElement('div');
-    errorElement.className = 'field-error';
+    const errorElement = document.createElement("div");
+    errorElement.className = "field-error";
     errorElement.textContent = errorMessage;
-    errorElement.setAttribute('role', 'alert');
+    errorElement.setAttribute("role", "alert");
     errorElement.style.cssText = `
       color: #c33;
       font-size: 14px;
@@ -452,12 +452,12 @@ export class FormErrorDisplay {
     `;
 
     // Add error class to field
-    fieldElement.classList.add('error');
+    fieldElement.classList.add("error");
 
     // Insert error after the field
     fieldElement.parentNode?.insertBefore(
       errorElement,
-      fieldElement.nextSibling
+      fieldElement.nextSibling,
     );
   }
 
@@ -466,8 +466,8 @@ export class FormErrorDisplay {
    */
   public clearErrors(): void {
     if (this.errorContainer) {
-      this.errorContainer.innerHTML = '';
-      this.errorContainer.style.display = 'none';
+      this.errorContainer.innerHTML = "";
+      this.errorContainer.style.display = "none";
     }
     this.clearFieldErrors();
   }
@@ -477,12 +477,12 @@ export class FormErrorDisplay {
    */
   public clearFieldErrors(): void {
     // Remove error classes and error elements
-    const errorFields = this.formElement?.querySelectorAll('.error');
+    const errorFields = this.formElement?.querySelectorAll(".error");
     errorFields?.forEach((field) => {
-      field.classList.remove('error');
+      field.classList.remove("error");
     });
 
-    const errorElements = this.formElement?.querySelectorAll('.field-error');
+    const errorElements = this.formElement?.querySelectorAll(".field-error");
     errorElements?.forEach((element) => {
       element.remove();
     });
@@ -509,7 +509,7 @@ export class FormErrorDisplay {
       margin-bottom: 16px;
       color: #363;
     `;
-    this.errorContainer.setAttribute('role', 'status');
+    this.errorContainer.setAttribute("role", "status");
   }
 }
 
@@ -536,15 +536,15 @@ export class ContactFormValidator {
       return;
     }
 
-    const fields = ['name', 'email', 'phone', 'message'];
+    const fields = ["name", "email", "phone", "message"];
 
     fields.forEach((fieldName) => {
       const field = this.formElement?.querySelector(
-        `[name="${fieldName}"]`
+        `[name="${fieldName}"]`,
       ) as HTMLInputElement;
       if (field) {
-        field.addEventListener('blur', () => this.validateField(fieldName));
-        field.addEventListener('input', () => this.clearFieldError(fieldName));
+        field.addEventListener("blur", () => this.validateField(fieldName));
+        field.addEventListener("input", () => this.clearFieldError(fieldName));
       }
     });
   }
@@ -555,7 +555,7 @@ export class ContactFormValidator {
    */
   private validateField(fieldName: string): void {
     const field = this.formElement?.querySelector(
-      `[name="${fieldName}"]`
+      `[name="${fieldName}"]`,
     ) as HTMLInputElement;
     if (!field) {
       return;
@@ -564,16 +564,16 @@ export class ContactFormValidator {
     let result: ValidationResult;
 
     switch (fieldName) {
-      case 'name':
+      case "name":
         result = validateName(field.value, this.translationManager);
         break;
-      case 'email':
+      case "email":
         result = validateEmail(field.value, this.translationManager);
         break;
-      case 'phone':
+      case "phone":
         result = validatePhone(field.value, this.translationManager);
         break;
-      case 'message':
+      case "message":
         result = validateMessage(field.value, this.translationManager);
         break;
       default:
@@ -591,11 +591,11 @@ export class ContactFormValidator {
    */
   private clearFieldError(fieldName: string): void {
     const field = this.formElement?.querySelector(
-      `[name="${fieldName}"]`
+      `[name="${fieldName}"]`,
     ) as HTMLElement;
     if (field) {
-      field.classList.remove('error');
-      const errorElement = field.parentNode?.querySelector('.field-error');
+      field.classList.remove("error");
+      const errorElement = field.parentNode?.querySelector(".field-error");
       if (errorElement) {
         errorElement.remove();
       }
@@ -610,31 +610,31 @@ export class ContactFormValidator {
     if (!this.formElement) {
       return {
         isValid: false,
-        errors: { form: 'Form not found' },
-        fieldResults: {}
+        errors: { form: "Form not found" },
+        fieldResults: {},
       };
     }
 
     const formData: ContactRequest = {
       name: DOMPurify.sanitize(
         (this.formElement.querySelector('[name="name"]') as HTMLInputElement)
-          ?.value || ''
+          ?.value || "",
       ),
       email: DOMPurify.sanitize(
         (this.formElement.querySelector('[name="email"]') as HTMLInputElement)
-          ?.value || ''
+          ?.value || "",
       ),
       phone: DOMPurify.sanitize(
         (this.formElement.querySelector('[name="phone"]') as HTMLInputElement)
-          ?.value || ''
+          ?.value || "",
       ),
       message: DOMPurify.sanitize(
         (
           this.formElement.querySelector(
-            '[name="message"]'
+            '[name="message"]',
           ) as HTMLTextAreaElement
-        )?.value || ''
-      )
+        )?.value || "",
+      ),
     };
 
     const result = validateContactForm(formData, this.translationManager);
@@ -662,25 +662,25 @@ export class ContactFormValidator {
       name: DOMPurify.sanitize(
         (
           this.formElement.querySelector('[name="name"]') as HTMLInputElement
-        )?.value.trim() || ''
+        )?.value.trim() || "",
       ),
       email: DOMPurify.sanitize(
         (
           this.formElement.querySelector('[name="email"]') as HTMLInputElement
-        )?.value.trim() || ''
+        )?.value.trim() || "",
       ),
       phone: DOMPurify.sanitize(
         (
           this.formElement.querySelector('[name="phone"]') as HTMLInputElement
-        )?.value.trim() || ''
+        )?.value.trim() || "",
       ),
       message: DOMPurify.sanitize(
         (
           this.formElement.querySelector(
-            '[name="message"]'
+            '[name="message"]',
           ) as HTMLTextAreaElement
-        )?.value.trim() || ''
-      )
+        )?.value.trim() || "",
+      ),
     };
   }
 
