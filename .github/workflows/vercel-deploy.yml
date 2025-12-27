@@ -1,4 +1,4 @@
-name: Deploy to Vercel (Simplified)
+name: Deploy to Vercel (Fixed)
 
 on:
   push:
@@ -20,8 +20,19 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Verify Environment
+        run: |
+          echo "=== ENVIRONMENT CHECK ==="
+          echo "Node: $(node --version)"
+          echo "NPM: $(npm --version)"
+          echo "Working Directory: $(pwd)"
+          echo "Files:"
+          ls -la
+          echo ""
+
       - name: Verify Secrets
         run: |
+          echo "=== SECRETS CHECK ==="
           if [ -z "$VERCEL_TOKEN" ]; then
             echo "::error::VERCEL_TOKEN is not set"
             exit 1
@@ -34,29 +45,43 @@ jobs:
             echo "::error::VERCEL_PROJECT_ID is not set"
             exit 1
           fi
-          echo "✅ All secrets are set"
+          echo "✅ All secrets available (length check only)"
+          echo "VERCEL_TOKEN length: ${#VERCEL_TOKEN}"
+          echo "VERCEL_ORG_ID length: ${#VERCEL_ORG_ID}"
+          echo "VERCEL_PROJECT_ID length: ${#VERCEL_PROJECT_ID}"
+          echo ""
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "=== INSTALLING DEPENDENCIES ==="
+          npm ci
+          echo ""
 
       - name: Build project
-        run: npm run build
-
-      - name: Verify build
         run: |
+          echo "=== BUILDING PROJECT ==="
+          npm run build
+          echo ""
+
+      - name: Verify build output
+        run: |
+          echo "=== VERIFYING BUILD ==="
           if [ ! -d "dist" ]; then
             echo "::error::Build failed - no dist directory"
             exit 1
           fi
           echo "✅ Build successful"
+          echo "Dist contents:"
+          ls -la dist/
+          echo ""
 
-      - name: Deploy to Vercel
+      - name: Deploy to Vercel (Official Action)
         id: deploy
-        uses: amondnet/vercel-action@v25
+        uses: vercel/action@v1
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
