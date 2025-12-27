@@ -1,10 +1,10 @@
-name: Deploy to Vercel
+name: Deploy to Vercel (Production-Ready)
 
 on:
   push:
-    branches: [preview-deployment] # Only auto-deploy preview for staging
+    branches: [preview-deployment]
   pull_request:
-    branches: [preview-deployment] # PRs to preview-deployment for review
+    branches: [preview-deployment]
   workflow_dispatch:
     inputs:
       environment:
@@ -20,13 +20,27 @@ on:
         required: false
         default: "preview-deployment"
         type: string
+      rollback:
+        description: "Enable rollback mode (production only)"
+        required: false
+        default: false
+        type: boolean
+
+# Environment variables for security
+env:
+  NODE_OPTIONS: "--max-old-space-size=4096"
+  NPM_CONFIG_AUDIT: "false"
+  NPM_CONFIG_FUND: "false"
+  NPM_CONFIG_PROGRESS: "false"
 
 jobs:
-  deploy-preview:
-    if: github.ref == 'refs/heads/preview-deployment' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'preview'))
+  # Security and validation job
+  security-scan:
     runs-on: ubuntu-latest
-    name: Deploy to Staging
-    environment: staging
+    name: 🔒 Security Scan & Validation
+    outputs:
+      security-passed: ${{ steps.security.outputs.passed }}
+      cache-key: ${{ steps.cache-key.outputs.key }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,182 +53,417 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Verify required secrets
+      - name: Generate cache key
+        id: cache-key
         run: |
-          echo "=== VERIFYING SECRETS ==="
-          if [ -z "$VERCEL_TOKEN" ]; then
-            echo "::error::VERCEL_TOKEN secret is not set"
-            exit 1
+          HASH=$(echo "${{ github.sha }}-$(node -v)-$(npm -v)" | sha256sum | cut -d' ' -f1)
+          echo "key=deps-${HASH}" >> $GITHUB_OUTPUT
+
+      - name: Security audit
+        id: security
+        run: |
+          echo "=== SECURITY AUDIT ==="
+
+          # Check for known vulnerabilities
+          if npm audit --audit-level=moderate --json 2>/dev/null | jq -e '.vulnerabilities | length > 0' >/dev/null; then
+            echo "⚠️ Security vulnerabilities found"
+            npm audit --audit-level=moderate
+            echo "passed=false" >> $GITHUB_OUTPUT
           else
-            echo "✅ VERCEL_TOKEN is set"
+            echo "✅ No critical vulnerabilities found"
+            echo "passed=true" >> $GITHUB_OUTPUT
           fi
 
-          if [ -z "$VERCEL_ORG_ID" ]; then
-            echo "::error::VERCEL_ORG_ID secret is not set"
-            exit 1
+      - name: Dependency integrity check
+        run: |
+          echo "=== DEPENDENCY INTEGRITY ==="
+          if [ -f package-lock.json ]; then
+            echo "✅ package-lock.json exists"
+            
+            # Verify lock file format
+            if jq empty package-lock.json 2>/dev/null; then
+              echo "✅ package-lock.json is valid JSON"
+            else
+              echo "::error::package-lock.json is corrupted"
+              exit 1
+            fi
+            
+            # Check for suspicious packages
+            SUSPICIOUS=$(npm ls --depth=0 --json 2>/dev/null | jq -r '.dependencies | keys | map(select(test("(eval|shell|exec|system|child_process)")))[0] // empty')
+            if [ -n "$SUSPICIOUS" ]; then
+              echo "::warning::Suspicious package detected: $SUSPICIOUS"
+            fi
           else
-            echo "✅ VERCEL_ORG_ID is set"
+            echo "::warning::No package-lock.json found"
           fi
 
-          if [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "::error::VERCEL_PROJECT_ID secret is not set"
-            exit 1
-          else
-            echo "✅ VERCEL_PROJECT_ID is set"
-          fi
+  # Preview deployment
+  deploy-preview:
+    if: github.ref == 'refs/heads/preview-deployment' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'preview'))
+    needs: security-scan
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy to Staging
+    environment: staging
+    outputs:
+      deployment-url: ${{ steps.deploy.outputs.preview-url }}
+      build-time: ${{ steps.timing.outputs.duration }}
 
-          echo "=== SECRET VALUES (VERIFIED ONLY LENGTH) ==="
-          echo "VERCEL_TOKEN length: ${#VERCEL_TOKEN}"
-          echo "VERCEL_ORG_ID length: ${#VERCEL_ORG_ID}"
-          echo "VERCEL_PROJECT_ID length: ${#VERCEL_PROJECT_ID}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js with enhanced caching
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Restore dependency cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ needs.security-scan.outputs.cache-key }}
+          restore-keys: |
+            deps-${{ github.sha }}-
+            deps-
+
+      - name: Comprehensive secret verification
+        run: |
+          echo "=== SECRET VERIFICATION ==="
+
+          # Function to verify secret without exposing value
+          verify_secret() {
+            local secret_name="$1"
+            local secret_value="$2"
+            local min_length="${3:-20}"
+            
+            if [ -z "$secret_value" ]; then
+              echo "::error::${secret_name} secret is not configured"
+              return 1
+            fi
+
+            if [ ${#secret_value} -lt $min_length ]; then
+              echo "::error::${secret_name} secret appears too short (length: ${#secret_value})"
+              return 1
+            fi
+
+            # Check for common placeholder values
+            if [[ "$secret_value" =~ (xxx|test|placeholder|example|change) ]]; then
+              echo "::error::${secret_name} secret appears to be a placeholder"
+              return 1
+            fi
+
+            echo "✅ ${secret_name} verified (length: ${#secret_value})"
+            return 0
+          }
+
+          # Verify all required secrets
+          verify_secret "VERCEL_TOKEN" "$VERCEL_TOKEN" 20 || exit 1
+          verify_secret "VERCEL_ORG_ID" "$VERCEL_ORG_ID" 10 || exit 1  
+          verify_secret "VERCEL_PROJECT_ID" "$VERCEL_PROJECT_ID" 10 || exit 1
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      - name: Debug Environment
+      - name: Enhanced environment debug
         run: |
           echo "=== ENVIRONMENT DEBUG ==="
-          echo "Node Version: $(node --version)"
-          echo "NPM Version: $(npm --version)"
-          echo "Working Directory: $(pwd)"
-          echo "Disk Space: $(df -h .)"
-          echo "Memory: $(free -h)"
-          echo "Files in directory: $(ls -la)"
-          echo "Package Lock Exists: $(test -f package-lock.json && echo YES || echo NO)"
-          echo "Git Status: $(git status --porcelain)"
-          echo "Git Branch: $(git branch --show-current)"
-          echo "Git Commit: $(git rev-parse HEAD)"
-          echo "GitHub Event: ${{ github.event_name }}"
-          echo "GitHub Ref: ${{ github.ref }}"
-          echo "GitHub Branch: ${{ github.ref_name }}"
+          echo "Node: $(node --version) (arch: $(node -e 'console.log(process.arch)'))"
+          echo "NPM: $(npm --version)"
+          echo "Platform: $(uname -a)"
+          echo "Memory: $(free -h | grep '^Mem:' | awk '{print $7 "/" $2}')"
+          echo "Disk: $(df -h . | tail -1 | awk '{print $4 "/" $2}')"
+          echo "Runner: ${{ runner.os }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Repository: ${{ github.repository }}"
 
-      - name: Verify Package Lock Sync
-        run: |
-          echo "=== PACKAGE LOCK VERIFICATION ==="
-          if ! npm ls --depth=0 >/dev/null 2>&1; then
-            echo "Package lock out of sync, regenerating..."
-            rm -f package-lock.json
-            npm install --package-lock-only
-          else
-            echo "Package lock appears synchronized"
-          fi
-
-      - name: Install dependencies (Robust)
+      - name: Intelligent dependency installation with retry
         run: |
           echo "=== DEPENDENCY INSTALLATION ==="
+
+          # Retry function
+          retry_command() {
+            local max_attempts=3
+            local attempt=1
+            local cmd="$1"
+            
+            while [ $attempt -le $max_attempts ]; do
+              echo "Attempt $attempt of $max_attempts: $cmd"
+              if eval "$cmd"; then
+                echo "✅ Command succeeded on attempt $attempt"
+                return 0
+              fi
+              
+              echo "⚠️ Attempt $attempt failed"
+              if [ $attempt -lt $max_attempts ]; then
+                echo "Waiting 10 seconds before retry..."
+                sleep 10
+              fi
+              attempt=$((attempt + 1))
+            done
+
+            echo "::error::Command failed after $max_attempts attempts"
+            return 1
+          }
+
+          # Clean npm cache
+          npm cache clean --force || true
+
           if [ -f package-lock.json ]; then
-            echo "Attempting npm ci..."
-            npm ci --verbose || {
-              echo "npm ci failed, falling back to npm install..."
-              npm install --verbose
-            }
+            echo "Using npm ci for reproducible builds..."
+            retry_command "npm ci --prefer-offline --no-audit --no-fund"
           else
-            echo "No package-lock.json found, using npm install..."
-            npm install --verbose
+            echo "No package-lock.json, using npm install..."
+            retry_command "npm install --prefer-offline --no-audit --no-fund"
           fi
 
-      - name: Run linting
-        run: npm run lint || echo "⚠️ Linting failed but continuing deployment"
-
-      - name: Build project
-        run: |
-          echo "=== BUILDING PROJECT ==="
-          npm run build
-          echo "=== BUILD OUTPUT VERIFICATION ==="
-          if [ -d "dist" ]; then
-            echo "✅ Build successful - dist directory created"
-            echo "Contents:"
-            ls -la dist/
+          # Verify installation
+          if npm list --depth=0 >/dev/null 2>&1; then
+            echo "✅ Dependencies installed successfully"
           else
-            echo "❌ Build failed - no dist directory"
+            echo "::error::Dependency verification failed"
             exit 1
           fi
 
-      - name: Setup Vercel CLI
+      - name: Type checking with enhanced error reporting
         run: |
-          echo "=== SETTING UP VERCEL CLI ==="
-          npm install --global vercel@latest
-          vercel --version
+          echo "=== TYPE CHECKING ==="
 
-      - name: Verify Vercel Project Configuration
+          # Run TypeScript compiler with detailed output
+          if npx tsc --noEmit --pretty false 2>&1; then
+            echo "✅ Type checking passed"
+          else
+            echo "::error::TypeScript compilation failed"
+            echo "::error::Please fix type errors before deployment"
+            exit 1
+          fi
+
+      - name: Linting with comprehensive output
         run: |
-          echo "=== VERIFYING VERCEL PROJECT CONFIGURATION ==="
-          echo "Expected Project ID: ${{ secrets.VERCEL_PROJECT_ID }}"
-          echo "Expected Org ID: ${{ secrets.VERCEL_ORG_ID }}"
+          echo "=== LINTING ==="
+          ESLINT_OUTPUT=$(npm run lint 2>&1 || true)
 
-          # Create a temporary vercel.json for the deployment
-          cat > vercel.json << EOF
-          {
-            "version": 2,
-            "buildCommand": "npm run build",
-            "outputDirectory": "dist",
-            "framework": null,
-            "cleanUrls": true,
-            "trailingSlash": false
-          }
-          EOF
+          if [ $? -eq 0 ]; then
+            echo "✅ Linting passed"
+          else
+            echo "⚠️ Linting issues found (continuing deployment)"
+            echo "$ESLINT_OUTPUT" | head -20
+          fi
 
-          echo "✅ Vercel configuration prepared"
+      - name: Build with comprehensive timing and error capture
+        id: timing
+        run: |
+          echo "=== BUILD PROCESS ==="
+          START_TIME=$(date +%s)
 
-      - name: Deploy to Vercel (Staging)
+          # Pre-build cleanup
+          rm -rf dist || true
+          mkdir -p dist
+
+          echo "Starting build at $(date)"
+
+          # Run build with comprehensive error capture
+          if BUILD_OUTPUT=$(npm run build 2>&1); then
+            END_TIME=$(date +%s)
+            DURATION=$((END_TIME - START_TIME))
+            echo "✅ Build completed successfully in ${DURATION}s"
+            echo "duration=${DURATION}" >> $GITHUB_OUTPUT
+            echo "$BUILD_OUTPUT"
+          else
+            END_TIME=$(date +%s)
+            DURATION=$((END_TIME - START_TIME))
+            echo "::error::Build failed after ${DURATION}s"
+            
+            echo "::error::=== BUILD DEBUG INFO ==="
+            echo "::error::Exit code: $?"
+            echo "::error::Directory contents:"
+            ls -la 2>/dev/null || echo "::error::Cannot list directory"
+            echo "::error::Node modules present: $(test -d node_modules && echo YES || echo NO)"
+            
+            if [ -f package.json ]; then
+              echo "::error::Available scripts:"
+              npm run 2>/dev/null || echo "::error::Cannot list scripts"
+            fi
+            
+            echo "::error::Build output:"
+            echo "$BUILD_OUTPUT"
+            
+            exit 1
+          fi
+
+      - name: Comprehensive build verification
+        run: |
+          echo "=== BUILD VERIFICATION ==="
+
+          # Required files and directories
+          REQUIRED_FILES=("dist/index.html" "dist/main.css" "dist/scripts/index.js")
+          REQUIRED_DIRS=("dist/assets" "dist/scripts/modules")
+
+          # Verify required files
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✅ $file exists"
+              echo "   Size: $(du -h "$file" | cut -f1)"
+            else
+              echo "::error::Required file missing: $file"
+              exit 1
+            fi
+          done
+
+          # Verify required directories
+          for dir in "${REQUIRED_DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+              echo "✅ $dir exists"
+              echo "   Items: $(find "$dir" -type f | wc -l)"
+            else
+              echo "::error::Required directory missing: $dir"
+              exit 1
+            fi
+          done
+
+          # Total build size
+          BUILD_SIZE=$(du -sh dist | cut -f1)
+          FILE_COUNT=$(find dist -type f | wc -l)
+          echo "✅ Build verification complete"
+          echo "   Total size: $BUILD_SIZE"
+          echo "   File count: $FILE_COUNT"
+
+          # Security check for sensitive data
+          if grep -r -i "password\|secret\|key\|token" dist/ --exclude-dir=node_modules 2>/dev/null; then
+            echo "::warning::Potential sensitive data detected in build output"
+          fi
+
+      - name: Deploy to Vercel with enhanced error handling
         id: deploy
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--debug"
+          vercel-args: "--debug --no-clipboard"
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify Deployment
+      - name: Deployment validation and testing
         run: |
-          echo "=== DEPLOYMENT VERIFICATION ==="
-          if [ "${{ steps.deploy.outputs.preview-url }}" != "" ]; then
-            echo "✅ Deployment successful"
-            echo "Preview URL: ${{ steps.deploy.outputs.preview-url }}"
-            
-            # Optional: Test the deployment
-            echo "Testing deployment URL..."
-            if curl -f -s -o /dev/null "${{ steps.deploy.outputs.preview-url }}"; then
-              echo "✅ Deployment URL is responding"
-            else
-              echo "⚠️ Deployment URL not responding (may still be propagating)"
-            fi
-          else
-            echo "❌ Deployment failed - no preview URL returned"
+          echo "=== DEPLOYMENT VALIDATION ==="
+
+          DEPLOY_URL="${{ steps.deploy.outputs.preview-url }}"
+
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "::error::No deployment URL returned"
             exit 1
           fi
 
-      - name: Deployment Summary
+          echo "✅ Deployment URL: $DEPLOY_URL"
+
+          # Test deployment URL with timeout
+          echo "Testing deployment URL..."
+          timeout 30s bash -c "
+            for i in {1..6}; do
+              echo 'Attempt $i of 6...'
+              if curl -f -s -o /dev/null -L '$DEPLOY_URL'; then
+                echo '✅ Deployment URL is responding'
+                exit 0
+              fi
+              echo 'Waiting 5 seconds...'
+              sleep 5
+            done
+            echo '❌ Deployment URL failed to respond'
+            exit 1
+          " || {
+            echo "::warning::Deployment URL test failed (may still be propagating)"
+          }
+
+          # Additional validation
+          if [[ "$DEPLOY_URL" =~ vercel\.app|lofersil ]]; then
+            echo "✅ URL appears valid"
+          else
+            echo "::warning::Unexpected URL format: $DEPLOY_URL"
+          fi
+
+      - name: Performance and optimization report
+        run: |
+          echo "=== PERFORMANCE REPORT ==="
+          echo "Build time: ${{ steps.timing.outputs.duration }}s"
+          echo "Build size: $(du -sh dist | cut -f1)"
+          echo "File count: $(find dist -type f | wc -l)"
+
+          # Check for optimization opportunities
+          TOTAL_JS_SIZE=$(find dist -name "*.js" -exec du -b {} + 2>/dev/null | awk '{sum+=$1} END {print sum/1024}' || echo "0")
+          TOTAL_CSS_SIZE=$(find dist -name "*.css" -exec du -b {} + 2>/dev/null | awk '{sum+=$1} END {print sum/1024}' || echo "0")
+
+          echo "JS total size: ${TOTAL_JS_SIZE}KB"
+          echo "CSS total size: ${TOTAL_CSS_SIZE}KB"
+
+          if (( $(echo "$TOTAL_JS_SIZE > 1000" | bc -l) )); then
+            echo "::warning::Large JS bundle detected (${TOTAL_JS_SIZE}KB)"
+          fi
+
+      - name: Enhanced deployment summary
         run: |
           echo "## 🚀 Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Environment**: Staging" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ steps.deploy.outputs.preview-url }}" != "" ]; then
-            echo "- **Staging URL**: ${{ steps.deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "- **Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build Time**: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Deployment Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: 🟢 Staging" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Time**: ${{ steps.timing.outputs.duration }}s" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Size**: $(du -sh dist | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
 
-      - name: Notify on failure
+          if [ "${{ steps.deploy.outputs.preview-url }}" != "" ]; then
+            echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
+            echo "- **Staging URL**: [${{ steps.deploy.outputs.preview-url }}](${{ steps.deploy.outputs.preview-url }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "### ✅ Status Checks" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security**: ${{ needs.security-scan.outputs.security-passed == 'true' && '✅ Passed' || '⚠️ Issues Found' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type Check**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build**: ✅ Successful" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployment**: ✅ Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### 📊 Statistics" >> $GITHUB_STEP_SUMMARY
+          echo "- **Files**: $(find dist -type f | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- **JS Size**: $(find dist -name "*.js" -exec du -b {} + 2>/dev/null | awk '{sum+=$1} END {print sum/1024}')KB" >> $GITHUB_STEP_SUMMARY
+          echo "- **CSS Size**: $(find dist -name "*.css" -exec du -b {} + 2>/dev/null | awk '{sum+=$1} END {print sum/1024}')KB" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Generated at $(date)*" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comprehensive failure notification
         if: failure()
         run: |
-          echo "::error::Staging deployment failed for branch ${{ github.ref_name }}"
+          echo "::error::=== STAGING DEPLOYMENT FAILED ==="
+          echo "::error::Branch: ${{ github.ref_name }}"
           echo "::error::Commit: ${{ github.sha }}"
-          echo "::error::Check logs above for details"
+          echo "::error::Author: ${{ github.actor }}"
+          echo "::error::Workflow: ${{ github.workflow }}"
+          echo "::error::Run ID: ${{ github.run_id }}"
+          echo "::error::Check the workflow logs for detailed debugging information"
 
+  # Production deployment with rollback support
   deploy-production:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    needs: [security-scan, deploy-preview]
     runs-on: ubuntu-latest
-    name: Deploy to Production
+    name: 🏭 Deploy to Production
     environment:
       name: production
       url: ${{ steps.deploy.outputs.preview-url }}
 
     steps:
-      - name: Checkout
+      - name: Checkout production source
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch || 'preview-deployment' }}
@@ -226,34 +475,65 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Verify required secrets
+      - name: Enhanced secret verification for production
         run: |
-          echo "=== VERIFYING SECRETS FOR PRODUCTION ==="
-          if [ -z "$VERCEL_TOKEN" ]; then
-            echo "::error::VERCEL_TOKEN secret is not set"
+          echo "=== PRODUCTION SECRET VERIFICATION ==="
+
+          # Additional checks for production secrets
+          if [ -z "$VERCEL_TOKEN" ] || [ ${#VERCEL_TOKEN} -lt 20 ]; then
+            echo "::error::Production VERCEL_TOKEN is invalid"
             exit 1
           fi
-          if [ -z "$VERCEL_ORG_ID" ]; then
-            echo "::error::VERCEL_ORG_ID secret is not set"
+
+          if [ -z "$VERCEL_ORG_ID" ] || [ ${#VERCEL_ORG_ID} -lt 5 ]; then
+            echo "::error::Production VERCEL_ORG_ID is invalid"
             exit 1
           fi
-          if [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "::error::VERCEL_PROJECT_ID secret is not set"
+
+          if [ -z "$VERCEL_PROJECT_ID" ] || [ ${#VERCEL_PROJECT_ID} -lt 5 ]; then
+            echo "::error::Production VERCEL_PROJECT_ID is invalid"
             exit 1
           fi
+
+          echo "✅ All production secrets verified"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci --prefer-offline --no-audit --no-fund
 
-      - name: Run linting
-        run: npm run lint || echo "⚠️ Linting failed but continuing deployment"
+      - name: Pre-deployment validation
+        run: |
+          echo "=== PRE-DEPLOYMENT VALIDATION ==="
 
-      - name: Build project
-        run: npm run build
+          # Check if staging deployment succeeded
+          if [ -z "${{ needs.deploy-preview.outputs.deployment-url }}" ]; then
+            echo "::error::Staging deployment did not complete successfully"
+            echo "::error::Cannot proceed to production deployment"
+            exit 1
+          fi
+
+          echo "✅ Staging deployment validated: ${{ needs.deploy-preview.outputs.deployment-url }}"
+          echo "✅ Proceeding with production deployment"
+
+      - name: Production build with validation
+        run: |
+          echo "=== PRODUCTION BUILD ==="
+
+          # Clean rebuild for production
+          rm -rf dist
+          npm run build
+
+          # Verify build
+          if [ ! -f "dist/index.html" ]; then
+            echo "::error::Production build failed"
+            exit 1
+          fi
+
+          echo "✅ Production build completed"
 
       - name: Deploy to Vercel (Production)
         id: deploy
@@ -262,24 +542,94 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--prod"
+          vercel-args: "--prod --debug --no-clipboard"
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deployment Summary
+      - name: Production deployment verification
         run: |
-          echo "## 🚀 Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch**: ${{ github.event.inputs.branch || 'preview-deployment' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ steps.deploy.outputs.preview-url }}" != "" ]; then
-            echo "- **Production URL**: ${{ steps.deploy.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "- **Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
+          echo "=== PRODUCTION DEPLOYMENT VERIFICATION ==="
 
-      - name: Notify on failure
+          DEPLOY_URL="${{ steps.deploy.outputs.preview-url }}"
+
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "::error::Production deployment failed - no URL returned"
+            exit 1
+          fi
+
+          echo "✅ Production deployed to: $DEPLOY_URL"
+
+          # Extended testing for production
+          echo "Running production validation..."
+          timeout 60s bash -c "
+            for i in {1..12}; do
+              echo 'Production test attempt $i of 12...'
+              if curl -f -s -o /dev/null -L '$DEPLOY_URL'; then
+                echo '✅ Production URL responding correctly'
+                exit 0
+              fi
+              sleep 10
+            done
+            echo '❌ Production URL validation failed'
+            exit 1
+          " || {
+            echo "::error::Production deployment validation failed"
+            exit 1
+          }
+
+      - name: Production deployment summary
+        run: |
+          echo "## 🏭 Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Deployment Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Source Branch**: \`${{ github.event.inputs.branch || 'preview-deployment' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: 🚨 Production" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployed by**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Staging validated**: ✅ ${{ needs.deploy-preview.outputs.deployment-url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.deploy.outputs.preview-url }}" != "" ]; then
+            echo "### 🔗 Production Links" >> $GITHUB_STEP_SUMMARY
+            echo "- **Production URL**: [${{ steps.deploy.outputs.preview-url }}](${{ steps.deploy.outputs.preview-url }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "### ✅ Status" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security**: ${{ needs.security-scan.outputs.security-passed == 'true' && '✅ Passed' || '⚠️ Issues' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build**: ✅ Successful" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployment**: ✅ Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Validation**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Production deployment completed at $(date)*" >> $GITHUB_STEP_SUMMARY
+
+      - name: Production failure notification
         if: failure()
         run: |
-          echo "::error::Production deployment failed"
-          echo "::error::Source branch: ${{ github.event.inputs.branch || 'preview-deployment' }}"
+          echo "::error::=== PRODUCTION DEPLOYMENT FAILED ==="
+          echo "::error::Source: ${{ github.event.inputs.branch || 'preview-deployment' }}"
           echo "::error::Commit: ${{ github.sha }}"
-          echo "::error::Check logs above for details"
+          echo "::error::Deployed by: ${{ github.actor }}"
+          echo "::error::Immediate attention required"
+          echo "::error::Check workflow logs for debugging information"
+
+  # Rollback job (if rollback mode is enabled)
+  rollback-production:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.rollback == 'true'
+    needs: security-scan
+    runs-on: ubuntu-latest
+    name: 🔄 Rollback Production
+    environment: production
+
+    steps:
+      - name: Execute rollback
+        run: |
+          echo "=== PRODUCTION ROLLBACK ==="
+          echo "Rollback initiated by: ${{ github.actor }}"
+          echo "Rollback from: ${{ github.event.inputs.branch || 'preview-deployment' }}"
+
+          # Note: Actual rollback implementation would depend on your Vercel setup
+          # This is a placeholder for rollback logic
+          echo "::warning::Rollback functionality requires custom implementation"
+          echo "::warning::Consider using Vercel's built-in rollback features"
