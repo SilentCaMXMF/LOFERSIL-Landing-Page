@@ -1,4 +1,4 @@
-name: Deploy to Vercel (Working)
+name: Deploy to Vercel
 
 on:
   push:
@@ -19,41 +19,17 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install dependencies and build
-        run: |
-          echo "=== BUILDING ==="
-          npm ci
-          npm run build
-          ls -la dist/
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Setup Vercel and Deploy
-        run: |
-          echo "=== DEPLOYING ==="
+      - name: Build project
+        run: npm run build
 
-          # Install Vercel CLI
-          npm install -g vercel
-
-          # Create project configuration
-          mkdir -p ~/.vercel
-          cat > ~/.vercel/project.json << EOF
-          {
-            "projectId": "${{ secrets.VERCEL_PROJECT_ID }}",
-            "orgId": "${{ secrets.VERCEL_ORG_ID }}"
-          }
-          EOF
-
-          # Deploy without login (using token directly)
-          VERCEL_ORG_ID="${{ secrets.VERCEL_ORG_ID }}" \
-          VERCEL_PROJECT_ID="${{ secrets.VERCEL_PROJECT_ID }}" \
-          vercel --prod --prebuilt --confirm --token "${{ secrets.VERCEL_TOKEN }}"
-        id: deploy
-
-      - name: Output Results
-        run: |
-          echo "=== DEPLOYMENT COMPLETE ==="
-          echo "✅ Vercel deployment initiated"
-          echo "Project: ${{ secrets.VERCEL_PROJECT_ID }}"
-          echo "Org: ${{ secrets.VERCEL_ORG_ID }}"
-          echo ""
-          echo "Note: The CLI approach may not return a URL directly"
-          echo "Check Vercel dashboard for deployment status"
+      - name: Deploy to Vercel
+        uses: vercel/action@v1
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: "--debug"
+          working-directory: ./dist
