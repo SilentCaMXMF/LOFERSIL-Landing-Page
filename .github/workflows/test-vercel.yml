@@ -1,0 +1,52 @@
+name: Test Vercel Connection
+
+on:
+  push:
+    branches: [preview-deployment]
+
+jobs:
+  test-vercel:
+    runs-on: ubuntu-latest
+    name: Test Vercel Connection
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Test Vercel CLI
+        run: |
+          echo "=== TESTING VERCEL CLI ==="
+          vercel --version
+
+          # Test with minimal configuration
+          if vercel --version > /dev/null; then
+            echo "✅ Vercel CLI working"
+          else
+            echo "::error::Vercel CLI not working"
+            exit 1
+          fi
+
+      - name: Test Basic Project Structure
+        run: |
+          echo "=== TESTING PROJECT ==="
+          if [ -f "vercel.json" ]; then
+            echo "✅ vercel.json found"
+            cat vercel.json
+          else
+            echo "::warning::vercel.json not found"
+          fi
+
+          if [ -f "package.json" ]; then
+            echo "✅ package.json found"
+          else
+            echo "::error::package.json not found"
+            exit 1
+          fi
