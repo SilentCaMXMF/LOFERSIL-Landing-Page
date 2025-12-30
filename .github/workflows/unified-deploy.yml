@@ -136,7 +136,7 @@ jobs:
       - name: Prepare Vercel prebuilt output
         run: |
           echo "Preparing prebuilt output for Vercel..."
-          mkdir -p .vercel
+          mkdir -p .vercel/output
           cp -r dist/* .vercel/output/
           echo "OK: Prebuilt output prepared"
 
