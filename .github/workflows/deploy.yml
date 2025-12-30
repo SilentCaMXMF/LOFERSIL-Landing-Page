@@ -1,0 +1,160 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main, master, preview-deployment]
+  pull_request:
+    branches: [main, master, preview-deployment]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: "preview"
+        type: choice
+        options:
+          - preview
+          - production
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+
+permissions:
+  contents: read
+  pull-requests: write
+  deployments: write
+  statuses: write
+
+jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    name: Validate PR
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify no git submodules
+        run: bash .github/scripts/verify-no-submodules.sh
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Build project
+        run: npm run build
+
+  deploy-preview:
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify secrets
+        run: |
+          [ -z "$VERCEL_TOKEN" ] && { echo "::error::VERCEL_TOKEN missing"; exit 1; }
+          [ -z "$VERCEL_ORG_ID" ] && { echo "::error::VERCEL_ORG_ID missing"; exit 1; }
+          [ -z "$VERCEL_PROJECT_ID" ] && { echo "::error::VERCEL_PROJECT_ID missing"; exit 1; }
+          echo "✅ Secrets verified"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Verify no git submodules
+        run: bash .github/scripts/verify-no-submodules.sh
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Vercel (Preview)
+        id: deploy
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ env.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          scope: ${{ secrets.VERCEL_TEAM_ID }}
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify secrets
+        run: |
+          [ -z "$VERCEL_TOKEN" ] && { echo "::error::VERCEL_TOKEN missing"; exit 1; }
+          [ -z "$VERCEL_ORG_ID" ] && { echo "::error::VERCEL_ORG_ID missing"; exit 1; }
+          [ -z "$VERCEL_PROJECT_ID" ] && { echo "::error::VERCEL_PROJECT_ID missing"; exit 1; }
+          echo "✅ Secrets verified"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Verify no git submodules
+        run: bash .github/scripts/verify-no-submodules.sh
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Build project (Production)
+        run: npm run build:prod
+
+      - name: Deploy to Vercel (Production)
+        id: deploy
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ env.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
+          vercel-args: "--prod"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          scope: ${{ secrets.VERCEL_TEAM_ID }}
