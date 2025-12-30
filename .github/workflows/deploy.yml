@@ -26,6 +26,7 @@ permissions:
   pull-requests: write
   deployments: write
   statuses: write
+  issues: write
 
 jobs:
   validate:
@@ -44,6 +45,33 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Debug environment
+        run: |
+          echo "=== Node.js version ==="
+          node --version
+          echo ""
+          echo "=== NPM version ==="
+          npm --version
+          echo ""
+          echo "=== Working directory listing ==="
+          ls -la
+          echo ""
+          echo "=== Environment variables (filtered) ==="
+          echo "NODE_ENV: ${NODE_ENV:-not set}"
+          echo "NPM_CONFIG_LOGLEVEL: ${NPM_CONFIG_LOGLEVEL:-not set}"
+          echo "CI: ${CI:-not set}"
+          echo ""
+          echo "=== package.json verification ==="
+          cat package.json
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
         run: npm ci
 
@@ -57,7 +85,58 @@ jobs:
         run: npm run test:run
 
       - name: Build project
-        run: npm run build
+        run: |
+          set -x
+          npm run build 2>&1 | tee build-output.txt
+          echo "Build exit code: $?"
+
+      - name: Verify build output
+        if: always()
+        run: |
+          echo "=== Build output directory check ==="
+          if [ -d "dist" ]; then
+            echo "dist/ directory exists"
+            ls -la dist/
+          else
+            echo "dist/ directory does NOT exist"
+          fi
+          echo ""
+          echo "=== Build output file check ==="
+          if [ -f "build-output.txt" ]; then
+            echo "build-output.txt exists"
+          else
+            echo "build-output.txt does NOT exist"
+          fi
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            build-output.txt
+            dist/
+          retention-days: 1
+
+      - name: Cache dist directory
+        uses: actions/cache@v4
+        with:
+          path: dist
+          key: ${{ runner.os }}-dist-${{ hashFiles('**/package-lock.json', 'src/**/*', '*.ts', '*.css') }}
+          restore-keys: |
+            ${{ runner.os }}-dist-
+
+      - name: Notify on validation failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🔴 CI Validation Failure',
+              body: `## Deployment Validation Failed\n\n**Job:** ${{ job.status }}\n**Workflow:** ${{ github.workflow }}\n**Run ID:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n**Branch:** ${{ github.ref }}\n**Commit:** ${{ github.sha }}\n\n### Troubleshooting Guide:\n📖 **View full logs:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\n🔧 **Troubleshooting Guide:** https://github.com/${{ github.repository }}/blob/main/docs/TROUBLESHOOTING.md\n\n📊 **Common Issues:** Check the docs folder for solutions.\n\nPlease fix the issues and push again to trigger a new validation.`
+            })
 
   deploy-preview:
     if: github.event_name == 'push' && github.ref != 'refs/heads/main'
@@ -73,6 +152,33 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+
+      - name: Debug environment
+        run: |
+          echo "=== Node.js version ==="
+          node --version
+          echo ""
+          echo "=== NPM version ==="
+          npm --version
+          echo ""
+          echo "=== Working directory listing ==="
+          ls -la
+          echo ""
+          echo "=== Environment variables (filtered) ==="
+          echo "NODE_ENV: ${NODE_ENV:-not set}"
+          echo "NPM_CONFIG_LOGLEVEL: ${NPM_CONFIG_LOGLEVEL:-not set}"
+          echo "CI: ${CI:-not set}"
+          echo ""
+          echo "=== package.json verification ==="
+          cat package.json
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm ci
@@ -96,7 +202,46 @@ jobs:
         run: npm run test:run
 
       - name: Build project
-        run: npm run build
+        run: |
+          set -x
+          npm run build 2>&1 | tee build-output.txt
+          echo "Build exit code: $?"
+
+      - name: Verify build output
+        if: always()
+        run: |
+          echo "=== Build output directory check ==="
+          if [ -d "dist" ]; then
+            echo "dist/ directory exists"
+            ls -la dist/
+          else
+            echo "dist/ directory does NOT exist"
+          fi
+          echo ""
+          echo "=== Build output file check ==="
+          if [ -f "build-output.txt" ]; then
+            echo "build-output.txt exists"
+          else
+            echo "build-output.txt does NOT exist"
+          fi
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-preview
+          path: |
+            build-output.txt
+            dist/
+          retention-days: 1
+
+      - name: Cache dist directory
+        uses: actions/cache@v4
+        with:
+          path: dist
+          key: ${{ runner.os }}-dist-${{ hashFiles('**/package-lock.json', 'src/**/*', '*.ts', '*.css') }}
+          restore-keys: |
+            ${{ runner.os }}-dist-
 
       - name: Deploy to Vercel (Preview)
         id: deploy
@@ -107,6 +252,18 @@ jobs:
           vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           scope: ${{ secrets.VERCEL_TEAM_ID }}
+
+      - name: Notify on preview deployment failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🔴 Preview Deployment Failure',
+              body: `## Preview Deployment Failed\n\n**Job:** ${{ job.status }}\n**Workflow:** ${{ github.workflow }}\n**Run ID:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n**Branch:** ${{ github.ref }}\n**Commit:** ${{ github.sha }}\n\n### Steps Completed:\n- Checkout ✅\n- Node.js Setup ✅\n- Dependencies Installed ✅\n- Secrets Verified ✅\n- Git Submodule Check ✅\n- Linting ✅\n- Tests ✅\n- Build ✅\n- Deploy ❌\n\n### Troubleshooting Guide:\n📖 **View full logs:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\n🔧 **Troubleshooting Guide:** https://github.com/${{ github.repository }}/blob/main/docs/TROUBLESHOOTING.md\n\n📊 **Vercel Status:** Check https://status.vercel.com/\n\nPlease check the logs and fix any issues. Common causes include:\n- Build errors in the code\n- Missing environment variables\n- Vercel API rate limits\n- Network issues during deployment`
+            })
 
   deploy-production:
     if: github.ref == 'refs/heads/main'
@@ -123,6 +280,33 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+
+      - name: Debug environment
+        run: |
+          echo "=== Node.js version ==="
+          node --version
+          echo ""
+          echo "=== NPM version ==="
+          npm --version
+          echo ""
+          echo "=== Working directory listing ==="
+          ls -la
+          echo ""
+          echo "=== Environment variables (filtered) ==="
+          echo "NODE_ENV: ${NODE_ENV:-not set}"
+          echo "NPM_CONFIG_LOGLEVEL: ${NPM_CONFIG_LOGLEVEL:-not set}"
+          echo "CI: ${CI:-not set}"
+          echo ""
+          echo "=== package.json verification ==="
+          cat package.json
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm ci
@@ -146,7 +330,46 @@ jobs:
         run: npm run test:run
 
       - name: Build project (Production)
-        run: npm run build:prod
+        run: |
+          set -x
+          npm run build:prod 2>&1 | tee build-output.txt
+          echo "Build exit code: $?"
+
+      - name: Verify build output
+        if: always()
+        run: |
+          echo "=== Build output directory check ==="
+          if [ -d "dist" ]; then
+            echo "dist/ directory exists"
+            ls -la dist/
+          else
+            echo "dist/ directory does NOT exist"
+          fi
+          echo ""
+          echo "=== Build output file check ==="
+          if [ -f "build-output.txt" ]; then
+            echo "build-output.txt exists"
+          else
+            echo "build-output.txt does NOT exist"
+          fi
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-production
+          path: |
+            build-output.txt
+            dist/
+          retention-days: 1
+
+      - name: Cache dist directory
+        uses: actions/cache@v4
+        with:
+          path: dist
+          key: ${{ runner.os }}-dist-${{ hashFiles('**/package-lock.json', 'src/**/*', '*.ts', '*.css') }}
+          restore-keys: |
+            ${{ runner.os }}-dist-
 
       - name: Deploy to Vercel (Production)
         id: deploy
@@ -158,3 +381,15 @@ jobs:
           vercel-args: "--prod"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           scope: ${{ secrets.VERCEL_TEAM_ID }}
+
+      - name: Notify on production deployment failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 PRODUCTION Deployment Failure',
+              body: `## PRODUCTION Deployment Failed\n\n**⚠️ URGENT: Production deployment has failed!**\n\n**Job:** ${{ job.status }}\n**Workflow:** ${{ github.workflow }}\n**Run ID:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n**Branch:** ${{ github.ref }}\n**Commit:** ${{ github.sha }}\n\n### Steps Completed:\n- Checkout ✅\n- Node.js Setup ✅\n- Dependencies Installed ✅\n- Secrets Verified ✅\n- Git Submodule Check ✅\n- Linting ✅\n- Tests ✅\n- Build ✅\n- Deploy ❌\n\n### Immediate Actions Required:\n📖 **View full logs:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\n🔧 **Troubleshooting Guide:** https://github.com/${{ github.repository }}/blob/main/docs/TROUBLESHOOTING.md\n\n📊 **Vercel Status:** https://status.vercel.com/\n\n### Common Production Issues:\n1. Build errors that passed validation\n2. Environment variables missing in production\n3. Vercel API rate limits\n4. Network connectivity issues\n5. Deployment timeout\n\n**Please investigate immediately and redeploy once fixed.**`
+            })
