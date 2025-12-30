@@ -133,6 +133,13 @@ jobs:
             exit $BUILD_EXIT_CODE
           fi
 
+      - name: Prepare Vercel prebuilt output
+        run: |
+          echo "Preparing prebuilt output for Vercel..."
+          mkdir -p .vercel
+          cp -r dist/* .vercel/output/
+          echo "OK: Prebuilt output prepared"
+
       - name: Verify build output
         run: |
           echo "=== Build output directory check ==="
@@ -174,18 +181,6 @@ jobs:
       - name: Create Vercel config directory
         run: mkdir -p ~/.vercel
 
-      - name: Pull Vercel environment info
-        run: |
-          set -x
-          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
-            echo "Pulling production environment configuration..."
-            vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-          else
-            echo "Pulling preview environment configuration..."
-            vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-          fi
-          set +x
-
       - name: Deploy to Vercel
         id: deploy
         run: |
@@ -199,6 +194,8 @@ jobs:
           fi
           set +x
           echo "OK: Deployment completed successfully"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
       - name: Log deployment URL
         if: success()
