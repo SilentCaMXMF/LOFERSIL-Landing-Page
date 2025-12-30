@@ -4,6 +4,5 @@
   "outputDirectory": "dist",
   "framework": null,
   "cleanUrls": true,
-  "trailingSlash": false,
-  "projectId": "prj_HwHNhqjyqXs3pJuw73jKc6QU1hSp"
+  "trailingSlash": false
 }
