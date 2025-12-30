@@ -157,8 +157,9 @@ class LOFERSILLandingPage {
           if (entries[0].isIntersecting) {
             observer.disconnect();
             try {
-              const { createContactForm } =
-                await import("./modules/ContactFormManager.js");
+              const { createContactForm } = await import(
+                "./modules/ContactFormManager.js"
+              );
               this.contactFormManager = createContactForm(
                 this.translationManager,
               );
@@ -181,8 +182,9 @@ class LOFERSILLandingPage {
     } else {
       // Fallback: load immediately if section not found
       try {
-        const { createContactForm } =
-          await import("./modules/ContactFormManager.js");
+        const { createContactForm } = await import(
+          "./modules/ContactFormManager.js"
+        );
         this.contactFormManager = createContactForm(this.translationManager);
       } catch (error) {
         this.errorHandler.handleError(
