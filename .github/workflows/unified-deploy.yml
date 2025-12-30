@@ -138,6 +138,8 @@ jobs:
           echo "Preparing prebuilt output for Vercel..."
           mkdir -p .vercel/output
           cp -r dist/* .vercel/output/
+          echo "Creating Vercel project config..."
+          echo "{\"projectId\":\"$VERCEL_PROJECT_ID\",\"orgId\":\"$VERCEL_ORG_ID\"}" > .vercel/project.json
           echo "OK: Prebuilt output prepared"
 
       - name: Verify build output
