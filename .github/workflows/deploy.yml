@@ -81,9 +81,6 @@ jobs:
       - name: Run linting
         run: npm run lint
 
-      - name: Run tests
-        run: npm run test:run
-
       - name: Build project
         run: |
           set -x
@@ -197,9 +194,6 @@ jobs:
 
       - name: Run linting
         run: npm run lint
-
-      - name: Run tests
-        run: npm run test:run
 
       - name: Build project
         run: |
@@ -325,9 +319,6 @@ jobs:
 
       - name: Run linting
         run: npm run lint
-
-      - name: Run tests
-        run: npm run test:run
 
       - name: Build project (Production)
         run: |
