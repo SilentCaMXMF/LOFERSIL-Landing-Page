@@ -4,8 +4,5 @@
   "outputDirectory": "dist",
   "framework": null,
   "cleanUrls": true,
-  "trailingSlash": false,
-  "installCommand": "npm ci",
-  "devCommand": "npm run dev",
-  "functionsDirectory": "api"
+  "trailingSlash": false
 }
