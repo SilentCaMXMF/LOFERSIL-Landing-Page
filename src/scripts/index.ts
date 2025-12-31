@@ -90,7 +90,7 @@ class LOFERSILLandingPage {
       void this.initializeContactFormLazily();
 
       // Log performance after delay to allow lazy loading
-      setTimeout(() => {
+      globalThis.setTimeout(() => {
         this.logPerformanceMetrics();
       }, 5000);
     } catch (error) {
