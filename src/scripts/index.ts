@@ -12,6 +12,8 @@ import { ErrorManager } from "./modules/ErrorManager.js";
 import { ScrollManager } from "./modules/ScrollManager.js";
 import { simpleLogger } from "./modules/simpleLogger.js";
 import { ThemeManager } from "./modules/ThemeManager.js";
+import { LazyLoadManager } from "./modules/LazyLoadManager.js";
+import { PerformanceMonitor } from "./modules/PerformanceMonitor.js";
 
 // Extend Window interface for global properties
 declare global {
@@ -35,6 +37,8 @@ class LOFERSILLandingPage {
 
   private contactFormManager: ContactFormManager | null = null;
   private themeManager!: ThemeManager;
+  private lazyLoadManager!: LazyLoadManager;
+  private performanceMonitor!: PerformanceMonitor;
 
   constructor() {
     this.mainContent = null;
@@ -64,10 +68,31 @@ class LOFERSILLandingPage {
       // Initialize theme manager
       this.themeManager = new ThemeManager();
 
+      // Initialize performance monitor
+      this.performanceMonitor = new PerformanceMonitor();
+
+      // Initialize lazy loading manager
+      this.lazyLoadManager = new LazyLoadManager(
+        this.errorHandler,
+        this.performanceMonitor,
+      );
+
+      // Preload critical images
+      this.preloadCriticalImages();
+
+      // Mark initial load time
+      this.performanceMonitor.markInitialLoadComplete();
+
       // Register service worker
       void this.registerServiceWorker();
+
       // Initialize contact form manager lazily
       void this.initializeContactFormLazily();
+
+      // Log performance after delay to allow lazy loading
+      setTimeout(() => {
+        this.logPerformanceMetrics();
+      }, 5000);
     } catch (error) {
       this.errorHandler.handleError(
         error,
@@ -144,6 +169,38 @@ class LOFERSILLandingPage {
       };
     }
   }
+  /**
+   * Preload critical images for above-fold content
+   */
+  private preloadCriticalImages(): void {
+    const criticalImages = [
+      "assets/images/Frente%20loja.jpg",
+      "assets/images/logo.svg",
+      "assets/images/favicon-48x48-lettuce.svg",
+    ];
+
+    this.lazyLoadManager.preloadCriticalImages(criticalImages);
+  }
+
+  /**
+   * Log performance metrics
+   */
+  private logPerformanceMetrics(): void {
+    const lazyMetrics = this.lazyLoadManager.getMetrics();
+
+    // Update performance monitor with lazy loading metrics
+    this.performanceMonitor.setTotals(
+      lazyMetrics.totalImages,
+      lazyMetrics.totalSections,
+    );
+
+    // Log comprehensive performance summary
+    this.performanceMonitor.logPerformanceSummary();
+
+    // Send to analytics if available
+    this.performanceMonitor.sendToAnalytics();
+  }
+
   /**
    * Initialize contact form manager lazily when needed
    */

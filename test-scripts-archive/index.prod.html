@@ -60,7 +60,7 @@
     <script src="dompurify.min.js"></script>
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="src/styles/main.css" />
+    <link rel="stylesheet" href="main.css" />
 
     <!-- Favicon -->
     <link
@@ -230,10 +230,7 @@
               <img
                 src="assets/images/Frente%20loja.jpg"
                 alt="Fachada da LOFERSIL, loja tradicional em Lisboa com mais de 30 anos de história, localizada na Rua Gomes Freire 187 B"
-                class="hero-img"
-                loading="eager"
-                decoding="async"
-                fetchpriority="high"
+                class="hero-img lazy"
               />
             </div>
           </div>
@@ -243,8 +240,7 @@
       <!-- About Us Section -->
       <section
         id="about"
-        class="about lazy-section"
-        data-lazy-section="true"
+        class="about"
         data-animate="fade-in"
         aria-labelledby="about-title"
       >
@@ -300,40 +296,26 @@
             </div>
             <div class="about-gallery">
               <div class="about-gallery-item">
-                <div class="progressive-image">
+                <picture>
                   <img
                     data-src="assets/images/Interior.jpg"
-                    data-low-quality="assets/images/Interior.jpg"
                     alt="Interior acolhedor da LOFERSIL mostrando exposições organizadas de produtos premium e atendimento personalizado"
                     class="about-gallery-img lazy"
                     loading="lazy"
                     decoding="async"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    srcset="
-                      assets/images/Interior.jpg  400w,
-                      assets/images/Interior.jpg  800w,
-                      assets/images/Interior.jpg 1200w
-                    "
                   />
-                </div>
+                </picture>
               </div>
               <div class="about-gallery-item">
-                <div class="progressive-image">
+                <picture>
                   <img
                     data-src="assets/images/Interior%20c%20funcion%C3%A1rio.jpg"
-                    data-low-quality="assets/images/Interior%20c%20funcion%C3%A1rio.jpg"
                     alt="Funcionários especializados da LOFERSIL oferecendo atendimento personalizado aos clientes na loja"
                     class="about-gallery-img lazy"
                     loading="lazy"
                     decoding="async"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    srcset="
-                      assets/images/Interior%20c%20funcion%C3%A1rio.jpg  400w,
-                      assets/images/Interior%20c%20funcion%C3%A1rio.jpg  800w,
-                      assets/images/Interior%20c%20funcion%C3%A1rio.jpg 1200w
-                    "
                   />
-                </div>
+                </picture>
               </div>
             </div>
           </div>
@@ -343,8 +325,7 @@
       <!-- Features Section -->
       <section
         id="features"
-        class="features lazy-section"
-        data-lazy-section="true"
+        class="features"
         data-animate="fade-in"
         aria-labelledby="features-title"
       >
@@ -363,7 +344,7 @@
             </p>
           </div>
           <div class="features-grid" data-animate="scale-in">
-            <div class="feature-card" data-animate-child="true">
+            <div class="feature-card">
               <div class="feature-icon">⭐</div>
               <h3
                 class="feature-title"
@@ -379,7 +360,7 @@
                 por nossa equipe especializada.
               </p>
             </div>
-            <div class="feature-card" data-animate-child="true">
+            <div class="feature-card">
               <div class="feature-icon">🚀</div>
               <h3
                 class="feature-title"
@@ -395,7 +376,7 @@
                 consultoria especializada para suas necessidades.
               </p>
             </div>
-            <div class="feature-card" data-animate-child="true">
+            <div class="feature-card">
               <div class="feature-icon">💎</div>
               <h3
                 class="feature-title"
@@ -411,7 +392,7 @@
                 empresas em Lisboa com integridade e qualidade.
               </p>
             </div>
-            <div class="feature-card" data-animate-child="true">
+            <div class="feature-card">
               <div class="feature-icon">🚚</div>
               <h3
                 class="feature-title"
@@ -427,7 +408,7 @@
                 Serviço rápido e confiável diretamente na sua porta.
               </p>
             </div>
-            <div class="feature-card" data-animate-child="true">
+            <div class="feature-card">
               <div class="feature-icon">📊</div>
               <h3
                 class="feature-title"
@@ -443,7 +424,7 @@
                 faturas, declarações fiscais e consultoria especializada.
               </p>
             </div>
-            <div class="feature-card" data-animate-child="true">
+            <div class="feature-card">
               <div class="feature-icon">📄</div>
               <h3
                 class="feature-title"
@@ -459,7 +440,7 @@
                 e organize seus documentos com acabamento premium.
               </p>
             </div>
-            <div class="feature-card" data-animate-child="true">
+            <div class="feature-card">
               <div class="feature-icon">
                 <img
                   src="assets/images/dhl-logo.svg"
@@ -497,8 +478,7 @@
       <!-- Products Showcase Section -->
       <section
         id="products-showcase"
-        class="products-showcase lazy-section"
-        data-lazy-section="true"
+        class="products-showcase"
         data-animate="fade-in"
         aria-labelledby="products-title"
       >
@@ -520,23 +500,20 @@
             </p>
           </div>
           <div class="products-grid" data-animate="scale-in">
-            <div class="product-category" data-animate-child="true">
+            <div class="product-category">
               <div class="product-category-image">
                 <div class="product-badge product-badge-popular">
                   Mais Vendido
                 </div>
-                <div class="progressive-image">
+                <picture>
                   <img
                     data-src="assets/images/reborn_doll.jpg"
-                    data-low-quality="assets/images/reborn_doll.jpg"
                     alt="Bonecos reborn hiper-realistas para recém-nascidos, com detalhes impressionantes e materiais premium para colecionadores e terapia"
                     class="product-category-img lazy"
                     loading="lazy"
                     decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="assets/images/reborn_doll.jpg 300w, assets/images/reborn_doll.jpg 600w, assets/images/reborn_doll.jpg 900w"
                   />
-                </div>
+                </picture>
               </div>
               <div class="product-category-content">
                 <div class="product-rating">
@@ -553,197 +530,17 @@
                 </p>
               </div>
             </div>
-                <div class="progressive-image">
-                  <img
-                    data-src="assets/images/reborn_doll.jpg"
-                    data-low-quality="assets/images/reborn_doll.jpg"
-                    alt="Bonecos reborn hiper-realistas para recém-nascidos, com detalhes impressionantes e materiais premium para colecionadores e terapia"
-                    class="product-category-img lazy"
-                    loading="lazy"
-                    decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="
-                      assets/images/reborn_doll.jpg 300w,
-                      assets/images/reborn_doll.jpg 600w,
-                      assets/images/reborn_doll.jpg 900w
-                    "
-                  />
-                </div>
-              </div>
-              <div class="product-category-content">
-                <div class="product-rating">
-                  <span class="stars" aria-label="4.9 de 5 estrelas"
-                    >★★★★★</span
-                  >
-                  <span class="rating-text">(4.9/5)</span>
-                </div>
-                <h3 class="product-category-title">Produtos para Bebés</h3>
-                <p class="product-category-description">
-                  Bonecos reborn hiper-realistas que parecem recém-nascidos de
-                  verdade. Perfeitos para colecionadores, terapia e decoração,
-                  com detalhes impressionantes e materiais premium.
-                </p>
-              </div>
-            </div>
-            <div class="product-category" data-animate-child="true">
+            <div class="product-category">
               <div class="product-category-image">
                 <div class="product-badge product-badge-new">Novo</div>
-                <div class="progressive-image">
+                <picture>
                   <img
                     data-src="assets/images/Caixas_joias.jpg"
-                    data-low-quality="assets/images/Caixas_joias.jpg"
                     alt="Imagem da coleção de caixas de joias premium"
                     class="product-category-img lazy"
                     loading="lazy"
-                    decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="assets/images/Caixas_joias.jpg 300w, assets/images/Caixas_joias.jpg 600w, assets/images/Caixas_joias.jpg 900w"
                   />
-                </div>
-              </div>
-              <div class="product-category-content">
-                <div class="product-rating">
-                  <span class="stars" aria-label="4.8 de 5 estrelas"
-                    >★★★★★</span
-                  >
-                  <span class="rating-text">(4.8/5)</span>
-                </div>
-                <h3 class="product-category-title">Caixas de Joias</h3>
-                <p class="product-category-description">
-                  Elegância atemporal para guardar suas joias mais preciosas.
-                  Design sofisticado com compartimentos organizados e
-                  acabamentos premium que combinam luxo e funcionalidade.
-                </p>
-              </div>
-            </div>
-            <div class="product-category" data-animate-child="true">
-              <div class="product-category-image">
-                <div class="product-badge product-badge-offer">Oferta</div>
-                <div class="progressive-image">
-                  <img
-                    data-src="assets/images/Canetas_oferta.jpg"
-                    data-low-quality="assets/images/Canetas_oferta.jpg"
-                    alt="Imagem de canetas promocionais e instrumentos de escrita"
-                    class="product-category-img lazy"
-                    loading="lazy"
-                    decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="assets/images/Canetas_oferta.jpg 300w, assets/images/Canetas_oferta.jpg 600w, assets/images/Canetas_oferta.jpg 900w"
-                  />
-                </div>
-              </div>
-              <div class="product-category-content">
-                <div class="product-rating">
-                  <span class="stars" aria-label="4.7 de 5 estrelas"
-                    >★★★★★</span
-                  >
-                  <span class="rating-text">(4.7/5)</span>
-                </div>
-                <h3 class="product-category-title">Canetas Promocionais</h3>
-                <p class="product-category-description">
-                  Canetas premium que escrevem com suavidade e elegância.
-                  Perfeitas para empresas que querem deixar uma marca duradoura
-                  com qualidade e estilo excepcionais.
-                </p>
-              </div>
-            </div>
-            <div class="product-category" data-animate-child="true">
-              <div class="product-category-image">
-                <div class="product-badge product-badge-professional">
-                  Profissional
-                </div>
-                <div class="progressive-image">
-                  <img
-                    data-src="assets/images/Dossiers.jpg"
-                    data-low-quality="assets/images/Dossiers.jpg"
-                    alt="Imagem de dossiês e pastas de escritório"
-                    class="product-category-img lazy"
-                    loading="lazy"
-                    decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="assets/images/Dossiers.jpg 300w, assets/images/Dossiers.jpg 600w, assets/images/Dossiers.jpg 900w"
-                  />
-                </div>
-              </div>
-              <div class="product-category-content">
-                <div class="product-rating">
-                  <span class="stars" aria-label="4.6 de 5 estrelas"
-                    >★★★★★</span
-                  >
-                  <span class="rating-text">(4.6/5)</span>
-                </div>
-                <h3 class="product-category-title">Material de Escritório</h3>
-                <p class="product-category-description">
-                  Materiais de escritório de alta qualidade, incluindo dossiers,
-                  canetas e tintas. Produtos duráveis e funcionais para o seu
-                  ambiente de trabalho.
-                </p>
-              </div>
-            </div>
-            <div class="product-category" data-animate-child="true">
-              <div class="product-category-image">
-                <div class="product-badge product-badge-trending">
-                  Tendência
-                </div>
-                <div class="progressive-image">
-                  <img
-                    data-src="assets/images/Mochilas.jpg"
-                    data-low-quality="assets/images/Mochilas.jpg"
-                    alt="Imagem de mochilas para escola e viagens"
-                    class="product-category-img lazy"
-                    loading="lazy"
-                    decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="assets/images/Mochilas.jpg 300w, assets/images/Mochilas.jpg 600w, assets/images/Mochilas.jpg 900w"
-                  />
-                </div>
-              </div>
-              <div class="product-category-content">
-                <div class="product-rating">
-                  <span class="stars" aria-label="4.8 de 5 estrelas"
-                    >★★★★★</span
-                  >
-                  <span class="rating-text">(4.8/5)</span>
-                </div>
-                <h3 class="product-category-title">Mochilas</h3>
-                <p class="product-category-description">
-                  Mochilas modernas e resistentes para todos os momentos. Design
-                  ergonómico com compartimentos inteligentes, materiais premium
-                  e estilo que acompanha sua rotina diária.
-                </p>
-              </div>
-            </div>
-            <div class="product-category" data-animate-child="true">
-              <div class="product-category-image">
-                <div class="product-badge product-badge-eco">Económico</div>
-                <div class="progressive-image">
-                  <img
-                    data-src="assets/images/Tinteiros.jpg"
-                    data-low-quality="assets/images/Tinteiros.jpg"
-                    alt="Imagem de cartuchos de tinta e suprimentos para impressoras"
-                    class="product-category-img lazy"
-                    loading="lazy"
-                    decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="assets/images/Tinteiros.jpg 300w, assets/images/Tinteiros.jpg 600w, assets/images/Tinteiros.jpg 900w"
-                  />
-                </div>
-              </div>
-              <div class="product-category-content">
-                <div class="product-rating">
-                  <span class="stars" aria-label="4.5 de 5 estrelas"
-                    >★★★★★</span
-                  >
-                  <span class="rating-text">(4.5/5)</span>
-                </div>
-                <h3 class="product-category-title">Cartuchos de Tinta</h3>
-                <p class="product-category-description">
-                  Cartuchos compatíveis de alta qualidade que garantem
-                  impressões nítidas e vibrantes. Solução económica e confiável
-                  para todas as suas necessidades de impressão.
-                </p>
-              </div>
-            </div>
+                </picture>
               </div>
               <div class="product-category-content">
                 <div class="product-rating">
@@ -763,22 +560,14 @@
             <div class="product-category">
               <div class="product-category-image">
                 <div class="product-badge product-badge-offer">Oferta</div>
-                <div class="progressive-image">
+                <picture>
                   <img
                     data-src="assets/images/Canetas_oferta.jpg"
-                    data-low-quality="assets/images/Canetas_oferta.jpg"
                     alt="Imagem de canetas promocionais e instrumentos de escrita"
                     class="product-category-img lazy"
                     loading="lazy"
-                    decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="
-                      assets/images/Canetas_oferta.jpg 300w,
-                      assets/images/Canetas_oferta.jpg 600w,
-                      assets/images/Canetas_oferta.jpg 900w
-                    "
                   />
-                </div>
+                </picture>
               </div>
               <div class="product-category-content">
                 <div class="product-rating">
@@ -800,22 +589,14 @@
                 <div class="product-badge product-badge-professional">
                   Profissional
                 </div>
-                <div class="progressive-image">
+                <picture>
                   <img
                     data-src="assets/images/Dossiers.jpg"
-                    data-low-quality="assets/images/Dossiers.jpg"
                     alt="Imagem de dossiês e pastas de escritório"
                     class="product-category-img lazy"
                     loading="lazy"
-                    decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="
-                      assets/images/Dossiers.jpg 300w,
-                      assets/images/Dossiers.jpg 600w,
-                      assets/images/Dossiers.jpg 900w
-                    "
                   />
-                </div>
+                </picture>
               </div>
               <div class="product-category-content">
                 <div class="product-rating">
@@ -837,22 +618,14 @@
                 <div class="product-badge product-badge-trending">
                   Tendência
                 </div>
-                <div class="progressive-image">
+                <picture>
                   <img
                     data-src="assets/images/Mochilas.jpg"
-                    data-low-quality="assets/images/Mochilas.jpg"
                     alt="Imagem de mochilas para escola e viagens"
                     class="product-category-img lazy"
                     loading="lazy"
-                    decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="
-                      assets/images/Mochilas.jpg 300w,
-                      assets/images/Mochilas.jpg 600w,
-                      assets/images/Mochilas.jpg 900w
-                    "
                   />
-                </div>
+                </picture>
               </div>
               <div class="product-category-content">
                 <div class="product-rating">
@@ -872,22 +645,14 @@
             <div class="product-category">
               <div class="product-category-image">
                 <div class="product-badge product-badge-eco">Económico</div>
-                <div class="progressive-image">
+                <picture>
                   <img
                     data-src="assets/images/Tinteiros.jpg"
-                    data-low-quality="assets/images/Tinteiros.jpg"
                     alt="Imagem de cartuchos de tinta e suprimentos para impressoras"
                     class="product-category-img lazy"
                     loading="lazy"
-                    decoding="async"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    srcset="
-                      assets/images/Tinteiros.jpg 300w,
-                      assets/images/Tinteiros.jpg 600w,
-                      assets/images/Tinteiros.jpg 900w
-                    "
                   />
-                </div>
+                </picture>
               </div>
               <div class="product-category-content">
                 <div class="product-rating">
@@ -924,12 +689,7 @@
       </section>
 
       <!-- CTA Section -->
-      <section
-        id="cta"
-        class="cta lazy-section"
-        data-lazy-section="true"
-        data-animate="fade-in"
-      >
+      <section id="cta" class="cta" data-animate="fade-in">
         <div class="cta-container">
           <div class="cta-content" data-animate="slide-up">
             <h2 class="cta-title" data-translate="cta.title">
@@ -961,8 +721,7 @@
       <!-- Contact Form Section -->
       <section
         id="contact-form"
-        class="contact-form lazy-section"
-        data-lazy-section="true"
+        class="contact-form"
         aria-labelledby="contact-title"
       >
         <div class="contact-form-container">
@@ -1270,14 +1029,17 @@
     </footer>
 
     <!-- Scripts -->
-    <script type="module" src="src/scripts/index.ts"></script>
-    <script type="module" src="src/scripts/types.ts"></script>
-    <script type="module" src="src/scripts/validation.ts"></script>
-    <script
-      type="module"
-      src="src/scripts/modules/ContactFormManager.ts"
-    ></script>
-    <script type="module" src="src/scripts/performance-test.ts" defer></script>
-    <script type="module" src="src/scripts/lazy-loading-demo.ts" defer></script>
+    <!-- Module Detection and Fallback Script -->
+    <script src="scripts/module-detection.js"></script>
+
+    <!-- Modern ES6 Module Support -->
+    <script type="module" src="scripts/bundle.js"></script>
+
+    <!-- Legacy Browser Fallback -->
+    <script nomodule>
+      // Legacy browsers will load this script
+      // Fallback functionality is handled by module-detection.js
+      console.log("Legacy browser detected - loading fallback content");
+    </script>
   </body>
 </html>

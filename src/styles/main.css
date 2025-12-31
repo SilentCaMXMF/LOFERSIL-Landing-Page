@@ -277,14 +277,223 @@ body {
   display: none;
 }
 
-/* Lazy Loading Images */
+/* Enhanced Lazy Loading Images */
 img.lazy {
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition:
+    opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateZ(0); /* Hardware acceleration */
 }
 
 img.lazy-loaded {
   opacity: 1;
+}
+
+/* Blur-up effect for progressive loading */
+img.lazy-blur {
+  filter: blur(5px);
+  transform: scale(1.05);
+  transition:
+    filter 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Skeleton placeholders */
+img.lazy-skeleton {
+  background-color: var(--gray-200);
+  background-image: linear-gradient(
+    90deg,
+    var(--gray-200) 0%,
+    var(--gray-300) 50%,
+    var(--gray-200) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    var(--gray-200) 0%,
+    var(--gray-300) 50%,
+    var(--gray-200) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Error state for lazy loaded images */
+img.lazy-error {
+  opacity: 0.5;
+  filter: grayscale(100%);
+  background-color: var(--gray-100);
+}
+
+/* Lazy loading for sections */
+.lazy-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lazy-section.lazy-loading {
+  opacity: 0.3;
+}
+
+.lazy-section.lazy-loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Lazy loading for modules */
+.lazy-module {
+  min-height: 100px;
+  background: var(--gray-50);
+  border: 1px dashed var(--gray-300);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-500);
+  font-size: var(--text-sm);
+}
+
+.lazy-module.module-loading {
+  background-image: linear-gradient(
+    90deg,
+    var(--gray-50) 0%,
+    var(--gray-100) 50%,
+    var(--gray-50) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.lazy-module.module-loaded {
+  min-height: auto;
+  background: transparent;
+  border: none;
+  animation: fadeInScale 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lazy-module.module-error {
+  background-color: #fef2f2;
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+
+/* Staggered animations for children */
+[data-animate-child] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-animate-child].animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Progressive image container */
+.progressive-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.progressive-image .skeleton-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+}
+
+.progressive-image img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Dark mode skeleton adjustments */
+[data-theme="dark"] .lazy-skeleton,
+[data-theme="dark"] .skeleton-overlay {
+  background: linear-gradient(
+    90deg,
+    var(--gray-700) 0%,
+    var(--gray-600) 50%,
+    var(--gray-700) 100%
+  );
+  background-size: 200% 100%;
+}
+
+[data-theme="dark"] .lazy-module {
+  background: var(--gray-800);
+  border-color: var(--gray-600);
+  color: var(--gray-400);
+}
+
+[data-theme="dark"] .lazy-module.module-loading {
+  background-image: linear-gradient(
+    90deg,
+    var(--gray-800) 0%,
+    var(--gray-700) 50%,
+    var(--gray-800) 100%
+  );
+  background-size: 200% 100%;
+}
+
+[data-theme="dark"] .lazy-error {
+  background-color: var(--gray-800);
+}
+
+/* Priority loading indicators */
+.lazy-priority {
+  position: relative;
+}
+
+.lazy-priority::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--gray-300);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 3;
+}
+
+.lazy-priority.lazy-loaded::before {
+  display: none;
 }
 
 /* Loading States */

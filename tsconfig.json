@@ -35,7 +35,9 @@
     "src/scripts/modules/ThemeManager.ts",
     "src/scripts/modules/TranslationManager.ts",
     "src/scripts/modules/Utils.ts",
-    "src/scripts/modules/simpleLogger.ts"
+    "src/scripts/modules/simpleLogger.ts",
+    "src/scripts/modules/LazyLoadManager.ts",
+    "src/scripts/modules/PerformanceMonitor.ts"
   ],
   "exclude": [
     "node_modules",

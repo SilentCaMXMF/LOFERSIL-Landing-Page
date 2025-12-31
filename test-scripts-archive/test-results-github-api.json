@@ -1,0 +1,106 @@
+{
+  "testSuite": "GitHub API Integration Test Suite",
+  "startTime": "2025-12-28T17:40:06.000Z",
+  "endTime": "2025-12-28T17:40:06.024Z",
+  "duration": "24ms",
+  "summary": {
+    "total": 9,
+    "passed": 1,
+    "failed": 8,
+    "warnings": 0
+  },
+  "tests": [
+    {
+      "name": "Environment Variables",
+      "passed": false,
+      "message": "Missing required environment variables: GITHUB_PERSONAL_ACCESS_TOKEN",
+      "details": {
+        "missingVars": [
+          "GITHUB_PERSONAL_ACCESS_TOKEN"
+        ]
+      },
+      "timestamp": "2025-12-28T17:40:06.004Z"
+    },
+    {
+      "name": "Configuration Loading",
+      "passed": true,
+      "message": "Configuration loaded and validated successfully",
+      "details": {
+        "configName": "LOFERSIL Landing Page - Monitoring Dashboard",
+        "version": "1.0.0",
+        "githubEndpoint": "https://api.github.com/repos/SilentCaMXMF/LOFERSIL-Landing-Page/actions/runs",
+        "retryAttempts": 3,
+        "timeout": 30
+      },
+      "timestamp": "2025-12-28T17:40:06.005Z"
+    },
+    {
+      "name": "Monitoring Service Initialization",
+      "passed": false,
+      "message": "MonitoringService initialization failed: GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN",
+      "details": {
+        "error": "GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN"
+      },
+      "timestamp": "2025-12-28T17:40:06.015Z"
+    },
+    {
+      "name": "GitHub API Connectivity",
+      "passed": false,
+      "message": "GitHub API connectivity failed: GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN",
+      "details": {
+        "error": "GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN"
+      },
+      "timestamp": "2025-12-28T17:40:06.017Z"
+    },
+    {
+      "name": "Specific Endpoint Test",
+      "passed": false,
+      "message": "Endpoint test failed: GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN",
+      "details": {
+        "error": "GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN"
+      },
+      "timestamp": "2025-12-28T17:40:06.018Z"
+    },
+    {
+      "name": "Data Extraction",
+      "passed": false,
+      "message": "Data extraction test failed: GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN",
+      "details": {
+        "error": "GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN"
+      },
+      "timestamp": "2025-12-28T17:40:06.020Z"
+    },
+    {
+      "name": "Error Handling",
+      "passed": false,
+      "message": "Error handling test failed: GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN",
+      "details": {
+        "error": "GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN"
+      },
+      "timestamp": "2025-12-28T17:40:06.022Z"
+    },
+    {
+      "name": "All Data Sources",
+      "passed": false,
+      "message": "All data sources test failed: GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN",
+      "details": {
+        "error": "GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN"
+      },
+      "timestamp": "2025-12-28T17:40:06.023Z"
+    },
+    {
+      "name": "Retry Logic",
+      "passed": false,
+      "message": "Retry logic test failed: GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN",
+      "details": {
+        "error": "GitHub token not found in environment variable: GITHUB_PERSONAL_ACCESS_TOKEN"
+      },
+      "timestamp": "2025-12-28T17:40:06.024Z"
+    }
+  ],
+  "recommendations": [
+    "Set up the required environment variables, especially GITHUB_PERSONAL_ACCESS_TOKEN",
+    "Check GitHub token permissions and ensure it has access to the repository",
+    "The 400 error fix may not be complete - investigate API request format and parameters"
+  ]
+}

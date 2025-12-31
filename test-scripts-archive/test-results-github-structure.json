@@ -1,0 +1,93 @@
+{
+  "testSuite": "GitHub API Structure Test Suite",
+  "startTime": "2025-12-28T17:41:11.165Z",
+  "endTime": "2025-12-28T17:41:12.860Z",
+  "duration": "1695ms",
+  "summary": {
+    "total": 4,
+    "passed": 3,
+    "failed": 1
+  },
+  "tests": [
+    {
+      "name": "API Endpoint Structure",
+      "passed": true,
+      "message": "Endpoint accessible and returns valid data",
+      "details": {
+        "status": 200,
+        "statusText": "OK",
+        "hasWorkflowRuns": true,
+        "totalCount": 344
+      },
+      "timestamp": "2025-12-28T17:41:12.548Z"
+    },
+    {
+      "name": "Request Headers",
+      "passed": true,
+      "message": "Header testing: 2/2 combinations work",
+      "details": {
+        "results": [
+          {
+            "name": "Standard GitHub API v3 headers",
+            "status": 200,
+            "statusText": "OK",
+            "success": true
+          },
+          {
+            "name": "GitHub Actions API specific headers",
+            "status": 200,
+            "statusText": "OK",
+            "success": true
+          }
+        ]
+      },
+      "timestamp": "2025-12-28T17:41:12.846Z"
+    },
+    {
+      "name": "Configuration Structure",
+      "passed": true,
+      "message": "Configuration structure is valid",
+      "details": {
+        "endpoint": "https://api.github.com/repos/SilentCaMXMF/LOFERSIL-Landing-Page/actions/runs",
+        "envToken": "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "retryAttempts": 3,
+        "timeout": 30,
+        "backoffFactor": 2
+      },
+      "timestamp": "2025-12-28T17:41:12.854Z"
+    },
+    {
+      "name": "Error Handling Logic",
+      "passed": false,
+      "message": "Error handling: 2/5 scenarios handled correctly",
+      "details": {
+        "results": [
+          {
+            "name": "401 Authentication Error",
+            "handled": false,
+            "error": "GitHub authentication failed - invalid or expired token"
+          },
+          {
+            "name": "403 Rate Limit",
+            "handled": true
+          },
+          {
+            "name": "404 Not Found",
+            "handled": false,
+            "error": "GitHub repository or workflow not found - check configuration"
+          },
+          {
+            "name": "422 Validation Error",
+            "handled": false,
+            "error": "GitHub API request invalid - check configuration"
+          },
+          {
+            "name": "429 Secondary Rate Limit",
+            "handled": true
+          }
+        ]
+      },
+      "timestamp": "2025-12-28T17:41:12.860Z"
+    }
+  ]
+}

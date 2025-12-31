@@ -61,27 +61,54 @@ export default async function handler(req, res) {
       timestamp: new Date().toISOString(),
     });
 
+    // Check SMTP configuration
+    const smtpConfig = {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT || "587",
+      secure: process.env.SMTP_SECURE === "true",
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+      from: process.env.FROM_EMAIL,
+      to: process.env.TO_EMAIL,
+    };
+
+    console.log("SMTP Configuration Check:", {
+      host: smtpConfig.host ? "SET" : "NOT SET",
+      port: smtpConfig.port,
+      secure: smtpConfig.secure,
+      user: smtpConfig.user ? "SET" : "NOT SET",
+      pass: smtpConfig.pass ? "SET" : "NOT SET",
+      from: smtpConfig.from || "DEFAULT",
+      to: smtpConfig.to || "DEFAULT",
+    });
+
     // Try to send email if SMTP is configured
     let emailSent = false;
-    if (
-      process.env.SMTP_HOST &&
-      process.env.SMTP_USER &&
-      process.env.SMTP_PASS
-    ) {
+    let emailError = null;
+
+    if (smtpConfig.host && smtpConfig.user && smtpConfig.pass) {
       try {
+        console.log("Creating email transporter...");
         const transporter = nodemailer.createTransport({
-          host: process.env.SMTP_HOST,
-          port: parseInt(process.env.SMTP_PORT || "587"),
-          secure: process.env.SMTP_SECURE === "true",
+          host: smtpConfig.host,
+          port: parseInt(smtpConfig.port),
+          secure: smtpConfig.secure,
           auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
+            user: smtpConfig.user,
+            pass: smtpConfig.pass,
           },
+          // Add debugging for troubleshooting
+          debug: process.env.NODE_ENV === "development",
+          logger: process.env.NODE_ENV === "development",
         });
 
+        console.log("Verifying SMTP connection...");
+        await transporter.verify();
+        console.log("SMTP connection verified successfully");
+
         const mailOptions = {
-          from: process.env.FROM_EMAIL || process.env.SMTP_USER,
-          to: process.env.TO_EMAIL || process.env.SMTP_USER,
+          from: smtpConfig.from || smtpConfig.user,
+          to: smtpConfig.to || smtpConfig.user,
           subject: `Nova mensagem de contacto - ${name}`,
           html: `
             <h2>Nova mensagem de contacto</h2>
@@ -95,30 +122,77 @@ export default async function handler(req, res) {
           replyTo: email,
         };
 
-        await transporter.sendMail(mailOptions);
+        console.log("Sending email to:", smtpConfig.to || smtpConfig.user);
+        const result = await transporter.sendMail(mailOptions);
         emailSent = true;
-        console.log("Email sent successfully to:", process.env.TO_EMAIL);
-      } catch (emailError) {
-        console.error("Email sending failed:", emailError);
-        // Continue with success response even if email fails
-        // This ensures the user gets a positive response
+        console.log("Email sent successfully:", {
+          messageId: result.messageId,
+          response: result.response,
+          to: smtpConfig.to || smtpConfig.user,
+        });
+      } catch (error) {
+        emailError = error;
+        console.error("Email sending failed:", {
+          error: error.message,
+          code: error.code,
+          command: error.command,
+          responseCode: error.responseCode,
+          response: error.response,
+          timestamp: new Date().toISOString(),
+        });
+
+        // Provide specific error information in development
+        if (process.env.NODE_ENV === "development") {
+          console.error("Full email error details:", error);
+        }
       }
     } else {
-      console.log("SMTP not configured, skipping email send");
+      console.log("SMTP not fully configured - missing required fields");
+      emailError = new Error("SMTP configuration incomplete");
     }
 
-    res.status(200).json({
+    // Always return success to the user, but include email status
+    // This prevents user frustration even if email delivery fails
+    const responseMessage = emailSent
+      ? "Mensagem enviada com sucesso! Entraremos em contacto em breve."
+      : "Mensagem registada com sucesso! Entraremos em contacto em breve.";
+
+    const responseData = {
       success: true,
-      message: emailSent
-        ? "Mensagem enviada com sucesso! Entraremos em contacto em breve."
-        : "Mensagem registada com sucesso! Entraremos em contacto em breve.",
+      message: responseMessage,
       emailSent,
-    });
+      timestamp: new Date().toISOString(),
+    };
+
+    // Include error details in development for debugging
+    if (process.env.NODE_ENV === "development" && emailError) {
+      responseData.debug = {
+        emailError: emailError.message,
+        smtpConfig: {
+          host: smtpConfig.host,
+          port: smtpConfig.port,
+          secure: smtpConfig.secure,
+          userConfigured: !!smtpConfig.user,
+          passConfigured: !!smtpConfig.pass,
+        },
+      };
+    }
+
+    res.status(200).json(responseData);
   } catch (error) {
-    console.error("Contact form error:", error);
+    console.error("Contact form error:", {
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+    });
+
     res.status(500).json({
       success: false,
       error: "Erro interno do servidor. Por favor, tente novamente mais tarde.",
+      timestamp: new Date().toISOString(),
+      ...(process.env.NODE_ENV === "development" && {
+        debug: { error: error.message },
+      }),
     });
   }
 }

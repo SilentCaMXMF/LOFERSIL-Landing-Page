@@ -136,9 +136,6 @@ export class ScrollManager {
       this.observers.push(animateObserver);
     }
 
-    // Setup lazy loading for images
-    this.setupLazyLoading();
-
     // Observe hero section for performance optimizations
     if (this.hero) {
       const heroObserver = new IntersectionObserver(
@@ -160,34 +157,6 @@ export class ScrollManager {
 
       heroObserver.observe(this.hero);
       this.observers.push(heroObserver);
-    }
-  }
-
-  /**
-   * Setup lazy loading for images
-   */
-  private setupLazyLoading(): void {
-    const lazyImages = document.querySelectorAll("img[data-src]");
-    if (lazyImages.length > 0) {
-      const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const img = entry.target as HTMLImageElement;
-            const src = img.getAttribute("data-src");
-            if (src) {
-              img.src = src;
-              img.classList.remove("lazy");
-              imageObserver.unobserve(img);
-            }
-          }
-        });
-      });
-
-      lazyImages.forEach((img) => {
-        imageObserver.observe(img);
-      });
-
-      this.observers.push(imageObserver);
     }
   }
 

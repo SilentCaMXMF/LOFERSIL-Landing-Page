@@ -173,7 +173,17 @@
       "type": "github_api",
       "endpoint": "https://api.github.com/repos/SilentCaMXMF/LOFERSIL-Landing-Page/actions/runs",
       "refresh_interval": 300,
-      "authentication": "token"
+      "authentication": "token",
+      "env_token": "GITHUB_PERSONAL_ACCESS_TOKEN",
+      "headers": {
+        "Accept": "application/vnd.github.v3+json",
+        "User-Agent": "LOFERSIL-Monitoring-Dashboard/1.0.0"
+      },
+      "error_handling": {
+        "retry_attempts": 3,
+        "timeout": 30,
+        "backoff_factor": 2
+      }
     },
     "lighthouse": {
       "type": "lighthouse",
