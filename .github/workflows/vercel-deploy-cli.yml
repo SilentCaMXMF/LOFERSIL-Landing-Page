@@ -31,23 +31,20 @@ jobs:
 
           mkdir -p ~/.vercel
 
-          echo '{"token":"'${{ secrets.VERCEL_TOKEN }}'","teamId":"'${{ secrets.VERCEL_ORG_ID }}'"}' > ~/.vercel/auth.json
-
           echo '{"projectId":"'${{ secrets.VERCEL_PROJECT_ID }}'","orgId":"'${{ secrets.VERCEL_ORG_ID }}'"}' > ~/.vercel/project.json
 
           echo "✅ Vercel CLI configured"
 
       - name: Deploy using Vercel CLI
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
           echo "=== DEPLOYING ==="
-          DEPLOY_OUTPUT=$(vercel --prod --prebuilt --confirm --token=${{ secrets.VERCEL_TOKEN }})
 
-          # Get deployment URL from output
-          DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -o 'https://[^[:space:]]*\.vercel\.app[^[:space:]]*' | head -1)
+          vercel --prod --prebuilt --confirm --yes
 
-          if [ -z "$DEPLOY_URL" ]; then
-            DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -o 'https://[^[:space:]]*' | head -1)
-          fi
+          DEPLOY_URL=$(vercel ls --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID --prod --limit=1 | grep -o 'https://[^[:space:]]*' | head -1)
 
           echo "deployment-url=$DEPLOY_URL" >> $GITHUB_OUTPUT
           echo "Deployment URL: $DEPLOY_URL"
