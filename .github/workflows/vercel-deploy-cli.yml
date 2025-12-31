@@ -40,11 +40,17 @@ jobs:
       - name: Deploy using Vercel CLI
         run: |
           echo "=== DEPLOYING ==="
-          vercel --prod --prebuilt --confirm
+          DEPLOY_OUTPUT=$(vercel --prod --prebuilt --confirm --token=${{ secrets.VERCEL_TOKEN }})
 
-          # Get deployment URL
-          DEPLOY_URL=$(vercel ls --scope=personal --limit=1 | grep -o 'https://[^[:space:]]*' | head -1)
+          # Get deployment URL from output
+          DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -o 'https://[^[:space:]]*\.vercel\.app[^[:space:]]*' | head -1)
+
+          if [ -z "$DEPLOY_URL" ]; then
+            DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -o 'https://[^[:space:]]*' | head -1)
+          fi
+
           echo "deployment-url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          echo "Deployment URL: $DEPLOY_URL"
         id: deploy
 
       - name: Output Results
