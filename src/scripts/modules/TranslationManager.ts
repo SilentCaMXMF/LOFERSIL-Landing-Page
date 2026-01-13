@@ -11,11 +11,11 @@ export class TranslationManager {
   private currentLanguage: string;
   private readonly defaultLanguage = "pt";
   private readonly supportedLanguages = ["pt", "en"];
-  private errorHandler: ErrorManager;
+  private errorHandler?: ErrorManager;
   private isInitialized = false;
   private isSwitchingLanguage = false;
 
-  constructor(errorHandler: ErrorManager) {
+  constructor(errorHandler?: ErrorManager) {
     this.translations = {};
     this.currentLanguage = this.detectLanguage();
     this.errorHandler = errorHandler;
@@ -88,17 +88,9 @@ export class TranslationManager {
 
       console.log(`Translations loaded for:`, Object.keys(this.translations));
     } catch (error) {
-      this.errorHandler.handleError(error, "Failed to load translations", {
-        component: "TranslationManager",
-        operation: "loadTranslations",
-        timestamp: new Date(),
-      });
+      console.error("Failed to load translations:", error);
       // Fallback to empty translations if loading fails
       this.translations = {};
-      // Show user-friendly message for translation loading failure
-      this.errorHandler.showInfoMessage(
-        "Some text may appear in English. Please refresh the page to try loading translations again.",
-      );
     }
   }
 

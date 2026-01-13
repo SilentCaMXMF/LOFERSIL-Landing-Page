@@ -2,41 +2,23 @@ name: Deploy to Vercel
 
 on:
   push:
-    branches: [main, master, preview-deployment]
-  pull_request:
-    branches: [main, master, preview-deployment]
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      environment:
-        description: "Deployment environment"
-        required: true
-        default: "preview"
-        type: choice
-        options:
-          - preview
-          - production
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
 
 permissions:
   contents: read
-  pull-requests: write
   deployments: write
-  statuses: write
-  issues: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && 'production' || 'preview' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -44,183 +26,20 @@ jobs:
           node-version: "22"
           cache: "npm"
 
-      - name: Debug environment dump
-        run: |
-          echo "=== Node.js version ==="
-          node --version
-          echo ""
-          echo "=== NPM version ==="
-          npm --version
-          echo ""
-          echo "=== OS info ==="
-          uname -a
-          echo ""
-          echo "=== Git info ==="
-          git --version
-          git branch -a
-          git log -1 --oneline
-          echo ""
-          echo "=== Environment variables (filtered) ==="
-          echo "NODE_ENV: ${NODE_ENV:-not set}"
-          echo "NPM_CONFIG_LOGLEVEL: ${NPM_CONFIG_LOGLEVEL:-not set}"
-          echo "CI: ${CI:-not set}"
-          echo ""
-          echo "=== GitHub context (filtered) ==="
-          echo "Repository: ${{ github.repository }}"
-          echo "Ref: ${{ github.ref }}"
-          echo "Event name: ${{ github.event_name }}"
-          echo "Actor: ${{ github.actor }}"
-          echo ""
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install dependencies
         run: npm ci
-
-      - name: Validate secrets
-        run: |
-          echo "Verifying required secrets..."
-          if [ -z "$VERCEL_TOKEN" ]; then
-            echo "::error::VERCEL_TOKEN secret is missing"
-            exit 1
-          fi
-          if [ -z "$VERCEL_ORG_ID" ]; then
-            echo "::error::VERCEL_ORG_ID secret is missing"
-            exit 1
-          fi
-          if [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "::error::VERCEL_PROJECT_ID secret is missing"
-            exit 1
-          fi
-          echo "OK: All required secrets verified"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Verify no git submodules
-        run: |
-          echo "Checking for git submodules..."
-          if [ -f .gitmodules ]; then
-            echo "::error::Git submodules detected in .gitmodules"
-            cat .gitmodules
-            exit 1
-          fi
-          SUBMODULE_COUNT=$(git submodule status | wc -l)
-          if [ "$SUBMODULE_COUNT" -gt 0 ]; then
-            echo "::error::Git submodules detected: $SUBMODULE_COUNT submodule(s) found"
-            git submodule status
-            exit 1
-          fi
-          echo "OK: No git submodules detected"
 
       - name: Run linting
         run: npm run lint
 
       - name: Build project
-        run: |
-          set -x
-          npm run build 2>&1 | tee build-output.txt
-          BUILD_EXIT_CODE=$?
-          set +x
-          echo "Build exit code: $BUILD_EXIT_CODE"
-          if [ $BUILD_EXIT_CODE -ne 0 ]; then
-            echo "::error::Build failed with exit code $BUILD_EXIT_CODE"
-            exit $BUILD_EXIT_CODE
-          fi
-
-      - name: Verify build output
-        run: |
-          echo "=== Build output directory check ==="
-          if [ -d "dist" ]; then
-            echo "OK: dist/ directory exists"
-            ls -la dist/
-          else
-            echo "::error::dist/ directory does NOT exist"
-            exit 1
-          fi
-          echo ""
-          echo "=== Build output file check ==="
-          if [ -f "build-output.txt" ]; then
-            echo "OK: build-output.txt exists"
-          else
-            echo "::error::build-output.txt does NOT exist"
-          fi
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: |
-            build-output.txt
-            dist/
-          retention-days: 1
-
-      - name: Cache dist directory
-        uses: actions/cache@v4
-        with:
-          path: dist
-          key: ${{ runner.os }}-dist-${{ hashFiles('**/package-lock.json', 'src/**/*', '*.ts', '*.css') }}
-          restore-keys: |
-            ${{ runner.os }}-dist-
+        run: npm run build
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Create Vercel config directory
-        run: mkdir -p ~/.vercel
-
       - name: Deploy to Vercel
-        id: deploy
         run: |
-          set -x
-          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
-            echo "Deploying to production..."
-            vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
-          else
-            echo "Deploying to preview..."
-            vercel deploy --token=${{ secrets.VERCEL_TOKEN }}
-          fi
-          set +x
-          echo "OK: Deployment completed successfully"
+          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Log deployment URL
-        if: success()
-        run: |
-          echo "COMPLETE: Deployment successful"
-          echo "Deployment ID: ${{ steps.deploy.outputs.deployment-url }}"
-          echo "Check Vercel dashboard for deployment details"
-
-      - name: Handle deployment failure with diagnostics
-        if: failure()
-        run: |
-          echo "ERROR: Deployment failed"
-          echo ""
-          echo "=== Diagnostic Information ==="
-          echo "Repository: ${{ github.repository }}"
-          echo "Workflow: ${{ github.workflow }}"
-          echo "Run ID: ${{ github.run_id }}"
-          echo "Branch: ${{ github.ref }}"
-          echo "Commit: ${{ github.sha }}"
-          echo "Event: ${{ github.event_name }}"
-          echo ""
-          echo "=== Build Output (last 50 lines) ==="
-          if [ -f "build-output.txt" ]; then
-            tail -n 50 build-output.txt
-          else
-            echo "build-output.txt not found"
-          fi
-          echo ""
-          echo "=== Environment variables status ==="
-          [ -n "$VERCEL_TOKEN" ] && echo "VERCEL_TOKEN: SET" || echo "VERCEL_TOKEN: NOT SET"
-          [ -n "$VERCEL_ORG_ID" ] && echo "VERCEL_ORG_ID: SET" || echo "VERCEL_ORG_ID: NOT SET"
-          [ -n "$VERCEL_PROJECT_ID" ] && echo "VERCEL_PROJECT_ID: SET" || echo "VERCEL_PROJECT_ID: NOT SET"
-          echo ""
-          echo "=== Network check ==="
-          ping -c 1 api.vercel.com && echo "Vercel API reachable" || echo "Vercel API unreachable"

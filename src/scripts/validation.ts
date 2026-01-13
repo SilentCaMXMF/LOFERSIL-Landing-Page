@@ -3,9 +3,6 @@
  * Comprehensive input validation system for contact forms
  */
 
-import type { TranslationManager } from "./modules/TranslationManager.js";
-
-// Validation constants
 const MIN_NAME_LENGTH = 2;
 const MAX_NAME_LENGTH = 100;
 const MAX_EMAIL_LENGTH = 254;
@@ -20,31 +17,29 @@ const DOMPurify = (
   }
 ).DOMPurify;
 
-// Validation messages for testing purposes
 export const VALIDATION_MESSAGES = {
   name: {
-    required: "Name is required",
-    tooShort: "Name must be at least 2 characters long",
-    tooLong: "Name must be less than 100 characters",
-    invalidChars: "Name contains invalid characters",
+    required: "Nome é obrigatório",
+    tooShort: "Nome deve ter pelo menos 2 caracteres",
+    tooLong: "Nome deve ter menos de 100 caracteres",
+    invalidChars: "Nome contém caracteres inválidos",
   },
   email: {
-    required: "Email is required",
-    invalid: "Please enter a valid email address",
-    tooLong: "Email address is too long",
+    required: "Email é obrigatório",
+    invalid: "Por favor, insira um email válido",
+    tooLong: "Endereço de email muito longo",
   },
   phone: {
-    invalid: "Please enter a valid phone number",
-    tooLong: "Phone number is too long",
+    invalid: "Por favor, insira um número de telefone válido",
+    tooLong: "Número de telefone muito longo",
   },
   message: {
-    required: "Message is required",
-    tooShort: "Message must be at least 10 characters long",
-    tooLong: "Message must be less than 2000 characters",
+    required: "Mensagem é obrigatória",
+    tooShort: "Mensagem deve ter pelo menos 10 caracteres",
+    tooLong: "Mensagem deve ter menos de 2000 caracteres",
   },
 };
 
-// Extended contact request interface with phone field
 export interface ContactRequest {
   name: string;
   email: string;
@@ -52,57 +47,26 @@ export interface ContactRequest {
   message: string;
 }
 
-// Validation result interface
 export interface ValidationResult {
   isValid: boolean;
   error?: string;
 }
 
-// Field-specific validation result
 export interface FieldValidationResult extends ValidationResult {
   field: string;
 }
 
-// Complete form validation result
 export interface FormValidationResult {
   isValid: boolean;
   errors: Record<string, string>;
   fieldResults: Record<string, FieldValidationResult>;
 }
 
-// Helper function to get validation messages from TranslationManager
-function getValidationMessage(
-  translationManager: TranslationManager,
-  field: string,
-  error: string,
-): string {
-  const translations = translationManager.getTranslations();
-  const contactTranslations = translations?.contact as Record<string, unknown>;
-  const validationMessages = (
-    contactTranslations as Record<
-      string,
-      Record<string, Record<string, string>>
-    >
-  )?.validation?.[field]?.[error];
-  return validationMessages || `${field} validation error`; // Fallback if translation not found
-}
-
-/**
- * Validates a name field
- * @param name - The name to validate
- * @param translationManager - Translation manager for localized messages
- * @returns ValidationResult
- */
-export function validateName(
-  name: string,
-  translationManager?: TranslationManager,
-): ValidationResult {
+export function validateName(name: string): ValidationResult {
   if (!name || name.trim().length === 0) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "name", "required")
-        : "Name is required",
+      error: VALIDATION_MESSAGES.name.required,
     };
   }
 
@@ -111,52 +75,33 @@ export function validateName(
   if (trimmedName.length < MIN_NAME_LENGTH) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "name", "tooShort")
-        : "Name must be at least 2 characters long",
+      error: VALIDATION_MESSAGES.name.tooShort,
     };
   }
 
   if (trimmedName.length > MAX_NAME_LENGTH) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "name", "tooLong")
-        : "Name must be less than 100 characters",
+      error: VALIDATION_MESSAGES.name.tooLong,
     };
   }
 
-  // Check for valid characters (letters, spaces, hyphens, apostrophes)
-  // Using compatible regex for ES2020
   const nameRegex = /^[a-zA-Zà-žÀ-Ž\s\-']+$/u;
   if (!nameRegex.test(trimmedName)) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "name", "invalidChars")
-        : "Name contains invalid characters",
+      error: VALIDATION_MESSAGES.name.invalidChars,
     };
   }
 
   return { isValid: true };
 }
 
-/**
- * Validates an email field
- * @param email - The email to validate
- * @param translationManager - Translation manager for localized messages
- * @returns ValidationResult
- */
-export function validateEmail(
-  email: string,
-  translationManager?: TranslationManager,
-): ValidationResult {
+export function validateEmail(email: string): ValidationResult {
   if (!email || email.trim().length === 0) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "email", "required")
-        : "Email is required",
+      error: VALIDATION_MESSAGES.email.required,
     };
   }
 
@@ -165,39 +110,24 @@ export function validateEmail(
   if (trimmedEmail.length > MAX_EMAIL_LENGTH) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "email", "tooLong")
-        : "Email address is too long",
+      error: VALIDATION_MESSAGES.email.tooLong,
     };
   }
 
-  // RFC 5322 compliant email regex (simplified but robust)
   const emailRegex =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
   if (!emailRegex.test(trimmedEmail)) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "email", "invalid")
-        : "Please enter a valid email address",
+      error: VALIDATION_MESSAGES.email.invalid,
     };
   }
 
   return { isValid: true };
 }
 
-/**
- * Validates a phone number field (optional)
- * @param phone - The phone number to validate
- * @param translationManager - Translation manager for localized messages
- * @returns ValidationResult
- */
-export function validatePhone(
-  phone: string,
-  translationManager?: TranslationManager,
-): ValidationResult {
-  // Phone is optional, so empty is valid
+export function validatePhone(phone: string): ValidationResult {
   if (!phone || phone.trim().length === 0) {
     return { isValid: true };
   }
@@ -207,55 +137,35 @@ export function validatePhone(
   if (trimmedPhone.length > MAX_PHONE_LENGTH) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "phone", "tooLong")
-        : "Phone number is too long",
+      error: VALIDATION_MESSAGES.phone.tooLong,
     };
   }
 
-  // Flexible phone regex that accepts various formats
-  // Allows digits, spaces, hyphens, parentheses, plus signs
   const phoneRegex = /^[+]?[\d\s\-()]+$/;
 
   if (!phoneRegex.test(trimmedPhone)) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "phone", "invalid")
-        : "Please enter a valid phone number",
+      error: VALIDATION_MESSAGES.phone.invalid,
     };
   }
 
-  // Check for minimum reasonable length (after removing formatting)
   const digitsOnly = trimmedPhone.replace(/[\s\-()+]/g, "");
   if (digitsOnly.length < MIN_PHONE_LENGTH) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "phone", "invalid")
-        : "Please enter a valid phone number",
+      error: VALIDATION_MESSAGES.phone.invalid,
     };
   }
 
   return { isValid: true };
 }
 
-/**
- * Validates a message field
- * @param message - The message to validate
- * @param translationManager - Translation manager for localized messages
- * @returns ValidationResult
- */
-export function validateMessage(
-  message: string,
-  translationManager?: TranslationManager,
-): ValidationResult {
+export function validateMessage(message: string): ValidationResult {
   if (!message || message.trim().length === 0) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "message", "required")
-        : "Message is required",
+      error: VALIDATION_MESSAGES.message.required,
     };
   }
 
@@ -264,59 +174,47 @@ export function validateMessage(
   if (trimmedMessage.length < MIN_MESSAGE_LENGTH) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "message", "tooShort")
-        : "Message must be at least 10 characters long",
+      error: VALIDATION_MESSAGES.message.tooShort,
     };
   }
 
   if (trimmedMessage.length > MAX_MESSAGE_LENGTH) {
     return {
       isValid: false,
-      error: translationManager
-        ? getValidationMessage(translationManager, "message", "tooLong")
-        : "Message must be less than 2000 characters",
+      error: VALIDATION_MESSAGES.message.tooLong,
     };
   }
 
   return { isValid: true };
 }
 
-/**
- * Validates an entire contact form
- * @param formData - The contact form data
- * @param translationManager - Translation manager for localized messages
- * @returns FormValidationResult
- */
 export function validateContactForm(
   formData: ContactRequest,
-  translationManager?: TranslationManager,
 ): FormValidationResult {
   const fieldResults: Record<string, FieldValidationResult> = {};
   const errors: Record<string, string> = {};
 
-  // Validate each field
-  const nameResult = validateName(formData.name, translationManager);
+  const nameResult = validateName(formData.name);
   fieldResults.name = { ...nameResult, field: "name" };
   if (!nameResult.isValid && nameResult.error) {
     errors.name = nameResult.error;
   }
 
-  const emailResult = validateEmail(formData.email, translationManager);
+  const emailResult = validateEmail(formData.email);
   fieldResults.email = { ...emailResult, field: "email" };
   if (!emailResult.isValid && emailResult.error) {
     errors.email = emailResult.error;
   }
 
   if (formData.phone !== undefined) {
-    const phoneResult = validatePhone(formData.phone, translationManager);
+    const phoneResult = validatePhone(formData.phone);
     fieldResults.phone = { ...phoneResult, field: "phone" };
     if (!phoneResult.isValid && phoneResult.error) {
       errors.phone = phoneResult.error;
     }
   }
 
-  const messageResult = validateMessage(formData.message, translationManager);
+  const messageResult = validateMessage(formData.message);
   fieldResults.message = { ...messageResult, field: "message" };
   if (!messageResult.isValid && messageResult.error) {
     errors.message = messageResult.error;
@@ -331,9 +229,6 @@ export function validateContactForm(
   };
 }
 
-/**
- * Error display system for form validation
- */
 export class FormErrorDisplay {
   private formElement: HTMLElement | null = null;
   private errorContainer: HTMLElement | null = null;
@@ -345,9 +240,6 @@ export class FormErrorDisplay {
     }
   }
 
-  /**
-   * Creates a container for displaying form errors
-   */
   private createErrorContainer(): void {
     if (!this.formElement) {
       return;
@@ -367,23 +259,17 @@ export class FormErrorDisplay {
       color: #c33;
     `;
 
-    // Insert at the beginning of the form
     this.formElement.insertBefore(
       this.errorContainer,
       this.formElement.firstChild,
     );
   }
 
-  /**
-   * Displays validation errors
-   * @param errors - Object containing field errors
-   */
   public displayErrors(errors: Record<string, string>): void {
     if (!this.errorContainer) {
       return;
     }
 
-    // Clear previous errors
     this.clearErrors();
 
     const errorMessages = Object.values(errors);
@@ -392,7 +278,6 @@ export class FormErrorDisplay {
       return;
     }
 
-    // Create error list
     const errorList = document.createElement("ul");
     errorList.style.cssText = "margin: 0; padding-left: 20px;";
 
@@ -405,18 +290,12 @@ export class FormErrorDisplay {
     this.errorContainer.appendChild(errorList);
     this.errorContainer.style.display = "block";
 
-    // Focus the error container for accessibility
     this.errorContainer.focus();
   }
 
-  /**
-   * Displays field-specific errors
-   * @param fieldResults - Field validation results
-   */
   public displayFieldErrors(
     fieldResults: Record<string, FieldValidationResult>,
   ): void {
-    // Clear previous field errors
     this.clearFieldErrors();
 
     Object.entries(fieldResults).forEach(([fieldName, result]) => {
@@ -426,11 +305,6 @@ export class FormErrorDisplay {
     });
   }
 
-  /**
-   * Displays error for a specific field
-   * @param fieldName - Name of the field
-   * @param errorMessage - Error message to display
-   */
   public displayFieldError(fieldName: string, errorMessage: string): void {
     const fieldElement = this.formElement?.querySelector(
       `[name="${fieldName}"]`,
@@ -439,7 +313,6 @@ export class FormErrorDisplay {
       return;
     }
 
-    // Create error element
     const errorElement = document.createElement("div");
     errorElement.className = "field-error";
     errorElement.textContent = errorMessage;
@@ -451,19 +324,14 @@ export class FormErrorDisplay {
       margin-bottom: 8px;
     `;
 
-    // Add error class to field
     fieldElement.classList.add("error");
 
-    // Insert error after the field
     fieldElement.parentNode?.insertBefore(
       errorElement,
       fieldElement.nextSibling,
     );
   }
 
-  /**
-   * Clears all displayed errors
-   */
   public clearErrors(): void {
     if (this.errorContainer) {
       this.errorContainer.innerHTML = "";
@@ -472,11 +340,7 @@ export class FormErrorDisplay {
     this.clearFieldErrors();
   }
 
-  /**
-   * Clears field-specific errors
-   */
   public clearFieldErrors(): void {
-    // Remove error classes and error elements
     const errorFields = this.formElement?.querySelectorAll(".error");
     errorFields?.forEach((field) => {
       field.classList.remove("error");
@@ -488,10 +352,6 @@ export class FormErrorDisplay {
     });
   }
 
-  /**
-   * Displays success message
-   * @param message - Success message to display
-   */
   public displaySuccess(message: string): void {
     if (!this.errorContainer) {
       return;
@@ -513,24 +373,16 @@ export class FormErrorDisplay {
   }
 }
 
-/**
- * Form validation handler that can be integrated with form submission
- */
 export class ContactFormValidator {
   private errorDisplay: FormErrorDisplay;
   private formElement: HTMLFormElement | null = null;
-  private translationManager?: TranslationManager;
 
-  constructor(formSelector: string, translationManager?: TranslationManager) {
+  constructor(formSelector: string) {
     this.errorDisplay = new FormErrorDisplay(formSelector);
     this.formElement = document.querySelector(formSelector);
-    this.translationManager = translationManager;
     this.setupFormValidation();
   }
 
-  /**
-   * Sets up real-time validation on form fields
-   */
   private setupFormValidation(): void {
     if (!this.formElement) {
       return;
@@ -549,10 +401,6 @@ export class ContactFormValidator {
     });
   }
 
-  /**
-   * Validates a single field and displays error if invalid
-   * @param fieldName - Name of the field to validate
-   */
   private validateField(fieldName: string): void {
     const field = this.formElement?.querySelector(
       `[name="${fieldName}"]`,
@@ -565,16 +413,16 @@ export class ContactFormValidator {
 
     switch (fieldName) {
       case "name":
-        result = validateName(field.value, this.translationManager);
+        result = validateName(field.value);
         break;
       case "email":
-        result = validateEmail(field.value, this.translationManager);
+        result = validateEmail(field.value);
         break;
       case "phone":
-        result = validatePhone(field.value, this.translationManager);
+        result = validatePhone(field.value);
         break;
       case "message":
-        result = validateMessage(field.value, this.translationManager);
+        result = validateMessage(field.value);
         break;
       default:
         return;
@@ -585,10 +433,6 @@ export class ContactFormValidator {
     }
   }
 
-  /**
-   * Clears error for a specific field
-   * @param fieldName - Name of the field
-   */
   private clearFieldError(fieldName: string): void {
     const field = this.formElement?.querySelector(
       `[name="${fieldName}"]`,
@@ -602,10 +446,6 @@ export class ContactFormValidator {
     }
   }
 
-  /**
-   * Validates the entire form
-   * @returns FormValidationResult
-   */
   public validateForm(): FormValidationResult {
     if (!this.formElement) {
       return {
@@ -637,7 +477,7 @@ export class ContactFormValidator {
       ),
     };
 
-    const result = validateContactForm(formData, this.translationManager);
+    const result = validateContactForm(formData);
 
     if (!result.isValid) {
       this.errorDisplay.displayErrors(result.errors);
@@ -649,10 +489,6 @@ export class ContactFormValidator {
     return result;
   }
 
-  /**
-   * Gets form data as ContactRequest object
-   * @returns ContactRequest or null if form not found
-   */
   public getFormData(): ContactRequest | null {
     if (!this.formElement) {
       return null;
@@ -684,17 +520,10 @@ export class ContactFormValidator {
     };
   }
 
-  /**
-   * Displays success message
-   * @param message - Success message
-   */
   public displaySuccess(message: string): void {
     this.errorDisplay.displaySuccess(message);
   }
 
-  /**
-   * Clears all errors
-   */
   public clearErrors(): void {
     this.errorDisplay.clearErrors();
   }
