@@ -72,10 +72,7 @@ export class ContactFormManager {
       errorElement.setAttribute("aria-hidden", "true");
     }
 
-    // Set up form submission handler
-    this.formElement.addEventListener("submit", this.handleSubmit.bind(this));
-
-    // Set up real-time validation
+    // Set up real-time validation only (form submits natively to Formspree)
     this.setupRealtimeValidation();
   }
 
@@ -358,9 +355,7 @@ export class ContactFormManager {
    * Destroy the contact form manager
    */
   public destroy(): void {
-    if (this.formElement) {
-      this.formElement.removeEventListener("submit", this.handleSubmit);
-    }
+    // Form submits natively, no cleanup needed
   }
 }
 
