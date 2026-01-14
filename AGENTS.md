@@ -1,245 +1,74 @@
 # AGENTS.md - Development Guide for LOFERSIL Landing Page
 
-This document provides essential information for agentic coding assistants (such as yourself) working on the LOFERSIL Landing Page project. It includes build commands, testing procedures, and code style guidelines to ensure consistency and quality.
+Static TypeScript website for Vercel deployment with dual language support (Portuguese/English), dark/light themes, responsive design, and Formspree contact forms.
 
-## Project Overview
-
-LOFERSIL Landing Page is a static TypeScript website built for Vercel deployment. It features dual language support (Portuguese/English), dark/light themes, responsive design, and contact form functionality using Formspree.
-
-Tech Stack:
-
-- TypeScript (relaxed configuration)
-- HTML5/CSS3 with PostCSS
-- DOMPurify for XSS protection
-- ESLint + Prettier for code quality
-- Static site generation
+Tech Stack: TypeScript (relaxed), HTML5/CSS3 + PostCSS, DOMPurify, ESLint + Prettier
 
 ## Build/Lint/Test Commands
 
-### Build Commands
-
 ```bash
-# Full production build (compiles TS, processes CSS, copies assets)
-npm run build
-
-# Individual build steps
-npm run build:compile    # Compile TypeScript to JavaScript
-npm run build:css        # Process CSS with PostCSS
-npm run build:copy       # Copy assets to dist/
-
-# Development build (watch TypeScript changes)
-npm run dev
+npm run build           # Full production build
+npm run build:compile   # Compile TypeScript to JavaScript
+npm run build:css       # Process CSS with PostCSS
+npm run build:copy      # Copy assets to dist/
+npm run dev             # Watch TypeScript changes
+npm start               # Serve built site locally (port 3000)
+npm run lint            # Lint TypeScript files
+npm run format          # Format code with Prettier
 ```
 
-### Lint and Format Commands
-
-```bash
-# Lint TypeScript files
-npm run lint
-
-# Format code (runs Prettier on TS and CSS files)
-npm run format
-```
-
-### Test Commands
-
-**Note:** This project does not currently have automated tests configured. There are no test frameworks (Jest, Vitest, etc.) installed.
-
-If you add tests:
-
-- Install a testing framework like Vitest
-- Add test scripts to package.json
-- Run single tests with: `npm run test -- --run path/to/test.ts`
-
-### Development Server
-
-```bash
-# Serve built site locally (after running npm run build)
-npm start
-```
+**Testing**: No automated tests configured. If adding tests, install Vitest and run single tests with: `npm run test -- --run path/to/test.ts`
 
 ## Code Style Guidelines
 
-### General Principles
+**General Principles**: Relaxed TypeScript (strict: false), browser-first, ES modules in `src/scripts/modules/`, error resilience
 
-- **Relaxed TypeScript**: The project uses a permissive TypeScript configuration (strict: false) to prioritize development speed over strict type checking.
-- **Browser-first**: All code runs in the browser environment. Use DOM APIs directly.
-- **Module-based**: Code is organized into ES modules in `src/scripts/modules/`.
-- **Error resilience**: Graceful error handling with user-friendly fallbacks.
+**TypeScript Config**: ES2020 target, bundler resolution, no strict mode, React-jsx, source maps enabled
 
-### File Structure
-
-```
-src/
-├── scripts/
-│   ├── index.ts                 # Main application entry
-│   ├── types.ts                 # Global type definitions
-│   ├── validation.ts            # Form validation logic
-│   └── modules/                 # Feature modules
-│       ├── ContactFormManager.ts
-│       ├── ThemeManager.ts
-│       ├── NavigationManager.ts
-│       └── ...
-└── styles/
-    └── main.css                 # Main stylesheet
-```
-
-### TypeScript Configuration
-
-- **Target**: ES2020
-- **Module**: ES2020 with bundler resolution
-- **Strict mode**: Disabled (noImplicitAny: false, strictNullChecks: false)
-- **JSX**: React-jsx (for potential future React migration)
-- **Source maps**: Enabled in development
-- **Declaration files**: Not generated
-
-### Import Style
-
-- Use ES6 imports with `.js` extension for relative imports (TypeScript requirement)
-- Import types with `import type` syntax
-- Group imports: types first, then modules
-- Relative paths only (no absolute imports)
+**Imports**: ES6 with `.js` extensions for relative imports, `import type` for types, group imports (types first)
 
 ```typescript
 import type { ContactFormManager } from "./modules/ContactFormManager.js";
 import { TranslationManager } from "./modules/TranslationManager.js";
-import { ErrorManager } from "./ErrorManager.js";
 ```
 
-### Naming Conventions
+**Naming**: Classes/Interfaces PascalCase, methods/properties camelCase, constants UPPER*SNAKE_CASE, private members with `*` prefix
 
-- **Classes**: PascalCase (e.g., `ContactFormManager`, `ThemeManager`)
-- **Interfaces**: PascalCase (e.g., `ContactFormConfig`, `ValidationResult`)
-- **Methods/Properties**: camelCase (e.g., `initializeForm()`, `currentTheme`)
-- **Constants**: UPPER_SNAKE_CASE for configuration constants
-- **Private members**: Prefix with underscore (e.g., `_config`, `_validator`)
-- **Files**: PascalCase for class files, camelCase for utilities
+**Types**: Explicit types for public APIs, allow implicit `any` for simple cases, union types for variants, prefer interfaces
 
-### Type Annotations
-
-- Use explicit types for public APIs and complex objects
-- Allow implicit `any` for simple cases (due to relaxed config)
-- Use union types for variant values (e.g., `"light" | "dark"`)
-- Prefer interfaces over types for object shapes
-
-### Error Handling
-
-- Use try-catch for operations that might fail (localStorage, DOM queries)
-- Log warnings for non-critical errors, not errors
-- Provide user feedback for form validation errors
-- Graceful degradation when features fail
+**Error Handling**: Try-catch for localStorage/DOM, log warnings (not errors), user feedback for validation, graceful degradation
 
 ```typescript
 try {
   localStorage.setItem(key, value);
 } catch (error) {
-  console.warn("Failed to save to localStorage:", error);
-  // Continue without persistence
+  console.warn("Failed to save:", error);
 }
 ```
 
-### Code Organization
+**Organization**: Single responsibility modules, JSDoc for public APIs, private methods with `#`, config interfaces, clean up event listeners
 
-- **Single Responsibility**: Each module handles one feature
-- **JSDoc Comments**: Document all public classes and methods
-- **Private Methods**: Use for internal logic, prefixed with `#` if supported
-- **Configuration Objects**: Use interfaces for complex config objects
-- **Event Listeners**: Clean up on destroy to prevent memory leaks
+**DOM**: Cache element references, modern APIs, CSS classes over styles, sanitize with DOMPurify
 
-### DOM Manipulation
+**Performance**: Lazy loading, debounced scroll/resize, minimize DOM queries, IntersectionObserver
 
-- Query elements once in constructor, cache references
-- Use modern DOM APIs (querySelector, classList, etc.)
-- Avoid direct style manipulation; use CSS classes
-- Sanitize user input with DOMPurify before insertion
+**CSS**: PostCSS + Autoprefixer, CSSnano, BEM naming, CSS custom properties, mobile-first
 
-### Performance Considerations
+**Linting**: `no-unused-vars: warn`, `no-explicit-any: warn`, `no-console: warn`, `no-debugger: error`, `prefer-const: error`, `no-var: error`
 
-- Lazy load images and heavy features
-- Debounce scroll/resize handlers
-- Minimize DOM queries in loops
-- Use IntersectionObserver for scroll-based animations
+**Commits**: Conventional commits (`feat:`, `fix:`, `docs:`), run `npm run format` first, focused changes
 
-### CSS Guidelines
-
-- Use PostCSS with Autoprefixer for browser compatibility
-- CSSnano minification in production
-- BEM-like naming: `.component-name__element--modifier`
-- CSS custom properties for theming
-- Mobile-first responsive design
-
-### Linting Rules
-
-Based on ESLint config:
-
-- `@typescript-eslint/no-unused-vars`: Warn
-- `@typescript-eslint/no-explicit-any`: Warn
-- `@typescript-eslint/explicit-function-return-type`: Off
-- `no-console`: Warn (use for debugging)
-- `no-debugger`: Error
-- `prefer-const`: Error
-- `no-var`: Error
-
-### Commit Guidelines
-
-- Use conventional commits: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`
-- Run `npm run format` before committing
-- Keep commits focused on single changes
-
-### Deployment
-
-- Automatic deployment via GitHub Actions to Vercel
-- Manual deployment: `npm run build` then deploy dist/ folder
-- Environment variables set in Vercel dashboard
-
-## Testing Strategy
-
-**Current State**: No automated tests.
-
-**Recommended Approach**:
-
-1. Add Vitest for unit testing
-2. Test critical paths: form validation, theme switching, navigation
-3. Mock DOM APIs for isolated testing
-4. Add E2E tests with Playwright if needed
-
-Example test structure:
-
-```
-src/
-├── scripts/
-│   └── modules/
-│       └── ContactFormManager.test.ts
-```
+**Deployment**: GitHub Actions to Vercel, or `npm run build` then deploy `dist/`
 
 ## Development Workflow
 
-1. **Setup**: `npm install`
-2. **Development**: `npm run dev` (watch mode)
-3. **Testing**: Manual testing in browser
-4. **Linting**: `npm run lint`
-5. **Formatting**: `npm run format`
-6. **Build**: `npm run build`
-7. **Deploy**: Push to main branch or manual Vercel deploy
+Setup → Dev (`npm run dev`) → Test manually → Lint (`npm run lint`) → Format (`npm run format`) → Build → Deploy
 
 ## AI Assistant Guidelines
 
-- Prefer functional programming where possible
-- Keep methods small and focused
-- Add JSDoc for new public APIs
-- Test changes in multiple browsers
-- Follow existing patterns in similar modules
-- Use TypeScript types even in relaxed mode
-- Document complex logic with comments
-- Check console for warnings/errors during development
+Prefer functional programming, small focused methods, JSDoc for public APIs, test in multiple browsers, follow existing patterns, use types even in relaxed mode, document complex logic, check console for warnings
 
-## Security Considerations
+## Security
 
-- Sanitize all user inputs with DOMPurify
-- Use HTTPS for external requests
-- Validate form data on client and server side
-- Avoid storing sensitive data in localStorage
-- Implement CSP headers if possible
-
-This guide should be updated as the project evolves. Last updated: January 2025.</content>
+Sanitize inputs with DOMPurify, use HTTPS, validate client/server, avoid sensitive localStorage, implement CSP headers</content>
 <parameter name="filePath">AGENTS.md

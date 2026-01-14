@@ -25,6 +25,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Body scroll lock for mobile navigation */
+body.menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
 /* Dark mode body styles */
 [data-theme="dark"] body {
   color: var(--body-text);
@@ -535,7 +543,6 @@ img.lazy-loaded {
   position: absolute;
   top: 0;
   left: 0;
-  width: 280px;
   width: 85vw;
   max-width: 280px;
   height: 100%;
@@ -543,6 +550,7 @@ img.lazy-loaded {
   box-shadow: var(--shadow-xl);
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-x: hidden;
 }
 
 .nav-list {
@@ -553,7 +561,6 @@ img.lazy-loaded {
   align-items: center;
   gap: var(--space-8);
   position: relative;
-  z-index: var(--z-modal);
 }
 
 .nav-link {
@@ -2406,8 +2413,8 @@ img.lazy-loaded {
     gap: var(--space-4);
     align-items: stretch;
     width: 100%;
-    max-width: 280px;
     max-width: 85vw;
+    overflow-x: hidden;
   }
 
   #nav-menu .nav-link {
