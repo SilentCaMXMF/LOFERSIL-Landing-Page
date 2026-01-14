@@ -92,6 +92,8 @@
   top: 0;
   left: 0;
   width: 280px;
+  width: 85vw;
+  max-width: 280px;
   height: 100%;
   background: var(--white);
   box-shadow: var(--shadow-xl);
@@ -281,7 +283,7 @@
 }
 
 /* Desktop Navigation Styles */
-@media (min-width: 769px) {
+@media (min-width: 768px) {
   #nav-menu {
     display: flex !important;
     position: static;

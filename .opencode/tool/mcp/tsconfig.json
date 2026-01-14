@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolvePackageJsonExports": true,
+    "resolvePackageJsonImports": true,
+    "target": "ES2022",
+    "skipLibCheck": true,
+
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["*.ts"],
+  "exclude": ["node_modules"]
+}

@@ -6,7 +6,7 @@ export default {
     // Add vendor prefixes for better browser compatibility
     autoprefixer,
 
-    // Minify CSS in production
+    // Minify CSS in production (with conservative settings to preserve min/max functions)
     process.env.NODE_ENV === "production"
       ? cssnano({
           preset: [
@@ -15,10 +15,10 @@ export default {
               discardComments: { removeAll: true },
               normalizeWhitespace: true,
               minifySelectors: true,
-              minifyFontValues: true,
-              minifyParams: true,
-              convertValues: true,
-              reduceIdents: true,
+              minifyFontValues: false,
+              minifyParams: false,
+              convertValues: false,
+              reduceIdents: false,
               colormin: true,
             },
           ],

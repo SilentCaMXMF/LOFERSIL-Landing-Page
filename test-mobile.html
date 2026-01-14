@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mobile Navigation Test</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+      .test-container {
+        padding: 20px;
+      }
+      .viewport-info {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: #333;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 1000;
+      }
+      iframe {
+        width: 100%;
+        border: 2px solid #ccc;
+        margin: 10px 0;
+      }
+      .iframe-container {
+        margin: 20px 0;
+      }
+      .iframe-label {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="viewport-info" id="viewportInfo">
+      Current viewport: <span id="viewportWidth"></span>px
+    </div>
+
+    <div class="test-container">
+      <h1>Mobile Navigation Test</h1>
+      <p>
+        Testing mobile navigation drawer functionality across different viewport
+        sizes.
+      </p>
+
+      <div class="iframe-container">
+        <div class="iframe-label">320px width (Small mobile)</div>
+        <iframe
+          src="http://localhost:3000"
+          style="height: 600px"
+          width="320"
+        ></iframe>
+      </div>
+
+      <div class="iframe-container">
+        <div class="iframe-label">375px width (iPhone)</div>
+        <iframe
+          src="http://localhost:3000"
+          style="height: 600px"
+          width="375"
+        ></iframe>
+      </div>
+
+      <div class="iframe-container">
+        <div class="iframe-label">414px width (Large mobile)</div>
+        <iframe
+          src="http://localhost:3000"
+          style="height: 600px"
+          width="414"
+        ></iframe>
+      </div>
+
+      <div class="iframe-container">
+        <div class="iframe-label">768px width (Tablet - breakpoint test)</div>
+        <iframe
+          src="http://localhost:3000"
+          style="height: 600px"
+          width="768"
+        ></iframe>
+      </div>
+    </div>
+
+    <script>
+      function updateViewportInfo() {
+        document.getElementById("viewportWidth").textContent =
+          window.innerWidth;
+      }
+
+      window.addEventListener("resize", updateViewportInfo);
+      updateViewportInfo();
+
+      // Instructions for testing
+      console.log("Mobile Navigation Test Instructions:");
+      console.log(
+        "1. For each iframe, click the hamburger menu to open navigation",
+      );
+      console.log("2. Verify the drawer width is responsive: min(280px, 85vw)");
+      console.log("3. Check navigation positioning is within drawer bounds");
+      console.log("4. Test active state animations work properly");
+      console.log("5. Verify no CSS conflicts or duplicate rules");
+      console.log("");
+      console.log("Expected drawer widths:");
+      console.log("- 320px: 272px (85vw)");
+      console.log("- 375px: 280px (min(280px, 85vw))");
+      console.log("- 414px: 280px (min(280px, 85vw))");
+      console.log("- 768px: Desktop navigation (no drawer)");
+    </script>
+  </body>
+</html>
