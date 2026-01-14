@@ -42,6 +42,36 @@ export class NavigationManager {
   private setupEventListeners(): void {
     // Navigation toggle
     this.navToggle?.addEventListener("click", () => this.toggleMobileMenu());
+
+    // Handle navigation link clicks to close mobile menu
+    const navLinks = document.querySelectorAll(".nav-link");
+    navLinks.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        // Get the target href
+        const href = link.getAttribute("href");
+
+        // Close mobile menu when nav link is clicked
+        if (this.isMenuOpen) {
+          this.closeMobileMenu();
+        }
+
+        // Smooth scroll to section if it's an anchor link
+        if (href && href.startsWith("#")) {
+          const targetElement = document.querySelector(href);
+          if (targetElement) {
+            setTimeout(() => {
+              targetElement.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }, 300); // Wait for menu close animation
+          }
+        }
+      });
+    });
+
     // Close menu when clicking outside
     document.addEventListener("click", (e) => this.handleOutsideClick(e));
     // Close menu on escape key and handle focus trap
