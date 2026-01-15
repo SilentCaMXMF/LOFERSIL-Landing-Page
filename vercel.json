@@ -8,10 +8,12 @@
   "redirects": [
     {
       "source": "/(.*)",
-      "has": {
-        "type": "host",
-        "value": "lofersil.vercel.app"
-      },
+      "has": [
+        {
+          "type": "host",
+          "value": "lofersil.vercel.app"
+        }
+      ],
       "destination": "https://lofersil.pt/$1",
       "permanent": true
     }
