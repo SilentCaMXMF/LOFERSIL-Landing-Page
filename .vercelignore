@@ -61,23 +61,9 @@ Thumbs.db
 *.test.js
 *.spec.js
 eslint.config.js
-vitest.config.ts
 
-# Build and utility scripts
-build.js
-tools/build/build.js
-extract_tasks.js
-optimize-images.js
-update-task-statuses.cjs
-make_executable.sh
-test-*.sh
-
-# Report files
+# Report files (if they exist)
 accessibility-report.json
 axe-report.json
 axe-report-fixed.json
 pa11y-report.json
-
-# Development only directories
-tools/
-k8s/

@@ -6,8 +6,18 @@
   }
 
   .about-gallery {
-    grid-template-columns: 1fr 1fr;
-    min-height: 20rem;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    min-height: 16rem;
+  }
+
+  /* Tablet: Bring back two columns */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .about-gallery {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+      min-height: 20rem;
+    }
   }
 }
 
