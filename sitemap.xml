@@ -5,75 +5,75 @@
   
   <!-- Main page -->
   <url>
-    <loc>https://lofersil.pt/</loc>
+    <loc>https://lofersil.vercel.app/</loc>
     <lastmod>2025-01-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.pt/en/" />
-    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.pt/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.pt/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/" />
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/Frente_loja_100.webp</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/Frente_loja_100.webp</image:loc>
       <image:title>LOFERSIL Store Front - Papelaria e Material de Escritório em Guimarães</image:title>
       <image:caption>Fachada da LOFERSIL, a sua papelaria de confiança em Guimarães. Venda de material de escritório, papelaria e artigos para escola.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/Interior.jpg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/Interior.jpg</image:loc>
       <image:title>LOFERSIL Store Interior - Wide Range of Stationery Products</image:title>
       <image:caption>Interior da LOFERSIL com grande variedade de material de escritório, papelaria e artigos escolares. Visite-nos em Guimarães.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/logo.jpg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/logo.jpg</image:loc>
       <image:title>LOFERSIL Logo - Papelaria e Material de Escritório em Guimarães</image:title>
       <image:caption>Logótipo oficial da LOFERSIL, especializada em papelaria, material de escritório e artigos escolares em Guimarães, Portugal.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/hero-image.svg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/hero-image.svg</image:loc>
       <image:title>LOFERSIL Hero Image - Stationery and Office Supplies</image:title>
       <image:caption>Imagem ilustrativa da LOFERSIL apresentando material de escritório e papelaria de qualidade.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/Tinteiros.jpg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/Tinteiros.jpg</image:loc>
       <image:title>Tinteiros - Printer Ink Cartridges at LOFERSIL</image:title>
       <image:caption>Tinteiros originais e compatíveis para impressoras de todas as marcas. Encontre o tinteiro ideal na LOFERSIL.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/Mochilas.jpg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/Mochilas.jpg</image:loc>
       <image:title>Mochilas - School and Travel Backpacks</image:title>
       <image:caption>Mochilas escolares e de viagem de alta qualidade. Resistência e conforto para todas as idades na LOFERSIL.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/Dossiers.jpg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/Dossiers.jpg</image:loc>
       <image:title>Dossiers - Professional Document Organizers</image:title>
       <image:caption>Dossiers de arquivo e apresentação para documentos profissionais. Organize os seus papéis com qualidade na LOFERSIL.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/Canetas_oferta.jpg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/Canetas_oferta.jpg</image:loc>
       <image:title>Canetas de Oferta - Premium Pens as Gifts</image:title>
       <image:caption>Canetas de oferta de alta qualidade para presentes corporativos e pessoais. A melhor seleção na LOFERSIL.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/Caixas_joias.jpg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/Caixas_joias.jpg</image:loc>
       <image:title>Caixas de Joias - Jewelry Gift Boxes</image:title>
       <image:caption>Caixas para joias e presentes elegantes. Embalagens premium para as suas ofertas na LOFERSIL.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/Bebés_nenucos.jpg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/Bebés_nenucos.jpg</image:loc>
       <image:title>Bebés Nenucos - Baby Products and Gifts</image:title>
       <image:caption>Produtos para bebés e artigos de oferta. Presentes especiais para os mais pequenos na LOFERSIL.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/mais_bebe_nenucos.jpg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/mais_bebe_nenucos.jpg</image:loc>
       <image:title>Mais Bebé Nenucos - Extended Baby Product Collection</image:title>
       <image:caption>Coleção alargada de produtos para bebés e artigos de oferta. Encontre o presente ideal na LOFERSIL.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/reborn_doll.jpg</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/reborn_doll.jpg</image:loc>
       <image:title>Reborn Dolls - Special Collectible Dolls</image:title>
       <image:caption>Bonecas reborn e artigos colecionáveis. Peças especiais para colecionadores na LOFERSIL.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://lofersil.pt/assets/images/postais_oferta.webp</image:loc>
+      <image:loc>https://lofersil.vercel.app/assets/images/postais_oferta.webp</image:loc>
       <image:title>Postais de Oferta - Greeting Cards and Stationery</image:title>
       <image:caption>Postais e cartões de oferta para todas as ocasiões. Dê o seu toque pessoal com a LOFERSIL.</image:caption>
     </image:image>
@@ -81,57 +81,57 @@
   
   <!-- Privacy Policy -->
   <url>
-    <loc>https://lofersil.pt/privacy.html</loc>
+    <loc>https://lofersil.vercel.app/privacy.html</loc>
     <lastmod>2025-01-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.pt/en/privacy.html" />
-    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.pt/privacy.html" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.pt/en/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/privacy.html" />
   </url>
   
   <!-- Terms and Conditions -->
   <url>
-    <loc>https://lofersil.pt/terms.html</loc>
+    <loc>https://lofersil.vercel.app/terms.html</loc>
     <lastmod>2025-01-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.pt/en/terms.html" />
-    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.pt/terms.html" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.pt/en/terms.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/terms.html" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/terms.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/terms.html" />
   </url>
 
   <!-- English Home Page -->
   <url>
-    <loc>https://lofersil.pt/en/</loc>
+    <loc>https://lofersil.vercel.app/en/</loc>
     <lastmod>2025-01-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.pt/en/" />
-    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.pt/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.pt/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/" />
   </url>
 
   <!-- English Privacy Policy -->
   <url>
-    <loc>https://lofersil.pt/en/privacy.html</loc>
+    <loc>https://lofersil.vercel.app/en/privacy.html</loc>
     <lastmod>2025-01-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.pt/en/privacy.html" />
-    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.pt/privacy.html" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.pt/en/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/privacy.html" />
   </url>
 
   <!-- English Terms and Conditions -->
   <url>
-    <loc>https://lofersil.pt/en/terms.html</loc>
+    <loc>https://lofersil.vercel.app/en/terms.html</loc>
     <lastmod>2025-01-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.pt/en/terms.html" />
-    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.pt/terms.html" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.pt/en/terms.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/terms.html" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/terms.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/terms.html" />
   </url>
 
 </urlset>

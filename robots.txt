@@ -134,4 +134,4 @@ Disallow: /docs/
 # SITEMAP REFERENCE
 # ===================================================================
 # Primary sitemap for search engines
-Sitemap: https://lofersil.pt/sitemap.xml
+Sitemap: https://lofersil.vercel.app/sitemap.xml
