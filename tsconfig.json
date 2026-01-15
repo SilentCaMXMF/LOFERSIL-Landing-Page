@@ -37,7 +37,8 @@
     "src/scripts/modules/ThemeManager.ts",
     "src/scripts/modules/TranslationManager.ts",
     "src/scripts/modules/Utils.ts",
-    "src/scripts/modules/simpleLogger.ts"
+    "src/scripts/modules/simpleLogger.ts",
+    "src/scripts/modules/SEOMetrics.ts"
   ],
   "exclude": [
     "node_modules",

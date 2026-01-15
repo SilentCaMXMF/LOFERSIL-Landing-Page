@@ -18,13 +18,19 @@
     "langToggle": "EN"
   },
   "skip": {
-    "mainContent": "Skip to main content",
-    "navigation": "Skip to navigation"
+    "toContent": "Skip to main content",
+    "toNavigation": "Skip to navigation"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "about": "About",
+    "privacy": "Privacy",
+    "terms": "Terms"
   },
   "hero": {
     "title": "Discover Excellence in Lisbon",
     "subtitle": "Premium Products & Trusted Services",
-    "description": "Serving Lisbon for over 30 years with superior quality products and personalized service. From stationery to baby items, you'll find everything you need in a trusted family store.",
+    "description": "Serving center of Lisbon for over 30 years with superior quality products and personalized service. From stationery to baby items, you'll find everything you need in a trusted family store.",
     "exploreProducts": "View Featured Products",
     "ourServices": "Discover Our Services"
   },
@@ -37,7 +43,7 @@
     },
     "personalizedService": {
       "title": "Personalized Service",
-      "description": "Our team knows each product and is ready to offer specialized consulting for your needs."
+      "description": "Our team knows each product and is ready to offer specialized consulting for your needs. We serve customers in Lisbon with dedication and care."
     },
     "traditionTrust": {
       "title": "Tradition & Trust",
@@ -62,9 +68,9 @@
     }
   },
   "about": {
-    "title": "Welcome to LOFERSIL",
-    "subtitle": "Your trusted local store in the heart of Lisbon",
-    "description": "Enter our welcoming store at R. Gomes Freire 187 B and discover a careful selection of quality products. Our friendly team is here to help you find exactly what you need.",
+    "title": "About LOFERSIL",
+    "subtitle": "Your trusted local store in heart of Lisbon",
+    "description": "For more than three decades, we have been reference for premium products in heart of Lisbon. Our store at R. Gomes Freire 187 B, in Saldanha neighborhood, offers a privileged location, accessible from all of Lisbon. Enjoy a unique experience where quality meets personalized service. Each product is carefully selected to ensure that our customers find exactly what they're looking for, with the trust of a family store.",
     "location": "Central Location in Lisbon",
     "physicalStore": "Physical Store Experience",
     "expertStaff": "Specialized Team Assistance"
@@ -137,6 +143,46 @@
         "tooShort": "Message must be at least 10 characters long",
         "tooLong": "Message must be less than 2000 characters"
       }
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to most common questions about our products and services",
+    "q1": {
+      "question": "Where is LOFERSIL located?",
+      "answer": "LOFERSIL is located at Rua Gomes Freire 187 B, in Saldanha neighborhood, Lisbon. We are easily accessible via metro (Saldanha station, Blue and Red lines) with just a 5-minute walk. We also offer free parking in area."
+    },
+    "q2": {
+      "question": "What are the opening hours?",
+      "answer": "We are open Monday to Friday from 09:00 to 19:00, and Saturdays from 09:00 to 13:00. We are closed on Sundays and holidays. We recommend scheduling a visit for specialized services."
+    },
+    "q3": {
+      "question": "What types of products do you sell?",
+      "answer": "We offer a wide range of premium products including stationery, office supplies, baby items (reborn dolls), jewelry boxes, promotional pens, backpacks and ink cartridges. All products are carefully selected by our specialized team."
+    },
+    "q4": {
+      "question": "Do you offer binding and lamination services?",
+      "answer": "Yes! We offer professional binding and lamination services. Protect and organize your documents with our premium finishing. The turnaround time varies depending on the quantity and complexity of work."
+    },
+    "q5": {
+      "question": "Do you accept orders by phone or email?",
+      "answer": "Yes, we accept orders by phone (+351 21 353 1555) and email (geral@lofersil.pt). For customized items or special services, we recommend contacting us in advance to ensure availability."
+    },
+    "q6": {
+      "question": "What payment methods do you accept?",
+      "answer": "We accept cash payments, credit cards, debit cards and Multibanco. All payments are processed securely. For businesses, we also accept monthly invoicing by prior agreement."
+    },
+    "q7": {
+      "question": "Do you deliver in Lisbon?",
+      "answer": "Yes, we deliver in Lisbon. For orders over €100, delivery is free. For lower values, we apply a moderate delivery fee. Delivery time varies between 1-3 business days depending on location."
+    },
+    "q8": {
+      "question": "What is the minimum amount for free delivery?",
+      "answer": "The minimum amount for free delivery in Lisbon is €100. This value applies only to the urban area of Lisbon. For peripheral areas, an additional fee may apply. Contact us for a specific quote."
+    },
+    "q9": {
+      "question": "Can I track my order sent through DHL?",
+      "answer": "Yes! As an authorized DHL service point, we can ship your orders with real-time tracking. After shipping, we will provide the tracking number to follow the delivery. You can also track directly on the DHL website through our link."
     }
   },
   "footer": {

@@ -1,8 +1,12 @@
+import postcssImport from "postcss-import";
 import autoprefixer from "autoprefixer";
 import cssnano from "cssnano";
 
 export default {
   plugins: [
+    // Import CSS from other files
+    postcssImport(),
+
     // Add vendor prefixes for better browser compatibility
     autoprefixer,
 

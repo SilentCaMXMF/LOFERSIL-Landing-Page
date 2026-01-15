@@ -4,5 +4,16 @@
   "outputDirectory": "dist",
   "framework": null,
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": {
+        "type": "host",
+        "value": "lofersil.vercel.app"
+      },
+      "destination": "https://lofersil.pt/$1",
+      "permanent": true
+    }
+  ]
 }

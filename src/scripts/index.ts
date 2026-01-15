@@ -8,6 +8,7 @@ import { NavigationManager } from "./modules/NavigationManager.js";
 import { ScrollManager } from "./modules/ScrollManager.js";
 import { simpleLogger } from "./modules/simpleLogger.js";
 import { ThemeManager } from "./modules/ThemeManager.js";
+import { getSEOMetrics } from "./modules/SEOMetrics.js";
 
 /**
  * Main application class
@@ -20,6 +21,7 @@ class LOFERSILLandingPage {
   private logger = simpleLogger;
   private contactFormManager: ContactFormManager | null = null;
   private themeManager!: ThemeManager;
+  private seoMetrics = getSEOMetrics();
 
   constructor() {
     this.mainContent = null;
@@ -27,11 +29,14 @@ class LOFERSILLandingPage {
   }
 
   /**
-   * Initialize the application
+   * Initialize application
    */
   async initializeApp() {
     try {
       this.setupDOMElements();
+
+      // Initialize SEO metrics tracking
+      this.seoMetrics.initialize();
 
       this.translationManager = new TranslationManager();
       this.navigationManager = new NavigationManager();
@@ -44,6 +49,9 @@ class LOFERSILLandingPage {
       this.themeManager = new ThemeManager();
 
       void this.initializeContactFormLazily();
+
+      // Log SEO metrics report after page load
+      this.logSEOMetricsReport();
     } catch (error) {
       console.error("Application initialization failed:", error);
     }
@@ -69,11 +77,28 @@ class LOFERSILLandingPage {
       langToggle.setAttribute("data-translate", "nav.langToggle");
 
       langToggle.addEventListener("click", () => {
-        const currentLang = this.translationManager.getCurrentLanguage();
-        const newLang = currentLang === "pt" ? "en" : "pt";
+        const currentLang = this.translationManager.getCurrentLanguage() as
+          | "pt"
+          | "en";
+        const newLang: "pt" | "en" = currentLang === "pt" ? "en" : "pt";
+
         this.translationManager.switchLanguage(newLang);
       });
     }
+  }
+
+  /**
+   * Setup theme change listener
+   */
+  setupThemeAnalyticsListener() {
+    // Listen for theme change custom event dispatched by ThemeManager
+    window.addEventListener("themeChange", (e) => {
+      const customEvent = e as { detail?: { theme: string } };
+      // Theme change is handled by ThemeManager, no analytics tracking needed
+      if (customEvent.detail && customEvent.detail.theme) {
+        // Theme changed successfully
+      }
+    });
   }
 
   /**
@@ -108,9 +133,63 @@ class LOFERSILLandingPage {
       }
     }
   }
+
+  /**
+   * Log SEO metrics report after page load
+   */
+  logSEOMetricsReport(): void {
+    window.addEventListener("load", () => {
+      // Wait a bit for all metrics to be measured
+      window.setTimeout(() => {
+        this.seoMetrics.measureCoreWebVitals();
+        const report = this.seoMetrics.getMetricsReport();
+
+        // Only log in development mode
+        if (
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1"
+        ) {
+          console.group("📊 SEO Metrics Report");
+          console.log("Overall Score:", report.score.overall);
+          console.log("Core Web Vitals Score:", report.score.coreWebVitals);
+          console.log(
+            "Mobile Responsiveness:",
+            report.score.mobileResponsiveness,
+          );
+          console.log("Accessibility Score:", report.score.accessibility);
+          console.log("SEO Practices Score:", report.score.seoPractices);
+          console.log("Performance Metrics:", report.performance);
+          console.log("Mobile Metrics:", report.mobile);
+          console.log("Accessibility Metrics:", report.accessibility);
+          console.log("SEO Practices Metrics:", report.seoPractices);
+
+          if (report.issues.length > 0) {
+            console.group("⚠️ Performance Issues");
+            report.issues.forEach((issue) => {
+              console.warn(
+                `[${issue.severity.toUpperCase()}] ${issue.message}`,
+                issue,
+              );
+            });
+            console.groupEnd();
+          }
+
+          if (report.recommendations.length > 0) {
+            console.group("💡 Recommendations");
+            report.recommendations.forEach((rec) => {
+              console.log(rec);
+            });
+            console.groupEnd();
+          }
+
+          console.groupEnd();
+        }
+      }, 2000);
+    });
+  }
 }
 
-// Initialize the application when DOM is ready
+// Initialize application when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     new LOFERSILLandingPage();

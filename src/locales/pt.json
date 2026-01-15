@@ -18,13 +18,19 @@
     "langToggle": "PT"
   },
   "skip": {
-    "mainContent": "Ir para o conteúdo principal",
-    "navigation": "Ir para a navegação"
+    "toContent": "Ir para o conteúdo principal",
+    "toNavigation": "Ir para a navegação"
+  },
+  "breadcrumb": {
+    "home": "Início",
+    "about": "Sobre",
+    "privacy": "Privacidade",
+    "terms": "Termos"
   },
   "hero": {
     "title": "Descubra a Excelência em Lisboa",
     "subtitle": "Produtos Premium & Serviços de Confiança",
-    "description": "Há mais de 30 anos servindo Lisboa com produtos de qualidade superior e atendimento personalizado. Da papelaria aos artigos para bebé, encontrará tudo o que precisa numa loja de confiança familiar.",
+    "description": "Há mais de 30 anos encantando famílias e empresas no centro de Lisboa com produtos premium e atendimento excepcional. Descubra nossa curadoria exclusiva de itens que combinam qualidade, estilo e funcionalidade.",
     "exploreProducts": "Ver Produtos em Destaque",
     "ourServices": "Conheça Nossos Serviços"
   },
@@ -37,7 +43,7 @@
     },
     "personalizedService": {
       "title": "Atendimento Personalizado",
-      "description": "A nossa equipe conhece cada produto e está pronta para oferecer consultoria especializada para suas necessidades."
+      "description": "A nossa equipe conhece cada produto e está pronta para oferecer consultoria especializada para suas necessidades. Atendemos clientes em Lisboa com dedicação e cuidado."
     },
     "traditionTrust": {
       "title": "Tradição & Confiança",
@@ -62,9 +68,9 @@
     }
   },
   "about": {
-    "title": "Bem-vindo à LOFERSIL",
+    "title": "Sobre a LOFERSIL",
     "subtitle": "A sua loja local de confiança no coração de Lisboa",
-    "description": "Entre na nossa loja acolhedora na R. Gomes Freire 187 B e descubra uma seleção cuidadosa de produtos de qualidade. A nossa equipa amigável está aqui para ajudar a encontrar exatamente o que precisa.",
+    "description": "Há mais de três décadas, somos a referência em produtos premium no coração de Lisboa. A nossa loja na R. Gomes Freire 187 B, no bairro de Saldanha, oferece uma localização privilegiada, acessível de todo o Lisboa. Desfrute de uma experiência única onde qualidade encontra atendimento personalizado. Cada produto é selecionado com cuidado para garantir que os nossos clientes encontrem exatamente o que procuram, com a confiança de uma loja familiar.",
     "location": "Localização Central em Lisboa",
     "physicalStore": "Experiência de Loja Física",
     "expertStaff": "Assistência de Equipa Especializada"
@@ -137,6 +143,46 @@
         "tooShort": "Mensagem deve ter pelo menos 10 caracteres",
         "tooLong": "Mensagem deve ter menos de 2000 caracteres"
       }
+    }
+  },
+  "faq": {
+    "title": "Perguntas Frequentes",
+    "subtitle": "Encontre respostas para as perguntas mais comuns sobre os nossos produtos e serviços",
+    "q1": {
+      "question": "Onde fica a LOFERSIL?",
+      "answer": "A LOFERSIL está localizada na Rua Gomes Freire 187 B, no bairro de Saldanha, Lisboa. Somos facilmente acessíveis através do metro (estação Saldanha, linhas Azul e Vermelha) com apenas 5 minutos a pé. Também dispomos de estacionamento gratuito na zona."
+    },
+    "q2": {
+      "question": "Quais são os horários de funcionamento?",
+      "answer": "Estamos abertos de segunda a sexta-feira das 09:00 às 19:00, e aos sábados das 09:00 às 13:00. Fechamos aos domingos e feriados. Recomendamos marcar visita para serviços especializados."
+    },
+    "q3": {
+      "question": "Que tipos de produtos vendem?",
+      "answer": "Oferecemos uma vasta gama de produtos premium incluindo papelaria, material de escritório, artigos para bebés (bonecos reborn), caixas de joias, canetas promocionais, mochilas e cartuchos de tinta. Todos os produtos são cuidadosamente selecionados pela nossa equipa especializada."
+    },
+    "q4": {
+      "question": "Oferecem serviços de encadernação e plastificação?",
+      "answer": "Sim! Oferecemos serviços profissionais de encadernação e plastificação. Proteja e organize os seus documentos com o nosso acabamento premium. O tempo de execução varia consoante a quantidade e complexidade do trabalho."
+    },
+    "q5": {
+      "question": "Aceitam encomendas por telefone ou email?",
+      "answer": "Sim, aceitamos encomendas por telefone (+351 21 353 1555) e email (geral@lofersil.pt). Para artigos personalizados ou serviços especiais, recomendamos contactar-nos com antecedência para garantir disponibilidade."
+    },
+    "q6": {
+      "question": "Quais são os métodos de pagamento aceites?",
+      "answer": "Aceitamos pagamentos em numerário, cartão de crédito, cartão de débito e Multibanco. Todos os pagamentos são processados de forma segura. Para empresas, também aceitamos faturação mensal mediante acordo prévio."
+    },
+    "q7": {
+      "question": "Fazem entregas em Lisboa?",
+      "answer": "Sim, efetuamos entregas em Lisboa. Para encomendas superiores a 100€, a entrega é gratuita. Para valores inferiores, aplicamos uma taxa de entrega moderada. O prazo de entrega varia entre 1-3 dias úteis dependendo da localização."
+    },
+    "q8": {
+      "question": "Qual é o valor mínimo para entrega gratuita?",
+      "answer": "O valor mínimo para entrega gratuita em Lisboa é de 100€. Este valor aplica-se apenas à área urbana de Lisboa. Para zonas periféricas, pode aplicar uma taxa adicional. Entre em contacto para obter um orçamento específico."
+    },
+    "q9": {
+      "question": "Posso rastrear a minha encomenda enviada através da DHL?",
+      "answer": "Sim! Como ponto de serviço DHL autorizado, podemos enviar as suas encomendas com tracking em tempo real. Após o envio, forneceremos o número de rastreamento para acompanhar a entrega. Também pode rastrear diretamente no site da DHL através do nosso link."
     }
   },
   "footer": {

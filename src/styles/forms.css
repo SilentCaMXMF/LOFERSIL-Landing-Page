@@ -95,6 +95,67 @@
   padding: 0 var(--container-padding);
 }
 
+.contact-location-info {
+  margin-bottom: var(--space-8);
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+}
+
+.contact-location-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.contact-location-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.contact-location-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.contact-location-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.contact-location-content {
+  flex: 1;
+  font-size: var(--text-base);
+  color: var(--gray-700);
+  line-height: 1.6;
+}
+
+.contact-location-content strong {
+  color: var(--gray-900);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .contact-location-info {
+    padding: var(--space-5);
+  }
+
+  .contact-location-title {
+    font-size: var(--text-base);
+  }
+
+  .contact-location-content {
+    font-size: var(--text-sm);
+  }
+}
+
 .contact-form-element {
   background-color: var(--white);
   border-radius: var(--radius-xl);
@@ -419,6 +480,23 @@
 [data-theme="dark"] .contact-form-element {
   background-color: var(--card-bg);
   border-color: var(--card-border);
+}
+
+[data-theme="dark"] .contact-location-info {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .contact-location-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .contact-location-content {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .contact-location-content strong {
+  color: var(--text-primary);
 }
 
 /* Form Labels */
