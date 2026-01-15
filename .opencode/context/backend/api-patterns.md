@@ -298,7 +298,7 @@ router.post('/contact', contactLimiter, validateContactForm, async (req, res) =>
     // Prepare email content
     const mailOptions = {
       from: `"${name}" <${email}>`,
-      to: process.env.CONTACT_EMAIL || 'contact@lofersil.pt',
+      to: process.env.CONTACT_EMAIL || 'lofersilpapelaria@gmail.com',
       subject: `LOFERSIL - ${subject}`,
       html: generateContactEmailHTML(name, email, phone, subject, message),
       text: generateContactEmailText(name, email, phone, subject, message),
@@ -414,7 +414,7 @@ Enviado através do formulário de contato em ${new Date().toLocaleString('pt-PT
 // Send confirmation email to user
 async function sendConfirmationEmail(userEmail, userName, subject) {
   const confirmationOptions = {
-    from: process.env.CONTACT_EMAIL || 'contact@lofersil.pt',
+    from: process.env.CONTACT_EMAIL || 'lofersilpapelaria@gmail.com',
     to: userEmail,
     subject: 'Confirmação de contato - LOFERSIL',
     html: `
