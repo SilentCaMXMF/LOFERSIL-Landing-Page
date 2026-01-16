@@ -32,8 +32,23 @@ jobs:
       - name: Run linting
         run: npm run lint
 
+      - name: TypeScript compilation check
+        run: npm run build:compile
+
+      - name: CSS processing check
+        run: npm run build:css
+
       - name: Build project
         run: npm run build
+
+      - name: Local server testing
+        run: |
+          npm start &
+          SERVER_PID=$!
+          sleep 10
+          curl -f http://localhost:3000 || exit 1
+          kill $SERVER_PID || true
+        timeout-minutes: 2
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
