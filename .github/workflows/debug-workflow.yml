@@ -1,0 +1,9 @@
+name: Disabled Workflow
+on:
+  workflow_dispatch:
+jobs:
+  disabled:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disabled
+        run: echo "This workflow is disabled and will be deleted"
