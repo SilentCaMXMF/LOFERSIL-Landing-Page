@@ -5,9 +5,14 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: deployment
+  cancel-in-progress: true
+
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  RECIPIENT_EMAIL: pedroocalado@gmail.com
 
 permissions:
   contents: read
@@ -43,11 +48,40 @@ jobs:
 
       - name: Local server testing
         run: |
+          # Start server in background
           npm start &
           SERVER_PID=$!
-          sleep 10
-          curl -f http://localhost:3000 || exit 1
-          kill $SERVER_PID || true
+
+          # Wait for server to be responsive with retry logic
+          MAX_RETRIES=30
+          RETRY_INTERVAL=2
+          RETRY_COUNT=0
+          SERVER_READY=false
+
+          echo "Waiting for server to start..."
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if curl -f -s -o /dev/null http://localhost:3000 2>/dev/null; then
+              echo "Server is ready!"
+              SERVER_READY=true
+              break
+            fi
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "Attempt $RETRY_COUNT/$MAX_RETRIES: Server not ready yet, waiting ${RETRY_INTERVAL}s..."
+            sleep $RETRY_INTERVAL
+          done
+
+          if [ "$SERVER_READY" = false ]; then
+            echo "ERROR: Server failed to start after $MAX_RETRIES attempts"
+            kill $SERVER_PID 2>/dev/null || true
+            exit 1
+          fi
+
+          echo "Server health check passed successfully"
+
+          # Clean up server process
+          kill $SERVER_PID 2>/dev/null || true
+          wait $SERVER_PID 2>/dev/null || true
         timeout-minutes: 2
 
       - name: Install Vercel CLI
@@ -58,3 +92,54 @@ jobs:
           vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Send success email notification
+        if: success()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT || 465 }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: ✅ Deployment Successful - ${{ github.repository }}
+          to: ${{ env.RECIPIENT_EMAIL }}
+          from: GitHub Actions
+          priority: high
+          html_body: |
+            <h2>Deployment Successful</h2>
+            <p>The deployment to Vercel has completed successfully.</p>
+            <h3>Deployment Details:</h3>
+            <ul>
+              <li><strong>Repository:</strong> ${{ github.repository }}</li>
+              <li><strong>Branch:</strong> ${{ github.ref_name }}</li>
+              <li><strong>Commit:</strong> <a href="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}">${{ github.sha }}</a></li>
+              <li><strong>Actor:</strong> ${{ github.actor }}</li>
+              <li><strong>Workflow:</strong> <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View Run</a></li>
+            </ul>
+            <p><strong>Timestamp:</strong> ${{ github.event.head_commit.timestamp }}</p>
+
+      - name: Send failure email notification
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT || 465 }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: ❌ Deployment Failed - ${{ github.repository }}
+          to: ${{ env.RECIPIENT_EMAIL }}
+          from: GitHub Actions
+          priority: high
+          html_body: |
+            <h2 style="color: #d32f2f;">Deployment Failed</h2>
+            <p>The deployment to Vercel has failed. Please check the workflow logs for details.</p>
+            <h3>Deployment Details:</h3>
+            <ul>
+              <li><strong>Repository:</strong> ${{ github.repository }}</li>
+              <li><strong>Branch:</strong> ${{ github.ref_name }}</li>
+              <li><strong>Commit:</strong> <a href="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}">${{ github.sha }}</a></li>
+              <li><strong>Actor:</strong> ${{ github.actor }}</li>
+              <li><strong>Workflow:</strong> <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View Run</a></li>
+            </ul>
+            <p><strong>Timestamp:</strong> ${{ github.event.head_commit.timestamp }}</p>
+            <p style="color: #d32f2f;"><strong>Action Required:</strong> Please review the workflow logs and fix any issues.</p>
