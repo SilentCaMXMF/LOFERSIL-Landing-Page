@@ -12,7 +12,7 @@ concurrency:
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  RECIPIENT_EMAIL: pedroocalado@gmail.com
+  RECIPIENT_EMAIL: ${{ secrets.TO_EMAIL }}
 
 permissions:
   contents: read
@@ -94,13 +94,13 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
       - name: Send success email notification
-        if: success() && secrets.MAIL_SERVER
+        if: success() && secrets.SMTP_HOST
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: ${{ secrets.MAIL_SERVER }}
-          server_port: ${{ secrets.MAIL_PORT || 587 }}
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT || 587 }}
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASS }}
           subject: ✅ Deployment Successful - ${{ github.repository }}
           to: ${{ env.RECIPIENT_EMAIL }}
           from: GitHub Actions
@@ -119,13 +119,13 @@ jobs:
             <p><strong>Timestamp:</strong> ${{ github.event.head_commit.timestamp }}</p>
 
       - name: Send failure email notification
-        if: failure() && secrets.MAIL_SERVER
+        if: failure() && secrets.SMTP_HOST
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: ${{ secrets.MAIL_SERVER }}
-          server_port: ${{ secrets.MAIL_PORT || 587 }}
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT || 587 }}
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASS }}
           subject: ❌ Deployment Failed - ${{ github.repository }}
           to: ${{ env.RECIPIENT_EMAIL }}
           from: GitHub Actions
