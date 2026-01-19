@@ -130,9 +130,21 @@
   }
 
   .about-gallery {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     height: auto;
-    min-height: 16rem;
+    min-height: 14rem;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  .about-gallery-item {
+    border-radius: var(--radius-md);
+    min-height: 6rem;
+  }
+
+  .about-gallery-img {
+    min-height: 6rem;
+    aspect-ratio: 4/3;
   }
 
   .products-grid {
@@ -206,7 +218,8 @@
   }
 
   .about-gallery {
-    min-height: 12rem;
+    min-height: 10rem;
+    gap: var(--space-2);
   }
 
   .products-grid {
@@ -254,7 +267,18 @@
   }
 
   .about-gallery {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    min-height: 12rem;
+  }
+
+  .about-gallery-item {
+    min-height: 5rem;
+  }
+
+  .about-gallery-img {
+    min-height: 5rem;
+    aspect-ratio: 1/1;
   }
 
   .hero {

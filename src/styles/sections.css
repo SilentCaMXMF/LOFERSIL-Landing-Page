@@ -87,8 +87,8 @@
   object-fit: cover;
   object-position: center;
   transition: var(--transition-slow);
-  aspect-ratio: 16/9;
-  min-height: 12rem;
+  aspect-ratio: 4/3;
+  min-height: 10rem;
 }
 
 .about-gallery-item:hover .about-gallery-img {
