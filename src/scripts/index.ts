@@ -9,6 +9,7 @@ import { ScrollManager } from "./modules/ScrollManager.js";
 import { simpleLogger } from "./modules/simpleLogger.js";
 import { ThemeManager } from "./modules/ThemeManager.js";
 import { getSEOMetrics } from "./modules/SEOMetrics.js";
+import "./modules/MobileGalleryCarousel.js";
 
 /**
  * Main application class

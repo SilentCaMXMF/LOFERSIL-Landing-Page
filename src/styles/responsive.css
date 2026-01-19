@@ -122,22 +122,180 @@
   }
 
   .about-gallery {
-    grid-template-columns: 1fr;
+    position: relative;
     height: auto;
-    min-height: 16rem;
-    gap: var(--space-4);
+    min-height: 20rem;
+    max-height: 28rem;
     margin-top: var(--space-6);
+    border-radius: var(--radius-md);
+    overflow: hidden;
   }
 
   .about-gallery-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform: translateX(100%);
     border-radius: var(--radius-md);
-    min-height: 8rem;
-    aspect-ratio: 16/9;
+    overflow: hidden;
+  }
+
+  .about-gallery-item.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    z-index: 1;
+  }
+
+  .about-gallery-item.prev {
+    transform: translateX(-100%);
   }
 
   .about-gallery-img {
-    min-height: 8rem;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     aspect-ratio: 16/9;
+    transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+  }
+
+  /* Mobile Gallery Navigation */
+  .about-gallery-nav {
+    position: absolute;
+    bottom: var(--space-3);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--space-2);
+    z-index: 10;
+    padding: var(--space-2) var(--space-3);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-full);
+  }
+
+  .about-gallery-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-gallery-dot::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease;
+  }
+
+  .about-gallery-dot:hover::before {
+    width: 16px;
+    height: 16px;
+  }
+
+  .about-gallery-dot.active {
+    background: var(--white);
+    transform: scale(1.2);
+  }
+
+  .about-gallery-dot:focus-visible {
+    outline: 2px solid var(--white);
+    outline-offset: 2px;
+  }
+
+  /* Mobile Gallery Arrow Controls */
+  .about-gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border: none;
+    border-radius: 50%;
+    color: var(--white);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .about-gallery:hover .about-gallery-arrow {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .about-gallery-arrow:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .about-gallery-arrow:focus-visible {
+    opacity: 1;
+    visibility: visible;
+    outline: 2px solid var(--white);
+    outline-offset: 2px;
+  }
+
+  .about-gallery-arrow.prev {
+    left: var(--space-3);
+  }
+
+  .about-gallery-arrow.next {
+    right: var(--space-3);
+  }
+
+  /* Touch indicators for mobile */
+  .about-gallery.swipe-hint::after {
+    content: "";
+    position: absolute;
+    bottom: var(--space-3);
+    right: var(--space-3);
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 50%;
+    z-index: 5;
+    animation: swipeHint 2s ease-in-out infinite;
+  }
+
+  @keyframes swipeHint {
+    0%,
+    100% {
+      transform: translateX(0);
+      opacity: 0;
+    }
+    20%,
+    80% {
+      opacity: 1;
+    }
+    50% {
+      transform: translateX(-10px);
+    }
   }
 
   .products-grid {
@@ -274,19 +432,37 @@
   }
 
   .about-gallery {
-    grid-template-columns: 1fr;
-    gap: var(--space-2);
-    min-height: 12rem;
+    min-height: 16rem;
+    max-height: 24rem;
   }
 
-  .about-gallery-item {
-    min-height: 6rem;
-    aspect-ratio: 16/9;
+  .about-gallery-nav {
+    bottom: var(--space-2);
+    padding: var(--space-1) var(--space-2);
   }
 
-  .about-gallery-img {
-    min-height: 6rem;
-    aspect-ratio: 16/9;
+  .about-gallery-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .about-gallery-dot:hover::before {
+    width: 12px;
+    height: 12px;
+  }
+
+  .about-gallery-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .about-gallery-arrow.prev {
+    left: var(--space-2);
+  }
+
+  .about-gallery-arrow.next {
+    right: var(--space-2);
   }
 
   .hero {
