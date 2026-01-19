@@ -94,7 +94,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
       - name: Send success email notification
-        if: success() && secrets.SMTP_HOST
+        if: success() && secrets.SMTP_HOST != ''
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_HOST }}
@@ -119,7 +119,7 @@ jobs:
             <p><strong>Timestamp:</strong> ${{ github.event.head_commit.timestamp }}</p>
 
       - name: Send failure email notification
-        if: failure() && secrets.SMTP_HOST
+        if: failure() && secrets.SMTP_HOST != ''
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_HOST }}
