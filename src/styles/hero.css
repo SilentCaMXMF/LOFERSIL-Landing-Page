@@ -351,12 +351,40 @@
   }
 
   .hero-image-wrapper {
-    max-width: 400px;
+    max-width: 280px; /* Smaller for mobile */
     margin: 0 auto;
   }
 
   .hero-image {
     animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+  }
+
+  /* Improved mobile typography */
+  .hero-title {
+    font-size: clamp(var(--text-2xl), 7vw, var(--text-4xl));
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(var(--text-lg), 5vw, var(--text-2xl));
+  }
+
+  .hero-description {
+    font-size: clamp(var(--text-base), 4vw, var(--text-lg));
+    max-width: 100%;
+  }
+
+  /* Larger button fonts for mobile */
+  .btn {
+    font-size: 16px;
+    min-height: 48px;
+    padding: 14px 24px;
+  }
+
+  .btn-large {
+    font-size: 18px;
+    min-height: 52px;
+    padding: 16px 32px;
   }
 }
 

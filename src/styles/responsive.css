@@ -5,19 +5,11 @@
     gap: var(--space-6);
   }
 
+  /* Fix: Keep 2 columns on tablets (≤1024px), 1 column only on mobile (≤767px) */
   .about-gallery {
-    grid-template-columns: 1fr;
-    gap: var(--space-6);
-    min-height: 16rem;
-  }
-
-  /* Tablet: Bring back two columns */
-  @media (min-width: 768px) and (max-width: 1024px) {
-    .about-gallery {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-4);
-      min-height: 20rem;
-    }
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    min-height: 20rem;
   }
 }
 
@@ -130,21 +122,22 @@
   }
 
   .about-gallery {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     height: auto;
-    min-height: 14rem;
-    gap: var(--space-3);
+    min-height: 16rem;
+    gap: var(--space-4);
     margin-top: var(--space-6);
   }
 
   .about-gallery-item {
     border-radius: var(--radius-md);
-    min-height: 6rem;
+    min-height: 8rem;
+    aspect-ratio: 16/9;
   }
 
   .about-gallery-img {
-    min-height: 6rem;
-    aspect-ratio: 4/3;
+    min-height: 8rem;
+    aspect-ratio: 16/9;
   }
 
   .products-grid {
@@ -153,11 +146,11 @@
   }
 
   .hero-title {
-    font-size: clamp(var(--text-3xl), 6vw, var(--text-4xl));
+    font-size: clamp(var(--text-2xl), 7vw, var(--text-4xl));
   }
 
   .hero-subtitle {
-    font-size: clamp(var(--text-lg), 5vw, var(--text-xl));
+    font-size: clamp(var(--text-lg), 5vw, var(--text-2xl));
   }
 
   .hero-actions {
@@ -195,12 +188,25 @@
     padding: var(--section-padding);
   }
 
+  .about-content {
+    gap: var(--space-8);
+    margin-top: var(--space-8);
+  }
+
   .features {
     padding: var(--section-padding);
   }
 
+  .features-grid {
+    gap: var(--space-6);
+  }
+
   .products-showcase {
     padding: var(--section-padding);
+  }
+
+  .products-grid {
+    gap: var(--space-6);
   }
 
   .cta {
@@ -214,12 +220,12 @@
   }
 
   .hero-title {
-    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+    font-size: clamp(var(--text-xl), 6vw, var(--text-3xl));
   }
 
   .about-gallery {
-    min-height: 10rem;
-    gap: var(--space-2);
+    min-height: 14rem;
+    gap: var(--space-3);
   }
 
   .products-grid {
@@ -232,7 +238,7 @@
   }
 
   .hero-subtitle {
-    font-size: clamp(var(--text-base), 4vw, var(--text-lg));
+    font-size: clamp(var(--text-sm), 5vw, var(--text-lg));
   }
 
   .hero-actions {
@@ -251,6 +257,7 @@
     max-width: 18rem;
     min-height: 48px;
     padding: var(--space-4) var(--space-6);
+    font-size: 16px; /* Prevent iOS zoom */
   }
 
   .section-title {
@@ -267,18 +274,19 @@
   }
 
   .about-gallery {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: var(--space-2);
     min-height: 12rem;
   }
 
   .about-gallery-item {
-    min-height: 5rem;
+    min-height: 6rem;
+    aspect-ratio: 16/9;
   }
 
   .about-gallery-img {
-    min-height: 5rem;
-    aspect-ratio: 1/1;
+    min-height: 6rem;
+    aspect-ratio: 16/9;
   }
 
   .hero {
@@ -372,21 +380,55 @@
   }
 }
 
-/* Touch Device Optimizations */
+/* Touch Device Optimizations - Enhanced */
 @media (hover: none) and (pointer: coarse) {
   .btn:hover,
   .feature-card:hover,
   .product-category:hover,
-  .about-gallery-item:hover {
+  .about-gallery-item:hover,
+  .hero-feature:hover,
+  .feature-link:hover,
+  .product-category-img:hover,
+  .about-gallery-img:hover,
+  .hero-image-wrapper:hover {
     transform: none;
+    box-shadow: none;
+    border-color: inherit;
+    background-color: transparent;
   }
 
   .nav-link:hover {
     background-color: transparent;
+    transform: none;
+  }
+
+  .btn:hover::before {
+    transform: translateX(-100%);
+  }
+
+  .hero-image-wrapper:hover .hero-img {
+    transform: none;
+    filter: none;
+  }
+
+  .hero-image-wrapper:hover .hero-image-glow {
+    opacity: 0;
+  }
+
+  .hero-image-wrapper:hover::before {
+    opacity: 0;
+  }
+
+  .hero-image-wrapper:hover {
+    transform: none;
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.1),
+      0 10px 20px rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 }
 
-/* Enhanced Focus Styles for Accessibility */
+/* Enhanced Focus Styles for Accessibility - Mobile Optimized */
 :focus-visible {
   outline: 3px solid var(--brand-primary);
   outline-offset: 2px;
@@ -396,12 +438,40 @@
 .nav-link:focus-visible,
 .btn:focus-visible,
 .form-input:focus-visible,
-.form-textarea:focus-visible {
+.form-textarea:focus-visible,
+.feature-card:focus-visible,
+.product-category:focus-visible,
+.about-gallery-item:focus-visible {
   outline: 3px solid var(--brand-primary);
   outline-offset: 2px;
   box-shadow:
     0 0 0 1px var(--white),
     0 0 0 4px rgba(34, 139, 34, 0.3);
+}
+
+/* Ensure 44px minimum touch targets on mobile */
+@media (max-width: 767px) {
+  .nav-link {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  .feature-card {
+    padding: 20px;
+  }
+
+  .product-category {
+    min-height: 44px;
+  }
+
+  .about-gallery-item {
+    min-height: 44px;
+  }
+
+  .faq-question {
+    min-height: 44px;
+    padding: 16px 20px;
+  }
 }
 
 /* High contrast focus for better visibility */
