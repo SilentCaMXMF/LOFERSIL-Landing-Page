@@ -40,7 +40,7 @@ export default [
       "@typescript-eslint/explicit-module-boundary-types": "off",
 
       // General rules
-      "no-console": "warn",
+      "no-console": "off",
       "no-debugger": "error",
       "prefer-const": "error",
       "no-var": "error",
