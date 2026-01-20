@@ -353,6 +353,17 @@
   .hero-image-wrapper {
     max-width: 280px; /* Smaller for mobile */
     margin: 0 auto;
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .hero-image-wrapper:hover {
+    transform: none !important;
+  }
+
+  .hero-img {
+    transform: none !important;
+    will-change: auto;
   }
 
   .hero-image {
