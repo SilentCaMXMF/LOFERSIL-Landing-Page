@@ -23,7 +23,7 @@ echo "🌿 Default branch: $DEFAULT_BRANCH"
 
 # Check if user has admin permissions
 echo "🔐 Checking permissions..."
-if ! gh api repos/$REPO_OWNER/$REPO_NAME/collaborators/"$(gh api user --jq '.login')"/permission --jq '.permission' | grep -q "admin"; then
+if ! gh api "repos/$REPO_OWNER/$REPO_NAME/collaborators/$(gh api user --jq '.login')/permission" --jq '.permission' | grep -q "admin"; then
     echo "❌ Error: You need admin permissions to configure branch protection"
     echo "Please ensure your GitHub token has 'repo' scope and you're a repository admin"
     exit 1
