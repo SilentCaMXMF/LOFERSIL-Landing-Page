@@ -42,7 +42,7 @@ The following rules need to be configured manually:
 - ✅ Require pull request reviews before merging
 - ✅ Required approving reviews: 1
 - ✅ Dismiss stale PR approvals when new commits are pushed
-- ❌ Require conversation resolution before merging
+- ✅ Require conversation resolution before merging
 
 #### 4. Restrictions
 
