@@ -13,12 +13,53 @@ export class ScrollManager {
   private navigationManager: NavigationManager;
   private observers: IntersectionObserver[] = [];
   private ticking = false;
+  private isMobileDevice = false;
 
   constructor(navigationManager: NavigationManager) {
     this.navigationManager = navigationManager;
+    this.detectMobileDevice();
     this.setupDOMElements();
     this.setupScrollEffects();
     this.setupIntersectionObservers();
+    this.setupResizeListener();
+  }
+
+  /**
+   * Detect if current device is mobile/touch device
+   */
+  private detectMobileDevice(): void {
+    // Check for touch capability and screen size
+    this.isMobileDevice =
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0 ||
+      window.innerWidth <= 768;
+  }
+
+  /**
+   * Setup resize listener to handle device changes
+   */
+  private setupResizeListener(): void {
+    let resizeTimeout: NodeJS.Timeout;
+
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const wasMobile = this.isMobileDevice;
+        this.detectMobileDevice();
+
+        // If device type changed, reset parallax state
+        if (wasMobile !== this.isMobileDevice && this.heroImage) {
+          if (this.isMobileDevice) {
+            this.heroImage.style.transform = "";
+            this.heroImage.style.willChange = "auto";
+          } else {
+            this.heroImage.style.willChange = "transform";
+          }
+        }
+      }, 250);
+    };
+
+    window.addEventListener("resize", handleResize, { passive: true });
   }
 
   /**
@@ -41,8 +82,8 @@ export class ScrollManager {
       // Update navbar scroll state
       this.navigationManager.updateNavbarOnScroll(SCROLL_THRESHOLD);
 
-      // Parallax effect for hero section (only if elements exist)
-      if (this.heroImage) {
+      // Parallax effect for hero section (desktop only)
+      if (this.heroImage && !this.isMobileDevice) {
         const parallaxOffset = scrollY * 0.5;
         this.heroImage.style.transform = `translateY(${parallaxOffset}px)`;
       }
@@ -192,10 +233,10 @@ export class ScrollManager {
   }
 
   /**
-   * Enable parallax effect
+   * Enable parallax effect (desktop only)
    */
   private enableParallax(): void {
-    if (this.heroImage) {
+    if (this.heroImage && !this.isMobileDevice) {
       this.heroImage.style.willChange = "transform";
     }
   }
@@ -206,6 +247,10 @@ export class ScrollManager {
   private disableParallax(): void {
     if (this.heroImage) {
       this.heroImage.style.willChange = "auto";
+      // Reset transform on mobile devices
+      if (this.isMobileDevice) {
+        this.heroImage.style.transform = "";
+      }
     }
   }
 
