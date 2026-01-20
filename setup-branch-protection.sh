@@ -60,9 +60,10 @@ RESPONSE=$(gh api repos/$REPO_OWNER/$REPO_NAME/branches/$DEFAULT_BRANCH/protecti
     --field 'restrictions=null' \
     --field 'allow_force_pushes=false' \
     --field 'allow_deletions=false' \
-    --jq '.' 2>/dev/null || echo "API call failed")
+    --jq '.' 2>/dev/null)
+STATUS=$?
 
-if [ $? -eq 0 ]; then
+if [ $STATUS -eq 0 ]; then
     echo "✅ Branch protection configured successfully!"
     echo ""
     echo "📋 Configuration applied:"
