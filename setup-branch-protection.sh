@@ -16,7 +16,7 @@ echo "🔧 Setting up branch protection for LOFERSIL Landing Page..."
 # Get repository info
 REPO_OWNER=$(gh repo view --json owner --jq '.owner.login')
 REPO_NAME=$(gh repo view --json name --jq '.name')
-DEFAULT_BRANCH=$(gh api repos/$REPO_OWNER/$REPO_NAME --jq '.default_branch')
+DEFAULT_BRANCH=$(gh api "repos/$REPO_OWNER/$REPO_NAME" --jq '.default_branch')
 
 echo "📋 Repository: $REPO_OWNER/$REPO_NAME"
 echo "🌿 Default branch: $DEFAULT_BRANCH"
