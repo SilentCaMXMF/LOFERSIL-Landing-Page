@@ -52,7 +52,7 @@ BRANCH_PROTECTION_PAYLOAD='{
 }'
 
 # Apply branch protection
-RESPONSE=$(gh api "repos/$REPO_OWNER/$REPO_NAME/branches/$DEFAULT_BRANCH/protection" \
+gh api "repos/$REPO_OWNER/$REPO_NAME/branches/$DEFAULT_BRANCH/protection" \
     --method PUT \
     --field "required_status_checks={\"strict\":true,\"contexts\":[\"PR Validation\",\"Security Audit\"]}" \
     --field 'enforce_admins=true' \
@@ -60,7 +60,7 @@ RESPONSE=$(gh api "repos/$REPO_OWNER/$REPO_NAME/branches/$DEFAULT_BRANCH/protect
     --field 'restrictions=null' \
     --field 'allow_force_pushes=false' \
     --field 'allow_deletions=false' \
-    --jq '.' 2>/dev/null)
+    --jq '.' > /dev/null 2>&1
 STATUS=$?
 
 if [ $STATUS -eq 0 ]; then
