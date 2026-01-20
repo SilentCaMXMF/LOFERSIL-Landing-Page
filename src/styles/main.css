@@ -1335,7 +1335,10 @@ img.lazy-loaded {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   transition: var(--transition-slow);
+  aspect-ratio: 4/3;
+  min-height: 10rem;
 }
 
 .about-gallery-item:hover .about-gallery-img {
@@ -2930,7 +2933,10 @@ img.lazy-loaded {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   transition: var(--transition-slow);
+  aspect-ratio: 4/3;
+  min-height: 10rem;
 }
 
 .about-gallery-item:hover .about-gallery-img {
