@@ -1,4 +1,6 @@
 ---
+import '../styles/main.css';
+
 export interface Props {
   title: string;
   description: string;
@@ -63,15 +65,11 @@ const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <!-- Preload critical resources -->
-    <link rel="preload" href="/styles/main.css" as="style" />
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
     <!-- Load DOMPurify locally -->
     <script src="/scripts/purify.min.js" is:inline></script>
-
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="/styles/main.css" />
 
     <!-- Favicon -->
     <link rel="icon" href="/assets/images/favicon-48x48-lettuce.svg" type="image/svg+xml" />

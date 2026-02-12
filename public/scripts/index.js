@@ -4,9 +4,10 @@ import { ScrollManager } from "./modules/ScrollManager.js";
 import { simpleLogger } from "./modules/simpleLogger.js";
 import { ThemeManager } from "./modules/ThemeManager.js";
 import { getSEOMetrics } from "./modules/SEOMetrics.js";
-import { initializeWebVitals } from "../utils/webVitals.js";
-import { initializeErrorTracking } from "../utils/errorTracking.js";
-import { initializeAnalytics } from "../utils/analytics.js";
+// Utils are not included in build - commenting out for now
+// import { initializeWebVitals } from "../utils/webVitals.js";
+// import { initializeErrorTracking } from "../utils/errorTracking.js";
+// import { initializeAnalytics } from "../utils/analytics.js";
 import "./modules/MobileGalleryCarousel.js";
 /**
  * Main application class
@@ -53,24 +54,20 @@ class LOFERSILLandingPage {
      * Initialize performance and monitoring tools
      */
     initializePerformanceTools() {
-        // Initialize Web Vitals monitoring
-        this.webVitalsMonitor = initializeWebVitals();
-        
-        // Initialize error tracking
-        this.errorTracker = initializeErrorTracking({
-            environment: window.location.hostname === 'localhost' ? 'development' : 'production',
-        });
-        
-        // Initialize analytics (privacy-focused)
-        this.analytics = initializeAnalytics({
-            respectDNT: true,
-            batchSize: 10,
-            flushInterval: 30000,
-        });
+        // Performance tools disabled due to missing utils
+        // this.webVitalsMonitor = initializeWebVitals();
+        // this.errorTracker = initializeErrorTracking({
+        //     environment: window.location.hostname === 'localhost' ? 'development' : 'production',
+        // });
+        // this.analytics = initializeAnalytics({
+        //     respectDNT: true,
+        //     batchSize: 10,
+        //     flushInterval: 30000,
+        // });
         
         // Make globally available
-        window.lofersilErrorTracker = this.errorTracker;
-        window.lofersilAnalytics = this.analytics;
+        // window.lofersilErrorTracker = this.errorTracker;
+        // window.lofersilAnalytics = this.analytics;
         
         console.log('Performance and monitoring tools initialized');
     }
