@@ -58,7 +58,7 @@
     "vitest": "^2.0.0"
   },
   "engines": {
-    "node": ">=22.x <25.0.0"
+    "node": ">=22.x"
   },
   "packageManager": "npm@10.0.0",
   "dependencies": {
