@@ -1,4 +1,3 @@
----
 // Critical CSS inlining for Astro
 // This extracts critical CSS for above-the-fold content to improve performance
 

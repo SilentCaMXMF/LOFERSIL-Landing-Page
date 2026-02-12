@@ -27,11 +27,10 @@ const {
   className = '',
   placeholder = 'blur',
   format = 'webp',
-  quality = 80,
 } = Astro.props;
 
 // Generate optimized image URLs
-function getOptimizedSrc(originalSrc: string, format: string, quality: number): string {
+function getOptimizedSrc(originalSrc: string, format: string): string {
   // In production, this would be handled by an image optimization service
   // For now, we'll use the original URL with format hint
   if (originalSrc.startsWith('http')) {
@@ -47,7 +46,7 @@ function getOptimizedSrc(originalSrc: string, format: string, quality: number): 
   return originalSrc.replace(/\.[^/.]+$/, `.${format}`);
 }
 
-const optimizedSrc = getOptimizedSrc(src, format, quality);
+const optimizedSrc = getOptimizedSrc(src, format);
 const hasDimensions = width && height;
 
 // Generate low-quality placeholder
@@ -58,8 +57,8 @@ const placeholderSrc = placeholder && hasDimensions
 // Generate srcset for responsive images
 const generatedSrcset = srcset || (width ? [
   `${optimizedSrc} ${width}w`,
-  `${getOptimizedSrc(src, format, quality)} ${Math.round(width * 1.5)}w`,
-  `${getOptimizedSrc(src, format, quality)} ${Math.round(width * 2)}w`,
+  `${getOptimizedSrc(src, format)} ${Math.round(width * 1.5)}w`,
+  `${getOptimizedSrc(src, format)} ${Math.round(width * 2)}w`,
 ].join(', ') : '');
 
 const finalSizes = sizes || (width ? `${width}px` : undefined);
