@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config';
-import vercel from '@astrojs/vercel/static';
+import vercel from '@astrojs/vercel';
 import tailwind from '@astrojs/tailwind';
 import { visualizer } from 'rollup-plugin-visualizer';
 
@@ -38,16 +38,7 @@ export default defineConfig({
     inlineStylesheets: 'auto',
     minify: 'esbuild',
   },
-  experimental: {
-    env: {
-      schema: {
-        // Define any environment variables here
-      },
-    },
-    build: {
-      inline: ['script', 'style'],
-    },
-  },
+
   security: {
     CSP: {
       directives: {

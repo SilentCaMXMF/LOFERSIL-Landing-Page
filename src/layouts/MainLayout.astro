@@ -68,7 +68,7 @@ const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
     <!-- Load DOMPurify locally -->
-    <script src="/scripts/purify.min.js"></script>
+    <script src="/scripts/purify.min.js" is:inline></script>
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/styles/main.css" />
@@ -91,9 +91,6 @@ const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
 </html>
 
 <script>
-  // Import DOMPurify for client-side sanitization
-  import('/scripts/purify.min.js');
-  
   // Register Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
