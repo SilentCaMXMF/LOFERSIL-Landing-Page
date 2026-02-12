@@ -1,7 +1,7 @@
 ---
 plan name: lofersil-optimization-plan
 plan description: Complete modernization of LOFERSIL landing page
-plan status: active
+plan status: done
 ---
 
 ## Idea

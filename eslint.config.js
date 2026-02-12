@@ -46,6 +46,23 @@ export default [
       "no-var": "error",
       "no-unused-vars": "off", // Let TypeScript handle this
     },
+  },
+  {
+    files: ["src/**/*.astro"],
+    languageOptions: {
+      globals: {
+        // Astro globals
+        Astro: "readonly",
+      },
+    },
+    rules: {
+      "no-console": "off",
+      "no-debugger": "error",
+      "prefer-const": "error",
+      "no-var": "error",
+    },
+  },
+  {
     ignores: [
       "src/**/*.test.ts",
       "src/**/*.spec.ts",
@@ -53,6 +70,8 @@ export default [
       "dist/**",
       ".opencode/**",
       "src/test/**",
+      ".astro/**",
+      "public/**",
     ],
   },
 ];

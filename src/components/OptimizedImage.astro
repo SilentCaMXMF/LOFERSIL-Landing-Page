@@ -1,0 +1,188 @@
+---
+// Astro component for optimized images with lazy loading
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'sync' | 'auto';
+  sizes?: string;
+  srcset?: string;
+  className?: string;
+  placeholder?: string;
+  format?: 'webp' | 'avif' | 'jpg' | 'png';
+  quality?: number;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  loading = 'lazy',
+  decoding = 'async',
+  sizes,
+  srcset,
+  className = '',
+  placeholder = 'blur',
+  format = 'webp',
+  quality = 80,
+} = Astro.props;
+
+// Generate optimized image URLs
+function getOptimizedSrc(originalSrc: string, format: string, quality: number): string {
+  // In production, this would be handled by an image optimization service
+  // For now, we'll use the original URL with format hint
+  if (originalSrc.startsWith('http')) {
+    return originalSrc;
+  }
+  
+  const extension = originalSrc.split('.').pop()?.toLowerCase();
+  if (extension === format) {
+    return originalSrc;
+  }
+  
+  // Replace extension for local images
+  return originalSrc.replace(/\.[^/.]+$/, `.${format}`);
+}
+
+const optimizedSrc = getOptimizedSrc(src, format, quality);
+const hasDimensions = width && height;
+
+// Generate low-quality placeholder
+const placeholderSrc = placeholder && hasDimensions 
+  ? `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E`
+  : '';
+
+// Generate srcset for responsive images
+const generatedSrcset = srcset || (width ? [
+  `${optimizedSrc} ${width}w`,
+  `${getOptimizedSrc(src, format, quality)} ${Math.round(width * 1.5)}w`,
+  `${getOptimizedSrc(src, format, quality)} ${Math.round(width * 2)}w`,
+].join(', ') : '');
+
+const finalSizes = sizes || (width ? `${width}px` : undefined);
+---
+
+<picture class={`optimized-image ${className}`}>
+  <!-- Modern formats first -->
+  {format !== 'webp' && (
+    <source 
+      srcset={generatedSrcset}
+      type="image/webp"
+      sizes={finalSizes}
+    />
+  )}
+  
+  {format !== 'avif' && (
+    <source 
+      srcset={generatedSrcset}
+      type="image/avif"
+      sizes={finalSizes}
+    />
+  )}
+  
+  <!-- Fallback to original format -->
+  <img 
+    src={optimizedSrc}
+    srcset={generatedSrcset}
+    alt={alt}
+    {width}
+    {height}
+    loading={loading}
+    decoding={decoding}
+    sizes={finalSizes}
+    style={placeholderSrc && hasDimensions ? `background-image: url('${placeholderSrc}'); background-size: cover; background-position: center;` : ''}
+    onload={placeholderSrc ? "this.style.backgroundImage=''" : ""}
+    class="transition-opacity duration-300"
+  />
+</picture>
+
+<style>
+  .optimized-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .optimized-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .optimized-image img[loading="lazy"] {
+    opacity: 0;
+  }
+  
+  .optimized-image img[loading="lazy"]:loaded {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  // Intersection Observer for enhanced lazy loading
+  class LazyImageLoader {
+    constructor() {
+      this.init();
+    }
+
+    init() {
+      const images = document.querySelectorAll('img[loading="lazy"]');
+      
+      if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target as HTMLImageElement;
+              
+              // Add fade-in effect
+              img.style.opacity = '0';
+              img.style.transition = 'opacity 0.3s ease-in-out';
+              
+              // Load the image
+              if (img.dataset.src) {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+              }
+              
+              img.onload = () => {
+                img.style.opacity = '1';
+                img.removeAttribute('loading');
+                observer.unobserve(img);
+              };
+              
+              img.onerror = () => {
+                img.style.opacity = '1';
+                observer.unobserve(img);
+              };
+            }
+          });
+        }, {
+          rootMargin: '50px 0px',
+          threshold: 0.01
+        });
+        
+        images.forEach(img => imageObserver.observe(img));
+      } else {
+        // Fallback for browsers without IntersectionObserver
+        images.forEach(img => {
+          const imgElement = img as HTMLImageElement;
+          if (imgElement.dataset.src) {
+            imgElement.src = imgElement.dataset.src;
+          }
+        });
+      }
+    }
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new LazyImageLoader());
+  } else {
+    new LazyImageLoader();
+  }
+</script>

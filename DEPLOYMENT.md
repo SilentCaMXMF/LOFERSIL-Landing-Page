@@ -1,226 +1,212 @@
-# LOFERSIL Landing Page - Deployment Guide
+# Deployment Guide - LOFERSIL Landing Page
 
-## 🚀 Deployment Options
+## 📋 Table of Contents
 
-### 1. Vercel (Recommended)
+1. [Prerequisites](#prerequisites)
+2. [Platform-Specific Deployment](#platform-specific-deployment)
+3. [Environment Configuration](#environment-configuration)
+4. [Domain & SSL Setup](#domain--ssl-setup)
+5. [Performance Optimization](#performance-optimization)
+6. [CI/CD Pipeline](#cicd-pipeline)
+7. [Monitoring & Maintenance](#monitoring--maintenance)
 
-#### Automatic Deployment (GitHub Integration)
+## 🎯 Prerequisites
 
-1. **Connect Repository to Vercel**
-   - Go to [vercel.com](https://vercel.com)
-   - Click "New Project"
-   - Import your GitHub repository
-   - Vercel will automatically detect the settings
+### System Requirements
+- **Node.js**: 22.x or later
+- **npm**: 10.x or later
+- **Git**: For version control
+- **Vercel Account**: For automated deployment
 
-2. **Configure Environment Variables** (in Vercel Dashboard)
-
-   ```
-   NODE_ENV=production
-   VERCEL_ORG_ID=your_org_id
-   VERCEL_PROJECT_ID=your_project_id
-   ```
-
-3. **Automatic Deployments**
-   - Push to `main` branch → Production deployment
-   - Pull requests → Preview deployments
-
-#### Manual Deployment (CLI)
-
+### Build Dependencies
+All dependencies are automatically installed with:
 ```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Login to Vercel
-vercel login
-
-# Deploy to production
-npm run vercel-deploy
-
-# Or use the automated script
-./vercel-deploy.sh
+npm install
 ```
 
-#### Local Development Deployment
+### Build Tools
+The project uses these build tools:
+- **Astro 5.17.2**: Static site generation
+- **TypeScript 5.0**: Type checking and compilation
+- **PostCSS**: CSS processing and optimization
+- **ESLint + Prettier**: Code quality
 
+## 🌐 Platform-Specific Deployment
+
+### Vercel (Recommended)
+
+#### Automatic Deployment (Recommended)
 ```bash
-# Deploy preview
-npm run deploy:preview
-
 # Deploy to production
-npm run deploy:prod
+vercel --prod
+
+# Deploy to preview
+vercel
+
+# Custom domain setup
+vercel --prod --domains lofersil.vercel.app
 ```
 
-### 2. Other Static Hosting
+#### Project Configuration
+The `vercel.json` is pre-configured:
+```json
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "astro",
+  "cleanUrls": true,
+  "trailingSlash": false
+}
+```
 
-#### Netlify
+#### Vercel Dashboard Steps
+1. **Connect Repository**: Import from GitHub
+2. **Configure Domain**: Set `lofersil.vercel.app` or custom domain
+3. **Environment Variables**: Set any required environment variables
+4. **Deploy**: Automatic deployment on git push
 
+### Netlify
+
+#### Manual Setup
 ```bash
-# Build the project
+# Build project
 npm run build
 
-# Deploy dist/ folder to Netlify
-# Or use Netlify CLI
-npm install -g netlify-cli
+# Deploy to Netlify
 netlify deploy --prod --dir=dist
 ```
 
-#### GitHub Pages
+#### Netlify Configuration
+Create `netlify.toml`:
+```toml
+[build]
+  publish = "dist"
+  command = "npm run build"
 
-```bash
-# Build the project
-npm run build
+[build.environment]
+  NODE_VERSION = "22"
 
-# Copy dist/ to docs/ for GitHub Pages
-cp -r dist docs
-
-# Push to gh-pages branch
-git subtree push --prefix docs origin gh-pages
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
 ```
 
-#### AWS S3 + CloudFront
+### GitHub Pages
 
+#### Manual Setup
 ```bash
-# Build the project
+# Build and deploy
+npm run build
+cd dist
+git init
+git add .
+git commit -m "Deploy to GitHub Pages"
+git push origin main:gh-pages --force
+```
+
+#### GitHub Actions
+Create `.github/workflows/deploy.yml`:
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+```
+
+### AWS S3 + CloudFront
+
+#### Prerequisites
+- AWS CLI configured
+- S3 bucket created
+- CloudFront distribution set up
+
+#### Deployment Script
+```bash
+#!/bin/bash
+
+# Build
 npm run build
 
-# Upload to S3
+# Sync to S3
 aws s3 sync dist/ s3://your-bucket-name --delete
 
-# Invalidate CloudFront cache
-aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"
+# Invalidate CloudFront
+aws cloudfront create-invalidation --distribution-id YOUR-DISTRIBUTION-ID --paths "/*"
 ```
 
-## 🔧 Configuration Files
+## 🔧 Environment Configuration
 
-### Vercel Configuration (`vercel.json`)
+### Required Variables
 
-- **Static build**: Optimized for static sites
-- **Routing**: SPA-friendly routing
-- **Headers**: Security and caching headers
-- **Regions**: Global CDN deployment
+#### For Production
+```bash
+# Analytics (optional)
+VITE_ANALYTICS_ENDPOINT=
+VITE_ANALYTICS_API_KEY=
 
-### Build Process
+# Error tracking (optional)
+VITE_ERROR_ENDPOINT=
+VITE_ERROR_API_KEY=
+```
 
-1. **Clean**: Remove previous build artifacts
-2. **Install**: Install dependencies
-3. **Lint**: Code quality checks
-4. **Build**: Production build with minification
-5. **Deploy**: Upload to Vercel CDN
+### Configuration Files
 
-### Environment Variables
+#### Astro Configuration (`astro.config.mjs`)
+- Static output configured for optimal performance
+- CSP headers for security
+- Image optimization settings
+- Bundle analysis support
 
-| Variable            | Description             | Default       |
-| ------------------- | ----------------------- | ------------- |
-| `NODE_ENV`          | Build environment       | `development` |
-| `VERCEL_ORG_ID`     | Vercel organization ID  | -             |
-| `VERCEL_PROJECT_ID` | Vercel project ID       | -             |
-| `VERCEL_TOKEN`      | Vercel deployment token | -             |
-
-## 📊 Deployment Checklist
-
-### Pre-Deployment
-
-- [ ] All tests pass
-- [ ] Build completes successfully
-- [ ] Environment variables configured
-- [ ] SEO meta tags updated
-- [ ] Performance optimized
-- [ ] Security headers configured
-
-### Post-Deployment
-
-- [ ] Site loads correctly
-- [ ] All pages accessible
-- [ ] Forms and links work
-- [ ] Mobile responsive
-- [ ] SEO score checked
-- [ ] Performance tested
-- [ ] Analytics configured
-
-## 🔍 Monitoring
-
-### Vercel Dashboard
-
-- **Analytics**: Page views, visitors, performance
-- **Logs**: Real-time error tracking
-- **Deployments**: Deployment history and rollbacks
-- **Functions**: Serverless function monitoring
+## 📊 Monitoring & Maintenance
 
 ### Performance Monitoring
 
-```bash
-# Run Lighthouse audit
-npm run lighthouse
+#### Built-in Monitoring
+- **Web Vitals**: Automatic tracking
+- **Error Tracking**: Real-time error reporting
+- **Analytics Dashboard**: `/performance` endpoint
+- **Bundle Analysis**: `npm run build:analyze`
 
-# Check Core Web Vitals
-# Use Chrome DevTools > Lighthouse
-```
+### Maintenance Checklist
 
-### SEO Monitoring
-
-- **Google Search Console**: Search performance
-- **Google PageSpeed Insights**: Performance scores
-- **GTmetrix**: Detailed performance analysis
-
-## 🚨 Troubleshooting
-
-### Common Issues
-
-#### Build Failures
-
-```bash
-# Clear cache and rebuild
-rm -rf node_modules dist
-npm install
-npm run build
-```
-
-#### Deployment Failures
-
-```bash
-# Check Vercel logs
-vercel logs
-
-# Check deployment status
-vercel list
-```
-
-#### Performance Issues
-
-- Check image optimization
-- Verify minification
-- Monitor Core Web Vitals
-- Test on different devices
-
-#### SEO Issues
-
-- Verify meta tags
-- Check sitemap.xml
-- Test robots.txt
-- Validate structured data
-
-### Support Resources
-
-- [Vercel Documentation](https://vercel.com/docs)
-- [Vercel Community](https://vercel.com/community)
-- [GitHub Issues](https://github.com/vercel/vercel/issues)
-
-## 🔄 CI/CD Pipeline
-
-### GitHub Actions Workflow
-
-- **Trigger**: Push to main, pull requests
-- **Steps**: Build → Test → Deploy → Comment
-- **Environments**: Production (main), Preview (PRs)
-- **Secrets**: Vercel tokens and IDs
-
-### Manual Triggers
-
-```bash
-# Trigger workflow manually
-gh workflow run "Deploy to Vercel"
-```
+#### Regular Tasks
+- [ ] **Weekly**: Check bundle size and performance
+- [ ] **Monthly**: Update dependencies, review security
+- [ ] **Quarterly**: Full performance audit, update documentation
+- [ ] **Annually**: Major framework update consideration
 
 ---
 
-**Note**: This deployment guide is specifically configured for the LOFERSIL landing page with vanilla TypeScript and static site generation.
+**Last Updated**: February 12, 2026  
+**Framework**: Astro 5.17.2  
+**Node Version**: 22.x  
+**Target Platform**: Vercel (production ready)
