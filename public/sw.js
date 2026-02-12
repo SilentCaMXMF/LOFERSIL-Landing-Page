@@ -156,7 +156,7 @@ self.addEventListener('fetch', (event) => {
 /**
  * Determine caching strategy based on request type
  */
-function getCacheStrategy(url: string, destination?: string): string {
+function getCacheStrategy(url, destination) {
   // Static assets - cache first
   if (url.includes('/assets/') || 
       url.includes('/scripts/') || 

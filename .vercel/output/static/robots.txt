@@ -1,0 +1,137 @@
+# ===================================================================
+# LOFERSIL Landing Page - Enhanced robots.txt
+# ===================================================================
+# This file guides search engine crawlers to optimize SEO while
+# protecting sensitive development and administrative content.
+# ===================================================================
+
+# ===================================================================
+# GENERAL CRAWLER RULES
+# ===================================================================
+User-agent: *
+# Crawl delay to prevent server overload (1 second between requests)
+Crawl-delay: 1
+
+# Allow root and public content by default
+Allow: /
+
+# Block development and build paths
+Disallow: /src/
+Disallow: /dist/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.github/
+
+# Block administrative and internal paths
+Disallow: /tasks/
+Disallow: /tools/
+Disallow: /docs/
+
+# Block test and development files
+Disallow: /*.test.html
+Disallow: /*.dev.html
+Disallow: /*.staging.html
+Disallow: /test/
+Disallow: /tests/
+
+# Block certain JS files from direct indexing (allow via HTML)
+Disallow: /src/scripts/modules/*.js
+
+# Allow important assets for SEO and rendering
+Allow: /assets/
+Allow: /assets/images/
+Allow: /main.css
+Allow: /purify.min.js
+Allow: /manifest.json
+Allow: /favicon.ico
+Allow: /apple-touch-icon.png
+Allow: /browserconfig.xml
+
+# ===================================================================
+# GOOGLEBOT - Full access for optimal indexing
+# ===================================================================
+User-agent: Googlebot
+Crawl-delay: 0
+Disallow: /src/
+Disallow: /dist/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.github/
+Disallow: /tasks/
+Disallow: /tools/
+Disallow: /docs/
+Disallow: /*.test.html
+
+# ===================================================================
+# GOOGLEBOT-IMAGE - For image search optimization
+# ===================================================================
+User-agent: Googlebot-Image
+Disallow: /src/
+Disallow: /dist/
+Disallow: /node_modules/
+Allow: /assets/
+Allow: /assets/images/
+
+# ===================================================================
+# GOOGLEBOT-NEWS - For news content (if applicable)
+# ===================================================================
+User-agent: Googlebot-News
+Allow: /
+
+# ===================================================================
+# FACEBOOK EXTERNAL HIT - For social sharing previews
+# ===================================================================
+User-agent: FacebookExternalHit
+Allow: /
+Allow: /assets/
+Allow: /assets/images/
+
+# ===================================================================
+# TWITTER BOT - For Twitter card generation
+# ===================================================================
+User-agent: TwitterBot
+Allow: /
+Allow: /assets/
+Allow: /assets/images/
+
+# ===================================================================
+# LINKEDIN BOT - For LinkedIn sharing previews
+# ===================================================================
+User-agent: LinkedInBot
+Allow: /
+Allow: /assets/
+Allow: /assets/images/
+
+# ===================================================================
+# BAIDU SPIDER - For Chinese search engine coverage
+# ===================================================================
+User-agent: Baiduspider
+Allow: /
+Allow: /assets/
+Allow: /assets/images/
+Disallow: /src/
+Disallow: /dist/
+Disallow: /node_modules/
+Disallow: /tasks/
+Disallow: /tools/
+Disallow: /docs/
+
+# ===================================================================
+# YANDEX BOT - For Russian search engine coverage
+# ===================================================================
+User-agent: YandexBot
+Allow: /
+Allow: /assets/
+Allow: /assets/images/
+Disallow: /src/
+Disallow: /dist/
+Disallow: /node_modules/
+Disallow: /tasks/
+Disallow: /tools/
+Disallow: /docs/
+
+# ===================================================================
+# SITEMAP REFERENCE
+# ===================================================================
+# Primary sitemap for search engines
+Sitemap: https://lofersil.vercel.app/sitemap.xml
