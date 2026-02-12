@@ -377,7 +377,7 @@
             "name": "Cartuchos de Tinta",
             "description": "Cartuchos compatíveis de alta qualidade que garantem impressões nítidas e vibrantes. Solução económica e confiável para todas as suas necessidades de impressão.",
             "category": "Consumíveis de Impressão",
-            "image": "https://lofersil.vercel.app/assets/images/Tinteiros.jpg",
+            "image": "https://lofersil.vercel.app/assets/images/optimized/Tinteiros.webp",
             "offers": {
               "@type": "Offer",
               "price": "18.00",
@@ -1078,12 +1078,23 @@
               <div class="product-category-image">
                 <div class="product-badge product-badge-eco">Económico</div>
                 <picture>
+                  <source
+                    srcset="
+                      assets/images/optimized/Tinteiros-400w.webp   400w,
+                      assets/images/optimized/Tinteiros-800w.webp   800w,
+                      assets/images/optimized/Tinteiros-1200w.webp 1200w
+                    "
+                    sizes="(max-width: 480px) 400px, (max-width: 768px) 800px, 1200px"
+                    type="image/webp"
+                  />
                   <img
-                    data-src="assets/images/Tinteiros.jpg"
+                    src="assets/images/Tinteiros.jpg"
                     alt="Cartuchos tinta LOFERSIL Lisboa - impressão nítida"
-                    class="product-category-img lazy"
+                    class="product-category-img"
                     loading="lazy"
                     decoding="async"
+                    width="1260"
+                    height="840"
                   />
                 </picture>
               </div>

@@ -380,7 +380,7 @@
             "name": "Ink Cartridges",
             "description": "High-quality compatible cartridges that guarantee sharp and vibrant prints. An economical and reliable solution for all your printing needs.",
             "category": "Printing Consumables",
-            "image": "https://lofersil.vercel.app/assets/images/Tinteiros.jpg",
+            "image": "https://lofersil.vercel.app/assets/images/optimized/Tinteiros.webp",
             "offers": {
               "@type": "Offer",
               "price": "18.00",
@@ -970,12 +970,23 @@
               <div class="product-category-image">
                 <div class="product-badge product-badge-eco">Economic</div>
                 <picture>
+                  <source
+                    srcset="
+                      ../assets/images/optimized/Tinteiros-400w.webp   400w,
+                      ../assets/images/optimized/Tinteiros-800w.webp   800w,
+                      ../assets/images/optimized/Tinteiros-1200w.webp 1200w
+                    "
+                    sizes="(max-width: 480px) 400px, (max-width: 768px) 800px, 1200px"
+                    type="image/webp"
+                  />
                   <img
-                    data-src="../assets/images/Tinteiros.jpg"
+                    src="../assets/images/Tinteiros.jpg"
                     alt="Ink cartridges LOFERSIL Lisbon - clear printing"
-                    class="product-category-img lazy"
+                    class="product-category-img"
                     loading="lazy"
                     decoding="async"
+                    width="1260"
+                    height="840"
                   />
                 </picture>
               </div>
