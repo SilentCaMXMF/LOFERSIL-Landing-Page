@@ -52,6 +52,7 @@ export default [
       "node_modules/**",
       "dist/**",
       ".opencode/**",
+      "src/test/**",
     ],
   },
 ];

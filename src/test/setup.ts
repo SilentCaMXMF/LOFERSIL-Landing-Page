@@ -56,7 +56,9 @@ global.console = {
 };
 
 // Reset mocks before each test
-global.beforeEach(() => {
+import { beforeEach } from 'vitest';
+
+beforeEach(() => {
   vi.clearAllMocks();
   localStorageMock.clear();
 });
