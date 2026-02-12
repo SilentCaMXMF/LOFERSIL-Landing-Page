@@ -4,9 +4,20 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: [],
+    setupFiles: ['./src/test/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'dist/',
+        'src/test/',
+        '**/*.d.ts',
+        '**/*.config.*',
+      ],
+    },
   },
   esbuild: {
-    target: 'node14',
+    target: 'es2020',
   },
 });

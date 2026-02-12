@@ -8,12 +8,23 @@
     "build": "npm run build:compile && npm run build:css && npm run build:copy",
     "build:compile": "tsc",
     "build:css": "postcss src/styles/main.css -o dist/main.css",
-    "build:copy": "mkdir -p dist/scripts && mkdir -p dist/scripts/modules && mkdir -p dist/locales && mkdir -p dist/assets/images && mkdir -p dist/en && cp index.html dist/ && cp privacy.html dist/ && cp terms.html dist/ && cp robots.txt dist/ && cp sitemap.xml dist/ && cp site.webmanifest dist/ && cp browserconfig.xml dist/ && cp favicon.ico dist/ && cp -r assets/images/* dist/assets/images/ && cp src/locales/*.json dist/locales/ && cp en/*.html dist/en/ && cp node_modules/dompurify/dist/purify.min.js dist/scripts/ && cp dist/modules/*.js dist/scripts/modules/ && cp dist/types.js dist/scripts/ && cp dist/validation.js dist/scripts/ && mv dist/index.js dist/scripts/ && rm -rf dist/modules dist/*.js dist/types.js.map dist/validation.js.map",
+    "build:copy": "npm run build:copy:dirs && npm run build:copy:assets && npm run build:copy:scripts && npm run build:copy:cleanup",
+    "build:copy:dirs": "mkdir -p dist/scripts/modules && mkdir -p dist/locales && mkdir -p dist/assets/images && mkdir -p dist/en",
+    "build:copy:assets": "cp index.html privacy.html terms.html robots.txt sitemap.xml site.webmanifest browserconfig.xml favicon.ico dist/ && cp -r assets/images/* dist/assets/images/ && cp src/locales/*.json dist/locales/ && cp en/*.html dist/en/",
+    "build:copy:scripts": "cp node_modules/dompurify/dist/purify.min.js dist/scripts/ && cp dist/modules/*.js dist/scripts/modules/ && cp dist/types.js dist/validation.js dist/index.js dist/scripts/",
+    "build:copy:cleanup": "rm -rf dist/modules dist/*.js dist/*.js.map",
     "dev": "tsc --watch",
     "start": "serve dist --single -l 3000",
     "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --write src/**/*.{ts,css}",
-    "prebuild": "npm run format"
+    "format:check": "prettier --check src/**/*.{ts,css}",
+    "prebuild": "npm run format:check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "ci": "npm run lint && npm run format:check && npm run build:compile && npm run test"
   },
   "keywords": [
     "landing-page",
@@ -24,7 +35,7 @@
   ],
   "author": "LOFERSIL",
   "license": "MIT",
-  "devDependencies": {
+"devDependencies": {
     "@types/dompurify": "^3.2.0",
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
@@ -37,7 +48,12 @@
     "postcss-import": "^16.1.1",
     "prettier": "^3.0.0",
     "serve": "^14.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0",
+    "@vitest/ui": "^2.0.0",
+    "jsdom": "^25.0.0",
+    "@types/jsdom": "^21.1.6",
+    "c8": "^10.0.0"
   },
   "engines": {
     "node": "22.x"
