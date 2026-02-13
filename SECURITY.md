@@ -33,11 +33,12 @@ The following CSP headers are configured in `vercel.json`:
 ```
 Content-Security-Policy: 
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://unpkg.com;
+  script-src 'self' https://unpkg.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   img-src 'self' data: https:;
   font-src 'self' https://fonts.gstatic.com;
   connect-src 'self' https://formspree.io;
+  object-src 'none';
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self' https://formspree.io;
@@ -106,7 +107,7 @@ Please do not disclose vulnerabilities publicly until we have had a chance to ad
 
 1. Always sanitize user input before displaying it
 2. Use DOMPurify for all HTML content
-3. Keep dependencies up to date
+3. Keep dependencies up-to-date
 4. Follow the principle of least privilege
 5. Never store sensitive data in localStorage or cookies
 6. Always use HTTPS in production
