@@ -40,7 +40,7 @@
     "typescript": "^5.0.0"
   },
   "engines": {
-    "node": "22.x"
+    "node": ">=20.x"
   },
   "packageManager": "npm@10.0.0",
   "dependencies": {
