@@ -64,10 +64,11 @@ export class PrivacyAnalytics {
    */
   private shouldTrack(): boolean {
     if (!this.config.enabled) return false;
-    
-    if (this.config.respectDNT && 
-        navigator.doNotTrack === '1' || 
-        navigator.doNotTrack === 'yes') {
+
+    if (
+      (this.config.respectDNT && navigator.doNotTrack === '1') ||
+      navigator.doNotTrack === 'yes'
+    ) {
       if (this.config.debug) {
         console.log('Analytics disabled due to DNT');
       }
@@ -126,12 +127,7 @@ export class PrivacyAnalytics {
   /**
    * Track custom event
    */
-  public trackEvent(
-    category: string,
-    action: string,
-    label?: string,
-    value?: number
-  ): void {
+  public trackEvent(category: string, action: string, label?: string, value?: number): void {
     if (!this.shouldTrack()) return;
 
     const event: AnalyticsEvent = {
@@ -177,12 +173,7 @@ export class PrivacyAnalytics {
   /**
    * Track errors
    */
-  public trackError(
-    message: string,
-    source?: string,
-    line?: number,
-    column?: number
-  ): void {
+  public trackError(message: string, source?: string, line?: number, column?: number): void {
     if (!this.shouldTrack()) return;
 
     const event: AnalyticsEvent = {
@@ -289,7 +280,7 @@ export class PrivacyAnalytics {
     this.flush();
     this.eventQueue = [];
     this.sessionId = this.generateSessionId();
-    
+
     if (this.flushTimer) {
       clearInterval(this.flushTimer);
       this.flushTimer = null;
@@ -304,7 +295,7 @@ export class PrivacyAnalytics {
       clearInterval(this.flushTimer);
       this.flushTimer = null;
     }
-    
+
     this.flush(true);
     this.eventQueue = [];
   }
@@ -316,13 +307,12 @@ export class PrivacyAnalytics {
 export function initializeAnalytics(config: AnalyticsConfig = {}): PrivacyAnalytics {
   const analytics = new PrivacyAnalytics({
     // Only enable in production
-    enabled: window.location.hostname !== 'localhost' && 
-             window.location.hostname !== '127.0.0.1',
+    enabled: window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1',
     respectDNT: true,
     debug: false,
     ...config,
   });
-  
+
   analytics.initialize();
   return analytics;
 }

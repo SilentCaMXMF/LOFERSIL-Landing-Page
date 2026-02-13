@@ -3,14 +3,14 @@
  * Handles loading and applying translations for multiple languages
  */
 
-import { Translations } from "../types.js";
-import { ErrorManager } from "./ErrorManager.js";
+import { Translations } from '../types.js';
+import { ErrorManager } from './ErrorManager.js';
 
 export class TranslationManager {
   private translations: Record<string, Translations>;
   private currentLanguage: string;
-  private readonly defaultLanguage = "pt";
-  private readonly supportedLanguages = ["pt", "en"];
+  private readonly defaultLanguage = 'pt';
+  private readonly supportedLanguages = ['pt', 'en'];
   private errorHandler?: ErrorManager;
   private isInitialized = false;
   private isSwitchingLanguage = false;
@@ -26,17 +26,17 @@ export class TranslationManager {
    */
   private detectLanguage(): string {
     // Check localStorage first
-    const stored = localStorage.getItem("language");
+    const stored = localStorage.getItem('language');
     if (stored && this.supportedLanguages.includes(stored)) {
       return stored;
     }
 
     // Check browser language
     const browserLang = navigator.language.toLowerCase();
-    if (browserLang.startsWith("pt")) {
-      return "pt";
-    } else if (browserLang.startsWith("en")) {
-      return "en";
+    if (browserLang.startsWith('pt')) {
+      return 'pt';
+    } else if (browserLang.startsWith('en')) {
+      return 'en';
     }
 
     // Default to Portuguese
@@ -63,15 +63,13 @@ export class TranslationManager {
    * Load translations for all supported languages
    */
   async loadTranslations(): Promise<void> {
-    console.log(
-      `Loading translations for languages: ${this.supportedLanguages.join(", ")}`,
-    );
+    console.log(`Loading translations for languages: ${this.supportedLanguages.join(', ')}`);
     try {
-      const promises = this.supportedLanguages.map(async (lang) => {
+      const promises = this.supportedLanguages.map(async lang => {
         const response = await fetch(`/locales/${lang}.json`);
         if (!response.ok) {
           throw new Error(
-            `Failed to load ${lang} translations: ${response.status} ${response.statusText}`,
+            `Failed to load ${lang} translations: ${response.status} ${response.statusText}`
           );
         }
         return { lang, data: await response.json() };
@@ -83,12 +81,12 @@ export class TranslationManager {
           acc[lang] = data;
           return acc;
         },
-        {} as Record<string, Translations>,
+        {} as Record<string, Translations>
       );
 
       console.log(`Translations loaded for:`, Object.keys(this.translations));
     } catch (error) {
-      console.error("Failed to load translations:", error);
+      console.error('Failed to load translations:', error);
       // Fallback to empty translations if loading fails
       this.translations = {};
     }
@@ -98,26 +96,22 @@ export class TranslationManager {
    * Apply translations to DOM elements
    */
   applyTranslations(): void {
-    const elements = document.querySelectorAll("[data-translate]");
-    console.log(
-      `Applying ${this.currentLanguage} translations: Found ${elements.length} elements`,
-    );
+    const elements = document.querySelectorAll('[data-translate]');
+    console.log(`Applying ${this.currentLanguage} translations: Found ${elements.length} elements`);
     const currentTranslations = this.translations[this.currentLanguage];
     if (!currentTranslations) {
-      console.warn(
-        `No translations available for language: ${this.currentLanguage}`,
-      );
+      console.warn(`No translations available for language: ${this.currentLanguage}`);
       return;
     }
-    elements.forEach((element) => {
-      const key = element.getAttribute("data-translate");
+    elements.forEach(element => {
+      const key = element.getAttribute('data-translate');
       if (key) {
         const translation = this.getNestedTranslation(currentTranslations, key);
         if (translation && element instanceof HTMLElement) {
           // Handle different element types
-          if (element.tagName === "META") {
-            element.setAttribute("content", translation);
-          } else if (element.tagName === "TITLE") {
+          if (element.tagName === 'META') {
+            element.setAttribute('content', translation);
+          } else if (element.tagName === 'TITLE') {
             element.textContent = translation;
           } else {
             element.textContent = translation;
@@ -132,8 +126,8 @@ export class TranslationManager {
    * Get nested translation value
    */
   getNestedTranslation(obj: any, path: string): string {
-    return path.split(".").reduce((current, key) => {
-      return current && typeof current === "object" ? current[key] : "";
+    return path.split('.').reduce((current, key) => {
+      return current && typeof current === 'object' ? current[key] : '';
     }, obj);
   }
 
@@ -145,37 +139,34 @@ export class TranslationManager {
     if (!currentTranslations) return;
 
     const metaKeys = [
-      "title",
-      "description",
-      "ogTitle",
-      "ogDescription",
-      "twitterTitle",
-      "twitterDescription",
+      'title',
+      'description',
+      'ogTitle',
+      'ogDescription',
+      'twitterTitle',
+      'twitterDescription',
     ];
-    metaKeys.forEach((key) => {
-      const translation = this.getNestedTranslation(
-        currentTranslations,
-        `meta.${key}`,
-      );
+    metaKeys.forEach(key => {
+      const translation = this.getNestedTranslation(currentTranslations, `meta.${key}`);
       if (translation) {
         switch (key) {
-          case "title":
+          case 'title':
             document.title = translation;
             break;
-          case "description":
-            this.updateMetaTag("description", translation);
+          case 'description':
+            this.updateMetaTag('description', translation);
             break;
-          case "ogTitle":
-            this.updateMetaTag("og:title", translation);
+          case 'ogTitle':
+            this.updateMetaTag('og:title', translation);
             break;
-          case "ogDescription":
-            this.updateMetaTag("og:description", translation);
+          case 'ogDescription':
+            this.updateMetaTag('og:description', translation);
             break;
-          case "twitterTitle":
-            this.updateMetaTag("twitter:title", translation);
+          case 'twitterTitle':
+            this.updateMetaTag('twitter:title', translation);
             break;
-          case "twitterDescription":
-            this.updateMetaTag("twitter:description", translation);
+          case 'twitterDescription':
+            this.updateMetaTag('twitter:description', translation);
             break;
         }
       }
@@ -190,7 +181,7 @@ export class TranslationManager {
       document.querySelector(`meta[name="${name}"]`) ||
       document.querySelector(`meta[property="${name}"]`);
     if (meta) {
-      meta.setAttribute("content", content);
+      meta.setAttribute('content', content);
     }
   }
 
@@ -199,25 +190,23 @@ export class TranslationManager {
    */
   setupHreflangTags(): void {
     // Remove existing hreflang tags
-    const existingTags = document.querySelectorAll(
-      'link[rel="alternate"][hreflang]',
-    );
-    existingTags.forEach((tag) => tag.remove());
+    const existingTags = document.querySelectorAll('link[rel="alternate"][hreflang]');
+    existingTags.forEach(tag => tag.remove());
 
     // Add hreflang tags for each supported language
     const baseUrl = window.location.origin;
-    this.addHreflangTag("pt-PT", `${baseUrl}/`);
-    this.addHreflangTag("en-US", `${baseUrl}/`);
+    this.addHreflangTag('pt-PT', `${baseUrl}/`);
+    this.addHreflangTag('en-US', `${baseUrl}/`);
     // Default language
-    this.addHreflangTag("x-default", `${baseUrl}/`);
+    this.addHreflangTag('x-default', `${baseUrl}/`);
   }
 
   /**
    * Add a single hreflang tag
    */
   private addHreflangTag(hreflang: string, url: string): void {
-    const link = document.createElement("link") as HTMLLinkElement;
-    link.rel = "alternate";
+    const link = document.createElement('link') as HTMLLinkElement;
+    link.rel = 'alternate';
     link.hreflang = hreflang;
     link.href = url;
     document.head.appendChild(link);
@@ -227,21 +216,18 @@ export class TranslationManager {
    * Update the HTML lang attribute
    */
   updateHtmlLangAttribute(): void {
-    document.documentElement.lang =
-      this.currentLanguage === "pt" ? "pt-PT" : "en-US";
+    document.documentElement.lang = this.currentLanguage === 'pt' ? 'pt-PT' : 'en-US';
   }
 
   /**
    * Update canonical link for SEO
    */
   updateCanonicalLink(): void {
-    let canonical = document.querySelector(
-      'link[rel="canonical"]',
-    ) as HTMLLinkElement;
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
     const baseUrl = window.location.origin;
     if (!canonical) {
-      canonical = document.createElement("link") as HTMLLinkElement;
-      canonical.rel = "canonical";
+      canonical = document.createElement('link') as HTMLLinkElement;
+      canonical.rel = 'canonical';
       document.head.appendChild(canonical);
     }
     // Set canonical URL for Portuguese
@@ -251,7 +237,7 @@ export class TranslationManager {
   /**
    * Switch to a different language
    */
-  switchLanguage(lang: "pt" | "en"): void {
+  switchLanguage(lang: 'pt' | 'en'): void {
     if (!this.supportedLanguages.includes(lang)) {
       console.warn(`Unsupported language: ${lang}`);
       return;
@@ -264,7 +250,7 @@ export class TranslationManager {
     this.isSwitchingLanguage = true;
 
     this.currentLanguage = lang;
-    localStorage.setItem("language", lang);
+    localStorage.setItem('language', lang);
     this.applyTranslations();
     this.updateMetaTagsForLanguage();
     this.updateHtmlLangAttribute();

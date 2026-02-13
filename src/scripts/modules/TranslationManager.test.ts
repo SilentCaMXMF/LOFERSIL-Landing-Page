@@ -36,11 +36,11 @@ describe('TranslationManager', () => {
   beforeEach(() => {
     // Reset localStorage
     localStorage.clear();
-    
+
     // Reset document
     document.documentElement.innerHTML = '';
     document.documentElement.lang = '';
-    
+
     // Mock fetch for loading translations
     global.fetch = vi.fn((url: string) => {
       const lang = url.match(/\/locales\/(\w+)\.json/)?.[1];
@@ -57,16 +57,16 @@ describe('TranslationManager', () => {
   describe('Initialization', () => {
     it('should initialize with default language (pt)', () => {
       translationManager = new TranslationManager();
-      
+
       // Before initialize, detectLanguage should return default
       expect(translationManager.getCurrentLanguage()).toBe('pt');
     });
 
     it('should use stored language from localStorage', () => {
       localStorage.setItem('language', 'en');
-      
+
       translationManager = new TranslationManager();
-      
+
       expect(translationManager.getCurrentLanguage()).toBe('en');
     });
 
@@ -76,9 +76,9 @@ describe('TranslationManager', () => {
         value: 'en-US',
         configurable: true,
       });
-      
+
       translationManager = new TranslationManager();
-      
+
       // Should detect English from browser
       expect(translationManager.getCurrentLanguage()).toBe('en');
     });
@@ -88,9 +88,9 @@ describe('TranslationManager', () => {
         value: 'fr-FR',
         configurable: true,
       });
-      
+
       translationManager = new TranslationManager();
-      
+
       expect(translationManager.getCurrentLanguage()).toBe('pt');
     });
   });
@@ -102,27 +102,27 @@ describe('TranslationManager', () => {
 
     it('should load translations for all supported languages', async () => {
       await translationManager.loadTranslations();
-      
+
       expect(fetch).toHaveBeenCalledWith('/locales/pt.json');
       expect(fetch).toHaveBeenCalledWith('/locales/en.json');
     });
 
     it('should handle fetch errors gracefully', async () => {
       global.fetch = vi.fn(() => Promise.reject(new Error('Network error')));
-      
+
       // Should not throw, but log error
       await expect(translationManager.loadTranslations()).resolves.not.toThrow();
     });
 
     it('should handle HTTP errors', async () => {
-      global.fetch = vi.fn(() => 
+      global.fetch = vi.fn(() =>
         Promise.resolve({
           ok: false,
           status: 404,
           statusText: 'Not Found',
         } as Response)
       );
-      
+
       await expect(translationManager.loadTranslations()).resolves.not.toThrow();
     });
   });
@@ -137,7 +137,7 @@ describe('TranslationManager', () => {
         value: 'en-US',
         configurable: true,
       });
-      
+
       expect(translationManager.getCurrentLanguage()).toBe('en');
     });
 
@@ -146,7 +146,7 @@ describe('TranslationManager', () => {
         value: 'pt-BR',
         configurable: true,
       });
-      
+
       expect(translationManager.getCurrentLanguage()).toBe('pt');
     });
 
@@ -155,7 +155,7 @@ describe('TranslationManager', () => {
         value: 'fr-FR',
         configurable: true,
       });
-      
+
       expect(translationManager.getCurrentLanguage()).toBe('pt');
     });
   });
@@ -170,7 +170,7 @@ describe('TranslationManager', () => {
           <a data-i18n="navigation.home" href="/">Home</a>
         </nav>
       `;
-      
+
       translationManager = new TranslationManager();
       await translationManager.initialize();
     });
@@ -178,14 +178,14 @@ describe('TranslationManager', () => {
     it('should apply translations to elements with data-i18n attributes', () => {
       const title = document.querySelector('[data-i18n="hero.title"]');
       const subtitle = document.querySelector('[data-i18n="hero.subtitle"]');
-      
+
       expect(title?.textContent).toBe('Bem-vindo à LOFERSIL');
       expect(subtitle?.textContent).toBe('Produtos Premium');
     });
 
     it('should update translations when language changes', async () => {
       await translationManager.setLanguage('en');
-      
+
       const title = document.querySelector('[data-i18n="hero.title"]');
       expect(title?.textContent).toBe('Welcome to LOFERSIL');
     });
@@ -211,7 +211,7 @@ describe('TranslationManager', () => {
       // Add translation with placeholder
       const translations = (translationManager as any).translations;
       translations.pt.greeting = 'Olá, {name}!';
-      
+
       const result = translationManager.translate('greeting', { name: 'João' });
       expect(result).toBe('Olá, João!');
     });
@@ -225,7 +225,7 @@ describe('TranslationManager', () => {
 
     it('should update html lang attribute', async () => {
       await translationManager.setLanguage('en');
-      
+
       expect(document.documentElement.lang).toBe('en');
     });
   });
@@ -238,24 +238,24 @@ describe('TranslationManager', () => {
 
     it('should return current language translations', () => {
       const translations = translationManager.getTranslations();
-      
+
       expect(translations).toBeDefined();
       expect(typeof translations).toBe('object');
     });
   });
 
   describe('Error Handling', () => {
-it('should handle missing translation files', async () => {
-      global.fetch = vi.fn(() => 
+    it('should handle missing translation files', async () => {
+      global.fetch = vi.fn(() =>
         Promise.resolve({
           ok: false,
           status: 404,
           statusText: 'Not Found',
         } as Response)
       );
-      
+
       translationManager = new TranslationManager();
-      
+
       // Should not throw
       await expect(translationManager.initialize()).resolves.not.toThrow();
     });
@@ -266,13 +266,13 @@ it('should handle missing translation files', async () => {
       localStorage.setItem = vi.fn(() => {
         throw new Error('localStorage error');
       });
-      
+
       translationManager = new TranslationManager();
       await translationManager.initialize();
-      
+
       // Should not throw when setting language
       await expect(translationManager.setLanguage('en')).resolves.not.toThrow();
-      
+
       // Restore
       (localStorage as any).setItem = originalSetItem;
     });

@@ -12,7 +12,7 @@ export interface SimpleLogger {
 
 export const simpleLogger: SimpleLogger = {
   debug(message: string, ...args: any[]): void {
-    if (process?.env?.NODE_ENV !== "production") {
+    if (process?.env?.NODE_ENV !== 'production') {
       console.debug(`[DEBUG] ${message}`, ...args);
     }
   },

@@ -103,23 +103,25 @@ export class CriticalCSSExtractor {
   private inlineCriticalStyles(html: string, critical: string, allStyles: string): string {
     // Remove existing style tags
     let cleanHtml = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
-    
+
     // Add critical styles inline
     const criticalStyleTag = `<style data-emotion="critical">${critical}</style>`;
-    
+
     // Add remaining styles if any
-    const restStyleTag = allStyles.replace(critical, '') ? 
-      `<style data-emotion="rest">${allStyles.replace(critical, '')}</style>` : '';
-    
+    const restStyleTag = allStyles.replace(critical, '')
+      ? `<style data-emotion="rest">${allStyles.replace(critical, '')}</style>`
+      : '';
+
     // Insert styles in head
     const headEndIndex = cleanHtml.indexOf('</head>');
     if (headEndIndex !== -1) {
-      cleanHtml = cleanHtml.slice(0, headEndIndex) + 
-                  criticalStyleTag + 
-                  restStyleTag + 
-                  cleanHtml.slice(headEndIndex);
+      cleanHtml =
+        cleanHtml.slice(0, headEndIndex) +
+        criticalStyleTag +
+        restStyleTag +
+        cleanHtml.slice(headEndIndex);
     }
-    
+
     return cleanHtml;
   }
 }

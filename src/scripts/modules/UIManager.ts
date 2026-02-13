@@ -7,7 +7,11 @@ import { validateContactForm, ContactFormValidator } from '../validation.js';
 
 // Simple error handling helper
 class UIErrorHandler {
-  static handleError(error: Error | unknown, message: string, context?: Record<string, unknown>): void {
+  static handleError(
+    error: Error | unknown,
+    message: string,
+    context?: Record<string, unknown>
+  ): void {
     console.warn(`[UI Error] ${message}:`, error, context);
     // Optionally send to analytics or monitoring service
   }
@@ -153,9 +157,7 @@ export class UIManager {
       const response = await this.submitContact(contactRequest);
 
       if (response.success) {
-        UIErrorHandler.showSuccessMessage(
-          "Message sent successfully! We'll get back to you soon."
-        );
+        UIErrorHandler.showSuccessMessage("Message sent successfully! We'll get back to you soon.");
         form.reset();
       } else {
         UIErrorHandler.showErrorMessage(
