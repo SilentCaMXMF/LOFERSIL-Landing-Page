@@ -1,0 +1,120 @@
+---
+import '../styles/main.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  lang: string;
+  alternate?: { [key: string]: string };
+}
+
+const {
+  title,
+  description,
+  canonical = '',
+  lang,
+  alternate = {},
+} = Astro.props;
+
+const siteUrl = 'https://lofersil.vercel.app';
+const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="keywords" content="lofersil lisboa, papelaria lisboa, artigos bebe lisboa, encadernação lisboa, serviços contabilidade lisboa, loja tradicional lisboa, produtos premium portugal, saldanha lisboa, loja centro lisboa, joias premium, canetas promocionais, material escritorio, caixas joias, loja lisboa" />
+    <meta name="author" content="LOFERSIL" />
+    <meta name="robots" content="index, follow" />
+    <meta name="geo.position" content="38.7169;-9.1449" />
+    <meta name="geo.placename" content="Lisboa, Portugal" />
+    <meta name="geo.region" content="PT-11" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="cystEsCYjLR4yQN-kwOQd6qRkwM6PcZAYSdM-aqTSLE" />
+
+    <!-- SEO Canonical and Hreflang -->
+    <link rel="canonical" href={fullCanonical} />
+    {Object.entries(alternate).map(([langCode, href]) => (
+      <link rel="alternate" hreflang={langCode} href={`${siteUrl}${href}`} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={siteUrl} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="LOFERSIL" />
+    <meta property="og:image" content="/images/Frente loja.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+
+    <title>{title}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Preload critical resources -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+
+    <!-- Load DOMPurify locally -->
+    <script src="/scripts/purify.min.js" is:inline></script>
+
+    <!-- Favicon -->
+    <link rel="icon" href="/images/favicon-48x48-lettuce.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-lettuce.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-lettuce.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/images/favicon-48x48-lettuce.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- PWA Theme Color -->
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="theme-color" content="#ffffff" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<script>
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered:', registration);
+          
+          // Check for updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (newWorker) {
+              console.log('New Service Worker installing');
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New worker is ready, show update notification
+                  if (confirm('New version available! Reload to update?')) {
+                    window.location.reload();
+                  }
+                }
+              });
+            }
+          });
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    });
+  }
+</script>

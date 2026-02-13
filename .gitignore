@@ -32,8 +32,6 @@ coverage/
 test-*.html
 test-*.js
 *test*.html
-*.test.ts
-*.spec.ts
 
 # Development files
 *-REPORT.md

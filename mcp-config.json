@@ -1,0 +1,33 @@
+{
+  "mcp": {
+    "context7": {
+      "name": "context7",
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}",
+        "Content-Type": "application/json"
+      },
+      "enabled": true,
+      "timeout": 30000,
+      "retry": {
+        "maxAttempts": 5,
+        "interval": 5000
+      }
+    },
+    "local-dev": {
+      "name": "local-dev",
+      "type": "remote",
+      "url": "ws://localhost:3000",
+      "headers": {
+        "Authorization": "Bearer ${LOCAL_DEV_KEY}"
+      },
+      "enabled": false,
+      "timeout": 10000,
+      "retry": {
+        "maxAttempts": 3,
+        "interval": 2000
+      }
+    }
+  }
+}

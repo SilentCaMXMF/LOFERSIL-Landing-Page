@@ -1,0 +1,335 @@
+{
+  "meta": {
+    "title": "LOFERSIL - Premium Products & Services in Lisbon | Trusted Store",
+    "description": "Discover premium products and trusted services at LOFERSIL, your reference store in Lisbon. Stationery, baby items, jewelry and much more. Visit us!",
+    "keywords": "lofersil lisbon, premium products portugal, lisbon stationery, baby items, jewelry boxes, promotional pens, office supplies, lisbon store",
+    "ogTitle": "LOFERSIL - Premium Products & Services in Lisbon | Trusted Store",
+    "ogDescription": "Discover premium products and trusted services at LOFERSIL, your reference store in Lisbon. Stationery, baby items, jewelry and much more.",
+    "twitterTitle": "LOFERSIL - Premium Products & Services in Lisbon | Trusted Store",
+    "twitterDescription": "Discover premium products and trusted services at LOFERSIL, your reference store in Lisbon."
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "services": "Services",
+    "about": "About Us",
+    "contact": "Contact",
+    "store": "Visit Store",
+    "langToggle": "EN"
+  },
+  "skip": {
+    "toContent": "Skip to main content",
+    "toNavigation": "Skip to navigation"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "about": "About",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "hero": {
+    "title": "Discover Excellence in Lisbon",
+    "subtitle": "Premium Products & Trusted Services",
+    "description": "Serving center of Lisbon for over 30 years with superior quality products and personalized service. From stationery to baby items, you'll find everything you need in a trusted family store.",
+    "exploreProducts": "View Featured Products",
+    "ourServices": "Discover Our Services"
+  },
+  "features": {
+    "title": "Why Trust LOFERSIL?",
+    "subtitle": "Tradition, quality and service that make a difference for over 30 years",
+    "premiumQuality": {
+      "title": "Premium Quality",
+      "description": "We select only excellent products, tested and approved by our specialized team."
+    },
+    "personalizedService": {
+      "title": "Personalized Service",
+      "description": "Our team knows each product and is ready to offer specialized consulting for your needs. We serve customers in Lisbon with dedication and care."
+    },
+    "traditionTrust": {
+      "title": "Tradition & Trust",
+      "description": "For over 30 years, we've been earning the trust of families and businesses in Lisbon with integrity and quality."
+    },
+    "freeDelivery": {
+      "title": "Free Delivery",
+      "description": "Free delivery in Lisbon for orders over €100. Fast and reliable service right to your door."
+    },
+    "accountingServices": {
+      "title": "Accounting Services",
+      "description": "Accounting support for individuals and businesses. Invoice management, tax declarations and specialized consulting."
+    },
+    "bindingLamination": {
+      "title": "Binding & Lamination",
+      "description": "Professional binding and lamination services. Protect and organize your documents with premium finishing."
+    },
+    "dhlService": {
+      "title": "DHL Service Point",
+      "description": "Pickup and shipping of orders through our authorized DHL service point. Track your orders in real time.",
+      "linkText": "Track Order"
+    }
+  },
+  "about": {
+    "title": "About LOFERSIL",
+    "subtitle": "Your trusted local store in heart of Lisbon",
+    "description": "For more than three decades, we have been reference for premium products in heart of Lisbon. Our store at R. Gomes Freire 187 B, in Saldanha neighborhood, offers a privileged location, accessible from all of Lisbon. Enjoy a unique experience where quality meets personalized service. Each product is carefully selected to ensure that our customers find exactly what they're looking for, with the trust of a family store.",
+    "location": "Central Location in Lisbon",
+    "physicalStore": "Physical Store Experience",
+    "expertStaff": "Specialized Team Assistance"
+  },
+  "productsShowcase": {
+    "title": "Our Product Categories",
+    "subtitle": "Discover our wide range of quality products for all your needs",
+    "babyProducts": {
+      "title": "Baby Products",
+      "description": "Complete collection of soft toys, adorable dolls and essential accessories for babies. Safe, high-quality products made to last."
+    },
+    "jewelryBoxes": {
+      "title": "Jewelry Boxes",
+      "description": "Premium jewelry boxes with elegant design and organized compartments. Protect and display your most precious jewelry with style and security."
+    },
+    "pens": {
+      "title": "Promotional Pens",
+      "description": "Premium promotional pens for businesses and personal use. Write with comfort and style with our superior quality pens."
+    },
+    "binders": {
+      "title": "Office Supplies",
+      "description": "Complete office supplies including binders, folders and professional organizers. Keep your documents organized and protected."
+    },
+    "backpacks": {
+      "title": "Backpacks",
+      "description": "Durable and modern backpacks perfect for school, work or travel. Ergonomic design with smart compartments for maximum organization."
+    },
+    "ink": {
+      "title": "Ink Cartridges",
+      "description": "High-quality compatible ink cartridges for all brands. Crisp and economical prints for home and office."
+    },
+    "ctaText": "Visit our store to explore our complete collection and find exactly what you're looking for",
+    "ctaButton": "Explore Complete Catalog"
+  },
+  "cta": {
+    "title": "Ready to Discover?",
+    "description": "Visit us today and experience premium products with personalized service. Special offers available while stocks last!",
+    "primaryButton": "Visit Physical Store",
+    "secondaryButton": "View Online Catalog"
+  },
+  "contact": {
+    "title": "Get In Touch",
+    "subtitle": "We're here to help. Get in touch with our team and we'll respond quickly with the care you deserve.",
+    "nameLabel": "Name *",
+    "emailLabel": "Email *",
+    "phoneLabel": "Phone",
+    "messageLabel": "Message *",
+    "submitButton": "Send Message",
+    "submitButtonLoading": "Sending...",
+    "successMessage": "Message sent successfully! We'll get back to you shortly.",
+    "errorMessage": "An error occurred while sending the message. Please try again.",
+    "validation": {
+      "name": {
+        "required": "Name is required",
+        "tooShort": "Name must be at least 2 characters long",
+        "tooLong": "Name must be less than 100 characters",
+        "invalidChars": "Name contains invalid characters"
+      },
+      "email": {
+        "required": "Email is required",
+        "invalid": "Please enter a valid email address",
+        "tooLong": "Email address is too long"
+      },
+      "phone": {
+        "invalid": "Please enter a valid phone number",
+        "tooLong": "Phone number is too long"
+      },
+      "message": {
+        "required": "Message is required",
+        "tooShort": "Message must be at least 10 characters long",
+        "tooLong": "Message must be less than 2000 characters"
+      }
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to most common questions about our products and services",
+    "q1": {
+      "question": "Where is LOFERSIL located?",
+      "answer": "LOFERSIL is located at Rua Gomes Freire 187 B, in Saldanha neighborhood, Lisbon. We are easily accessible via metro (Saldanha station, Blue and Red lines) with just a 5-minute walk. We also offer free parking in area."
+    },
+    "q2": {
+      "question": "What are the opening hours?",
+      "answer": "We are open Monday to Friday from 09:00 to 19:00, and Saturdays from 09:00 to 13:00. We are closed on Sundays and holidays. We recommend scheduling a visit for specialized services."
+    },
+    "q3": {
+      "question": "What types of products do you sell?",
+      "answer": "We offer a wide range of premium products including stationery, office supplies, baby items (reborn dolls), jewelry boxes, promotional pens, backpacks and ink cartridges. All products are carefully selected by our specialized team."
+    },
+    "q4": {
+      "question": "Do you offer binding and lamination services?",
+      "answer": "Yes! We offer professional binding and lamination services. Protect and organize your documents with our premium finishing. The turnaround time varies depending on the quantity and complexity of work."
+    },
+    "q5": {
+      "question": "Do you accept orders by phone or email?",
+      "answer": "Yes, we accept orders by phone (+351 21 353 1555) and email (lofersilpapelaria@gmail.com). For customized items or special services, we recommend contacting us in advance to ensure availability."
+    },
+    "q6": {
+      "question": "What payment methods do you accept?",
+      "answer": "We accept cash payments, credit cards, debit cards and Multibanco. All payments are processed securely. For businesses, we also accept monthly invoicing by prior agreement."
+    },
+    "q7": {
+      "question": "Do you deliver in Lisbon?",
+      "answer": "Yes, we deliver in Lisbon. For orders over €100, delivery is free. For lower values, we apply a moderate delivery fee. Delivery time varies between 1-3 business days depending on location."
+    },
+    "q8": {
+      "question": "What is the minimum amount for free delivery?",
+      "answer": "The minimum amount for free delivery in Lisbon is €100. This value applies only to the urban area of Lisbon. For peripheral areas, an additional fee may apply. Contact us for a specific quote."
+    },
+    "q9": {
+      "question": "Can I track my order sent through DHL?",
+      "answer": "Yes! As an authorized DHL service point, we can ship your orders with real-time tracking. After shipping, we will provide the tracking number to follow the delivery. You can also track directly on the DHL website through our link."
+    }
+  },
+  "footer": {
+    "title": "LOFERSIL",
+    "description": "Premium products and services for demanding customers.",
+    "quickLinks": "Quick Links",
+    "connect": "Connect",
+    "support": "Support",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2024 LOFERSIL. All rights reserved."
+  },
+  "alt": {
+    "storeFront": "LOFERSIL Store Front - R. Gomes Freire 187 B, Lisbon",
+    "storeInterior": "LOFERSIL Store Interior - Wide view of product displays",
+    "storeInteriorStaff": "LOFERSIL Store Interior - Staff assisting customers",
+    "babyProducts": "Baby Products and Dolls Collection",
+    "jewelryBoxes": "Premium Jewelry Boxes Collection",
+    "pens": "Promotional Pens and Writing Instruments",
+    "binders": "Office Binders and Folders",
+    "backpacks": "School and Travel Backpacks",
+    "inkCartridges": "Printer Ink Cartridges and Supplies",
+    "heroImage": "LOFERSIL Hero Image"
+  },
+  "routes": {
+    "/": {
+      "title": "LOFERSIL - Premium Products and Services",
+      "description": "Discover LOFERSIL's premium collection of products and services. Quality and excellence in everything we do."
+    },
+    "/products": {
+      "title": "Products - LOFERSIL",
+      "description": "Explore our premium product collection. High-quality items selected for demanding customers.",
+      "heroTitle": "Our Products",
+      "heroSubtitle": "Premium Collection",
+      "heroDescription": "Discover our careful selection of high-quality products designed to meet your needs.",
+      "sectionTitle": "Product Categories",
+      "sectionSubtitle": "Find exactly what you're looking for",
+      "electronics": {
+        "title": "Electronics",
+        "description": "Latest technology and devices for modern life."
+      },
+      "fashion": {
+        "title": "Fashion",
+        "description": "Elegant and comfortable clothing for all occasions."
+      },
+      "homeGarden": {
+        "title": "Home & Garden",
+        "description": "Everything you need to make your space beautiful."
+      },
+      "entertainment": {
+        "title": "Entertainment",
+        "description": "Fun and engaging products for leisure time."
+      }
+    },
+    "/services": {
+      "title": "Services - LOFERSIL",
+      "description": "Professional services tailored to your needs. Specialized solutions for businesses and individuals.",
+      "heroTitle": "Our Services",
+      "heroSubtitle": "Specialized Solutions",
+      "heroDescription": "Professional services designed to help you achieve your goals with excellence.",
+      "sectionTitle": "Service Areas",
+      "sectionSubtitle": "Comprehensive solutions for your needs",
+      "consulting": {
+        "title": "Consulting",
+        "description": "Specialized advice and strategic planning services."
+      },
+      "technicalSupport": {
+        "title": "Technical Support",
+        "description": "Reliable technical assistance and maintenance."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "Data-driven insights to optimize your performance."
+      },
+      "design": {
+        "title": "Design",
+        "description": "Creative design solutions for your projects."
+      }
+    },
+    "/about": {
+      "title": "About Us - LOFERSIL",
+      "description": "Learn about LOFERSIL's mission, values and commitment to quality. Discover our story.",
+      "heroTitle": "About LOFERSIL",
+      "heroSubtitle": "Our Story",
+      "heroDescription": "Founded with passion for quality and excellence, LOFERSIL is committed to providing premium products and services.",
+      "sectionTitle": "Our Mission",
+      "sectionSubtitle": "Delivering excellence in everything we do",
+      "qualityFirst": {
+        "title": "Quality First",
+        "description": "We prioritize quality in all products and services we offer."
+      },
+      "customerFocus": {
+        "title": "Customer Focus",
+        "description": "Your satisfaction is our top priority."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "description": "Continuously improving and adapting to meet your needs."
+      }
+    },
+    "/contact": {
+      "title": "Contact Us - LOFERSIL",
+      "description": "Get in touch with LOFERSIL. We're here to help with any questions or support you need.",
+      "heroTitle": "Contact Us",
+      "heroSubtitle": "Get in Touch",
+      "heroDescription": "Have questions? Need support? We're here to help every step of the way.",
+      "sectionTitle": "Contact Information",
+      "sectionSubtitle": "Contact us through any of these channels",
+      "email": {
+        "title": "Email",
+        "description": "info@lofersil.com"
+      },
+      "phone": {
+        "title": "Phone",
+        "description": "+351 21 123 4567"
+      },
+      "address": {
+        "title": "Address",
+        "description": "R. Gomes Freire 187 B, 1150-178 Lisbon"
+      }
+    },
+    "/store": {
+      "title": "Store - LOFERSIL",
+      "description": "Visit our online store to browse and purchase our complete collection of premium products.",
+      "heroTitle": "Our Store",
+      "heroSubtitle": "Premium Shopping Experience",
+      "heroDescription": "Browse our complete collection of premium products. Quality items at competitive prices.",
+      "browseProducts": "Browse Products",
+      "contactSales": "Contact Sales",
+      "sectionTitle": "Store Features",
+      "sectionSubtitle": "Why shop with us",
+      "easyShopping": {
+        "title": "Easy Shopping",
+        "description": "Intuitive interface for a seamless shopping experience."
+      },
+      "fastShipping": {
+        "title": "Fast Shipping",
+        "description": "Fast and reliable delivery to your door."
+      },
+      "securePayment": {
+        "title": "Secure Payment",
+        "description": "Secure and protected payment processing."
+      },
+      "qualityGuarantee": {
+        "title": "Quality Guarantee",
+        "description": "100% satisfaction guarantee on all purchases."
+      }
+    }
+  }
+}
