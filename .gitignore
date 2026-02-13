@@ -8,7 +8,11 @@ pnpm-lock.yaml
 dist/
 build/
 out/
+.vercel/
 *.tsbuildinfo
+
+# Generated assets
+public/images/optimized/
 
 # Source maps
 *.map
