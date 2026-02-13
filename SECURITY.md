@@ -15,28 +15,30 @@ The LOFERSIL Landing Page implements multiple layers of XSS protection:
    - Configured to allow only safe HTML tags and attributes
    - Located in `src/scripts/purify.min.js`
 
-2. **Route Path Sanitization**
-   - URL paths are sanitized before processing
-   - Only alphanumeric characters, hyphens, and slashes are allowed
-   - Implemented in `src/scripts/index.js`
+2. **Input Validation**
+   - All form inputs are validated before processing
+   - Email format validation with regex
+   - Length limits enforced on all fields
+   - Implemented in `src/scripts/validation.ts` and `ContactFormManager.ts`
 
 3. **Content Sanitization**
    - HTML content is sanitized before DOM insertion
    - Script tags and event handlers are removed
-   - Implemented in the `sanitizeContent()` method
+   - Implemented using DOMPurify in form handling
 
 ### Content Security Policy (CSP)
 
-The following CSP headers should be configured on the server:
+The following CSP headers are configured in `vercel.json`:
 
 ```
 Content-Security-Policy: 
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://unpkg.com;
+  script-src 'self' https://unpkg.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   img-src 'self' data: https:;
   font-src 'self' https://fonts.gstatic.com;
   connect-src 'self' https://formspree.io;
+  object-src 'none';
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self' https://formspree.io;
@@ -44,7 +46,7 @@ Content-Security-Policy:
 
 ### Security Headers
 
-Recommended security headers for production:
+The following security headers are configured in `vercel.json`:
 
 - `X-Frame-Options: DENY` - Prevent clickjacking
 - `X-Content-Type-Options: nosniff` - Prevent MIME-type sniffing
@@ -56,7 +58,7 @@ Recommended security headers for production:
 
 Current security-related dependencies:
 
-- **DOMPurify 3.3.0**: XSS protection library
+- **DOMPurify ^3.3.0**: XSS protection library
   - Only external library required for security
   - Self-hosted to prevent supply chain attacks
 
@@ -77,83 +79,35 @@ The contact form implements the following security measures:
 
 3. **Input Sanitization**
    - All form inputs sanitized with DOMPurify
-   - Length limits enforced
-   - Character filtering applied
+   - Length limits enforced (name: 100 chars, email: 254 chars, phone: 20 chars, message: 2000 chars)
+   - Implemented in `ContactFormManager.ts`
 
-## Vulnerability Disclosure
+## Vulnerability Reporting
 
-If you discover a security vulnerability, please report it to:
+If you discover a security vulnerability, please report it responsibly using one of the following methods:
 
-- **Email**: pedroocalado@gmail.com
-- **Subject**: [SECURITY] LOFERSIL Landing Page Vulnerability Report
-- **Details**: Include steps to reproduce, impact assessment, and suggested fix
+### Private Reporting (Preferred)
+1. **GitHub Security Advisories**: Use [GitHub's private vulnerability reporting](https://github.com/SilentCaMXMF/LOFERSIL-Landing-Page/security/advisories/new) to submit a security advisory privately
+2. **Email**: Send details to **security@lofersil.pt**
 
-## Security Checklist
+### What to Include
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if any)
 
-Before deploying updates:
+### Response Timeline
+- **Acknowledgment**: Within 48 hours
+- **Initial assessment**: Within 5 business days
+- **Fix and disclosure**: Coordinated with reporter
 
-- [ ] All user inputs are sanitized
-- [ ] No `innerHTML` with unsanitized content
-- [ ] DOMPurify is loaded and functioning
-- [ ] CSP headers are configured
-- [ ] HTTPS is enforced
-- [ ] No sensitive data in client-side code
-- [ ] Dependencies are up to date
-- [ ] No console.log statements with sensitive data
+Please do not disclose vulnerabilities publicly until we have had a chance to address them. We appreciate responsible disclosure and will credit reporters who follow these guidelines.
 
-## Security Updates
+## Security Best Practices
 
-### February 2026
-- Fixed XSS vulnerability in `src/scripts/index.js` (line 628)
-- Fixed XSS vulnerability in `src/scripts/modules/UIManager.ts` (line 235)
-- Removed 45+ unused files reducing attack surface
-- Implemented route path sanitization
-- Added content sanitization methods
-
-## Compliance
-
-### GDPR Compliance
-- No persistent user data storage
-- Form data processed by third-party (Formspree)
-- Privacy policy available at `/privacy.html`
-- Cookie consent implemented
-
-### Data Protection
-- No analytics tracking without consent
-- Minimal data collection
-- Secure transmission via HTTPS
-
-## Incident Response
-
-In case of security incident:
-
-1. **Immediate Response**
-   - Assess scope and impact
-   - Take affected systems offline if necessary
-   - Document timeline and actions taken
-
-2. **Investigation**
-   - Identify root cause
-   - Determine affected users/data
-   - Preserve evidence
-
-3. **Remediation**
-   - Deploy security patches
-   - Update security measures
-   - Verify fixes
-
-4. **Communication**
-   - Notify affected users if required
-   - Update security documentation
-   - Report to relevant authorities if necessary
-
-## Additional Resources
-
-- [OWASP XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
-- [MDN Web Security](https://developer.mozilla.org/en-US/docs/Web/Security)
-- [DOMPurify Documentation](https://github.com/cure53/DOMPurify)
-
----
-
-Last Updated: February 2026  
-Security Contact: pedroocalado@gmail.com
+1. Always sanitize user input before displaying it
+2. Use DOMPurify for all HTML content
+3. Keep dependencies up-to-date
+4. Follow the principle of least privilege
+5. Never store sensitive data in localStorage or cookies
+6. Always use HTTPS in production
