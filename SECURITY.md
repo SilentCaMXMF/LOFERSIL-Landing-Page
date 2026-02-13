@@ -57,7 +57,7 @@ The following security headers are configured in `vercel.json`:
 
 Current security-related dependencies:
 
-- **DOMPurify 3.3.0**: XSS protection library
+- **DOMPurify ^3.3.0**: XSS protection library
   - Only external library required for security
   - Self-hosted to prevent supply chain attacks
 
@@ -83,7 +83,24 @@ The contact form implements the following security measures:
 
 ## Vulnerability Reporting
 
-If you discover a security vulnerability, please report it by creating an issue in the GitHub repository.
+If you discover a security vulnerability, please report it responsibly using one of the following methods:
+
+### Private Reporting (Preferred)
+1. **GitHub Security Advisories**: Use [GitHub's private vulnerability reporting](https://github.com/SilentCaMXMF/LOFERSIL-Landing-Page/security/advisories/new) to submit a security advisory privately
+2. **Email**: Send details to **security@lofersil.pt**
+
+### What to Include
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if any)
+
+### Response Timeline
+- **Acknowledgment**: Within 48 hours
+- **Initial assessment**: Within 5 business days
+- **Fix and disclosure**: Coordinated with reporter
+
+Please do not disclose vulnerabilities publicly until we have had a chance to address them. We appreciate responsible disclosure and will credit reporters who follow these guidelines.
 
 ## Security Best Practices
 
