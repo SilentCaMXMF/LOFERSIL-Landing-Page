@@ -34,7 +34,7 @@ export class ErrorTracker {
   private errorCount = 0;
   private lastErrorTime = 0;
   private originalHandlers: {
-    onError: ((event: ErrorEvent) => void) | null;
+    onError: OnErrorEventHandler | null;
     onUnhandledRejection: ((event: PromiseRejectionEvent) => void) | null;
   };
 
