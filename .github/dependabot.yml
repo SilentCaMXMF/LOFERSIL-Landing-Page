@@ -1,6 +1,5 @@
 version: 2
 updates:
-  # Production dependencies
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -12,60 +11,20 @@ updates:
       production-dependencies:
         patterns:
           - "dompurify"
-    allow:
-      # Only update production dependencies
-      - dependency-type: "production"
-    # Auto-merge settings for production
-    assignees:
-      - "dependabot[bot]"
-    reviewers:
-      - "dependabot[bot]"
-    # Enable auto-merge for all update types via pull request labels
-    # Note: Actual auto-merge requires repository branch protection rules
-    # and the GitHub Actions or a bot to merge labeled PRs
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "npm"
-      - "production"
-      - "auto-merge"
-
-  # Development dependencies
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    open-pull-requests-limit: 10
-    groups:
-      # Group type packages together
       typescript-types:
         patterns:
           - "@types/*"
-      # Group linting/formatting packages together
       linting-and-formatting:
         patterns:
           - "eslint*"
           - "@typescript-eslint/*"
           - "prettier"
-      # Group build tools together
       build-tools:
         patterns:
           - "postcss*"
           - "autoprefixer"
           - "cssnano"
           - "typescript"
-      # Group dev server together
-      dev-server:
-        patterns:
-          - "serve"
-    allow:
-      # Only update development dependencies
-      - dependency-type: "development"
-    # Auto-merge settings for development dependencies
     assignees:
       - "dependabot[bot]"
     reviewers:
@@ -75,6 +34,4 @@ updates:
       include: "scope"
     labels:
       - "dependencies"
-      - "npm"
-      - "development"
       - "auto-merge"
