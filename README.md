@@ -1,6 +1,6 @@
 # LOFERSIL Landing Page
 
-🚀 **High-performance, responsive landing page for LOFERSIL** - built with Astro, TypeScript, and modern web technologies.
+🚀 **High-performance, responsive landing page for LOFERSIL** - built with pure static TypeScript, PostCSS, and modern web technologies.
 
 ## 🎯 Performance Metrics
 
@@ -16,7 +16,6 @@
 ## ✨ Features
 
 ### 🌍 User Experience
-- **🏗 Modern Framework**: Built with Astro for optimal performance
 - **🌐 Dual Language**: Portuguese/English with SEO optimization
 - **🌙 Dark/Light Themes**: System preference with manual toggle
 - **📱 Responsive Design**: Mobile-first, works on all devices
@@ -28,141 +27,123 @@
 - **🔒 Security**: XSS protection, CSP headers, input sanitization
 - **📊 Performance Monitoring**: Real-time Web Vitals tracking
 - **🐛 Error Tracking**: Comprehensive error reporting system
-- **📈 Analytics**: Privacy-focused, GDPR-compliant
-- **🖼 Image Optimization**: Lazy loading, modern formats (WebP/AVIF)
+- **🖼 Image Optimization**: Lazy loading, modern formats
 - **💾 Caching**: Smart service worker with multiple strategies
 - **🔍 SEO Optimized**: Structured data, meta tags, sitemaps
 
 ## 🚀 Tech Stack
 
 ### Core Technologies
-- **🔧 Framework**: Astro 5.17.2 (Static Site Generation)
 - **💻 Language**: TypeScript (relaxed mode, ES2020)
 - **🎨 Styling**: PostCSS + CSS Custom Properties
 - **📦 Deployment**: Vercel with static hosting
 - **🧪 Testing**: Vitest with jsdom environment
 
 ### Performance & Optimization
-- **⚡ Bundle Analysis**: Rollup visualizer and chunking
-- **🎯 Critical CSS**: Above-the-fold styles inlined
-- **📸 Images**: Optimized loading with modern formats
+- **⚡ TypeScript**: Transpiled to vanilla JavaScript
+- **📸 Images**: Optimized loading with lazy loading
 - **💾 Service Worker**: Multi-strategy caching system
 - **📊 Monitoring**: Web Vitals and error tracking
-- **📈 Analytics**: Privacy-first, no fingerprinting
 
 ### Security & Quality
 - **🛡 Security**: DOMPurify, CSP headers, input validation
-- **🔍 Linting**: ESLint + Prettier with Astro support
-- **🧪 Testing**: Unit tests with coverage reporting
+- **🔍 Linting**: ESLint + Prettier
 - **📋 Documentation**: Comprehensive, developer-friendly
 
 ## 📁 Project Structure
 
 ```
 src/
-├── pages/                  # Astro pages (file-based routing)
-│   ├── index.astro         # Portuguese main page
-│   ├── en/                 # English pages
-│   │   └── index.astro
-│   ├── privacy.astro       # Privacy policy
-│   ├── terms.astro         # Terms of service
-│   └── performance.astro   # Performance dashboard
-├── layouts/               # Astro layouts
-│   └── MainLayout.astro   # Main layout component
-├── components/           # Reusable Astro components
-│   └── OptimizedImage.astro
-├── utils/               # TypeScript utility modules
-│   ├── criticalCSS.ts    # Critical CSS extraction
-│   ├── webVitals.ts     # Web Vitals monitoring
-│   ├── errorTracking.ts  # Error tracking system
-│   └── analytics.ts     # Privacy-focused analytics
-├── styles/              # CSS files with PostCSS
-└── scripts/             # TypeScript application modules
+├── locales/              # Translation JSON files
+│   ├── pt.json
+│   └── en.json
+├── scripts/              # TypeScript application modules
+│   ├── index.ts          # Main entry point
+│   └── modules/          # Feature modules
+│       ├── ThemeManager.ts
+│       ├── TranslationManager.ts
+│       ├── NavigationManager.ts
+│       └── ...
+├── styles/               # PostCSS source files
+│   └── main.css          # Main stylesheet
+└── utils/                # Utility modules
+    ├── webVitals.ts
+    └── errorTracking.ts
 
-public/                 # Static assets (served as-is)
-├── assets/             # Images, icons, fonts
-├── scripts/           # Compiled JavaScript
-├── styles/            # Compiled CSS
-├── locales/           # Translation files (JSON)
-├── sw.js             # Service worker
-└── site.webmanifest   # PWA manifest
+dist/                     # Built output (deployed to Vercel)
+├── index.html            # Portuguese main page
+├── en/                   # English pages
+├── main.css              # Compiled CSS
+├── scripts/              # Compiled JavaScript
+├── locales/              # Translation files
+├── images/               # Optimized images
+└── ...
 
-docs/                  # Comprehensive documentation
-├── PHASE_DOCUMENTATION.md
-└── phase-specific docs
+public/                   # Static assets (copied to dist)
+├── assets/
+│   └── images/
+├── offline/
+├── performance/
+├── privacy/
+└── terms/
 
-astro.config.mjs        # Astro configuration
-package.json           # Dependencies and scripts
-vercel.json           # Vercel deployment config
+docs/                     # Documentation
+├── API.md
+├── DOCUMENTATION.md
+├── DEPLOYMENT.md
+└── ...
+
+package.json              # Dependencies and scripts
+vercel.json              # Vercel deployment config
+postcss.config.js        # PostCSS configuration
+tsconfig.json            # TypeScript configuration
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 22.x
-- npm 10.x
+- Node.js 20.x+
+- npm 10.x+
 - Git
 
 ### Installation & Development
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/lofersil-landing-page.git
-cd lofersil-landing-page
+git clone https://github.com/SilentCaMXMF/LOFERSIL-Landing-Page.git
+cd LOFERSIL-Landing-Page
 
 # Install dependencies
 npm install
 
 # Start development server (http://localhost:3000)
-npm run dev
+npm run start
 
 # Build for production
 npm run build
 
-# Preview production build
-npm run preview
+# Watch TypeScript changes
+npm run dev
 
-# Run tests
-npm run test
-
-# Lint and format code
+# Lint code
 npm run lint
-npm run format
 
-# Analyze bundle size
-npm run build:analyze
+# Format code
+npm run format
 ```
 
 ## 📋 Available Scripts
 
 | Script | Description |
 |--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run build:analyze` | Build with bundle analysis |
-| `npm run preview` | Preview production build |
-| `npm run test` | Run tests |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:coverage` | Run tests with coverage |
-| `npm run lint` | Lint TypeScript and Astro files |
+| `npm run dev` | Watch TypeScript changes |
+| `npm run start` | Serve production build locally (port 3000) |
+| `npm run build` | Full production build |
+| `npm run build:compile` | Compile TypeScript only |
+| `npm run build:css` | Process CSS only |
+| `npm run build:copy` | Copy assets to dist/ |
+| `npm run lint` | Lint TypeScript files |
 | `npm run format` | Format code with Prettier |
-| `npm run ci` | Run CI pipeline (lint, test, build) |
-
-## 📊 Performance & Monitoring
-
-### Performance Dashboard
-Visit `/performance` for:
-- Real-time Web Vitals monitoring
-- Load time and memory testing
-- Cache performance tests
-- Error tracking dashboard
-
-### Development Monitoring
-```javascript
-// Access monitoring tools globally
-window.lofersilErrorTracker.trackError("Custom error");
-window.lofersilAnalytics.trackEvent("category", "action");
-```
 
 ## 🔒 Security Features
 
@@ -189,47 +170,21 @@ window.lofersilAnalytics.trackEvent("category", "action");
 - ✅ **Responsive**: Works on all devices
 - ✅ **Fast Loading**: Optimized bundle and assets
 
-## 🔧 Environment Variables
-
-```bash
-# Analytics (optional)
-VITE_ANALYTICS_ENDPOINT=
-VITE_ANALYTICS_API_KEY=
-
-# Error tracking (optional)
-VITE_ERROR_ENDPOINT=
-VITE_ERROR_API_KEY=
-
-# Development
-VITE_PERFORMANCE_DEBUG=true
-```
-
 ## Build Process
-
-Single command builds everything:
 
 ```bash
 npm run build
 ```
 
 This command:
-
 1. **Format code** with Prettier
 2. **Compile TypeScript** to JavaScript (ES2020)
-3. **Process CSS** with PostCSS + Autoprefixer
+3. **Process CSS** with PostCSS + Autoprefixer + CSSnano
 4. **Copy assets** to `dist/` directory
-5. **Minify output** with CSSnano
-
-### Build Scripts
-
-- `npm run build:compile` - TypeScript compilation only
-- `npm run build:css` - CSS processing only
-- `npm run build:copy` - Asset copying only
-- `npm run dev` - Watch TypeScript changes
 
 ## Deployment to Vercel
 
-### Automatic Deployment
+### Automatic Deployment (GitHub Actions)
 
 1. Push to `master` branch
 2. GitHub Actions workflow triggers automatically
@@ -237,9 +192,20 @@ This command:
 
 ### Manual Deployment
 
-1. Build project: `npm run build`
-2. Deploy via Vercel CLI or dashboard
-3. Configure secrets in Vercel settings
+```bash
+# Build the project
+npm run build
+
+# Deploy via Vercel CLI
+vercel --prod
+```
+
+### Environment Variables (GitHub Secrets)
+
+Required for GitHub Actions deployment:
+- `VERCEL_TOKEN` - Vercel deployment token
+- `VERCEL_ORG_ID` - Vercel organization ID
+- `VERCEL_PROJECT_ID` - Vercel project ID
 
 ## Contact Form Configuration
 
@@ -256,37 +222,7 @@ This command:
 ### Current Configuration
 
 - Form endpoint: `https://formspree.io/f/xzddbybz`
-- Email: pedroocalado@gmail.com
-- Domain: `lofersil.vercel.app` (migrated from lofersil.pt)
-
-## Environment Variables (Vercel)
-
-Required for deployment:
-
-- `VERCEL_TOKEN` - Vercel deployment token
-- `VERCEL_ORG_ID` - Vercel organization ID
-- `VERCEL_PROJECT_ID` - Vercel project ID
-
-## Browser Support
-
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-
-## Code Quality & Style
-
-- **ESLint**: Linting with relaxed TypeScript rules
-- **Prettier**: Code formatting for consistency
-- **TypeScript**: Relaxed mode (strict: false) for flexibility
-- **Git Hooks**: Pre-commit formatting enforced
-
-## Security
-
-- **XSS Protection**: DOMPurify sanitization
-- **HTTPS Required**: Production deployments force HTTPS
-- **Input Validation**: Client-side form validation
-- **CSP Ready**: Content Security Policy headers available
+- Domain: `lofersil.vercel.app`
 
 ## Browser Support
 
