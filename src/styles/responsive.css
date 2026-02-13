@@ -310,6 +310,12 @@
     }
   }
 
+  /* Hide gallery arrows and images on mobile */
+  .about-gallery-arrow,
+  .about-gallery-img {
+    display: none;
+  }
+
   .products-grid {
     grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
     gap: var(--space-4);
