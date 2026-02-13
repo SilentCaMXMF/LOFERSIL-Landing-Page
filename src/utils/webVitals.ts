@@ -31,10 +31,7 @@ export class WebVitalsMonitor {
    * Check if browser supports PerformanceObserver
    */
   private checkSupport(): boolean {
-    return (
-      'PerformanceObserver' in window &&
-      'PerformanceNavigationTiming' in window
-    );
+    return 'PerformanceObserver' in window && 'PerformanceNavigationTiming' in window;
   }
 
   /**
@@ -69,7 +66,7 @@ export class WebVitalsMonitor {
    */
   private measureFCP(): void {
     try {
-      this.observer = new PerformanceObserver((list) => {
+      this.observer = new PerformanceObserver(list => {
         const entries = list.getEntries();
         for (const entry of entries) {
           if (entry.name === 'first-contentful-paint') {
@@ -91,7 +88,7 @@ export class WebVitalsMonitor {
    */
   private measureLCP(): void {
     try {
-      const lcpObserver = new PerformanceObserver((list) => {
+      const lcpObserver = new PerformanceObserver(list => {
         const entries = list.getEntries();
         const lastEntry = entries[entries.length - 1];
         if (lastEntry) {
@@ -110,7 +107,7 @@ export class WebVitalsMonitor {
    */
   private measureFID(): void {
     try {
-      const fidObserver = new PerformanceObserver((list) => {
+      const fidObserver = new PerformanceObserver(list => {
         const entries = list.getEntries();
         for (const entry of entries) {
           if (entry.name === 'first-input') {
@@ -133,7 +130,7 @@ export class WebVitalsMonitor {
   private measureCLS(): void {
     try {
       let clsValue = 0;
-      const clsObserver = new PerformanceObserver((list) => {
+      const clsObserver = new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
           if (!(entry as any).hadRecentInput) {
             clsValue += (entry as any).value;
@@ -266,7 +263,7 @@ export class WebVitalsMonitor {
  * Initialize Web Vitals monitoring for LOFERSIL
  */
 export function initializeWebVitals(): WebVitalsMonitor {
-  const monitor = new WebVitalsMonitor((report) => {
+  const monitor = new WebVitalsMonitor(report => {
     // Send to analytics in production (placeholder)
     if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
       // TODO: Integrate with analytics service

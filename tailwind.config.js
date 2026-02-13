@@ -8,27 +8,17 @@ const path = require('path');
 module.exports = {
   content: [
     // HTML files
-    './src/pages/**/*.astro',
-    './src/pages/**/*.html',
+    './*.html',
+    './src/**/*.html',
+    './en/**/*.html',
     
     // TypeScript/JavaScript files
     './src/scripts/**/*.ts',
     './src/scripts/**/*.js',
-    './public/scripts/**/*.ts',
-    './public/scripts/**/*.js',
     
     // CSS files
     './src/styles/**/*.css',
     './src/styles_backup/**/*.css',
-    
-    // Astro layout files
-    './src/layouts/**/*.astro',
-    
-    // Public assets
-    './public/**/*.html',
-    
-    // Components
-    './src/components/**/*.astro',
   ],
   
   theme: {

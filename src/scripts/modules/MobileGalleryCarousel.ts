@@ -37,10 +37,7 @@ export class MobileGalleryCarousel {
     enableTouch: true,
   };
 
-  constructor(
-    gallerySelector: string,
-    options: Partial<typeof this.config> = {},
-  ) {
+  constructor(gallerySelector: string, options: Partial<typeof this.config> = {}) {
     this.config = { ...this.config, ...options };
     this.init(gallerySelector);
   }
@@ -60,9 +57,7 @@ export class MobileGalleryCarousel {
       return;
     }
 
-    this.items = Array.from(
-      this.gallery.querySelectorAll(".about-gallery-item"),
-    );
+    this.items = Array.from(this.gallery.querySelectorAll('.about-gallery-item'));
     if (this.items.length <= 1) {
       return; // No carousel needed for single image
     }
@@ -90,41 +85,41 @@ export class MobileGalleryCarousel {
     if (!this.gallery) return;
 
     // Create dots container
-    const navContainer = document.createElement("div");
-    navContainer.className = "about-gallery-nav";
-    navContainer.setAttribute("role", "tablist");
-    navContainer.setAttribute("aria-label", "Gallery navigation");
+    const navContainer = document.createElement('div');
+    navContainer.className = 'about-gallery-nav';
+    navContainer.setAttribute('role', 'tablist');
+    navContainer.setAttribute('aria-label', 'Gallery navigation');
 
     this.items.forEach((item, index) => {
-      const dot = document.createElement("button");
-      dot.className = `about-gallery-dot ${index === 0 ? "active" : ""}`;
-      dot.setAttribute("type", "button");
-      dot.setAttribute("role", "tab");
-      dot.setAttribute("aria-label", `Go to image ${index + 1}`);
-      dot.setAttribute("aria-selected", index === 0 ? "true" : "false");
-      dot.setAttribute("data-index", index.toString());
+      const dot = document.createElement('button');
+      dot.className = `about-gallery-dot ${index === 0 ? 'active' : ''}`;
+      dot.setAttribute('type', 'button');
+      dot.setAttribute('role', 'tab');
+      dot.setAttribute('aria-label', `Go to image ${index + 1}`);
+      dot.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+      dot.setAttribute('data-index', index.toString());
 
-      dot.addEventListener("click", () => this.goToSlide(index));
-      dot.addEventListener("keydown", (e) => this.handleDotKeydown(e, index));
+      dot.addEventListener('click', () => this.goToSlide(index));
+      dot.addEventListener('keydown', e => this.handleDotKeydown(e, index));
 
       navContainer.appendChild(dot);
       this.dots.push(dot);
     });
 
     // Create arrow buttons
-    this.prevButton = document.createElement("button");
-    this.prevButton.className = "about-gallery-arrow prev";
-    this.prevButton.setAttribute("type", "button");
-    this.prevButton.setAttribute("aria-label", "Previous image");
-    this.prevButton.innerHTML = "‹";
-    this.prevButton.addEventListener("click", () => this.prev());
+    this.prevButton = document.createElement('button');
+    this.prevButton.className = 'about-gallery-arrow prev';
+    this.prevButton.setAttribute('type', 'button');
+    this.prevButton.setAttribute('aria-label', 'Previous image');
+    this.prevButton.innerHTML = '‹';
+    this.prevButton.addEventListener('click', () => this.prev());
 
-    this.nextButton = document.createElement("button");
-    this.nextButton.className = "about-gallery-arrow next";
-    this.nextButton.setAttribute("type", "button");
-    this.nextButton.setAttribute("aria-label", "Next image");
-    this.nextButton.innerHTML = "›";
-    this.nextButton.addEventListener("click", () => this.next());
+    this.nextButton = document.createElement('button');
+    this.nextButton.className = 'about-gallery-arrow next';
+    this.nextButton.setAttribute('type', 'button');
+    this.nextButton.setAttribute('aria-label', 'Next image');
+    this.nextButton.innerHTML = '›';
+    this.nextButton.addEventListener('click', () => this.next());
 
     // Append navigation to gallery
     this.gallery.appendChild(navContainer);
@@ -139,35 +134,29 @@ export class MobileGalleryCarousel {
     if (!this.gallery || !this.config.enableTouch) return;
 
     // Touch events
-    this.gallery.addEventListener(
-      "touchstart",
-      this.handleTouchStart.bind(this),
-      { passive: true },
-    );
-    this.gallery.addEventListener(
-      "touchmove",
-      this.handleTouchMove.bind(this),
-      { passive: true },
-    );
-    this.gallery.addEventListener("touchend", this.handleTouchEnd.bind(this), {
+    this.gallery.addEventListener('touchstart', this.handleTouchStart.bind(this), {
+      passive: true,
+    });
+    this.gallery.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: true });
+    this.gallery.addEventListener('touchend', this.handleTouchEnd.bind(this), {
       passive: true,
     });
 
     // Mouse events (for desktop testing)
-    this.gallery.addEventListener("mousedown", this.handleMouseDown.bind(this));
-    this.gallery.addEventListener("mousemove", this.handleMouseMove.bind(this));
-    this.gallery.addEventListener("mouseup", this.handleMouseUp.bind(this));
-    this.gallery.addEventListener("mouseleave", this.handleMouseUp.bind(this));
+    this.gallery.addEventListener('mousedown', this.handleMouseDown.bind(this));
+    this.gallery.addEventListener('mousemove', this.handleMouseMove.bind(this));
+    this.gallery.addEventListener('mouseup', this.handleMouseUp.bind(this));
+    this.gallery.addEventListener('mouseleave', this.handleMouseUp.bind(this));
 
     // Keyboard navigation
-    this.gallery.addEventListener("keydown", this.handleKeydown.bind(this));
+    this.gallery.addEventListener('keydown', this.handleKeydown.bind(this));
 
     // Pause auto-play on user interaction
-    this.gallery.addEventListener("mouseenter", () => this.pauseAutoPlay());
-    this.gallery.addEventListener("mouseleave", () => this.resumeAutoPlay());
+    this.gallery.addEventListener('mouseenter', () => this.pauseAutoPlay());
+    this.gallery.addEventListener('mouseleave', () => this.resumeAutoPlay());
 
     // Handle window resize
-    window.addEventListener("resize", this.handleResize.bind(this));
+    window.addEventListener('resize', this.handleResize.bind(this));
   }
 
   /**
@@ -199,10 +188,7 @@ export class MobileGalleryCarousel {
     const deltaY = this.touchStart.y - this.touchEnd.y;
 
     // Check if it's a horizontal swipe
-    if (
-      Math.abs(deltaX) > Math.abs(deltaY) &&
-      Math.abs(deltaX) > this.config.swipeThreshold
-    ) {
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > this.config.swipeThreshold) {
       if (deltaX > 0) {
         this.next(); // Swipe left -> next
       } else {
@@ -240,10 +226,7 @@ export class MobileGalleryCarousel {
     const deltaX = this.touchStart.x - this.touchEnd.x;
     const deltaY = this.touchStart.y - this.touchEnd.y;
 
-    if (
-      Math.abs(deltaX) > Math.abs(deltaY) &&
-      Math.abs(deltaX) > this.config.swipeThreshold
-    ) {
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > this.config.swipeThreshold) {
       if (deltaX > 0) {
         this.next();
       } else {
@@ -260,19 +243,19 @@ export class MobileGalleryCarousel {
    */
   private handleKeydown(e: KeyboardEvent): void {
     switch (e.key) {
-      case "ArrowLeft":
+      case 'ArrowLeft':
         e.preventDefault();
         this.prev();
         break;
-      case "ArrowRight":
+      case 'ArrowRight':
         e.preventDefault();
         this.next();
         break;
-      case "Home":
+      case 'Home':
         e.preventDefault();
         this.goToSlide(0);
         break;
-      case "End":
+      case 'End':
         e.preventDefault();
         this.goToSlide(this.items.length - 1);
         break;
@@ -284,19 +267,19 @@ export class MobileGalleryCarousel {
    */
   private handleDotKeydown(e: KeyboardEvent, index: number): void {
     switch (e.key) {
-      case "ArrowLeft":
+      case 'ArrowLeft':
         e.preventDefault();
         this.goToSlide(Math.max(0, index - 1));
         break;
-      case "ArrowRight":
+      case 'ArrowRight':
         e.preventDefault();
         this.goToSlide(Math.min(this.items.length - 1, index + 1));
         break;
-      case "Home":
+      case 'Home':
         e.preventDefault();
         this.goToSlide(0);
         break;
-      case "End":
+      case 'End':
         e.preventDefault();
         this.goToSlide(this.items.length - 1);
         break;
@@ -315,18 +298,18 @@ export class MobileGalleryCarousel {
 
     // Update items
     this.items.forEach((item, i) => {
-      item.classList.remove("active", "prev");
+      item.classList.remove('active', 'prev');
       if (i === index) {
-        item.classList.add("active");
+        item.classList.add('active');
       } else if (i < index) {
-        item.classList.add("prev");
+        item.classList.add('prev');
       }
     });
 
     // Update dots
     this.dots.forEach((dot, i) => {
-      dot.classList.toggle("active", i === index);
-      dot.setAttribute("aria-selected", i === index ? "true" : "false");
+      dot.classList.toggle('active', i === index);
+      dot.setAttribute('aria-selected', i === index ? 'true' : 'false');
     });
 
     // Reset transition state
@@ -347,8 +330,7 @@ export class MobileGalleryCarousel {
    * Navigate to previous slide
    */
   public prev(): void {
-    const prevIndex =
-      this.currentIndex === 0 ? this.items.length - 1 : this.currentIndex - 1;
+    const prevIndex = this.currentIndex === 0 ? this.items.length - 1 : this.currentIndex - 1;
     this.goToSlide(prevIndex);
   }
 
@@ -356,7 +338,7 @@ export class MobileGalleryCarousel {
    * Show initial item
    */
   private showItem(index: number): void {
-    this.items[index].classList.add("active");
+    this.items[index].classList.add('active');
   }
 
   /**
@@ -402,10 +384,10 @@ export class MobileGalleryCarousel {
   private handleResize(): void {
     // Re-initialize on significant size change
     const isNowMobile = this.isMobile();
-    const wasMobile = this.gallery?.classList.contains("mobile-carousel");
+    const wasMobile = this.gallery?.classList.contains('mobile-carousel');
 
     if (isNowMobile && !wasMobile) {
-      this.gallery?.classList.add("mobile-carousel");
+      this.gallery?.classList.add('mobile-carousel');
     } else if (!isNowMobile && wasMobile) {
       this.destroy();
     }
@@ -418,17 +400,17 @@ export class MobileGalleryCarousel {
     if (!this.gallery) return;
 
     // Add swipe hint class
-    this.gallery.classList.add("swipe-hint");
+    this.gallery.classList.add('swipe-hint');
 
     // Remove hint after first interaction
     const removeHint = () => {
-      this.gallery?.classList.remove("swipe-hint");
-      document.removeEventListener("touchstart", removeHint);
-      document.removeEventListener("click", removeHint);
+      this.gallery?.classList.remove('swipe-hint');
+      document.removeEventListener('touchstart', removeHint);
+      document.removeEventListener('click', removeHint);
     };
 
-    document.addEventListener("touchstart", removeHint, { once: true });
-    document.addEventListener("click", removeHint, { once: true });
+    document.addEventListener('touchstart', removeHint, { once: true });
+    document.addEventListener('click', removeHint, { once: true });
   }
 
   /**
@@ -441,33 +423,21 @@ export class MobileGalleryCarousel {
 
     // Remove event listeners
     if (this.gallery) {
-      this.gallery.removeEventListener(
-        "touchstart",
-        this.handleTouchStart.bind(this),
-      );
-      this.gallery.removeEventListener(
-        "touchmove",
-        this.handleTouchMove.bind(this),
-      );
-      this.gallery.removeEventListener(
-        "touchend",
-        this.handleTouchEnd.bind(this),
-      );
-      this.gallery.removeEventListener(
-        "keydown",
-        this.handleKeydown.bind(this),
-      );
-      window.removeEventListener("resize", this.handleResize.bind(this));
+      this.gallery.removeEventListener('touchstart', this.handleTouchStart.bind(this));
+      this.gallery.removeEventListener('touchmove', this.handleTouchMove.bind(this));
+      this.gallery.removeEventListener('touchend', this.handleTouchEnd.bind(this));
+      this.gallery.removeEventListener('keydown', this.handleKeydown.bind(this));
+      window.removeEventListener('resize', this.handleResize.bind(this));
     }
 
     // Remove navigation elements
-    this.dots.forEach((dot) => dot.remove());
+    this.dots.forEach(dot => dot.remove());
     this.prevButton?.remove();
     this.nextButton?.remove();
 
     // Reset items
-    this.items.forEach((item) => {
-      item.classList.remove("active", "prev");
+    this.items.forEach(item => {
+      item.classList.remove('active', 'prev');
     });
   }
 }
@@ -477,16 +447,16 @@ let mobileCarousel: MobileGalleryCarousel | null = null;
 
 const initMobileGalleryCarousel = (): void => {
   // Wait for DOM to be ready
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      mobileCarousel = new MobileGalleryCarousel(".about-gallery", {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      mobileCarousel = new MobileGalleryCarousel('.about-gallery', {
         autoPlay: false,
         enableTouch: true,
       });
     });
   } else {
     // DOM already loaded
-    mobileCarousel = new MobileGalleryCarousel(".about-gallery", {
+    mobileCarousel = new MobileGalleryCarousel('.about-gallery', {
       autoPlay: false,
       enableTouch: true,
     });
@@ -505,6 +475,6 @@ const handleResizeForCarousel = (): void => {
 
 // Initialize
 initMobileGalleryCarousel();
-window.addEventListener("resize", handleResizeForCarousel);
+window.addEventListener('resize', handleResizeForCarousel);
 
 export default MobileGalleryCarousel;

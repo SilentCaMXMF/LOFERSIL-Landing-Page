@@ -5,8 +5,7 @@
  */
 
 const IS_DEVELOPMENT =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1";
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 /**
  * Simple Error Manager class for basic error handling
@@ -15,9 +14,7 @@ export class ErrorManager {
   private showUserMessages: boolean;
   private logToConsole: boolean;
 
-  constructor(
-    config: { showUserMessages?: boolean; logToConsole?: boolean } = {},
-  ) {
+  constructor(config: { showUserMessages?: boolean; logToConsole?: boolean } = {}) {
     this.showUserMessages = config.showUserMessages ?? true;
     this.logToConsole = config.logToConsole ?? IS_DEVELOPMENT;
     this.setupGlobalErrorHandling();
@@ -27,12 +24,12 @@ export class ErrorManager {
    * Setup global error handling for unhandled errors
    */
   private setupGlobalErrorHandling(): void {
-    window.addEventListener("error", (event) => {
+    window.addEventListener('error', event => {
       this.handleError(event.error, `Unhandled error: ${event.message}`);
     });
 
-    window.addEventListener("unhandledrejection", (event) => {
-      this.handleError(event.reason, "Unhandled promise rejection");
+    window.addEventListener('unhandledrejection', event => {
+      this.handleError(event.reason, 'Unhandled promise rejection');
     });
   }
 
@@ -41,7 +38,7 @@ export class ErrorManager {
    */
   handleError(error: unknown, context: string): void {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : "";
+    const errorStack = error instanceof Error ? error.stack : '';
 
     if (this.logToConsole) {
       console.error(`${context}:`, errorMessage);
@@ -49,9 +46,7 @@ export class ErrorManager {
     }
 
     if (this.showUserMessages && this.isCriticalError(context)) {
-      this.showErrorMessage(
-        "An unexpected error occurred. Please refresh the page and try again.",
-      );
+      this.showErrorMessage('An unexpected error occurred. Please refresh the page and try again.');
     }
   }
 
@@ -59,11 +54,11 @@ export class ErrorManager {
    * Show error notification to user
    */
   showErrorMessage(message: string, duration: number = 5000): void {
-    const errorDiv = document.createElement("div");
-    errorDiv.className = "notification error";
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'notification error';
     errorDiv.textContent = message;
-    errorDiv.setAttribute("role", "alert");
-    errorDiv.setAttribute("aria-live", "assertive");
+    errorDiv.setAttribute('role', 'alert');
+    errorDiv.setAttribute('aria-live', 'assertive');
 
     setTimeout(() => {
       if (errorDiv.parentNode) {
@@ -78,11 +73,11 @@ export class ErrorManager {
    * Show success notification to user
    */
   showSuccessMessage(message: string, duration: number = 3000): void {
-    const successDiv = document.createElement("div");
-    successDiv.className = "notification success";
+    const successDiv = document.createElement('div');
+    successDiv.className = 'notification success';
     successDiv.textContent = message;
-    successDiv.setAttribute("role", "status");
-    successDiv.setAttribute("aria-live", "polite");
+    successDiv.setAttribute('role', 'status');
+    successDiv.setAttribute('aria-live', 'polite');
 
     setTimeout(() => {
       if (successDiv.parentNode) {
@@ -97,11 +92,11 @@ export class ErrorManager {
    * Show info notification to user
    */
   showInfoMessage(message: string, duration: number = 3000): void {
-    const infoDiv = document.createElement("div");
-    infoDiv.className = "notification info";
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'notification info';
     infoDiv.textContent = message;
-    infoDiv.setAttribute("role", "status");
-    infoDiv.setAttribute("aria-live", "polite");
+    infoDiv.setAttribute('role', 'status');
+    infoDiv.setAttribute('aria-live', 'polite');
 
     setTimeout(() => {
       if (infoDiv.parentNode) {
@@ -116,11 +111,11 @@ export class ErrorManager {
    * Show warning notification to user
    */
   showWarning(message: string, duration: number = 4000): void {
-    const warningDiv = document.createElement("div");
-    warningDiv.className = "notification warning";
+    const warningDiv = document.createElement('div');
+    warningDiv.className = 'notification warning';
     warningDiv.textContent = message;
-    warningDiv.setAttribute("role", "alert");
-    warningDiv.setAttribute("aria-live", "assertive");
+    warningDiv.setAttribute('role', 'alert');
+    warningDiv.setAttribute('aria-live', 'assertive');
 
     setTimeout(() => {
       if (warningDiv.parentNode) {
@@ -136,21 +131,18 @@ export class ErrorManager {
    */
   private isCriticalError(context: string): boolean {
     const criticalContexts = [
-      "Application initialization failed",
-      "Failed to load translations",
-      "Routing error",
-      "Critical rendering error",
+      'Application initialization failed',
+      'Failed to load translations',
+      'Routing error',
+      'Critical rendering error',
     ];
-    return criticalContexts.some((critical) => context.includes(critical));
+    return criticalContexts.some(critical => context.includes(critical));
   }
 
   /**
    * Update configuration
    */
-  updateConfig(newConfig: {
-    showUserMessages?: boolean;
-    logToConsole?: boolean;
-  }): void {
+  updateConfig(newConfig: { showUserMessages?: boolean; logToConsole?: boolean }): void {
     if (newConfig.showUserMessages !== undefined) {
       this.showUserMessages = newConfig.showUserMessages;
     }

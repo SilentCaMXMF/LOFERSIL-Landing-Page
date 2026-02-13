@@ -3,10 +3,7 @@
 declare global {
   interface Window {
     DOMPurify: {
-      sanitize: (
-        _dirty: string | Node,
-        _config?: Record<string, unknown>,
-      ) => string;
+      sanitize: (_dirty: string | Node, _config?: Record<string, unknown>) => string;
     };
   }
 }
@@ -94,7 +91,7 @@ export interface SEOScoreBreakdown {
 
 export interface PerformanceIssue {
   type: string;
-  severity: "low" | "medium" | "high";
+  severity: 'low' | 'medium' | 'high';
   message: string;
   metric?: string;
   value?: number;

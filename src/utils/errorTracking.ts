@@ -69,7 +69,7 @@ export class ErrorTracker {
     this.setupGlobalErrorHandlers();
     this.setupNetworkErrorTracking();
     this.setupPerformanceErrorTracking();
-    
+
     console.log('Error tracking initialized with session:', this.sessionId);
   }
 
@@ -95,19 +95,19 @@ export class ErrorTracker {
         stack: error?.stack,
         severity: this.assessSeverity(error),
       });
-      
+
       return this.originalHandlers.onError?.(message, source, line, column, error) ?? false;
     };
 
     // Unhandled promise rejections
-    window.onunhandledrejection = (event) => {
+    window.onunhandledrejection = event => {
       this.reportError({
         type: 'javascript',
         message: `Unhandled Promise Rejection: ${event.reason}`,
         stack: event.reason?.stack,
         severity: 'high',
       });
-      
+
       this.originalHandlers.onUnhandledRejection?.(event);
     };
   }
@@ -117,11 +117,11 @@ export class ErrorTracker {
    */
   private setupNetworkErrorTracking(): void {
     const originalFetch = window.fetch;
-    
+
     window.fetch = async (...args) => {
       try {
         const response = await originalFetch(...args);
-        
+
         if (!response.ok) {
           this.reportError({
             type: 'network',
@@ -134,7 +134,7 @@ export class ErrorTracker {
             severity: response.status >= 500 ? 'high' : 'medium',
           });
         }
-        
+
         return response;
       } catch (error) {
         this.reportError({
@@ -153,9 +153,9 @@ export class ErrorTracker {
    */
   private setupPerformanceErrorTracking(): void {
     if ('PerformanceObserver' in window) {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         const entries = list.getEntries();
-        
+
         for (const entry of entries) {
           // Long tasks that might cause UI freezing
           if (entry.entryType === 'longtask' && entry.duration > 100) {
@@ -171,7 +171,7 @@ export class ErrorTracker {
           }
         }
       });
-      
+
       try {
         observer.observe({ entryTypes: ['longtask'] });
       } catch (e) {
@@ -185,29 +185,28 @@ export class ErrorTracker {
    */
   private assessSeverity(error?: Error): 'low' | 'medium' | 'high' | 'critical' {
     if (!error) return 'medium';
-    
+
     const message = error.message.toLowerCase();
-    
+
     // Critical errors that break the app
-    if (message.includes('chunk load failed') || 
-        message.includes('script error') ||
-        message.includes('type error')) {
+    if (
+      message.includes('chunk load failed') ||
+      message.includes('script error') ||
+      message.includes('type error')
+    ) {
       return 'critical';
     }
-    
+
     // High severity errors
-    if (message.includes('network') || 
-        message.includes('fetch') ||
-        message.includes('timeout')) {
+    if (message.includes('network') || message.includes('fetch') || message.includes('timeout')) {
       return 'high';
     }
-    
+
     // Medium severity
-    if (message.includes('warning') || 
-        message.includes('deprecated')) {
+    if (message.includes('warning') || message.includes('deprecated')) {
       return 'low';
     }
-    
+
     return 'medium';
   }
 
@@ -245,7 +244,7 @@ export class ErrorTracker {
     };
 
     this.errorCount++;
-    
+
     // Log in development
     if (this.config.environment === 'development') {
       console.group(`🚨 Error Report [${report.severity.toUpperCase()}]`);
@@ -311,7 +310,7 @@ export class ErrorTracker {
   public reset(): void {
     this.errorCount = 0;
     this.sessionId = this.generateSessionId();
-    
+
     // Restore original handlers
     window.onerror = this.originalHandlers.onError;
     window.onunhandledrejection = this.originalHandlers.onUnhandledRejection;
@@ -333,7 +332,7 @@ export function initializeErrorTracking(config: ErrorTrackerConfig = {}): ErrorT
     environment: window.location.hostname === 'localhost' ? 'development' : 'production',
     ...config,
   });
-  
+
   tracker.initialize();
   return tracker;
 }

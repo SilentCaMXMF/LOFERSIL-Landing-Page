@@ -35,7 +35,7 @@
   }
 
   #nav-menu::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -58,7 +58,7 @@
     transform: translateX(0);
   }
 
-  [data-theme="dark"] #nav-menu {
+  [data-theme='dark'] #nav-menu {
     background: var(--gray-900);
     border-top-color: var(--gray-700);
   }
@@ -193,7 +193,7 @@
   }
 
   .about-gallery-dot::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -269,7 +269,7 @@
 
   /* Touch indicators for mobile */
   .about-gallery.swipe-hint::after {
-    content: "";
+    content: '';
     position: absolute;
     bottom: var(--space-3);
     right: var(--space-3);
