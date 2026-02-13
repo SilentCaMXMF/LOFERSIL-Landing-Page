@@ -14,6 +14,11 @@
 }
 
 @media (max-width: 767px) {
+  /* Hide entire gallery section on mobile */
+  .about-gallery {
+    display: none;
+  }
+
   #nav-menu {
     display: flex;
     position: fixed;
@@ -220,96 +225,6 @@
     outline-offset: 2px;
   }
 
-  /* Mobile Gallery Arrow Controls */
-  .about-gallery-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    border: none;
-    border-radius: 50%;
-    color: var(--white);
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    z-index: 10;
-    opacity: 1;
-    visibility: visible;
-    /* Always visible on mobile for better UX */
-  }
-
-  .about-gallery-arrow:hover {
-    background: rgba(0, 0, 0, 0.7);
-    transform: translateY(-50%) scale(1.05);
-  }
-
-  .about-gallery-arrow:active {
-    background: rgba(0, 0, 0, 0.85);
-    transform: translateY(-50%) scale(0.95);
-  }
-
-  .about-gallery-arrow:focus-visible {
-    outline: 2px solid var(--white);
-    outline-offset: 2px;
-  }
-
-  .about-gallery-arrow.prev {
-    left: var(--space-3);
-  }
-
-  .about-gallery-arrow.next {
-    right: var(--space-3);
-  }
-
-  /* Touch indicators for mobile */
-  .about-gallery.swipe-hint::after {
-    content: '';
-    position: absolute;
-    bottom: var(--space-3);
-    right: var(--space-3);
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px);
-    border-radius: 50%;
-    z-index: 5;
-    animation: swipeHint 2s ease-in-out infinite;
-  }
-
-  @keyframes swipeHint {
-    0%,
-    100% {
-      transform: translateX(0);
-      opacity: 0;
-    }
-    20%,
-    80% {
-      opacity: 1;
-    }
-    50% {
-      transform: translateX(-10px);
-    }
-  }
-
-  /* Hide arrows on hover-capable devices (desktop) */
-  @media (hover: hover) and (pointer: fine) {
-    .about-gallery-arrow {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .about-gallery:hover .about-gallery-arrow {
-      opacity: 1;
-      visibility: visible;
-    }
-  }
-
   .products-grid {
     grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
     gap: var(--space-4);
@@ -393,11 +308,6 @@
     font-size: clamp(var(--text-xl), 6vw, var(--text-3xl));
   }
 
-  .about-gallery {
-    min-height: 14rem;
-    gap: var(--space-3);
-  }
-
   .products-grid {
     grid-template-columns: 1fr;
     gap: var(--space-3);
@@ -443,41 +353,9 @@
     gap: var(--space-3);
   }
 
+  /* Hide entire gallery section on mobile */
   .about-gallery {
-    min-height: 16rem;
-    max-height: 24rem;
-  }
-
-  .about-gallery-nav {
-    bottom: var(--space-2);
-    padding: var(--space-1) var(--space-2);
-  }
-
-  .about-gallery-dot {
-    width: 6px;
-    height: 6px;
-  }
-
-  .about-gallery-dot:hover::before {
-    width: 12px;
-    height: 12px;
-  }
-
-  .about-gallery-arrow {
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .about-gallery-arrow.prev {
-    left: var(--space-2);
-  }
-
-  .about-gallery-arrow.next {
-    right: var(--space-2);
+    display: none;
   }
 
   .hero {
