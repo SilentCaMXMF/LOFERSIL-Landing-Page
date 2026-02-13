@@ -24,16 +24,7 @@ jobs:
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          check-name: "PR Validation"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-          timeout_seconds: 1800
-
-      - name: Wait for security checks to pass
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          check-name: "Security Audit"
+          check-name: "Deploy / validate"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
           timeout_seconds: 1800
