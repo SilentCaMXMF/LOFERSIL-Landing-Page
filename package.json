@@ -13,6 +13,7 @@
     "start": "serve dist --single -l 3000",
     "lint": "eslint src/**/*.ts",
     "format": "prettier --write src/**/*.{ts,css}",
+    "format:check": "prettier --check src/**/*.{ts,css}",
     "prebuild": "npm run format"
   },
   "keywords": [
