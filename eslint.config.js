@@ -38,6 +38,7 @@ export default [
         ErrorEvent: "readonly",
         PromiseRejectionEvent: "readonly",
         URL: "readonly",
+        OnErrorEventHandler: "readonly",
         // Node.js globals (for test files)
         global: "readonly",
         process: "readonly",
