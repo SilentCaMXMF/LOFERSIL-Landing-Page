@@ -185,7 +185,7 @@ function getCacheStrategy(url, destination) {
 /**
  * Cache First strategy
  */
-async function cacheFirst(request: Request): Promise<Response> {
+async function cacheFirst(request) {
   const cache = await caches.open(STATIC_CACHE_NAME);
   const cached = await cache.match(request);
   
@@ -204,7 +204,7 @@ async function cacheFirst(request: Request): Promise<Response> {
 /**
  * Network First strategy
  */
-async function networkFirst(request: Request): Promise<Response> {
+async function networkFirst(request) {
   const cache = await caches.open(RUNTIME_CACHE_NAME);
   const cached = await cache.match(request);
   
@@ -228,7 +228,7 @@ async function networkFirst(request: Request): Promise<Response> {
 /**
  * Stale While Revalidate strategy
  */
-async function staleWhileRevalidate(request: Request): Promise<Response> {
+async function staleWhileRevalidate(request) {
   const cache = await caches.open(RUNTIME_CACHE_NAME);
   const cached = await cache.match(request);
   
