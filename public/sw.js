@@ -38,14 +38,23 @@ self.addEventListener('install', (event) => {
   
   event.waitUntil(
     (async () => {
-      try {
-        const staticCache = await caches.open(STATIC_CACHE_NAME);
-        console.log('Caching static assets...');
-        await staticCache.addAll(STATIC_ASSETS);
-        console.log('Static assets cached successfully');
-      } catch (error) {
-        console.error('Failed to cache static assets:', error);
-      }
+      const staticCache = await caches.open(STATIC_CACHE_NAME);
+      console.log('Caching static assets...');
+      
+      await Promise.allSettled(
+        STATIC_ASSETS.map(url => 
+          fetch(url, { mode: 'no-cors' })
+            .then(response => {
+              if (response.ok || response.type === 'opaque') {
+                return staticCache.put(url, response);
+              }
+            })
+            .catch(() => {})
+        )
+      );
+      
+      console.log('Static assets cached');
+      await self.skipWaiting();
     })()
   );
 });
