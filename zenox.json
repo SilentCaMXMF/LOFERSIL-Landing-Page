@@ -1,0 +1,16 @@
+{
+  "agents": {
+    "explorer": {
+      "model": "big-pickle"
+    },
+    "librarian": {
+      "model": "big-pickle"
+    },
+    "oracle": {
+      "model": "big-pickle"
+    },
+    "ui-planner": {
+      "model": "big-pickle"
+    }
+  }
+}
