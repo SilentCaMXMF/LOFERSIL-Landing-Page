@@ -6,7 +6,7 @@
   <!-- Main page -->
   <url>
     <loc>https://lofersil.vercel.app/</loc>
-    <lastmod>2025-01-14</lastmod>
+    <lastmod>2026-02-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/" />
@@ -82,7 +82,7 @@
   <!-- Privacy Policy -->
   <url>
     <loc>https://lofersil.vercel.app/privacy.html</loc>
-    <lastmod>2025-01-14</lastmod>
+    <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/privacy.html" />
@@ -93,7 +93,7 @@
   <!-- Terms and Conditions -->
   <url>
     <loc>https://lofersil.vercel.app/terms.html</loc>
-    <lastmod>2025-01-14</lastmod>
+    <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/terms.html" />
@@ -104,7 +104,7 @@
   <!-- English Home Page -->
   <url>
     <loc>https://lofersil.vercel.app/en/</loc>
-    <lastmod>2025-01-14</lastmod>
+    <lastmod>2026-02-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/" />
@@ -115,7 +115,7 @@
   <!-- English Privacy Policy -->
   <url>
     <loc>https://lofersil.vercel.app/en/privacy.html</loc>
-    <lastmod>2025-01-14</lastmod>
+    <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/privacy.html" />
@@ -126,7 +126,7 @@
   <!-- English Terms and Conditions -->
   <url>
     <loc>https://lofersil.vercel.app/en/terms.html</loc>
-    <lastmod>2025-01-14</lastmod>
+    <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/terms.html" />

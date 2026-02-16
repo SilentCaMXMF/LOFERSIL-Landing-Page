@@ -2,73 +2,245 @@
 
 Static TypeScript website for Vercel deployment with dual language support (Portuguese/English), dark/light themes, responsive design, and Formspree contact forms.
 
-Tech Stack: TypeScript (relaxed), HTML5/CSS3 + PostCSS, DOMPurify, ESLint + Prettier
+**Tech Stack**: TypeScript (relaxed), HTML5/CSS3 + PostCSS, DOMPurify, ESLint + Prettier, Vitest
+
+---
 
 ## Build/Lint/Test Commands
 
 ```bash
-npm run build           # Full production build
-npm run build:compile   # Compile TypeScript to JavaScript
-npm run build:css       # Process CSS with PostCSS
-npm run build:copy      # Copy assets to dist/
-npm run dev             # Watch TypeScript changes
-npm start               # Serve built site locally (port 3000)
-npm run lint            # Lint TypeScript files
-npm run format          # Format code with Prettier
+# Build
+npm run build              # Full production build (compile + css + copy)
+npm run build:compile     # Compile TypeScript to JavaScript
+npm run build:css         # Process CSS with PostCSS ( Autoprefixer + cssnano)
+npm run build:copy        # Copy assets to dist/
+
+# Development
+npm run dev               # Watch TypeScript changes
+npm run start             # Serve built site locally (port 3000)
+
+# Quality
+npm run lint              # Lint TypeScript files
+npm run format            # Format code with Prettier
+npm run format:check      # Check formatting without writing
+
+# Testing (requires npm install vitest)
+# npm install vitest --save-dev  # Install first if needed
+npx vitest run                       # Run all tests
+npx vitest run src/scripts/modules/ThemeManager.test.ts  # Run single test file
+npx vitest --watch                  # Watch mode
 ```
 
-**Testing**: No automated tests configured. If adding tests, install Vitest and run single tests with: `npm run test -- --run path/to/test.ts`
+---
 
 ## Code Style Guidelines
 
-**General Principles**: Relaxed TypeScript (strict: false), browser-first, ES modules in `src/scripts/modules/`, error resilience
+### General Principles
+- **Relaxed TypeScript**: `strict: false` in tsconfig.json - implicit `any` allowed for simple cases
+- **Browser-first**: ES2020 target, vanilla JS transpiled from TypeScript
+- **ES Modules**: Use `.js` extensions for relative imports
+- **Error Resilience**: Graceful degradation, never crash the page
 
-**TypeScript Config**: ES2020 target, bundler resolution, no strict mode, React-jsx, source maps enabled
+### TypeScript Config (tsconfig.json)
+```json
+{
+  "target": "ES2020",
+  "module": "ES2020",
+  "moduleResolution": "bundler",
+  "strict": false,
+  "esModuleInterop": true,
+  "skipLibCheck": true,
+  "forceConsistentCasingInFileNames": true
+}
+```
 
-**Imports**: ES6 with `.js` extensions for relative imports, `import type` for types, group imports (types first)
+### Imports
+- Group imports: types first, then regular imports
+- Use `import type` for type-only imports
+- Add `.js` extension for relative imports
 
 ```typescript
 import type { ContactFormManager } from "./modules/ContactFormManager.js";
 import { TranslationManager } from "./modules/TranslationManager.js";
 ```
 
-**Naming**: Classes/Interfaces PascalCase, methods/properties camelCase, constants UPPER*SNAKE_CASE, private members with `*` prefix
+### Naming Conventions
+- **Classes/Interfaces**: PascalCase (`ThemeManager`, `ContactFormData`)
+- **Methods/Properties**: camelCase (`init()`, `handleSubmit()`)
+- **Constants**: UPPER_SNAKE_CASE (`DEFAULT_LANGUAGE`, `API_ENDPOINT`)
+- **Private Members**: Use `#` prefix for private methods (e.g., `#init()`)
 
-**Types**: Explicit types for public APIs, allow implicit `any` for simple cases, union types for variants, prefer interfaces
+### Types
+- Explicit types for public APIs
+- Allow implicit `any` for simple DOM manipulations
+- Use union types for variants
+- Prefer interfaces over types for object shapes
 
-**Error Handling**: Try-catch for localStorage/DOM, log warnings (not errors), user feedback for validation, graceful degradation
+```typescript
+interface ThemeConfig {
+  default: 'light' | 'dark' | 'system';
+  toggle: boolean;
+}
+
+type Theme = 'light' | 'dark' | 'system';
+```
+
+### Error Handling
+- Use try-catch for localStorage/DOM operations
+- Log warnings (not errors) for expected failures
+- Provide user feedback for validation errors
+- Graceful degradation - app should work even if features fail
 
 ```typescript
 try {
   localStorage.setItem(key, value);
 } catch (error) {
-  console.warn("Failed to save:", error);
+  console.warn("Failed to save preference:", error);
 }
 ```
 
-**Organization**: Single responsibility modules, JSDoc for public APIs, private methods with `#`, config interfaces, clean up event listeners
+---
 
-**DOM**: Cache element references, modern APIs, CSS classes over styles, sanitize with DOMPurify
+## Project Organization
 
-**Performance**: Lazy loading, debounced scroll/resize, minimize DOM queries, IntersectionObserver
+### Directory Structure
+```
+src/
+├── locales/              # Translation JSON files (pt.json, en.json)
+├── scripts/              # TypeScript source
+│   ├── index.ts          # Main entry point
+│   ├── modules/          # Feature modules
+│   │   ├── ThemeManager.ts
+│   │   ├── TranslationManager.ts
+│   │   ├── NavigationManager.ts
+│   │   ├── ContactFormManager.ts
+│   │   ├── ScrollManager.ts
+│   │   └── ...
+│   ├── validation.ts     # Form validation utilities
+│   └── types.ts          # Global type definitions
+├── styles/               # PostCSS source
+│   └── main.css          # Main stylesheet
+└── utils/                # Utility modules
+    ├── webVitals.ts      # Performance monitoring
+    └── errorTracking.ts  # Error reporting
+```
 
-**CSS**: PostCSS + Autoprefixer, CSSnano, BEM naming, CSS custom properties, mobile-first
+### Module Guidelines
+- **Single Responsibility**: Each module handles one feature
+- **JSDoc**: Document public APIs with JSDoc comments
+- **Private Methods**: Use `#` prefix for private class methods
+- **Cleanup**: Remove event listeners when modules are destroyed
 
-**Linting**: `no-unused-vars: warn`, `no-explicit-any: warn`, `no-console: warn`, `no-debugger: error`, `prefer-const: error`, `no-var: error`
+### DOM Patterns
+- Cache element references (don't query DOM repeatedly)
+- Use modern APIs (`querySelector`, `addEventListener`)
+- Prefer CSS classes over inline styles
+- Sanitize user input with DOMPurify
 
-**Commits**: Conventional commits (`feat:`, `fix:`, `docs:`), run `npm run format` first, focused changes
+### Performance
+- Lazy loading for images (`loading="lazy"`)
+- Debounce scroll/resize handlers
+- Minimize DOM queries
+- Use IntersectionObserver for animations
 
-**Deployment**: GitHub Actions to Vercel, or `npm run build` then deploy `dist/`
+---
 
-## Development Workflow
+## CSS Guidelines
 
-Setup → Dev (`npm run dev`) → Test manually → Lint (`npm run lint`) → Format (`npm run format`) → Build → Deploy
+### Styling Approach
+- **PostCSS**: With Autoprefixer and CSSnano for minification
+- **BEM Naming**: `block__element--modifier` (e.g., `.nav-menu__item--active`)
+- **CSS Custom Properties**: For theming and consistent values
+- **Mobile-First**: Write base styles for mobile, add media queries for desktop
+
+### CSS Variables Example
+```css
+:root {
+  --color-primary: #2d5a27;
+  --color-text: #333333;
+  --spacing-md: 1rem;
+  --transition-fast: 0.2s ease;
+}
+```
+
+---
+
+## Linting Rules
+
+ESLint configured with these key rules:
+- `no-unused-vars`: warn
+- `no-explicit-any`: warn
+- `no-console`: warn (for console.log usage)
+- `no-debugger`: error
+- `prefer-const`: error
+- `no-var`: error
+
+---
+
+## Git/Commit Conventions
+
+### Commit Message Format
+```
+type: description
+
+[optional body]
+```
+
+Types: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`
+
+### Workflow
+1. Run `npm run format` before committing
+2. Run `npm run lint` to check for issues
+3. Create focused, atomic commits
+4. Use conventional commit format
+
+---
+
+## Deployment
+
+### Automatic (GitHub Actions)
+- Push to `master` branch triggers workflow
+- Builds `dist/` folder
+- Deploys to Vercel production
+- Vercel GitHub integration disabled (manual build only)
+
+### Manual
+```bash
+npm run build
+# Deploy dist/ folder via Vercel CLI or dashboard
+```
+
+---
 
 ## AI Assistant Guidelines
 
-Prefer functional programming, small focused methods, JSDoc for public APIs, test in multiple browsers, follow existing patterns, use types even in relaxed mode, document complex logic, check console for warnings
+- Prefer functional programming patterns
+- Write small, focused methods
+- Add JSDoc for public APIs
+- Follow existing code patterns in the codebase
+- Use types even in relaxed mode
+- Document complex logic
+- Check browser console for warnings during testing
+- Test in multiple browsers if possible
+
+---
 
 ## Security
 
-Sanitize inputs with DOMPurify, use HTTPS, validate client/server, avoid sensitive localStorage, implement CSP headers</content>
-<parameter name="filePath">AGENTS.md
+- **XSS Protection**: Sanitize all user input with DOMPurify
+- **CSP Headers**: Configured in vercel.json
+- **Form Validation**: Client-side validation + Formspree backend
+- **No Secrets**: Never expose API keys in client-side code
+- **HTTPS**: Enforced by Vercel
+
+---
+
+## Development Workflow
+
+```
+1. Setup:    npm install
+2. Dev:      npm run dev (watch TS) + npm run start (serve)
+3. Test:     Manual testing in browser
+4. Quality:  npm run lint → npm run format → npm run build
+5. Deploy:   git push to master
+```
