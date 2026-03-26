@@ -196,7 +196,7 @@ export class TranslationManager {
     // Add hreflang tags for each supported language
     const baseUrl = window.location.origin;
     this.addHreflangTag('pt-PT', `${baseUrl}/`);
-    this.addHreflangTag('en-US', `${baseUrl}/`);
+    this.addHreflangTag('en-US', `${baseUrl}/en/`);
     // Default language
     this.addHreflangTag('x-default', `${baseUrl}/`);
   }

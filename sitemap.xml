@@ -9,23 +9,23 @@
     <lastmod>2026-02-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/" />
     <image:image>
       <image:loc>https://lofersil.vercel.app/assets/images/Frente_loja_100.webp</image:loc>
-      <image:title>LOFERSIL Store Front - Papelaria e Material de Escritório em Guimarães</image:title>
-      <image:caption>Fachada da LOFERSIL, a sua papelaria de confiança em Guimarães. Venda de material de escritório, papelaria e artigos para escola.</image:caption>
+      <image:title>LOFERSIL Store Front - Papelaria e Material de Escritório em Lisboa</image:title>
+      <image:caption>Fachada da LOFERSIL, a sua papelaria de confiança em Lisboa. Venda de material de escritório, papelaria e artigos para escola.</image:caption>
     </image:image>
     <image:image>
       <image:loc>https://lofersil.vercel.app/assets/images/Interior.jpg</image:loc>
       <image:title>LOFERSIL Store Interior - Wide Range of Stationery Products</image:title>
-      <image:caption>Interior da LOFERSIL com grande variedade de material de escritório, papelaria e artigos escolares. Visite-nos em Guimarães.</image:caption>
+      <image:caption>Interior da LOFERSIL com grande variedade de material de escritório, papelaria e artigos escolares. Visite-nos em Lisboa.</image:caption>
     </image:image>
     <image:image>
       <image:loc>https://lofersil.vercel.app/assets/images/logo.jpg</image:loc>
-      <image:title>LOFERSIL Logo - Papelaria e Material de Escritório em Guimarães</image:title>
-      <image:caption>Logótipo oficial da LOFERSIL, especializada em papelaria, material de escritório e artigos escolares em Guimarães, Portugal.</image:caption>
+      <image:title>LOFERSIL Logo - Papelaria e Material de Escritório em Lisboa</image:title>
+      <image:caption>Logótipo oficial da LOFERSIL, especializada em papelaria, material de escritório e artigos escolares em Lisboa, Portugal.</image:caption>
     </image:image>
     <image:image>
       <image:loc>https://lofersil.vercel.app/assets/images/hero-image.svg</image:loc>
@@ -85,7 +85,7 @@
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/privacy.html" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/privacy.html" />
     <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/privacy.html" />
   </url>
@@ -96,7 +96,7 @@
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/terms.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/terms.html" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/terms.html" />
     <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/terms.html" />
   </url>
@@ -107,7 +107,7 @@
     <lastmod>2026-02-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/" />
   </url>
@@ -118,7 +118,7 @@
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/privacy.html" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/privacy.html" />
     <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/privacy.html" />
   </url>
@@ -129,7 +129,7 @@
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/en/terms.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lofersil.vercel.app/terms.html" />
     <xhtml:link rel="alternate" hreflang="pt" href="https://lofersil.vercel.app/terms.html" />
     <xhtml:link rel="alternate" hreflang="en" href="https://lofersil.vercel.app/en/terms.html" />
   </url>

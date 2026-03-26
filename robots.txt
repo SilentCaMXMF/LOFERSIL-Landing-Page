@@ -28,6 +28,7 @@ Disallow: /tools/
 Disallow: /docs/
 
 # Block test and development files
+Disallow: /validation-demo.html
 Disallow: /*.test.html
 Disallow: /*.dev.html
 Disallow: /*.staging.html
@@ -60,6 +61,7 @@ Disallow: /.github/
 Disallow: /tasks/
 Disallow: /tools/
 Disallow: /docs/
+Disallow: /validation-demo.html
 Disallow: /*.test.html
 
 # ===================================================================
