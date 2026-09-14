@@ -39,7 +39,7 @@
     "prettier": "^3.0.0",
     "serve": "^14.0.0",
     "typescript": "^5.0.0",
-    "vercel": "^50.17.1"
+    "vercel": "^59.16.0"
   },
   "engines": {
     "node": ">=20.x"
